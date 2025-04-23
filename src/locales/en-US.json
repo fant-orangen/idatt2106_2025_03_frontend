@@ -1,3 +1,6 @@
 {
-"test": "English"
+  "login": "Login",
+  "signup": "Sign Up",
+  "home": "Home",
+  "language": "Language"
 }

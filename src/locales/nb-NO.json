@@ -1,3 +1,6 @@
 {
-  "test": "Norsk"
+  "login": "Logg inn",
+  "signup": "Registrer",
+  "home": "Hjem",
+  "language": "Språk"
 }
