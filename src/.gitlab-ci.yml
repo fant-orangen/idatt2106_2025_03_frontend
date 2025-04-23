@@ -1,0 +1,27 @@
+image: node:22
+stages:
+  - build
+  - test
+
+install:
+  stage: build # The install job will be run before the prettier, typescript and test jobs
+  script:
+    - npm install
+  artifacts: # Keep node_modules folder for the following stages
+    paths:
+      - node_modules
+
+prettier:
+  stage: test
+  script:
+    - ./node_modules/.bin/prettier --check .
+
+typescript:
+  stage: test
+  script:
+    - ./node_modules/.bin/tsc --noEmit --skipLibCheck
+
+test:
+  stage: test
+  script:
+    - npm test
