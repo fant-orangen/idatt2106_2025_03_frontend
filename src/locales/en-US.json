@@ -2,5 +2,11 @@
   "login": "Login",
   "signup": "Sign Up",
   "home": "Home",
-  "language": "Language"
+  "language": "Language",
+  "crisis-status": "Crisis Status",
+  "no-crisis": "No ongoing crisis",
+  "more-crisis-info": "Read more about your current crisis situation",
+  "before": "before",
+  "during": "during",
+  "after": "after"
 }
