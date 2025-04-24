@@ -15,7 +15,7 @@
     --orange-background-color: #FFE0B2;
 }
 
-/*dark mode, todo: fix blues*/
+/*dark mode*/
 .dark-mode {
     --background-color: #121212;
     --text-color: #F1F5F9;
@@ -28,6 +28,6 @@
     --red-background-color: #FF8A80;
     --green-text-color: #1C4421;
     --green-background-color: #A5D6A7;
-    --orange-text-color: #E65100;
+    --orange-text-color: #FFAB40;
     --orange-background-color: #FFAB40;
 }
