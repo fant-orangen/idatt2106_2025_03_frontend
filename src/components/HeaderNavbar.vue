@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 let prevScrollpos: number = window.pageYOffset
 const showDropdown = ref(false)
@@ -62,8 +62,8 @@ function selectLanguage(language: { label: string; code: string }): void {
       </div>
     </div>
     <div class="navbar-left">
-      <RouterLink to="/"> {{ $t('login') }}</RouterLink>
-      <RouterLink to="/"> {{ $t('signup') }}</RouterLink>
+      <RouterLink to="/login"> {{ t('login') }}</RouterLink>
+      <RouterLink to="/"> {{ t('signup') }}</RouterLink>
       <RouterLink to="/" class="no-border">
         <font-awesome-icon :icon="['fas', 'user']" size="lg" />
       </RouterLink>
