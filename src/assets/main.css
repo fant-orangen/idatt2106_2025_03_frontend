@@ -1,0 +1,33 @@
+/*light mode*/
+:root {
+    --background-color: #F9FAFB;
+    --text-color: #1A1A1A;
+    --primary-color: #123456;
+    --secondary-color: #0B1C2C;
+    --third-color: #345A89;
+    --fourth-color: #7FA1C1;
+    --fifth-color: #D6E3EF;
+    --red-text-color: #B71C1C;
+    --red-background-color: #FFCDD2;
+    --green-text-color: #1C4421;
+    --green-background-color: #A5D6A7;
+    --orange-text-color: #E65100;
+    --orange-background-color: #FFE0B2;
+}
+
+/*dark mode*/
+.dark-mode {
+    --background-color: #121212;
+    --text-color: #F1F5F9;
+    --primary-color: #123456;
+    --secondary-color: #0B1C2C;
+    --third-color: #345A89;
+    --fourth-color: #7FA1C1;
+    --fifth-color: #D6E3EF;
+    --red-text-color: #B71C1C;
+    --red-background-color: #FF8A80;
+    --green-text-color: #1C4421;
+    --green-background-color: #A5D6A7;
+    --orange-text-color: #FFAB40;
+    --orange-background-color: #FFAB40;
+}
