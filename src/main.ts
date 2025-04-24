@@ -23,4 +23,3 @@ app.use(i18n)
 app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.mount('#app')
-// import { createApp } from 'vue'
