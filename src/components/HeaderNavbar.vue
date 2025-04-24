@@ -1,6 +1,19 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
+
 let prevScrollpos: number = window.pageYOffset
+const showDropdown = ref(false)
+const languages = [
+  { label: 'Norsk bokmål', code: 'nb-NO' },
+  { label: 'English', code: 'en-US' },
+  { label: 'Norsk nynorsk', code: 'nn-NO' },
+  { label: 'Sámi', code: 'se' },
+]
+const selectedLanguage = ref(languages[0].label)
 
 window.onscroll = function (): void {
   const currentScrollPos: number = window.pageYOffset
@@ -18,21 +31,13 @@ window.onscroll = function (): void {
 }
 
 function toggleDropdown(): void {
-  const myDropdown = document.getElementById('myDropdown')
-  if (myDropdown) {
-    myDropdown.classList.toggle('show')
-  }
+  showDropdown.value = !showDropdown.value
 }
 
-// Close the dropdown if the user clicks outside of it
-window.onclick = function (e: MouseEvent): void {
-  const target = e.target as HTMLElement
-  if (!target.matches('.dropbtn')) {
-    const myDropdown = document.getElementById('myDropdown')
-    if (myDropdown && myDropdown.classList.contains('show')) {
-      myDropdown.classList.remove('show')
-    }
-  }
+function selectLanguage(language: { label: string; code: string }): void {
+  selectedLanguage.value = language.label
+  showDropdown.value = false
+  locale.value = language.code
 }
 </script>
 
@@ -42,13 +47,18 @@ window.onclick = function (e: MouseEvent): void {
       <RouterLink to="/"> {{ $t('home') }}</RouterLink>
       <div class="dropdown">
         <button class="dropbtn" @click="toggleDropdown">
-          Norsk bokmål
-          <i class="fa fa-caret-down"></i>
+          {{ selectedLanguage }}
+          <i class="pi pi-chevron-down"></i>
         </button>
-        <div class="dropdown-content" id="myDropdown">
-          <a href="#">English</a>
-          <a href="#">Norsk nynorsk</a>
-          <a href="#">Sámi</a>
+        <div v-if="showDropdown" class="dropdown-content">
+          <div
+            v-for="language in languages"
+            :key="language.code"
+            @click="selectLanguage(language)"
+            class="dropdown-item"
+          >
+            {{ language.label }}
+          </div>
         </div>
       </div>
     </div>
@@ -63,7 +73,7 @@ window.onclick = function (e: MouseEvent): void {
 .navbar {
   box-shadow: 0px 5px 6px rgb(0, 0, 0, 0.25);
   height: 60px;
-  background-color: rgba(18, 52, 86, 1);
+  background-color: var(--secondary-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -82,72 +92,51 @@ window.onclick = function (e: MouseEvent): void {
 }
 
 .navbar a:hover {
-  border-bottom: 5px solid #d6e3ef;
+  border-bottom: 5px solid var(--fifth-color);
 }
 
 .navbar-left,
 .navbar-right {
   display: flex;
   gap: 20px;
-}
-
-.dropbtn {
-  color: #d6e3ef;
-  text-decoration: none;
-  font-weight: medium;
-  border: transparent;
-  border-bottom: 5px solid transparent;
-  transition: border-color 0.3s ease;
-  line-height: 55px;
-  font-size: larger;
-  background-color: transparent;
-  cursor: pointer;
-}
-
-.dropbtn:hover {
-  border-bottom: 5px solid #d6e3ef;
+  align-items: center;
 }
 
 .dropdown {
   position: relative;
-  display: inline-block;
+}
+
+.dropbtn {
+  background-color: var(--secondary-color);
+  color: #d6e3ef;
+  border: none;
+  cursor: pointer;
+  font-size: larger;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .dropdown-content {
-  display: none;
+  display: flex;
+  flex-direction: column;
   position: absolute;
-  background-color: #f9f9f9;
-  min-width: 180px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  left: 0;
+  background-color: var(--background-color);
+  box-shadow: 0px 5px 6px rgb(0, 0, 0, 0.25);
   z-index: 1;
+  top: 150%;
+  min-width: 150px;
 }
 
-.dropdown-content a {
-  float: none;
-  color: black;
-  padding: 0px 16px;
-  text-decoration: none;
-  display: block;
+.dropdown-item {
+  padding: 10px;
+  color: var(--text-color);
+  cursor: pointer;
   text-align: left;
 }
 
-.dropdown-content a:hover {
-  background-color: #ddd;
-}
-
-.dropdown .show {
-  display: block;
-}
-
-.dropdown {
-  cursor: pointer;
-  font-size: 16px;
-  border: none;
-  outline: none;
-  color: white;
-  padding: 14px 16px;
-  background-color: inherit;
-  font-family: inherit;
-  margin: 0;
+.dropdown-item:hover {
+  background-color: var(--fifth-color);
 }
 </style>
