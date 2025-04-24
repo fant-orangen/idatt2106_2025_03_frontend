@@ -22,6 +22,14 @@ onUnmounted(() => {
   document.body.style.overflow = ''
 })
 
+/**
+ * Handles the login process by verifying the user's credentials.
+ * 
+ * @async
+ * @function handleLogin
+ * @returns {Promise<void>} Resolves when the login process is complete.
+ * @throws {Error} If the login fails, an error message is displayed.
+ */
 async function handleLogin() {
   try {
     errorMessage.value = ''
@@ -69,6 +77,7 @@ async function handleLogin() {
 </template>
 
 <style scoped>
+/* Wrapper styling to center the login form */
 .login-wrapper {
   display: flex;
   justify-content: space-around;
@@ -78,6 +87,7 @@ async function handleLogin() {
   padding: 1rem;
 }
 
+/* Styling for the login form container */
 .login-container {
   max-width: 400px;
   margin: 0 auto;
@@ -88,6 +98,7 @@ async function handleLogin() {
   color: var(--text-color);
 }
 
+/* Styling for error messages */
 .error {
   margin-top: 10px;
 }
