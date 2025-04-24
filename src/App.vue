@@ -4,8 +4,10 @@ import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <HeaderNavbar />
-  <RouterView />
+  <div class="bg-background text-foreground min-h-screen">
+    <HeaderNavbar />
+    <RouterView />
+  </div>
 </template>
 
 <style scoped></style>
