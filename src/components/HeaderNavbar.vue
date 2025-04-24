@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import 'primeicons/primeicons.css'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -47,8 +46,8 @@ function selectLanguage(language: { label: string; code: string }): void {
       <RouterLink to="/"> {{ $t('home') }}</RouterLink>
       <div class="dropdown">
         <button class="dropbtn" @click="toggleDropdown">
+          <font-awesome-icon :icon="['fas', 'globe']" size="lg" />
           {{ selectedLanguage }}
-          <i class="pi pi-chevron-down"></i>
         </button>
         <div v-if="showDropdown" class="dropdown-content">
           <div
@@ -65,11 +64,21 @@ function selectLanguage(language: { label: string; code: string }): void {
     <div class="navbar-left">
       <RouterLink to="/"> {{ $t('login') }}</RouterLink>
       <RouterLink to="/"> {{ $t('signup') }}</RouterLink>
+      <RouterLink to="/" class="no-border">
+        <font-awesome-icon :icon="['fas', 'user']" size="lg" />
+      </RouterLink>
+      <RouterLink to="/" class="no-border">
+        <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
+      </RouterLink>
     </div>
   </div>
 </template>
 
 <style>
+font-awesome-icon {
+  color: var(--fifth-color);
+}
+
 .navbar {
   box-shadow: 0px 5px 6px rgb(0, 0, 0, 0.25);
   height: 60px;
@@ -82,7 +91,7 @@ function selectLanguage(language: { label: string; code: string }): void {
 }
 
 .navbar a {
-  color: #d6e3ef;
+  color: var(--fifth-color);
   text-decoration: none;
   font-weight: medium;
   border-bottom: 5px solid transparent;
@@ -91,14 +100,22 @@ function selectLanguage(language: { label: string; code: string }): void {
   font-size: larger;
 }
 
+.rl-icon:hover {
+  border: trans;
+}
+
 .navbar a:hover {
   border-bottom: 5px solid var(--fifth-color);
+}
+
+.navbar a.no-border:hover {
+  border-bottom: 5px solid transparent;
 }
 
 .navbar-left,
 .navbar-right {
   display: flex;
-  gap: 20px;
+  gap: 30px;
   align-items: center;
 }
 
