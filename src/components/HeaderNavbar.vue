@@ -10,8 +10,8 @@ const showDropdown = ref(false)
 const languages = [
   { label: 'Norsk bokmål', code: 'nb-NO' },
   { label: 'English', code: 'en-US' },
-  { label: 'Norsk nynorsk', code: 'nn-NO' },
-  { label: 'Sámi', code: 'se' },
+  { label: 'Norsk nynorsk (WIP)', code: 'nn-NO' },
+  { label: 'Sámi (WIP)', code: 'se' },
 ]
 const selectedLanguage = ref(languages[0].label)
 
@@ -126,7 +126,7 @@ function selectLanguage(language: { label: string; code: string }): void {
   box-shadow: 0px 5px 6px rgb(0, 0, 0, 0.25);
   z-index: 1;
   top: 150%;
-  min-width: 150px;
+  width: 200px;
 }
 
 .dropdown-item {
