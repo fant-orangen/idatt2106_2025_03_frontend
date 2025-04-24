@@ -7,7 +7,8 @@ import BeforeCrisis from './components/pages/BeforeCrisis.vue'
 <template>
   <HeaderNavbar />
 
-  <router-view></router-view>
+  <router-view>
+  </router-view>
 </template>
 
 <style scoped></style>
