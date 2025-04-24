@@ -20,47 +20,40 @@
   </div>
 </template>
 
-<script setup>
-import { ref, watch } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 
 // Props definition
-const props = defineProps({
-  value: {
-    type: [Number, String],
-    required: true,
-  },
-  min: {
-    type: Number,
-    default: 0,
-  },
-  max: {
-    type: Number,
-    default: 100,
-  },
-  step: {
-    type: Number,
-    default: 1,
-  },
-  label: {
-    type: String,
-    default: '',
-  },
-  name: {
-    type: String,
-    default: '',
-  }
-})
+interface SliderProps {
+  modelValue: number | string;
+  min?: number;
+  max?: number;
+  step?: number;
+  label?: string;
+  name?: string;
+}
 
-// Local state for slider value
-const sliderValue = ref(props.value)
+const props = withDefaults(defineProps<SliderProps>(), {
+  min: 0,
+  max: 100,
+  step: 1,
+  label: '',
+  name: ''
+});
 
-// Watch for changes in `value` to keep the slider synced
-watch(() => props.value, (newValue) => {
-  sliderValue.value = newValue
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: number | string): void;
+}>()
+
+// Computed property for two-way binding
+const sliderValue = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value)
 })
 
 // Handle input change and emit update
 const handleInput = () => {
-  emit('update:value', sliderValue.value)
+  // This is now redundant with the computed property, but keeping it for compatibility
+  emit('update:modelValue', sliderValue.value)
 }
 </script>

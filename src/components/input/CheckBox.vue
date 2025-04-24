@@ -14,63 +14,42 @@
   </label>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Text from './Text.vue'
-import { computed, defineProps, defineEmits } from 'vue'
+import { computed } from 'vue'
 
 /**
- * @typedef {Object} CheckboxProps
- * @property {boolean} modelValue - The checked state of the checkbox
- * @property {string} [label=''] - The text label for the checkbox
- * @property {string} [labelClass='text-sm text-gray-700'] - CSS classes for the label
- * @property {number} [maxAllowed=Infinity] - Maximum number of checkboxes that can be checked
- * @property {number} [checkedCount=0] - Current count of checked checkboxes
- * @property {string} [name=''] - Name attribute for the checkbox input
- * @property {string|number|Object} [value=null] - Value to emit when checkbox changes
- * @property {boolean} [isDisabled=false] - Whether the checkbox is disabled
+ * Interface for checkbox props
  */
+interface CheckboxProps {
+  modelValue: boolean;
+  label?: string;
+  labelClass?: string;
+  maxAllowed?: number;
+  checkedCount?: number;
+  name?: string;
+  value?: string | number | object | null;
+  isDisabled?: boolean;
+}
 
-const props =defineProps({
-  modelValue: {
-    type: Boolean,
-    required: true
-  },
-  label: {
-    type: String,
-    default: ''
-  },
-  labelClass: {
-    type: String,
-    default: 'text-sm text-gray-700'
-  },
-  // New props for checkbox limitation
-  maxAllowed: {
-    type: Number,
-    default: Infinity
-  },
-  checkedCount: {
-    type: Number,
-    default: 0
-  },
-  name: {
-    type: String,
-    default: ''
-  },
-  value: {
-    type: [String, Number, Object],
-    default: null
-  },
-  isDisabled: {
-    type: Boolean,
-    default: false
-  }
-})
+const props = withDefaults(defineProps<CheckboxProps>(), {
+  label: '',
+  labelClass: 'text-sm text-gray-700',
+  maxAllowed: Infinity,
+  checkedCount: 0,
+  name: '',
+  value: null,
+  isDisabled: false
+});
 /**
- * @typedef {Object} CheckboxEmits
- * @property {(checked: boolean) => void} 'update:modelValue' - Emitted when checkbox state changes
- * @property {(data: {name: string, checked: boolean, value: any}) => void} 'change' - Emitted with checkbox data when state changes
+ * Interface for checkbox emits
  */
-const emit = defineEmits(['update:modelValue', 'change'])
+interface CheckboxEmits {
+  (e: 'update:modelValue', checked: boolean): void;
+  (e: 'change', data: {name: string, checked: boolean, value: string | number | object | null}): void;
+}
+
+const emit = defineEmits<CheckboxEmits>();
 
 /**
  * Determines if the checkbox should be disabled based on check count and current state

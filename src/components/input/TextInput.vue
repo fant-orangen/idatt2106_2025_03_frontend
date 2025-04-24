@@ -74,79 +74,56 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: ''
-  },
-  label: {
-    type: String,
-    default: ''
-  },
-  class: {
-    type: [String, Array, Object],
-    default: ''
-  },
-  type: {
-    type: String,
-    default: 'text',
-    validator: value => ['text', 'password', 'email', 'number', 'tel', 'textarea'].includes(value)
-  },
-  placeholder: {
-    type: String,
-    default: ''
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  required: {
-    type: Boolean,
-    default: false
-  },
-  maxlength: {
-    type: Number,
-    default: null
-  },
-  error: {
-    type: String,
-    default: ''
-  },
-  rows: {
-    type: Number,
-    default: 4
-  },
-  showPasswordStrength: {
-    type: Boolean,
-    default: true
-  },
-  // New validation props
-  min: {
-    type: [Number, String],
-    default: null
-  },
-  max: {
-    type: [Number, String],
-    default: null
-  },
-  pattern: {
-    type: String,
-    default: null
-  },
-  validateOnInput: {
-    type: Boolean,
-    default: false
-  },
-  validateOnBlur: {
-    type: Boolean,
-    default: true
-  }
-})
+interface TextInputProps {
+  modelValue?: string;
+  label?: string;
+  class?: string | string[] | Record<string, boolean>;
+  type?: 'text' | 'password' | 'email' | 'number' | 'tel' | 'textarea';
+  placeholder?: string;
+  disabled?: boolean;
+  required?: boolean;
+  maxlength?: number | null;
+  error?: string;
+  rows?: number;
+  showPasswordStrength?: boolean;
+  min?: number | string | null;
+  max?: number | string | null;
+  pattern?: string | null;
+  validateOnInput?: boolean;
+  validateOnBlur?: boolean;
+  id?: string; // Added this as it's used in the template
+}
 
-const emit = defineEmits(['update:modelValue', 'blur', 'validation-error', 'validation-success'])
+const props = withDefaults(defineProps<TextInputProps>(), {
+  modelValue: '',
+  label: '',
+  class: '',
+  type: 'text',
+  placeholder: '',
+  disabled: false,
+  required: false,
+  maxlength: null,
+  error: '',
+  rows: 4,
+  showPasswordStrength: true,
+  min: null,
+  max: null,
+  pattern: null,
+  validateOnInput: false,
+  validateOnBlur: true
+});
+
+interface TextInputEmits {
+  (e: 'update:modelValue', value: string): void;
+  (e: 'blur', event: Event): void;
+  (e: 'validation-error', message: string): void;
+  (e: 'validation-success'): void;
+}
+
+const emit = defineEmits<TextInputEmits>();
 
 const passwordVisible = ref(false)
 const validationError = ref('')
