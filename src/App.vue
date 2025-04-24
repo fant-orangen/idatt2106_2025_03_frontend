@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import HeaderNavbar from './components/HeaderNavbar.vue'
-import router from '@/router/index.ts'
-import BeforeCrisis from './components/pages/BeforeCrisis.vue'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <HeaderNavbar />
+  <div class="bg-background text-foreground min-h-screen">
+    <HeaderNavbar />
+    <RouterView />
+  </div>
 
-  <router-view>
-  </router-view>
 </template>
 
 <style scoped></style>
