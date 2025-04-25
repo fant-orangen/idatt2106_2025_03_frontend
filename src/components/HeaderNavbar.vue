@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 
 let prevScrollpos: number = window.pageYOffset
 const showDropdown = ref(false)
@@ -77,7 +77,7 @@ function selectLanguage(language: { label: string; code: string }): void {
     </div>
     <div class="navbar-left flex items-center gap-4">
       <RouterLink
-        to="/"
+        to="/login"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('login') }}</RouterLink
