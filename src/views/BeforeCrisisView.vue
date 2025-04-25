@@ -30,7 +30,7 @@
       <div>
         <h3>{{ $t('storage.storage') }}</h3>
         <Button @click="router.push('/login')">
-          {{ $t('info.info-about-storage') }} 
+          {{ $t('info.info-about-storage') }}
           <font-awesome-icon icon="fa-solid fa-arrow-right"/>
         </Button>
         <Button @click="router.push('/household')">
@@ -53,14 +53,14 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from '@/components/ui/button
+import { Button } from '@/components/ui/button'
 import router from '@/router/index.ts'
 import { Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator, } from '@/components/ui/breadcrumb' 
+  BreadcrumbSeparator, } from '@/components/ui/breadcrumb'
 
 </script>
 
