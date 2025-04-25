@@ -63,5 +63,113 @@
     "food-and-drinks": "Mat og drikke",
     "medicine": "Medisin",
     "your-storage": "Ditt beredskapslager"
+  },
+  "sidebar": {
+    "title": "Informasjon",
+    "themes": {
+      "crisisSituations": {
+        "title": "Krisesituasjoner",
+        "pandemic": "Pandemi",
+        "war": "Krig",
+        "extremeWeather": {
+          "title": "Ekstremvær",
+          "flood": "Flom",
+          "hurricane": "Orkan",
+          "drought": "Tørke",
+          "heatwave": "Hetebølge"
+        },
+        "forestFire": "Skogbrann",
+        "powerOutage": "Strømbrudd",
+        "waterShortage": "Vannmangel",
+        "cyberAttack": "Cyberangrep",
+        "majorAccident": "Større ulykke"
+      },
+      "preparednessStorage": "Beredskapslager",
+      "afterCrisis": "Etter krisen"
+    }
+  },
+  "themes": {
+    "crisisSituations": {
+      "pandemic": {
+        "title": "Pandemi",
+        "content": "# Pandemiberedskap\n\nEn pandemi er et globalt utbrudd av en sykdom. Pandemier oppstår når et nytt virus dukker opp som kan smitte mennesker og spres mellom mennesker på en bærekraftig måte.\n\n## Hvordan forberede seg\n\n- Lagre essensielle forsyninger (mat, vann, medisin)\n- Følg offisielle helseanbefalinger\n- Praktiser god hygiene\n- Hold deg informert gjennom pålitelige kilder\n\n## Under en pandemi\n\n- Følg retningslinjer for sosial distansering\n- Bruk passende beskyttelsesutstyr\n- Overvåk helsen din regelmessig\n- Støtt sårbare medlemmer i samfunnet"
+      },
+      "war": {
+        "title": "Krig",
+        "content": "# Beredskap for krig og konflikt\n\nVæpnede konflikter kan forstyrre viktige tjenester og skape farlige situasjoner for sivile.\n\n## Hvordan forberede seg\n\n- Lag en beredskapsplan med familien din\n- Forbered et nødhjelpssett med essensielle ting\n- Kjenn til lokale tilfluktsrom\n- Hold viktige dokumenter tilgjengelige\n\n## Under konflikt\n\n- Hold deg informert gjennom offisielle kanaler\n- Følg instruksjoner fra myndighetene\n- Unngå områder med aktiv konflikt\n- Hjelp andre når det er trygt å gjøre det"
+      },
+      "extremeWeather": {
+        "flood": {
+          "title": "Flom",
+          "content": "# Flomberedskap\n\nFlommer kan oppstå med lite forvarsel og kan være ødeleggende for lokalsamfunn.\n\n## Hvordan forberede seg\n\n- Vit om du bor i et flomutsatt område\n- Forbered et nødhjelpssett\n- Lag en beredskapsplan for familien\n- Vurder flomforsikring\n\n## Under en flom\n\n- Flytt til høyere grunn umiddelbart\n- Unngå å gå eller kjøre gjennom flomvann\n- Følg evakueringsordrer\n- Slå av strømmen hvis du blir bedt om det"
+        },
+        "hurricane": {
+          "title": "Orkan",
+          "content": "# Orkanberedskap\n\nOrkaner er kraftige stormer som kan forårsake omfattende skader gjennom høye vinder, kraftig nedbør og stormflo.\n\n## Hvordan forberede seg\n\n- Lag et nødhjelpssett for orkan\n- Utvikle en evakueringsplan\n- Sikre hjemmet ditt (dekk vinduer, sikre utendørs gjenstander)\n- Hold deg informert om væroppdateringer\n\n## Under en orkan\n\n- Følg evakueringsordrer umiddelbart\n- Hvis du søker ly hjemme, opphold deg i et lite, indre rom\n- Hold deg unna vinduer\n- Vær forberedt på strømbrudd"
+        },
+        "drought": {
+          "title": "Tørke",
+          "content": "# Tørkeberedskap\n\nTørke er lengre perioder med uvanlig lite nedbør, som fører til vannmangel.\n\n## Hvordan forberede seg\n\n- Implementer vannbesparende tiltak\n- Installer vanneffektive armaturer\n- Samle og lagre regnvann når det er mulig\n- Lær om vannforsyningen i lokalsamfunnet ditt\n\n## Under en tørke\n\n- Følg retningslinjer for vannrestriksjoner\n- Prioriter vannbruk til essensielle behov\n- Rapporter vannlekkasjer umiddelbart\n- Hjelp sårbare medlemmer i samfunnet"
+        },
+        "heatwave": {
+          "title": "Hetebølge",
+          "content": "# Hetebølgeberedskap\n\nEkstrem varme kan være farlig, spesielt for sårbare befolkningsgrupper som eldre og små barn.\n\n## Hvordan forberede seg\n\n- Installer vindusreflektorer for å reflektere varme tilbake utendørs\n- Tett dører og vinduer\n- Sjekk klimaanlegg\n- Lær om kjølesentre i ditt område\n\n## Under en hetebølge\n\n- Opphold deg i klimatiserte områder når det er mulig\n- Drikk rikelig med væske\n- Bruk lette, lyse klær\n- Sjekk på sårbare familiemedlemmer og naboer"
+        }
+      },
+      "forestFire": {
+        "title": "Skogbrann",
+        "content": "# Skogbrannberedskap\n\nSkogbranner kan spre seg raskt og true hjem og lokalsamfunn nær villmarksområder.\n\n## Hvordan forberede seg\n\n- Lag et forsvarbart område rundt hjemmet ditt\n- Bruk brannbestandige byggematerialer\n- Forbered en evakueringsplan\n- Hold nødforsyninger klare\n\n## Under en skogbrann\n\n- Følg evakueringsordrer umiddelbart\n- Lukk alle vinduer og dører hvis du evakuerer\n- Overvåk luftkvalitetsrapporter\n- Hold deg informert gjennom offisielle kanaler"
+      },
+      "powerOutage": {
+        "title": "Strømbrudd",
+        "content": "# Strømbruddsberedskap\n\nStrømbrudd kan oppstå på grunn av stormer, utstyrsfeil eller andre nødsituasjoner.\n\n## Hvordan forberede seg\n\n- Ha lommelykter og ekstra batterier\n- Vurder en reservestrømkilde\n- Ha en batteridrevet eller håndsveivradio\n- Hold mobiltelefoner ladet\n\n## Under et strømbrudd\n\n- Bruk lommelykter i stedet for stearinlys når det er mulig\n- Hold kjøleskap- og fryserdører lukket\n- Koble fra følsom elektronikk\n- Sjekk på sårbare naboer"
+      },
+      "waterShortage": {
+        "title": "Vannmangel",
+        "content": "# Vannmangelberedskap\n\nVannmangel kan oppstå på grunn av tørke, infrastruktursvikt eller forurensningshendelser.\n\n## Hvordan forberede seg\n\n- Lagre nødvann (4 liter per person per dag)\n- Installer vanneffektive armaturer\n- Lær hvordan du renser vann\n- Kjenn til alternative vannkilder\n\n## Under vannmangel\n\n- Følg retningslinjer for vannsparing\n- Bruk vann kun til essensielle behov\n- Rapporter vannledningsbrudd\n- Hjelp sårbare medlemmer i samfunnet"
+      },
+      "cyberAttack": {
+        "title": "Cyberangrep",
+        "content": "# Cyberangrepsberedskap\n\nCyberangrep kan forstyrre kritiske tjenester og kompromittere personlig informasjon.\n\n## Hvordan forberede seg\n\n- Bruk sterke, unike passord\n- Aktiver tofaktorautentisering\n- Hold programvare og systemer oppdatert\n- Sikkerhetskopier viktige data regelmessig\n\n## Under et cyberangrep\n\n- Koble berørte enheter fra internett\n- Rapporter mistenkelig aktivitet\n- Endre passord på uberørte kontoer\n- Overvåk kontoer for uautorisert aktivitet"
+      },
+      "majorAccident": {
+        "title": "Større ulykke",
+        "content": "# Beredskap for større ulykker\n\nStørre ulykker inkluderer industrihendelser, transportulykker eller strukturelle feil.\n\n## Hvordan forberede seg\n\n- Kjenn til evakueringsruter fra ditt område\n- Lær om lokale varslingssystemer\n- Hold nødkontaktinformasjon tilgjengelig\n- Forbered et nødhjelpssett\n\n## Under en større ulykke\n\n- Følg instruksjoner fra myndighetene\n- Evakuer hvis du blir bedt om det\n- Unngå det berørte området\n- Søk medisinsk hjelp om nødvendig"
+      }
+    },
+    "preparednessStorage": {
+      "title": "Beredskapslager",
+      "content": "# Beredskapslager for nødsituasjoner\n\nÅ ha essensielle forsyninger lagret og klare kan hjelpe deg og familien din under nødsituasjoner.\n\n## Grunnleggende nødhjelpssett\n\n- Vann (4 liter per person per dag i minst 3 dager)\n- Ikke-bedervelig mat (minst 3 dagers forsyning)\n- Batteridrevet eller håndsveivradio\n- Lommelykt og ekstra batterier\n- Førstehjelpssett\n- Fløyte for å signalisere for hjelp\n- Støvmaske, plastfolie og gaffatape\n- Våtservietter, søppelsekker og plastbånd\n- Skiftenøkkel eller tang for å slå av strømmen\n- Manuell boksåpner\n- Lokale kart\n- Mobiltelefon med ladere og reservebatteri\n\n## Ytterligere gjenstander å vurdere\n\n- Reseptbelagte medisiner og briller\n- Babyformel og bleier\n- Dyremat og ekstra vann til kjæledyret ditt\n- Viktige familiedokumenter i en vanntett beholder\n- Kontanter eller reisesjekker\n- Nødreferansematerialer\n- Sovepose eller varm teppe for hver person\n- Komplett skift av klær\n- Brannslukningsapparat\n- Fyrstikker i en vanntett beholder\n- Feminine produkter og personlige hygieneartikler\n- Spisesett, papirkopper, tallerkener, papirhåndklær og plastbestikk\n- Papir og blyant\n- Bøker, spill, puslespill eller andre aktiviteter for barn"
+    },
+    "afterCrisis": {
+      "title": "Etter krisen",
+      "content": "# Etter en krise\n\nPerioden etter en krise kan være utfordrende. Her er veiledning om gjenoppretting og tilbakevending til normalitet.\n\n## Umiddelbare tiltak\n\n- Sikre din egen sikkerhet og sikkerheten til de rundt deg\n- Vurder skader og søk medisinsk hjelp om nødvendig\n- Sjekk eiendommen din for skader\n- Kontakt familiemedlemmer for å fortelle at du er trygg\n- Lytt til offisiell informasjon og instruksjoner\n\n## Gjenopprettingsprosess\n\n- Dokumenter skader for forsikringsformål\n- Søk om katastrofehjelp hvis aktuelt\n- Start opprydding når myndighetene indikerer at det er trygt\n- Ta vare på din mentale helse og emosjonelle velvære\n- Hjelp andre i lokalsamfunnet ditt når det er mulig\n\n## Langsiktige betraktninger\n\n- Gjennomgå og oppdater beredskapsplanen din basert på din erfaring\n- Fyll på nødforsyninger\n- Vurder forbedringer for å gjøre hjemmet ditt mer motstandsdyktig\n- Hold kontakten med gjenopprettingsinnsatsen i lokalsamfunnet\n- Forbered deg på fremtidige nødsituasjoner"
+    }
+  },
+  "infoPage": {
+    "aboutThisTheme": "Om dette temaet",
+    "themeDescription": "Viktig informasjon for å hjelpe deg med å forberede og reagere.",
+    "readMore": "Les mer",
+    "emergencyContacts": "Nødkontakter",
+    "readMoreTitle": "Ytterligere ressurser",
+    "readMoreDescription": "Finn mer detaljert informasjon om dette temaet fra offisielle kilder.",
+    "officialWebsites": "Offisielle nettsider",
+    "additionalResources": "For mer informasjon, besøk disse offisielle ressursene:",
+    "close": "Lukk",
+    "emergencyContactsTitle": "Nødkontakter",
+    "emergencyContactsDescription": "Viktige kontakter for nødsituasjoner.",
+    "generalEmergencyContacts": {
+      "title": "Generelle nødnumre",
+      "police": "Politi: 112",
+      "ambulance": "Ambulanse: 113",
+      "fire": "Brannvesen: 110",
+      "civilDefense": "Sivilforsvaret: 51 51 51 51"
+    },
+    "relatedThemes": "Relaterte temaer",
+    "selectThemePrompt": "Velg et tema for å lære mer",
+    "browseThemesDescription": "Bla gjennom våre informasjonsressurser for å lære om forskjellige krisesituasjoner og hvordan du kan forberede deg.",
+    "preparednessStorageBrief": "Lær hvilke forsyninger du bør ha klare for nødsituasjoner.",
+    "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalitet etter en krise.",
+    "learnMoreTopic": "Klikk for å lære mer om dette temaet."
   }
 }

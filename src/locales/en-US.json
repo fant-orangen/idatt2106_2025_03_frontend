@@ -63,5 +63,113 @@
     "food-and-drinks": "Food and Drinks",
     "medicine": "Medicine",
     "your-storage": "Your emergency storage"
+  },
+  "sidebar": {
+    "title": "Information",
+    "themes": {
+      "crisisSituations": {
+        "title": "Crisis Situations",
+        "pandemic": "Pandemic",
+        "war": "War",
+        "extremeWeather": {
+          "title": "Extreme Weather",
+          "flood": "Flood",
+          "hurricane": "Hurricane",
+          "drought": "Drought",
+          "heatwave": "Heat Wave"
+        },
+        "forestFire": "Forest Fire",
+        "powerOutage": "Power Outage",
+        "waterShortage": "Water Shortage",
+        "cyberAttack": "Cyber Attack",
+        "majorAccident": "Major Accident"
+      },
+      "preparednessStorage": "Preparedness Storage",
+      "afterCrisis": "After Crisis"
+    }
+  },
+  "themes": {
+    "crisisSituations": {
+      "pandemic": {
+        "title": "Pandemic",
+        "content": "# Pandemic Preparedness\n\nA pandemic is a global outbreak of a disease. Pandemics happen when a new virus emerges to infect people and can spread between people sustainably.\n\n## How to prepare\n\n- Stock up on essential supplies (food, water, medicine)\n- Follow official health guidelines\n- Practice good hygiene\n- Stay informed through reliable sources\n\n## During a pandemic\n\n- Follow social distancing guidelines\n- Wear appropriate protective equipment\n- Monitor your health regularly\n- Support vulnerable community members"
+      },
+      "war": {
+        "title": "War",
+        "content": "# War and Conflict Preparedness\n\nArmed conflicts can disrupt essential services and create dangerous situations for civilians.\n\n## How to prepare\n\n- Create an emergency plan with your family\n- Prepare an emergency kit with essentials\n- Know your local emergency shelters\n- Keep important documents accessible\n\n## During conflict\n\n- Stay informed through official channels\n- Follow instructions from authorities\n- Avoid areas of active conflict\n- Help others when it's safe to do so"
+      },
+      "extremeWeather": {
+        "flood": {
+          "title": "Flood",
+          "content": "# Flood Preparedness\n\nFloods can occur with little warning and can be devastating to communities.\n\n## How to prepare\n\n- Know if you live in a flood-prone area\n- Prepare an emergency kit\n- Create a family emergency plan\n- Consider flood insurance\n\n## During a flood\n\n- Move to higher ground immediately\n- Avoid walking or driving through flood waters\n- Follow evacuation orders\n- Turn off utilities if instructed to do so"
+        },
+        "hurricane": {
+          "title": "Hurricane",
+          "content": "# Hurricane Preparedness\n\nHurricanes are powerful storms that can cause extensive damage through high winds, heavy rainfall, and storm surges.\n\n## How to prepare\n\n- Create a hurricane emergency kit\n- Develop an evacuation plan\n- Secure your home (board windows, secure outdoor items)\n- Stay informed about weather updates\n\n## During a hurricane\n\n- Follow evacuation orders immediately\n- If sheltering at home, stay in a small, interior room\n- Stay away from windows\n- Be prepared for power outages"
+        },
+        "drought": {
+          "title": "Drought",
+          "content": "# Drought Preparedness\n\nDroughts are extended periods of unusually low rainfall, leading to water shortages.\n\n## How to prepare\n\n- Implement water conservation measures\n- Install water-efficient fixtures\n- Collect and store rainwater when possible\n- Learn about your community's water supply\n\n## During a drought\n\n- Follow water restriction guidelines\n- Prioritize water use for essential needs\n- Report water leaks promptly\n- Help vulnerable community members"
+        },
+        "heatwave": {
+          "title": "Heat Wave",
+          "content": "# Heat Wave Preparedness\n\nExtreme heat can be dangerous, especially for vulnerable populations like the elderly and young children.\n\n## How to prepare\n\n- Install window reflectors to reflect heat back outside\n- Weather-strip doors and windows\n- Check air conditioning systems\n- Learn about cooling centers in your area\n\n## During a heat wave\n\n- Stay in air-conditioned areas when possible\n- Drink plenty of fluids\n- Wear lightweight, light-colored clothing\n- Check on vulnerable family and neighbors"
+        }
+      },
+      "forestFire": {
+        "title": "Forest Fire",
+        "content": "# Forest Fire Preparedness\n\nForest fires can spread rapidly and threaten homes and communities near wilderness areas.\n\n## How to prepare\n\n- Create a defensible space around your home\n- Use fire-resistant building materials\n- Prepare an emergency evacuation plan\n- Keep emergency supplies ready\n\n## During a forest fire\n\n- Follow evacuation orders immediately\n- Close all windows and doors if evacuating\n- Monitor air quality reports\n- Stay informed through official channels"
+      },
+      "powerOutage": {
+        "title": "Power Outage",
+        "content": "# Power Outage Preparedness\n\nPower outages can occur due to storms, equipment failures, or other emergencies.\n\n## How to prepare\n\n- Keep flashlights and extra batteries\n- Consider a backup power source\n- Have a battery-powered or hand-crank radio\n- Keep mobile phones charged\n\n## During a power outage\n\n- Use flashlights instead of candles when possible\n- Keep refrigerator and freezer doors closed\n- Unplug sensitive electronics\n- Check on vulnerable neighbors"
+      },
+      "waterShortage": {
+        "title": "Water Shortage",
+        "content": "# Water Shortage Preparedness\n\nWater shortages can occur due to drought, infrastructure failures, or contamination events.\n\n## How to prepare\n\n- Store emergency water (1 gallon per person per day)\n- Install water-efficient fixtures\n- Learn how to purify water\n- Know alternative water sources\n\n## During a water shortage\n\n- Follow water conservation guidelines\n- Use water for essential needs only\n- Report water main breaks\n- Help vulnerable community members"
+      },
+      "cyberAttack": {
+        "title": "Cyber Attack",
+        "content": "# Cyber Attack Preparedness\n\nCyber attacks can disrupt critical services and compromise personal information.\n\n## How to prepare\n\n- Use strong, unique passwords\n- Enable two-factor authentication\n- Keep software and systems updated\n- Back up important data regularly\n\n## During a cyber attack\n\n- Disconnect affected devices from the internet\n- Report suspicious activity\n- Change passwords on unaffected accounts\n- Monitor accounts for unauthorized activity"
+      },
+      "majorAccident": {
+        "title": "Major Accident",
+        "content": "# Major Accident Preparedness\n\nMajor accidents include industrial incidents, transportation accidents, or structural failures.\n\n## How to prepare\n\n- Know evacuation routes from your area\n- Learn about local warning systems\n- Keep emergency contact information accessible\n- Prepare an emergency kit\n\n## During a major accident\n\n- Follow instructions from authorities\n- Evacuate if instructed to do so\n- Avoid the affected area\n- Seek medical attention if needed"
+      }
+    },
+    "preparednessStorage": {
+      "title": "Preparedness Storage",
+      "content": "# Emergency Preparedness Storage\n\nHaving essential supplies stored and ready can help you and your family during emergencies.\n\n## Basic Emergency Kit\n\n- Water (1 gallon per person per day for at least 3 days)\n- Non-perishable food (at least a 3-day supply)\n- Battery-powered or hand-crank radio\n- Flashlight and extra batteries\n- First aid kit\n- Whistle to signal for help\n- Dust mask, plastic sheeting, and duct tape\n- Moist towelettes, garbage bags, and plastic ties\n- Wrench or pliers to turn off utilities\n- Manual can opener\n- Local maps\n- Cell phone with chargers and a backup battery\n\n## Additional Items to Consider\n\n- Prescription medications and glasses\n- Infant formula and diapers\n- Pet food and extra water for your pet\n- Important family documents in a waterproof container\n- Cash or traveler's checks\n- Emergency reference materials\n- Sleeping bag or warm blanket for each person\n- Complete change of clothing\n- Fire extinguisher\n- Matches in a waterproof container\n- Feminine supplies and personal hygiene items\n- Mess kits, paper cups, plates, paper towels, and plastic utensils\n- Paper and pencil\n- Books, games, puzzles, or other activities for children"
+    },
+    "afterCrisis": {
+      "title": "After Crisis",
+      "content": "# After a Crisis\n\nThe period after a crisis can be challenging. Here's guidance on recovery and returning to normalcy.\n\n## Immediate Steps\n\n- Ensure your safety and the safety of those around you\n- Assess for injuries and seek medical attention if needed\n- Check your property for damage\n- Contact family members to let them know you're safe\n- Listen to official information and instructions\n\n## Recovery Process\n\n- Document damage for insurance purposes\n- Apply for disaster assistance if applicable\n- Begin clean-up when authorities indicate it's safe\n- Take care of your mental health and emotional well-being\n- Help others in your community when possible\n\n## Long-term Considerations\n\n- Review and update your emergency plan based on your experience\n- Replenish emergency supplies\n- Consider improvements to make your home more resilient\n- Stay connected with community recovery efforts\n- Prepare for future emergencies"
+    }
+  },
+  "infoPage": {
+    "aboutThisTheme": "About this theme",
+    "themeDescription": "Essential information to help you prepare and respond.",
+    "readMore": "Read more",
+    "emergencyContacts": "Emergency contacts",
+    "readMoreTitle": "Additional Resources",
+    "readMoreDescription": "Find more detailed information about this topic from official sources.",
+    "officialWebsites": "Official Websites",
+    "additionalResources": "For more information, visit these official resources:",
+    "close": "Close",
+    "emergencyContactsTitle": "Emergency Contacts",
+    "emergencyContactsDescription": "Important contacts for emergency situations.",
+    "generalEmergencyContacts": {
+      "title": "General Emergency Numbers",
+      "police": "Police: 112",
+      "ambulance": "Ambulance: 113",
+      "fire": "Fire Department: 110",
+      "civilDefense": "Civil Defense: 51 51 51 51"
+    },
+    "relatedThemes": "Related Themes",
+    "selectThemePrompt": "Select a theme to learn more",
+    "browseThemesDescription": "Browse through our information resources to learn about different crisis situations and how to prepare.",
+    "preparednessStorageBrief": "Learn what supplies you should have ready for emergencies.",
+    "afterCrisisBrief": "Find guidance on recovery and returning to normalcy after a crisis.",
+    "learnMoreTopic": "Click to learn more about this topic."
   }
 }
