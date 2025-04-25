@@ -15,9 +15,7 @@
     <!-- Main content -->
     <main class="main-content">
       <!-- Breadcrumb -->
-      <div class="breadcrumb">
-        <span>Hjem</span> &gt; <span class="current">Under</span>
-      </div>
+      <div class="breadcrumb"><span>Hjem</span> &gt; <span class="current">Under</span></div>
 
       <!-- Heading -->
       <h2 class="page-title">Under</h2>
@@ -34,15 +32,11 @@
           <ul class="timeline">
             <li>
               <div class="dot"></div>
-              <div class="timeline-content">
-                <strong>14:32</strong> – Strømbrudd i Midtbyen
-              </div>
+              <div class="timeline-content"><strong>14:32</strong> – Strømbrudd i Midtbyen</div>
             </li>
             <li>
               <div class="dot"></div>
-              <div class="timeline-content">
-                <strong>14:02</strong> – Brann ved kraftverk
-              </div>
+              <div class="timeline-content"><strong>14:02</strong> – Brann ved kraftverk</div>
             </li>
             <li>
               <div class="dot"></div>
@@ -234,4 +228,3 @@
   --orange-background-color: #ffab40;
 }
 </style>
-
