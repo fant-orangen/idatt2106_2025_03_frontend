@@ -1,17 +1,5 @@
 <template>
   <div class="page">
-    <!-- Navbar -->
-    <nav class="navbar">
-      <h1 class="logo">ny navbar</h1>
-      <div class="nav-links">
-        <a href="#" class="active">Min Side</a>
-        <a href="#">Logg inn</a>
-        <a href="#">Registrer</a>
-        <button title="Språk">🌐</button>
-        <button title="Varsler">🔔</button>
-      </div>
-    </nav>
-
     <!-- Main content -->
     <main class="main-content">
       <!-- Breadcrumb -->
@@ -67,19 +55,9 @@
 
 .page {
   font-family: 'Inter', sans-serif;
-  background: var(--background-color);
   color: var(--text-color);
   min-height: 100vh;
   margin: 0;
-}
-
-.navbar {
-  background-color: var(--secondary-color);
-  color: white;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .logo {
@@ -87,26 +65,10 @@
   font-size: 1.2rem;
 }
 
-.nav-links {
-  display: flex;
-  gap: 1.2rem;
-  align-items: center;
-}
-
-.nav-links a {
-  color: white;
-  text-decoration: none;
-}
-
-.nav-links .active {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-
 .main-content {
   max-width: 1200px;
   margin: 2rem auto;
-  background: white;
+  background: var(--color-muted);
   padding: 4rem;
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
@@ -114,12 +76,12 @@
 
 .breadcrumb {
   font-size: 0.875rem;
-  color: gray;
+  color: var(--color-muted-foreground);
   margin-bottom: 1rem;
 }
 
 .breadcrumb .current {
-  color: black;
+  color: var(--color-foreground);
   font-weight: 500;
 }
 
@@ -150,12 +112,12 @@
 
 .news-header h3 {
   font-size: 2rem;
-  color: var(--third-color);
+  color: var(--color-foreground);
 }
 
 .news-header .se-mer {
   font-size: 0.875rem;
-  color: var(--third-color);
+  color: var(--color-foreground);
   text-decoration: underline;
 }
 
@@ -164,7 +126,7 @@
   margin: 1.5rem 0;
   padding-left: 2rem;
   list-style: none;
-  border-left: 2px solid var(--third-color);
+  border-left: 2px solid var(--color-foreground);
 }
 
 .timeline li {
@@ -179,7 +141,7 @@
   top: 0.45rem;
   width: 0.75rem;
   height: 0.75rem;
-  background-color: var(--third-color);
+  background-color: var(--color-foreground);
   border-radius: 50%;
   z-index: 1;
 }
