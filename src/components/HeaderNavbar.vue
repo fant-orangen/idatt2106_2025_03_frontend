@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useNotificationStore } from '@/stores/NotificationStore' // Adjust the path as needed
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import NotificationPopover from '@/components/NotificationPopover.vue'
+
 
 const { locale } = useI18n()
 
@@ -21,12 +23,14 @@ const selectedLanguage = ref(languages[0].label)
 // Dark mode toggle
 const colorMode = useColorMode()
 
-// Notifications state -- test data
-const notifications = ref([
-  { id: 1, message: 'New message from John Doe', read: false },
-  { id: 2, message: 'Your order has been shipped', read: true },
-  { id: 3, message: 'New comment on your post', read: false }
-])
+// Get the top 3 notifications
+const topNotifications = ref<Notification[]>([])
+
+onMounted(() => {
+  const notificationStore = useNotificationStore()
+  topNotifications.value = notificationStore.topNotifications() as unknown as Notification[]
+})
+
 
 window.onscroll = function (): void {
   const currentScrollPos: number = window.pageYOffset
@@ -106,8 +110,8 @@ function selectLanguage(language: { label: string; code: string }): void {
         <PopoverTrigger as="button" class="no-border">
           <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
         </PopoverTrigger>
-        <PopoverContent class="w-64">
-          <NotificationPopover :notifications="notifications" />
+        <PopoverContent>
+          <NotificationPopover :notifications="topNotifications" />
         </PopoverContent>
       </Popover>
 
