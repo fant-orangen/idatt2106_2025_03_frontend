@@ -65,10 +65,10 @@
     "your-storage": "Ditt beredskapslager"
   },
   "sidebar": {
-    "title": "Informasjon",
+    "title": "Temaer",
     "themes": {
       "crisisSituations": {
-        "title": "Krisesituasjoner",
+        "title": "Ulike typer krisesituasjoner",
         "pandemic": "Pandemi",
         "war": "Krig",
         "extremeWeather": {
@@ -82,68 +82,68 @@
         "powerOutage": "Strømbrudd",
         "waterShortage": "Vannmangel",
         "cyberAttack": "Cyberangrep",
-        "majorAccident": "Større ulykke"
+        "majorAccident": "Storulykke"
       },
       "preparednessStorage": "Beredskapslager",
-      "afterCrisis": "Etter krisen"
+      "afterCrisis": "Etter en krise"
     }
   },
   "themes": {
     "crisisSituations": {
       "pandemic": {
-        "title": "Pandemi",
-        "content": "# Pandemiberedskap\n\nEn pandemi er et globalt utbrudd av en sykdom. Pandemier oppstår når et nytt virus dukker opp som kan smitte mennesker og spres mellom mennesker på en bærekraftig måte.\n\n## Hvordan forberede seg\n\n- Lagre essensielle forsyninger (mat, vann, medisin)\n- Følg offisielle helseanbefalinger\n- Praktiser god hygiene\n- Hold deg informert gjennom pålitelige kilder\n\n## Under en pandemi\n\n- Følg retningslinjer for sosial distansering\n- Bruk passende beskyttelsesutstyr\n- Overvåk helsen din regelmessig\n- Støtt sårbare medlemmer i samfunnet"
+        "title": "Informasjon om Pandemi",
+        "content": "Under en pandemi er det avgjørende å følge råd fra helsemyndighetene (som [Helsenorge.no](https://www.helsenorge.no/) og FHI) for å begrense smittespredning.\n\n**Viktige tiltak inkluderer:**\n* God hånd- og hostehygiene.\n* Holde avstand til andre.\n* Holde seg hjemme ved sykdom.\n* Sørge for å ha nødvendige medisiner og hygieneartikler tilgjengelig.\n\nVær forberedt på at tjenester som transport og butikker kan bli påvirket. Ha et lager av mat og drikke som anbefalt i egenberedskapsrådene. Følg med på offisiell informasjon og vær kildekritisk.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
       },
       "war": {
-        "title": "Krig",
-        "content": "# Beredskap for krig og konflikt\n\nVæpnede konflikter kan forstyrre viktige tjenester og skape farlige situasjoner for sivile.\n\n## Hvordan forberede seg\n\n- Lag en beredskapsplan med familien din\n- Forbered et nødhjelpssett med essensielle ting\n- Kjenn til lokale tilfluktsrom\n- Hold viktige dokumenter tilgjengelige\n\n## Under konflikt\n\n- Hold deg informert gjennom offisielle kanaler\n- Følg instruksjoner fra myndighetene\n- Unngå områder med aktiv konflikt\n- Hjelp andre når det er trygt å gjøre det"
+        "title": "Informasjon om Krig",
+        "content": "Selv om Norge er et trygt land, er det viktig å være forberedt på ulike scenarioer, inkludert krigshandlinger. Ved en slik situasjon:\n\n* **Følg myndighetenes råd nøye.** Informasjon vil bli gitt via offisielle kanaler som NRK P1.\n* **Søk informasjon:** Hold deg oppdatert via pålitelige kilder.\n* **Finn dekning:** Orienter deg om nærmeste offentlige tilfluktsrom (sjekk [kart.dsb.no](https://kart.dsb.no)). Hvis ikke tilgjengelig, søk dekning i kjellere eller rom midt i bygninger, unngå vinduer da disse kan knuse.\n* **Ha beredskapslageret klart:** Sørg for at du har nok mat, vann og andre nødvendigheter for minst en uke.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
       },
       "extremeWeather": {
         "flood": {
-          "title": "Flom",
-          "content": "# Flomberedskap\n\nFlommer kan oppstå med lite forvarsel og kan være ødeleggende for lokalsamfunn.\n\n## Hvordan forberede seg\n\n- Vit om du bor i et flomutsatt område\n- Forbered et nødhjelpssett\n- Lag en beredskapsplan for familien\n- Vurder flomforsikring\n\n## Under en flom\n\n- Flytt til høyere grunn umiddelbart\n- Unngå å gå eller kjøre gjennom flomvann\n- Følg evakueringsordrer\n- Slå av strømmen hvis du blir bedt om det"
+          "title": "Informasjon om Flom",
+          "content": "Ved fare for flom:\n\n* **Følg varsler:** Hold deg oppdatert på værvarsler fra [MET Norway (Yr.no)](https://www.yr.no) og flomvarsler fra [NVE (varsom.no)](https://www.varsom.no).\n* **Sikre eiendom:** Fest eller flytt løse gjenstander utendørs. Flytt verdifulle eiendeler og farlige stoffer (kjemikalier, drivstoff) opp fra kjeller og første etasje.\n* **Tett åpninger:** Tett ventiler og sluk for å hindre vanninntrenging.\n* **Vurder evakuering:** Følg råd fra myndighetene om eventuell evakuering.\n* **Unngå flomvann:** Ikke kjør, gå eller svøm i flomvann – det kan være sterk strøm og skjulte farer.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) og [varsom.no](https://www.varsom.no)*"
         },
         "hurricane": {
-          "title": "Orkan",
-          "content": "# Orkanberedskap\n\nOrkaner er kraftige stormer som kan forårsake omfattende skader gjennom høye vinder, kraftig nedbør og stormflo.\n\n## Hvordan forberede seg\n\n- Lag et nødhjelpssett for orkan\n- Utvikle en evakueringsplan\n- Sikre hjemmet ditt (dekk vinduer, sikre utendørs gjenstander)\n- Hold deg informert om væroppdateringer\n\n## Under en orkan\n\n- Følg evakueringsordrer umiddelbart\n- Hvis du søker ly hjemme, opphold deg i et lite, indre rom\n- Hold deg unna vinduer\n- Vær forberedt på strømbrudd"
+          "title": "Informasjon om Orkan/Sterk Storm",
+          "content": "Ved varsel om orkan eller sterk storm:\n\n* **Følg varsler:** Hold deg oppdatert via [MET Norway (Yr.no)](https://www.yr.no).\n* **Sikre løse gjenstander:** Fest hagemøbler, trampoliner, søppelkasser og annet som kan bli tatt av vinden.\n* **Hold deg innendørs:** Unngå unødvendige reiser. Lukk vinduer og dører godt.\n* **Vær forberedt på strømbrudd:** Ha lommelykter, batteriradio, ladet batteribank og eventuell alternativ varmekilde klar. Sørg for at du har nok mat og vann.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
         },
         "drought": {
-          "title": "Tørke",
-          "content": "# Tørkeberedskap\n\nTørke er lengre perioder med uvanlig lite nedbør, som fører til vannmangel.\n\n## Hvordan forberede seg\n\n- Implementer vannbesparende tiltak\n- Installer vanneffektive armaturer\n- Samle og lagre regnvann når det er mulig\n- Lær om vannforsyningen i lokalsamfunnet ditt\n\n## Under en tørke\n\n- Følg retningslinjer for vannrestriksjoner\n- Prioriter vannbruk til essensielle behov\n- Rapporter vannlekkasjer umiddelbart\n- Hjelp sårbare medlemmer i samfunnet"
+          "title": "Informasjon om Tørke",
+          "content": "Under lengre tørkeperioder:\n\n* **Spar på vannet:** Følg eventuelle restriksjoner for vannbruk fra kommunen. Begrens vanning av plen/hage, bilvask etc.\n* **Sjekk brannfare:** Tørke øker brannfaren. Vær oppmerksom på og følg alle restriksjoner rundt bålbrenning.\n* **Overvåk vannkilder:** Hvis du bruker privat brønn, følg med på vannstanden.\n\n*[Kilde: Relevant kommune-/NVE-informasjon]*"
         },
         "heatwave": {
-          "title": "Hetebølge",
-          "content": "# Hetebølgeberedskap\n\nEkstrem varme kan være farlig, spesielt for sårbare befolkningsgrupper som eldre og små barn.\n\n## Hvordan forberede seg\n\n- Installer vindusreflektorer for å reflektere varme tilbake utendørs\n- Tett dører og vinduer\n- Sjekk klimaanlegg\n- Lær om kjølesentre i ditt område\n\n## Under en hetebølge\n\n- Opphold deg i klimatiserte områder når det er mulig\n- Drikk rikelig med væske\n- Bruk lette, lyse klær\n- Sjekk på sårbare familiemedlemmer og naboer"
+          "title": "Informasjon om Hetebølge",
+          "content": "Ved ekstrem varme:\n\n* **Hold deg hydrert:** Drikk rikelig med vann, selv om du ikke føler deg tørst.\n* **Hold deg avkjølt:** Opphold deg innendørs på kjølige steder midt på dagen. Bruk vifte eller klimaanlegg hvis mulig. Ta kjølige dusjer eller bad.\n* **Sjekk sårbare personer:** Se til eldre naboer, spedbarn og personer med kroniske sykdommer.\n* **Forlat aldri barn eller dyr i parkerte biler.**\n\n*[Kilde: Helsenorge.no]*"
         }
       },
       "forestFire": {
-        "title": "Skogbrann",
-        "content": "# Skogbrannberedskap\n\nSkogbranner kan spre seg raskt og true hjem og lokalsamfunn nær villmarksområder.\n\n## Hvordan forberede seg\n\n- Lag et forsvarbart område rundt hjemmet ditt\n- Bruk brannbestandige byggematerialer\n- Forbered en evakueringsplan\n- Hold nødforsyninger klare\n\n## Under en skogbrann\n\n- Følg evakueringsordrer umiddelbart\n- Lukk alle vinduer og dører hvis du evakuerer\n- Overvåk luftkvalitetsrapporter\n- Hold deg informert gjennom offisielle kanaler"
+        "title": "Informasjon om Skogbrann",
+        "content": "For å forebygge og håndtere skogbrannfare:\n\n* **Respekter bålforbud:** Sjekk lokale regler og generelt bålforbud (15. april - 15. september). Vær ekstremt forsiktig med all bruk av åpen ild.\n* **Sjekk farevarsel:** Hold deg oppdatert på [skogbrannfare.met.no](https://skogbrannfare.met.no).\n* **Ha evakueringsplan:** Hvis du bor i et utsatt område, tenk gjennom hvor du kan dra og hva du må ta med deg.\n* **Hold deg informert:** Følg med på informasjon fra lokale myndigheter og brannvesen.\n* **Beskytt boligen:** Lukk vinduer og ventiler for å unngå røykinntrengning. Fjern brennbart materiale nær husveggen.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) og [DSB - Skogbrann](https://www.dsb.no/brannsikkerhet/brannberedskap/skogbrann/)*"
       },
       "powerOutage": {
-        "title": "Strømbrudd",
-        "content": "# Strømbruddsberedskap\n\nStrømbrudd kan oppstå på grunn av stormer, utstyrsfeil eller andre nødsituasjoner.\n\n## Hvordan forberede seg\n\n- Ha lommelykter og ekstra batterier\n- Vurder en reservestrømkilde\n- Ha en batteridrevet eller håndsveivradio\n- Hold mobiltelefoner ladet\n\n## Under et strømbrudd\n\n- Bruk lommelykter i stedet for stearinlys når det er mulig\n- Hold kjøleskap- og fryserdører lukket\n- Koble fra følsom elektronikk\n- Sjekk på sårbare naboer"
+        "title": "Informasjon om Strømbrudd",
+        "content": "Ved strømbrudd:\n\n* **Bruk alternative lyskilder:** Lommelykter, batteridrevne lamper eller lysestaver er tryggere enn stearinlys.\n* **Hold kjøleskap/fryser lukket:** En full fryser vil holde maten frossen i ca. 48 timer hvis den ikke åpnes.\n* **Hold deg varm:** Kle deg i lag. Steng av ubrukte rom. Bruk trygge alternative oppvarmingsmetoder hvis tilgjengelig.\n* **Spar på telefonbatteriet:** Bruk telefonen sparsomt. Vurder å ha en powerbank ladet og klar.\n* **Vær forsiktig med aggregater:** Hvis du bruker aggregat, følg alle sikkerhetsinstruksjoner og bruk det aldri innendørs.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
       },
       "waterShortage": {
-        "title": "Vannmangel",
-        "content": "# Vannmangelberedskap\n\nVannmangel kan oppstå på grunn av tørke, infrastruktursvikt eller forurensningshendelser.\n\n## Hvordan forberede seg\n\n- Lagre nødvann (4 liter per person per dag)\n- Installer vanneffektive armaturer\n- Lær hvordan du renser vann\n- Kjenn til alternative vannkilder\n\n## Under vannmangel\n\n- Følg retningslinjer for vannsparing\n- Bruk vann kun til essensielle behov\n- Rapporter vannledningsbrudd\n- Hjelp sårbare medlemmer i samfunnet"
+        "title": "Informasjon om Vannmangel",
+        "content": "Ved vannmangel eller forurensning:\n\n* **Følg offisielle råd:** Myndighetene kan utstede kokepåbud eller andre instruksjoner.\n* **Bruk nødvannsforsyninger:** Bruk lagret vann eller andre trygge kilder til drikke, matlaging og hygiene.\n* **Spar på vannet:** Minimer bruk til ikke-essensielle formål.\n* **Kjenn til vannrensemetoder:** Vær kjent med metoder som koking, bruk av vannrensingstabletter eller filtrering.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
       },
       "cyberAttack": {
-        "title": "Cyberangrep",
-        "content": "# Cyberangrepsberedskap\n\nCyberangrep kan forstyrre kritiske tjenester og kompromittere personlig informasjon.\n\n## Hvordan forberede seg\n\n- Bruk sterke, unike passord\n- Aktiver tofaktorautentisering\n- Hold programvare og systemer oppdatert\n- Sikkerhetskopier viktige data regelmessig\n\n## Under et cyberangrep\n\n- Koble berørte enheter fra internett\n- Rapporter mistenkelig aktivitet\n- Endre passord på uberørte kontoer\n- Overvåk kontoer for uautorisert aktivitet"
+        "title": "Informasjon om Cyberangrep",
+        "content": "For å beskytte deg mot cybertrusler:\n\n* **Bruk sterke, unike passord:** Lag forskjellige passord for viktige kontoer.\n* **Aktiver tofaktorautentisering:** Dette gir et ekstra sikkerhetslag.\n* **Vær forsiktig med e-poster og lenker:** Ikke klikk på mistenkelige lenker eller last ned vedlegg fra ukjente kilder.\n* **Hold programvare oppdatert:** Installer oppdateringer raskt for å fikse sikkerhetssårbarheter.\n* **Sikkerhetskopier viktige data:** Ta regelmessig backup av viktige filer til en ekstern enhet eller sikker skytjeneste.\n\n*Kilde: [Nasjonal sikkerhetsmyndighet (NSM)](https://www.nsm.no/)*"
       },
       "majorAccident": {
-        "title": "Større ulykke",
-        "content": "# Beredskap for større ulykker\n\nStørre ulykker inkluderer industrihendelser, transportulykker eller strukturelle feil.\n\n## Hvordan forberede seg\n\n- Kjenn til evakueringsruter fra ditt område\n- Lær om lokale varslingssystemer\n- Hold nødkontaktinformasjon tilgjengelig\n- Forbered et nødhjelpssett\n\n## Under en større ulykke\n\n- Følg instruksjoner fra myndighetene\n- Evakuer hvis du blir bedt om det\n- Unngå det berørte området\n- Søk medisinsk hjelp om nødvendig"
+        "title": "Informasjon om Storulykke",
+        "content": "Ved en storulykke (industriell, transport, etc.):\n\n* **Følg evakueringsordrer:** Hvis myndighetene ber deg evakuere, gjør det umiddelbart.\n* **Søk ly på stedet hvis pålagt:** Hvis du blir bedt om å holde deg innendørs, lukk vinduer og dører, slå av ventilasjonsanlegg, og flytt til et indre rom om mulig.\n* **Hold deg informert:** Lytt til lokalradio eller sjekk offisielle nettsider for instruksjoner.\n* **Unngå det berørte området:** Hold veier åpne for utrykningskjøretøy.\n\n*Kilde: [DSB](https://www.dsb.no/)*"
       }
     },
     "preparednessStorage": {
       "title": "Beredskapslager",
-      "content": "# Beredskapslager for nødsituasjoner\n\nÅ ha essensielle forsyninger lagret og klare kan hjelpe deg og familien din under nødsituasjoner.\n\n## Grunnleggende nødhjelpssett\n\n- Vann (4 liter per person per dag i minst 3 dager)\n- Ikke-bedervelig mat (minst 3 dagers forsyning)\n- Batteridrevet eller håndsveivradio\n- Lommelykt og ekstra batterier\n- Førstehjelpssett\n- Fløyte for å signalisere for hjelp\n- Støvmaske, plastfolie og gaffatape\n- Våtservietter, søppelsekker og plastbånd\n- Skiftenøkkel eller tang for å slå av strømmen\n- Manuell boksåpner\n- Lokale kart\n- Mobiltelefon med ladere og reservebatteri\n\n## Ytterligere gjenstander å vurdere\n\n- Reseptbelagte medisiner og briller\n- Babyformel og bleier\n- Dyremat og ekstra vann til kjæledyret ditt\n- Viktige familiedokumenter i en vanntett beholder\n- Kontanter eller reisesjekker\n- Nødreferansematerialer\n- Sovepose eller varm teppe for hver person\n- Komplett skift av klær\n- Brannslukningsapparat\n- Fyrstikker i en vanntett beholder\n- Feminine produkter og personlige hygieneartikler\n- Spisesett, papirkopper, tallerkener, papirhåndklær og plastbestikk\n- Papir og blyant\n- Bøker, spill, puslespill eller andre aktiviteter for barn"
+      "content": "Direktoratet for samfunnssikkerhet og beredskap (DSB) anbefaler at alle husholdninger er selvforsynte i minst tre døgn. Ditt beredskapslager bør inkludere:\n\n**Mat og drikke:**\n* Ni liter vann per person\n* Ikke-bedervelig mat som kan spises uten tilberedning eller med minimal oppvarming\n\n**Medisiner og hygiene:**\n* Nødvendige reseptbelagte medisiner\n* Smertestillende og annen grunnleggende medisin\n* Førstehjelpsutstyr\n* Hygieneprodukter\n* Våtservietter og desinfeksjonsmiddel\n\n**Varme- og lyskilder:**\n* Lommelykter med ekstra batterier\n* Stearinlys, fyrstikker/lighter\n* Varme klær, tepper, soveposer\n* Alternativ varmekilde (hvis mulig)\n\n**Andre viktige gjenstander:**\n* Batteridrevet eller håndsveivradio\n* Ekstra batterier/powerbanker til mobiltelefoner\n* Kontanter i små valører\n* Drivstoff på bilen\n* Papirkopier av viktige dokumenter\n* Grunnleggende verktøy\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
     },
     "afterCrisis": {
-      "title": "Etter krisen",
-      "content": "# Etter en krise\n\nPerioden etter en krise kan være utfordrende. Her er veiledning om gjenoppretting og tilbakevending til normalitet.\n\n## Umiddelbare tiltak\n\n- Sikre din egen sikkerhet og sikkerheten til de rundt deg\n- Vurder skader og søk medisinsk hjelp om nødvendig\n- Sjekk eiendommen din for skader\n- Kontakt familiemedlemmer for å fortelle at du er trygg\n- Lytt til offisiell informasjon og instruksjoner\n\n## Gjenopprettingsprosess\n\n- Dokumenter skader for forsikringsformål\n- Søk om katastrofehjelp hvis aktuelt\n- Start opprydding når myndighetene indikerer at det er trygt\n- Ta vare på din mentale helse og emosjonelle velvære\n- Hjelp andre i lokalsamfunnet ditt når det er mulig\n\n## Langsiktige betraktninger\n\n- Gjennomgå og oppdater beredskapsplanen din basert på din erfaring\n- Fyll på nødforsyninger\n- Vurder forbedringer for å gjøre hjemmet ditt mer motstandsdyktig\n- Hold kontakten med gjenopprettingsinnsatsen i lokalsamfunnet\n- Forbered deg på fremtidige nødsituasjoner"
+      "title": "Etter en krise",
+      "content": "Etter å ha opplevd en krise:\n\n**Ta vare på umiddelbare behov:**\n* Sikre din egen sikkerhet og sikkerheten til de rundt deg\n* Søk medisinsk hjelp om nødvendig\n* Finn trygt ly hvis hjemmet ditt er skadet\n* Kontakt familiemedlemmer for å fortelle at du er trygg\n\n**Start gjenoppbygging:**\n* Dokumenter skader (ta bilder) for forsikringsformål\n* Kontakt forsikringsselskapet ditt\n* Søk om katastrofehjelp hvis tilgjengelig\n* Rengjør og reparer hjemmet ditt når det er trygt å gjøre det\n\n**Mental helse er viktig:**\n* Det er normalt å oppleve stress, angst eller andre emosjonelle reaksjoner\n* Snakk om opplevelsene dine med familie, venner eller fagfolk\n* Ta vare på din fysiske helse (søvn, ernæring, mosjon)\n* Søk profesjonell hjelp om nødvendig\n\n**Lær av erfaringen:**\n* Evaluer beredskapsplanen og forsyningene dine\n* Gjør forbedringer basert på det du har lært\n* Hjelp andre i lokalsamfunnet ditt\n\n*Kilde: [Helsenorge.no og DSB](https://www.dsb.no/)*"
     }
   },
   "infoPage": {

@@ -65,10 +65,10 @@
     "your-storage": "Your emergency storage"
   },
   "sidebar": {
-    "title": "Information",
+    "title": "Themes",
     "themes": {
       "crisisSituations": {
-        "title": "Crisis Situations",
+        "title": "Different types of crisis situations",
         "pandemic": "Pandemic",
         "war": "War",
         "extremeWeather": {
@@ -76,7 +76,7 @@
           "flood": "Flood",
           "hurricane": "Hurricane",
           "drought": "Drought",
-          "heatwave": "Heat Wave"
+          "heatwave": "Heatwave"
         },
         "forestFire": "Forest Fire",
         "powerOutage": "Power Outage",
@@ -85,65 +85,65 @@
         "majorAccident": "Major Accident"
       },
       "preparednessStorage": "Preparedness Storage",
-      "afterCrisis": "After Crisis"
+      "afterCrisis": "After a Crisis"
     }
   },
   "themes": {
     "crisisSituations": {
       "pandemic": {
-        "title": "Pandemic",
-        "content": "# Pandemic Preparedness\n\nA pandemic is a global outbreak of a disease. Pandemics happen when a new virus emerges to infect people and can spread between people sustainably.\n\n## How to prepare\n\n- Stock up on essential supplies (food, water, medicine)\n- Follow official health guidelines\n- Practice good hygiene\n- Stay informed through reliable sources\n\n## During a pandemic\n\n- Follow social distancing guidelines\n- Wear appropriate protective equipment\n- Monitor your health regularly\n- Support vulnerable community members"
+        "title": "Pandemic Information",
+        "content": "During a pandemic, it is crucial to follow advice from health authorities (like [Helsenorge.no](https://www.helsenorge.no/) and FHI) to limit the spread of infection.\n\n**Key measures include:**\n* Good hand and cough hygiene.\n* Maintaining distance from others.\n* Staying home when sick.\n* Ensuring you have necessary medications and hygiene items readily available.\n\nBe prepared for services such as transportation and shops to be affected. Maintain a stock of food and drink as recommended in the self-preparedness guidelines. Follow official information and be critical of sources.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
       },
       "war": {
-        "title": "War",
-        "content": "# War and Conflict Preparedness\n\nArmed conflicts can disrupt essential services and create dangerous situations for civilians.\n\n## How to prepare\n\n- Create an emergency plan with your family\n- Prepare an emergency kit with essentials\n- Know your local emergency shelters\n- Keep important documents accessible\n\n## During conflict\n\n- Stay informed through official channels\n- Follow instructions from authorities\n- Avoid areas of active conflict\n- Help others when it's safe to do so"
+        "title": "War Information",
+        "content": "Although Norway is a safe country, it's important to be prepared for various scenarios, including acts of war. In such a situation:\n\n* **Follow authorities' advice closely.** Information will be provided through official channels like NRK P1.\n* **Seek information:** Stay updated through reliable sources.\n* **Find cover:** Familiarize yourself with the nearest public shelter (check [kart.dsb.no](https://kart.dsb.no)). If none is available, seek cover in basements or central rooms of buildings, away from windows as they can shatter.\n* **Have your emergency kit ready:** Ensure you have enough food, water, and other necessities for at least one week.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
       },
       "extremeWeather": {
         "flood": {
-          "title": "Flood",
-          "content": "# Flood Preparedness\n\nFloods can occur with little warning and can be devastating to communities.\n\n## How to prepare\n\n- Know if you live in a flood-prone area\n- Prepare an emergency kit\n- Create a family emergency plan\n- Consider flood insurance\n\n## During a flood\n\n- Move to higher ground immediately\n- Avoid walking or driving through flood waters\n- Follow evacuation orders\n- Turn off utilities if instructed to do so"
+          "title": "Flood Information",
+          "content": "In case of flood risk:\n\n* **Follow warnings:** Stay updated on weather forecasts from [MET Norway (Yr.no)](https://www.yr.no) and flood warnings from [NVE (varsom.no)](https://www.varsom.no).\n* **Secure property:** Fasten or move loose items outdoors. Move valuable possessions and hazardous materials (chemicals, fuel) up from basements and ground floors.\n* **Seal openings:** Seal vents and drains to prevent water intrusion.\n* **Consider evacuation:** Follow advice from authorities regarding potential evacuation.\n* **Avoid floodwaters:** Do not drive, walk, or swim in floodwaters – currents can be strong, and there may be hidden dangers.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) and [varsom.no](https://www.varsom.no)*"
         },
         "hurricane": {
-          "title": "Hurricane",
-          "content": "# Hurricane Preparedness\n\nHurricanes are powerful storms that can cause extensive damage through high winds, heavy rainfall, and storm surges.\n\n## How to prepare\n\n- Create a hurricane emergency kit\n- Develop an evacuation plan\n- Secure your home (board windows, secure outdoor items)\n- Stay informed about weather updates\n\n## During a hurricane\n\n- Follow evacuation orders immediately\n- If sheltering at home, stay in a small, interior room\n- Stay away from windows\n- Be prepared for power outages"
+          "title": "Hurricane/Severe Storm Information",
+          "content": "When a hurricane or severe storm is forecast:\n\n* **Follow forecasts:** Stay updated via [MET Norway (Yr.no)](https://www.yr.no).\n* **Secure loose items:** Fasten garden furniture, trampolines, bins, and anything else that could be blown away.\n* **Stay indoors:** Avoid unnecessary travel. Close windows and doors securely.\n* **Prepare for power outages:** Have flashlights, a battery-powered radio, a charged power bank, and any alternative heat source ready. Ensure you have sufficient food and water.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
         },
         "drought": {
-          "title": "Drought",
-          "content": "# Drought Preparedness\n\nDroughts are extended periods of unusually low rainfall, leading to water shortages.\n\n## How to prepare\n\n- Implement water conservation measures\n- Install water-efficient fixtures\n- Collect and store rainwater when possible\n- Learn about your community's water supply\n\n## During a drought\n\n- Follow water restriction guidelines\n- Prioritize water use for essential needs\n- Report water leaks promptly\n- Help vulnerable community members"
+          "title": "Drought Information",
+          "content": "During prolonged drought periods:\n\n* **Conserve water:** Follow any water usage restrictions issued by your municipality. Limit watering lawns/gardens, washing cars, etc.\n* **Check for fire bans:** Drought increases fire risk. Be aware of and adhere to all fire restrictions.\n* **Monitor water sources:** If you rely on private wells, monitor water levels.\n\n*[Source: Relevant Municipal/NVE information]*"
         },
         "heatwave": {
-          "title": "Heat Wave",
-          "content": "# Heat Wave Preparedness\n\nExtreme heat can be dangerous, especially for vulnerable populations like the elderly and young children.\n\n## How to prepare\n\n- Install window reflectors to reflect heat back outside\n- Weather-strip doors and windows\n- Check air conditioning systems\n- Learn about cooling centers in your area\n\n## During a heat wave\n\n- Stay in air-conditioned areas when possible\n- Drink plenty of fluids\n- Wear lightweight, light-colored clothing\n- Check on vulnerable family and neighbors"
+          "title": "Heatwave Information",
+          "content": "During extreme heat:\n\n* **Stay hydrated:** Drink plenty of water, even if you don't feel thirsty.\n* **Keep cool:** Stay indoors in cool places during the hottest parts of the day. Use fans or air conditioning if available. Take cool showers or baths.\n* **Check on vulnerable people:** Look out for elderly neighbors, infants, and those with chronic health conditions.\n* **Never leave children or pets in parked cars.**\n\n*[Source: Helsenorge.no]*"
         }
       },
       "forestFire": {
-        "title": "Forest Fire",
-        "content": "# Forest Fire Preparedness\n\nForest fires can spread rapidly and threaten homes and communities near wilderness areas.\n\n## How to prepare\n\n- Create a defensible space around your home\n- Use fire-resistant building materials\n- Prepare an emergency evacuation plan\n- Keep emergency supplies ready\n\n## During a forest fire\n\n- Follow evacuation orders immediately\n- Close all windows and doors if evacuating\n- Monitor air quality reports\n- Stay informed through official channels"
+        "title": "Forest Fire Information",
+        "content": "To prevent and manage forest fire risks:\n\n* **Respect fire bans:** Check local regulations and the general fire ban period (April 15 - September 15). Be extremely cautious with any open flame.\n* **Check danger levels:** Stay updated on [skogbrannfare.met.no](https://skogbrannfare.met.no).\n* **Have an evacuation plan:** If you live in an area at risk, plan where you can go and what you need to take.\n* **Stay informed:** Follow information from local authorities and the fire department.\n* **Protect your home:** Close windows and vents to prevent smoke from entering. Remove flammable materials from near the house walls.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) and [DSB - Forest Fire](https://www.dsb.no/brannsikkerhet/brannberedskap/skogbrann/)*"
       },
       "powerOutage": {
-        "title": "Power Outage",
-        "content": "# Power Outage Preparedness\n\nPower outages can occur due to storms, equipment failures, or other emergencies.\n\n## How to prepare\n\n- Keep flashlights and extra batteries\n- Consider a backup power source\n- Have a battery-powered or hand-crank radio\n- Keep mobile phones charged\n\n## During a power outage\n\n- Use flashlights instead of candles when possible\n- Keep refrigerator and freezer doors closed\n- Unplug sensitive electronics\n- Check on vulnerable neighbors"
+        "title": "Power Outage Information",
+        "content": "During a power outage:\n\n* **Use alternative light sources:** Flashlights, battery-powered lamps, or glow sticks are safer than candles.\n* **Keep refrigerator/freezer closed:** A full freezer will keep food frozen for about 48 hours if unopened.\n* **Stay warm:** Dress in layers. Close off unused rooms. Use safe alternative heating methods if available.\n* **Conserve phone battery:** Use your phone sparingly. Consider having a power bank charged and ready.\n* **Be careful with generators:** If using a generator, follow all safety instructions and never operate it indoors.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
       },
       "waterShortage": {
-        "title": "Water Shortage",
-        "content": "# Water Shortage Preparedness\n\nWater shortages can occur due to drought, infrastructure failures, or contamination events.\n\n## How to prepare\n\n- Store emergency water (1 gallon per person per day)\n- Install water-efficient fixtures\n- Learn how to purify water\n- Know alternative water sources\n\n## During a water shortage\n\n- Follow water conservation guidelines\n- Use water for essential needs only\n- Report water main breaks\n- Help vulnerable community members"
+        "title": "Water Shortage Information",
+        "content": "In case of water shortage or contamination:\n\n* **Follow official advice:** Authorities may issue boil water advisories or other instructions.\n* **Use emergency water supplies:** Use stored water or other safe sources for drinking, cooking, and hygiene.\n* **Conserve water:** Minimize usage for non-essential purposes.\n* **Know how to purify water:** Be familiar with methods like boiling, using water purification tablets, or filtering.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
       },
       "cyberAttack": {
-        "title": "Cyber Attack",
-        "content": "# Cyber Attack Preparedness\n\nCyber attacks can disrupt critical services and compromise personal information.\n\n## How to prepare\n\n- Use strong, unique passwords\n- Enable two-factor authentication\n- Keep software and systems updated\n- Back up important data regularly\n\n## During a cyber attack\n\n- Disconnect affected devices from the internet\n- Report suspicious activity\n- Change passwords on unaffected accounts\n- Monitor accounts for unauthorized activity"
+        "title": "Cyber Attack Information",
+        "content": "To protect yourself from cyber threats:\n\n* **Use strong, unique passwords:** Create different passwords for important accounts.\n* **Enable two-factor authentication:** This adds an extra layer of security.\n* **Be cautious with emails and links:** Don't click on suspicious links or download attachments from unknown sources.\n* **Keep software updated:** Install updates promptly to patch security vulnerabilities.\n* **Back up important data:** Regularly back up important files to an external device or secure cloud service.\n\n*[Source: National Security Authority (NSM)](https://www.nsm.no/)*"
       },
       "majorAccident": {
-        "title": "Major Accident",
-        "content": "# Major Accident Preparedness\n\nMajor accidents include industrial incidents, transportation accidents, or structural failures.\n\n## How to prepare\n\n- Know evacuation routes from your area\n- Learn about local warning systems\n- Keep emergency contact information accessible\n- Prepare an emergency kit\n\n## During a major accident\n\n- Follow instructions from authorities\n- Evacuate if instructed to do so\n- Avoid the affected area\n- Seek medical attention if needed"
+        "title": "Major Accident Information",
+        "content": "In case of a major accident (industrial, transportation, etc.):\n\n* **Follow evacuation orders:** If authorities instruct you to evacuate, do so immediately.\n* **Shelter in place if directed:** If told to stay indoors, close windows and doors, turn off ventilation systems, and move to an interior room if possible.\n* **Stay informed:** Listen to local radio or check official websites for instructions.\n* **Avoid the affected area:** Keep roads clear for emergency vehicles.\n\n*[Source: DSB](https://www.dsb.no/)*"
       }
     },
     "preparednessStorage": {
       "title": "Preparedness Storage",
-      "content": "# Emergency Preparedness Storage\n\nHaving essential supplies stored and ready can help you and your family during emergencies.\n\n## Basic Emergency Kit\n\n- Water (1 gallon per person per day for at least 3 days)\n- Non-perishable food (at least a 3-day supply)\n- Battery-powered or hand-crank radio\n- Flashlight and extra batteries\n- First aid kit\n- Whistle to signal for help\n- Dust mask, plastic sheeting, and duct tape\n- Moist towelettes, garbage bags, and plastic ties\n- Wrench or pliers to turn off utilities\n- Manual can opener\n- Local maps\n- Cell phone with chargers and a backup battery\n\n## Additional Items to Consider\n\n- Prescription medications and glasses\n- Infant formula and diapers\n- Pet food and extra water for your pet\n- Important family documents in a waterproof container\n- Cash or traveler's checks\n- Emergency reference materials\n- Sleeping bag or warm blanket for each person\n- Complete change of clothing\n- Fire extinguisher\n- Matches in a waterproof container\n- Feminine supplies and personal hygiene items\n- Mess kits, paper cups, plates, paper towels, and plastic utensils\n- Paper and pencil\n- Books, games, puzzles, or other activities for children"
+      "content": "The Norwegian Directorate for Civil Protection (DSB) recommends that all households be self-sufficient for at least three days. Your emergency preparedness storage should include:\n\n**Food and Drink:**\n* Nine liters of water per person\n* Non-perishable food that can be eaten without preparation or with minimal heating\n\n**Medications and Hygiene:**\n* Necessary prescription medications\n* Pain relievers and other basic medicines\n* First aid kit\n* Hygiene products\n* Wet wipes and disinfectant\n\n**Heat and Light Sources:**\n* Flashlights with extra batteries\n* Candles, matches/lighter\n* Warm clothes, blankets, sleeping bags\n* Alternative heating source (if possible)\n\n**Other Important Items:**\n* Battery-powered or hand-crank radio\n* Extra batteries/power banks for mobile phones\n* Cash in small denominations\n* Fuel in the car\n* Paper copies of important documents\n* Basic tools\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
     },
     "afterCrisis": {
-      "title": "After Crisis",
-      "content": "# After a Crisis\n\nThe period after a crisis can be challenging. Here's guidance on recovery and returning to normalcy.\n\n## Immediate Steps\n\n- Ensure your safety and the safety of those around you\n- Assess for injuries and seek medical attention if needed\n- Check your property for damage\n- Contact family members to let them know you're safe\n- Listen to official information and instructions\n\n## Recovery Process\n\n- Document damage for insurance purposes\n- Apply for disaster assistance if applicable\n- Begin clean-up when authorities indicate it's safe\n- Take care of your mental health and emotional well-being\n- Help others in your community when possible\n\n## Long-term Considerations\n\n- Review and update your emergency plan based on your experience\n- Replenish emergency supplies\n- Consider improvements to make your home more resilient\n- Stay connected with community recovery efforts\n- Prepare for future emergencies"
+      "title": "After a Crisis",
+      "content": "After experiencing a crisis:\n\n**Take care of immediate needs:**\n* Ensure your safety and the safety of those around you\n* Seek medical attention if needed\n* Find safe shelter if your home is damaged\n* Contact family members to let them know you're safe\n\n**Begin recovery:**\n* Document damage (take photos) for insurance purposes\n* Contact your insurance company\n* Apply for disaster assistance if available\n* Clean and repair your home when it's safe to do so\n\n**Mental health is important:**\n* It's normal to experience stress, anxiety, or other emotional reactions\n* Talk about your experiences with family, friends, or professionals\n* Take care of your physical health (sleep, nutrition, exercise)\n* Seek professional help if needed\n\n**Learn from the experience:**\n* Evaluate your emergency plan and supplies\n* Make improvements based on what you learned\n* Help others in your community\n\n*[Source: Helsenorge.no and DSB](https://www.dsb.no/)*"
     }
   },
   "infoPage": {
