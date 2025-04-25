@@ -2,5 +2,11 @@
   "login": "Logg inn",
   "signup": "Registrer",
   "home": "Hjem",
-  "language": "Språk"
+  "language": "Språk",
+  "crisis-status": "Krisestatus",
+  "no-crisis": "Ingen pågående krise",
+  "more-crisis-info": "Les mer om din nåværende krisesituasjon",
+  "before": "før",
+  "during": "under",
+  "after": "etter"
 }
