@@ -11,37 +11,7 @@ import { fetchToken } from '@/services/api/AuthService.ts';
 import { register } from '@/services/api/AuthService.ts';
 import { computed, ref } from 'vue';
 import api from '@/services/api/AxiosInstance.ts';
-
-
-/**
- * Interface representing the data required for user registration.
- *
- * Maps to the backend UserCreateDto structure expected by the registration endpoint.
- *
- * @interface RegistrationData
- */
-interface RegistrationData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-}
-
-
-/**
- * Interface representing the user's profile information.
- *
- * Contains personal information fields that can be displayed and edited.
- *
- * @interface UserProfile
- */
-interface UserProfile {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-}
+import type { RegistrationData, UserProfile } from '@/models/User.ts'
 
 /**
  * Defines and exports the user store for global user state management.
@@ -158,15 +128,13 @@ export const useUserStore = defineStore("user", () => {
    * @returns {Promise<void>} Promise that resolves upon successful registration and login
    * @throws {Error} If registration or subsequent login fails
    */
-  async function registerUser(userData: RegistrationData) { // Use the defined interface
+  async function registerUser(userData: RegistrationData) {
     try {
-      // Call the register service with the correctly structured data
       await register(userData);
-      // After successful registration, log in using email and password
       await verifyLogin(userData.email, userData.password);
     } catch (error) {
       console.error("Registration or subsequent login failed:", error);
-      throw error; // Re-throw the error to be handled by the component
+      throw error;
     }
   }
 
