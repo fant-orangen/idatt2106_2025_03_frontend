@@ -8,6 +8,7 @@
       <div>
         <h3>Beredskapslager</h3>
         <p>tekst tekst</p>
+        <Button variant="primary" @click="goToHousehold">go to household -></Button>
       </div>
       <div>
         <h3>Aktiviteter</h3>
@@ -21,6 +22,13 @@
 
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
+
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+const goToHousehold = () => {
+  router.push('/household')
+}
 </script>
 
 <style scoped>
