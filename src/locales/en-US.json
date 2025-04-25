@@ -28,7 +28,9 @@
   },
   "navigation": {
     "home": "Home",
-    "language": "Language"
+    "language": "Language",
+    "before-crisis-page": "Before a crisis",
+    "activities": "Activities"
   },
   "time": {
     "after": "after",
@@ -38,7 +40,8 @@
   "info": {
     "news": "News",
     "notifications": "Notifications",
-    "nr-of-people-in-household": "Number of people in household"
+    "nr-of-people-in-household": "Number of people in household",
+    "info-about-storage": "Read more about emergency storages"
   },
   "reflect": {
     "reflection": "Reflect after crisis",
@@ -62,6 +65,7 @@
   "storage": {
     "food-and-drinks": "Food and Drinks",
     "medicine": "Medicine",
+    "storage": "Emergency storage"
     "your-storage": "Your emergency storage"
   },
   "household": {
