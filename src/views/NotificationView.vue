@@ -18,8 +18,7 @@ const notifications = ref([
 
 <template>
   <div class="notification-page w-full max-w-3xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">Notifications</h1>
-    <div v-if="notifications.length > 0">
+    <h1 class="text-2xl font-bold mb-4">{{ $t('notifications.notifications') }}</h1>    <div v-if="notifications.length > 0">
       <ul class="notification-list">
         <li
           v-for="notification in notifications"

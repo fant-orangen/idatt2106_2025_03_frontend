@@ -17,6 +17,13 @@
     "submit": "Submit",
     "name": "Name"
   },
+  "notifications": {
+    "notification": "Notification",
+    "notifications": "Notifications",
+    "new-notification": "New Notification",
+    "no-notifications": "No notifications available",
+    "all-notifications": "See all notifications"
+  },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
     "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it."

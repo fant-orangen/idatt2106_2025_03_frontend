@@ -30,10 +30,9 @@ defineProps<{
       <p class="text-sm text-gray-700">No new notifications.</p>
     </div>
     <RouterLink
-      to="/notifications"
-      class="text-primary hover:underline text-sm font-medium mt-4 block"
-    >
-      Go to Notifications
+    to="/notifications"
+    class="text-primary hover:underline text-sm font-medium mt-4 block">
+    {{ $t('notifications.all-notifications') }}
     </RouterLink>
   </div>
 </template>

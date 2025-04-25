@@ -17,6 +17,13 @@
     "submit": "Send inn",
     "name": "Navn"
   },
+  "notifications": {
+    "notification": "Varsling",
+    "notifications": "Varslinger",
+    "new-notification": "Ny varsling",
+    "no-notifications": "Ingen varslinger tilgjengelig",
+    "all-notifications": "Se alle varslinger"
+  },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
     "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det."
