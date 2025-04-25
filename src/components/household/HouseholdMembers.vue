@@ -31,6 +31,12 @@
       <Button variant="outline" class="mt-4 w-full" @click="addEmptyUser">
         Add Empty User
       </Button>
+
+      <AddEmptyUser
+        v-if="showAddUser"
+        @save="handleSaveUser"
+        @cancel="showAddUser = false"
+      />
     </CardContent>
   </Card>
 </template>
@@ -39,6 +45,7 @@
 import { ref, onMounted, defineEmits } from 'vue';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import AddEmptyUser from './AddEmptyUser.vue';
 
 // Types
 interface HouseholdMember {
@@ -49,6 +56,7 @@ interface HouseholdMember {
 
 // Props and emits
 const emit = defineEmits(['memberSelected']);
+const showAddUser = ref(false);
 
 // State
 const householdMembers = ref<HouseholdMember[]>([]);
@@ -71,15 +79,22 @@ const selectMember = (member: HouseholdMember) => {
 };
 
 const addEmptyUser = () => {
+  showAddUser.value = true;
+};
+const handleSaveUser = (userData) => {
   const newId = householdMembers.value.length > 0
     ? Math.max(...householdMembers.value.map(m => m.id)) + 1
     : 1;
 
   householdMembers.value.push({
     id: newId,
-    firstName: 'New',
-    lastName: 'User'
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    type: userData.type,
+    description: userData.description
   });
+
+  showAddUser.value = false;
 };
 </script>
 

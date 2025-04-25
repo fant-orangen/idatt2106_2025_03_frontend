@@ -5,6 +5,7 @@ const routes = [
   { path: '/login', component: () => import('@/views/LoginView.vue') },
   { path: '/before-crisis', component: () => import('@/views/BeforeCrisisView.vue') },
   { path: '/during-crisis', component: () => import('@/views/DuringCrisisView.vue') },
+  { path: '/household', component: () => import('@/views/HouseholdManager.vue')}
 ]
 
 const router = createRouter({

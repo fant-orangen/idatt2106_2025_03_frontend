@@ -112,6 +112,7 @@ const getIconClass = (priority: Priority): string => {
 // Mock data for demonstration (replace with actual API calls)
 onMounted(() => {
   // Create dates for different timeframes
+
   const today = new Date();
   const threeDaysLater = new Date(today);
   threeDaysLater.setDate(today.getDate() + 3);
@@ -126,7 +127,7 @@ onMounted(() => {
   const items = [
     { id: 1, name: 'Canned beans', expiryDate: threeDaysLater },
     { id: 2, name: 'Water bottles', expiryDate: fifteenDaysLater },
-    { id: 3, name: 'Dried fruits', expiryDate: sixtyDaysLater },
+    { id: 3, name: 'Medicine', expiryDate: sixtyDaysLater },
   ];
 
   // Calculate days left and priority for each item
