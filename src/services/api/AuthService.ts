@@ -46,5 +46,6 @@ export async function fetchToken({ username, password }: { username: string, pas
  * @throws {Error} When registration fails or network issues occur
  */
 export async function register(userData: RegistrationData) {
+  console.log("User data:" + userData)
   return await api.post('/auth/register', userData)
 }

@@ -6,6 +6,10 @@ import { useUserStore } from '@/stores/UserStore'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { useI18n } from 'vue-i18n'
+
+// Initialize i18n
+const { t } = useI18n()
 
 // Reactive variables for form fields and error messages
 const email = ref('')
@@ -33,7 +37,7 @@ onUnmounted(() => {
 
 /**
  * Handles the registration process by sending user details to the backend.
- * 
+ *
  * @async
  * @function handleRegister
  * @returns {Promise<void>} Resolves when the registration process is complete.
@@ -46,7 +50,7 @@ async function handleRegister() {
 
     // Check if passwords match
     if (password.value !== confirmPassword.value) {
-      errorMessage.value = $t('errors.passwords-do-not-match') as string
+      errorMessage.value = t('errors.passwords-do-not-match') as string
       return
     }
 
@@ -54,15 +58,15 @@ async function handleRegister() {
     await userStore.registerUser({
       email: email.value,
       password: password.value,
-      firstName: firstName.value,   
-      lastName: lastName.value, 
+      firstName: firstName.value,
+      lastName: lastName.value,
       phone: phone.value,
     })
 
-    successMessage.value = $t('success.registration-successful') as string
+    successMessage.value = t('success.registration-successful') as string
     // Optionally, redirect to the login page
   } catch (error) {
-    errorMessage.value = $t('errors.registration-failed') as string
+    errorMessage.value = t('errors.registration-failed') as string
     console.error('Registration error:', error)
   }
 }
@@ -83,7 +87,7 @@ async function handleRegister() {
             :placeholder="$t('login.first-name')"
             required
           />
-        </div> 
+        </div>
 
         <!-- Last Name Field -->
         <div class="form-group">

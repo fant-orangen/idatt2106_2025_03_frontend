@@ -7,10 +7,9 @@
 export interface RegistrationData {
   email: string;
   password: string;
-  displayName: string;
   firstName: string;
   lastName: string;
-  phone: string;
+  phoneNumber: string;
 }
 
 /**
