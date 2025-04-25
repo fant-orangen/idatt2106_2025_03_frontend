@@ -110,7 +110,7 @@ export interface AdminUserUpdatePayload {
  *
  * @interface UserProfile
  */
-export interface UserProfile {
+export Uinterface UserProfile {
   email: string;
   firstName: string;
   lastName: string;
