@@ -1,13 +1,13 @@
 <template>
   <Card class="household-members">
     <CardHeader>
-      <CardTitle>My Household</CardTitle>
+      <CardTitle>{{ $t('household.my-household') }}</CardTitle>
     </CardHeader>
     <CardContent>
       <!-- Scrollable list of household members -->
       <div class="scrollable-container">
         <div v-if="householdMembers.length === 0" class="text-center text-gray-500">
-          No household members found.
+          {{ $t('household.no-members-found') }}
         </div>
         <div v-else>
           <Button
@@ -24,12 +24,12 @@
 
       <!-- Household count -->
       <div class="mt-4 text-sm text-gray-500">
-        {{ householdMembers.length }} {{ householdMembers.length === 1 ? 'person' : 'people' }} in household
+        {{ householdMembers.length }} {{ householdMembers.length === 1 ? $t('household.person') : $t('household.people') }} {{ $t('household.in-household') }}
       </div>
 
       <!-- Add empty user button -->
       <Button variant="outline" class="mt-4 w-full" @click="addEmptyUser">
-        Add Empty User
+        {{ $t('household.add-empty-user') }}
       </Button>
 
       <AddEmptyUser
@@ -43,9 +43,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, defineEmits } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AddEmptyUser from './AddEmptyUser.vue';
+
+// Initialize i18n
+useI18n();
 
 // Types
 interface HouseholdMember {

@@ -1,13 +1,13 @@
 <template>
   <Card class="beredskapslager">
     <CardHeader>
-      <CardTitle>Beredskapslager</CardTitle>
+      <CardTitle>{{ $t('household.beredskapslager') }}</CardTitle>
     </CardHeader>
     <CardContent>
       <!-- Messages about items about to expire -->
       <div class="mb-4">
         <div v-if="sortedExpiringItems.length === 0" class="text-center text-gray-500">
-          No items are about to expire.
+          {{ $t('household.no-expiring-items') }}
         </div>
         <div v-else>
           <div
@@ -18,7 +18,7 @@
           >
             <AlertTriangle class="mr-2 flex-shrink-0" :class="getIconClass(item.priority)" />
             <p class="text-sm">
-              {{ item.name }} - {{ item.daysLeft }} days left
+              {{ item.name }} - {{ item.daysLeft }} {{ $t('household.days-left') }}
             </p>
           </div>
         </div>
@@ -26,19 +26,23 @@
 
       <!-- Button to view beredskapslager -->
       <Button variant="primary" class="w-full" @click="viewBeredskapslager">
-        Your Shelter Store
+        {{ $t('household.your-shelter-store') }}
       </Button>
     </CardContent>
   </Card>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineEmits, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-vue-next';
 import { daysLeft } from '@/utils/dateUtils.ts';
 import { useRouter } from 'vue-router';
+
+// Initialize i18n
+useI18n();
 
 
 // Priority levels
@@ -56,9 +60,6 @@ interface ExpiringItem {
   daysLeft: number;
   priority: Priority;
 }
-
-// Props and emits
-const emit = defineEmits(['viewBeredskapslager']);
 
 // Router
 const router = useRouter();

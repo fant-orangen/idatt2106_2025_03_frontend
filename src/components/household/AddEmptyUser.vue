@@ -4,46 +4,46 @@
       <div class="space-y-4">
         <!-- Name field -->
         <div>
-          <Label for="name">Name</Label>
-          <Input id="name" v-model="newUser.firstName" placeholder="Enter name" required />
+          <Label for="name">{{ $t('household.name') }}</Label>
+          <Input id="name" v-model="newUser.firstName" :placeholder="$t('household.enter-name')" required />
         </div>
 
         <!-- Last name field -->
         <div>
-          <Label for="lastName">Last Name</Label>
-          <Input id="lastName" v-model="newUser.lastName" placeholder="Enter last name" required />
+          <Label for="lastName">{{ $t('household.last-name') }}</Label>
+          <Input id="lastName" v-model="newUser.lastName" :placeholder="$t('household.enter-last-name')" required />
         </div>
 
         <!-- Type selection -->
         <div>
-          <Label for="type">Type</Label>
+          <Label for="type">{{ $t('household.type') }}</Label>
           <Select v-model="newUser.type">
             <SelectTrigger id="type" class="w-full">
-              <SelectValue :placeholder="newUser.type || 'Select type'" />
+              <SelectValue :placeholder="newUser.type || $t('household.select-type')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="adult">Adult</SelectItem>
-              <SelectItem value="child">Child</SelectItem>
-              <SelectItem value="pet">Pet</SelectItem>
+              <SelectItem value="adult">{{ $t('household.adult') }}</SelectItem>
+              <SelectItem value="child">{{ $t('household.child') }}</SelectItem>
+              <SelectItem value="pet">{{ $t('household.pet') }}</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <!-- Description field -->
         <div>
-          <Label for="description">Description</Label>
+          <Label for="description">{{ $t('household.description') }}</Label>
           <Textarea
             id="description"
             v-model="newUser.description"
-            placeholder="Additional information"
+            :placeholder="$t('household.additional-info')"
             rows="3"
           />
         </div>
 
         <!-- Buttons -->
         <div class="flex gap-2">
-          <Button type="submit" variant="default">Save</Button>
-          <Button type="button" variant="outline" @click="cancel">Cancel</Button>
+          <Button type="submit" variant="default">{{ $t('household.save') }}</Button>
+          <Button type="button" variant="outline" @click="cancel">{{ $t('household.cancel') }}</Button>
         </div>
       </div>
     </form>
@@ -52,11 +52,15 @@
 
 <script setup lang="ts">
 import { ref, defineEmits } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+
+// Initialize i18n
+useI18n();
 
 interface NewUser {
   firstName: string;
