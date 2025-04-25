@@ -1,243 +1,67 @@
 {
-  "login": "Logg inn",
-  "signup": "Registrer",
-  "home": "Hjem",
-  "language": "Språk",
-  "crisis-status": "Krisestatus",
-  "no-crisis": "Ingen pågående krise",
-  "more-crisis-info": "Les mer om din nåværende krisesituasjon",
-  "before": "før",
-  "during": "under",
-  "after": "etter",
-
-  "sidebar": {
-    "title": "Temaer",
-    "themes": {
-      "crisisSituations": {
-        "title": "Ulike typer krisesituasjoner",
-        "pandemic": "Pandemi",
-        "war": "Krig",
-        "extremeWeather": {
-          "title": "Ekstremvær",
-          "flood": "Flom",
-          "hurricane": "Orkan",
-          "drought": "Tørke",
-          "heatwave": "Hetebølge"
-        },
-        "forestFire": "Skogbrann",
-        "powerOutage": "Strømbrudd",
-        "waterShortage": "Vannmangel",
-        "cyberAttack": "Cyberangrep",
-        "majorAccident": "Storulykke"
-      },
-      "preparednessStorage": "Beredskapslager",
-      "afterCrisis": "Etter en krise"
-    }
+  "actions": {
+    "to-reflect": "for å reflektere",
+    "read-more": "Les mer",
+    "add-empty-account-to-household": "Legg til en tom bruker i husholdningen",
+    "add": "Legg til",
+    "switch-household": "Bytt husholdning"
   },
-  "themes": {
-    "crisisSituations": {
-      "pandemic": {
-        "title": "Informasjon om Pandemi",
-        "content": "Under en pandemi er det avgjørende å følge råd fra helsemyndighetene (som [Helsenorge.no](https://www.helsenorge.no/) og FHI) for å begrense smittespredning.\n\n**Viktige tiltak inkluderer:**\n* God hånd- og hostehygiene.\n* Holde avstand til andre.\n* Holde seg hjemme ved sykdom.\n* Sørge for å ha nødvendige medisiner og hygieneartikler tilgjengelig.\n\nVær forberedt på at tjenester som transport og butikker kan bli påvirket. Ha et lager av mat og drikke som anbefalt i egenberedskapsrådene. Følg med på offisiell informasjon og vær kildekritisk.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
-      },
-      "war": {
-        "title": "Informasjon om Krig",
-        "content": "Selv om Norge er et trygt land, er det viktig å være forberedt på ulike scenarioer, inkludert krigshandlinger. Ved en slik situasjon:\n\n* **Følg myndighetenes råd nøye.** Informasjon vil bli gitt via offisielle kanaler som NRK P1.\n* **Søk informasjon:** Hold deg oppdatert via pålitelige kilder.\n* **Finn dekning:** Orienter deg om nærmeste offentlige tilfluktsrom (sjekk [kart.dsb.no](https://kart.dsb.no)). Hvis ikke tilgjengelig, søk dekning i kjellere eller rom midt i bygninger, unngå vinduer da disse kan knuse.\n* **Ha beredskapslageret klart:** Sørg for at du har nok mat, vann og andre nødvendigheter for minst en uke.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
-      },
-      "extremeWeather": {
-        "flood": {
-          "title": "Informasjon om Flom",
-          "content": "Ved fare for flom:\n\n* **Følg varsler:** Hold deg oppdatert på værvarsler fra [MET Norway (Yr.no)](https://www.yr.no) og flomvarsler fra [NVE (varsom.no)](https://www.varsom.no).\n* **Sikre eiendom:** Fest eller flytt løse gjenstander utendørs. Flytt verdifulle eiendeler og farlige stoffer (kjemikalier, drivstoff) opp fra kjeller og første etasje.\n* **Tett åpninger:** Tett ventiler og sluk for å hindre vanninntrenging.\n* **Vurder evakuering:** Følg råd fra myndighetene om eventuell evakuering.\n* **Unngå flomvann:** Ikke kjør, gå eller svøm i flomvann – det kan være sterk strøm og skjulte farer.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) og [varsom.no](https://www.varsom.no)*"
-        },
-        "hurricane": {
-          "title": "Informasjon om Orkan/Sterk Storm",
-          "content": "Ved varsel om orkan eller sterk storm:\n\n* **Følg varsler:** Hold deg oppdatert via [MET Norway (Yr.no)](https://www.yr.no).\n* **Sikre løse gjenstander:** Fest hagemøbler, trampoliner, søppelkasser og annet som kan bli tatt av vinden.\n* **Hold deg innendørs:** Unngå unødvendige reiser. Lukk vinduer og dører godt.\n* **Vær forberedt på strømbrudd:** Ha lommelykter, batteriradio, ladet batteribank og eventuell alternativ varmekilde klar. Sørg for at du har nok mat og vann.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
-        },
-        "drought": {
-          "title": "Informasjon om Tørke",
-          "content": "Under lengre tørkeperioder:\n\n* **Spar på vannet:** Følg eventuelle restriksjoner for vannbruk fra kommunen. Begrens vanning av plen/hage, bilvask etc.\n* **Sjekk brannfare:** Tørke øker brannfaren. Vær oppmerksom på og følg alle restriksjoner rundt bålbrenning.\n* **Overvåk vannkilder:** Hvis du bruker privat brønn, følg med på vannstanden.\n\n*[Kilde: Relevant kommune-/NVE-informasjon]*"
-        },
-        "heatwave": {
-          "title": "Informasjon om Hetebølge",
-          "content": "Ved ekstrem varme:\n\n* **Hold deg hydrert:** Drikk rikelig med vann, selv om du ikke føler deg tørst.\n* **Hold deg avkjølt:** Opphold deg innendørs på kjølige steder midt på dagen. Bruk vifte eller klimaanlegg hvis mulig. Ta kjølige dusjer eller bad.\n* **Sjekk sårbare personer:** Se til eldre naboer, spedbarn og personer med kroniske sykdommer.\n* **Forlat aldri barn eller dyr i parkerte biler.**\n\n*[Kilde: Helsenorge.no]*"
-        }
-      },
-      "forestFire": {
-        "title": "Informasjon om Skogbrann",
-        "content": "For å forebygge og håndtere skogbrannfare:\n\n* **Respekter bålforbud:** Sjekk lokale regler og generelt bålforbud (15. april - 15. september). Vær ekstremt forsiktig med all bruk av åpen ild.\n* **Sjekk farevarsel:** Hold deg oppdatert på [skogbrannfare.met.no](https://skogbrannfare.met.no).\n* **Ha evakueringsplan:** Hvis du bor i et utsatt område, tenk gjennom hvor du kan dra og hva du må ta med deg.\n* **Hold deg informert:** Følg med på informasjon fra lokale myndigheter og brannvesen.\n* **Beskytt boligen:** Lukk vinduer og ventiler for å unngå røykinntrengning. Fjern brennbart materiale nær husveggen.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) og [DSB - Skogbrann](https://www.dsb.no/brannsikkerhet/brannberedskap/skogbrann/)*"
-      },
-      "powerOutage": {
-        "title": "Informasjon om Strømbrudd",
-        "content": "Hvis strømmen går:\n\n* **Sjekk sikringsskapet:** Først, sjekk om bruddet kun gjelder din bolig.\n* **Meld fra:** Gi beskjed til nettselskapet ditt.\n* **Hold deg informert:** Bruk en batteridrevet radio for oppdateringer.\n* **Hold varmen/kulden:** Kle deg i lag. Lukk dører til rom som ikke er i bruk.\n* **Matsikkerhet:** Hold kjøleskap og fryser lukket mest mulig. Bruk lett bedervelig mat først.\n* **Bruk lommelykt:** Unngå bruk av stearinlys på grunn av brannfare.\n* **Ha reservestrøm:** Hold batteribanker ladet for mobiltelefoner.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
-      },
-      "waterShortage": {
-        "title": "Informasjon om Vannmangel/Forurensning",
-        "content": "Hvis vann fra springen blir utilgjengelig eller utrygt:\n\n* **Bruk lagret vann:** Benytt din egenberedskapsforsyning (sikt mot 20 liter per person).\n* **Kokevarsel:** Hvis myndighetene sender ut kokevarsel, kok alt vann til drikke, matlaging og tannpuss i minst ett minutt.\n* **Spar på vannet:** Begrens toalettspyling og ta korte dusjer hvis vann er tilgjengelig, men begrenset.\n* **Hold deg informert:** Lytt etter oppdateringer fra ditt lokale vannverk og kommune.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) og Lokal Kommune]*"
-      },
-      "cyberAttack": {
-        "title": "Informasjon om Cyberangrep",
-        "content": "Cyberangrep kan forstyrre kritiske tjenester (strøm, bank, kommunikasjon).\n\n* **Vær forberedt på forstyrrelser:** Ha offline backup av viktig informasjon og litt kontanter tilgjengelig.\n* **Sikre dine enheter:** Bruk sterke, unike passord, aktiver flerfaktorautentisering, og hold programvare oppdatert.\n* **Vær skeptisk:** Vær på vakt mot mistenkelige e-poster, meldinger eller anrop som ber om personlig informasjon (phishing).\n* **Hold deg informert:** Følg råd fra Nasjonalt cybersikkerhetssenter (NCSC) og offisielle nyhetskilder.\n\n*[Kilde: NCSC.no / NSM.no]*"
-      },
-      "majorAccident": {
-        "title": "Informasjon om Storulykke (f.eks. Kjemikalieutslipp, Transport)",
-        "content": "Ved en storulykke i nærheten:\n\n* **Følg instrukser umiddelbart:** Lytt til nødetatene (politi, brannvesen) og følg deres anvisninger (f.eks. hold deg inne, evakuer).\n* **Hold deg inne ('Shelter in place'):** Hvis du blir bedt om å holde deg innendørs, lukk alle vinduer og dører, slå av ventilasjonsanlegg (HVAC, vifter).\n* **Evakuering:** Hvis du blir bedt om å evakuere, følg oppgitte ruter. Ta med beredskapslageret ditt hvis mulig.\n* **Hold deg informert:** Bruk en batteridrevet radio for oppdateringer.\n\n*[Kilde: DSB / Lokale Nødetater]*"
-      }
-    },
-    "preparednessStorage": {
-      "title": "Informasjon om Beredskapslager",
-      "content": "Myndighetene anbefaler at alle husstander er forberedt på å klare seg selv i minst én uke ved en krisesituasjon. Dette kalles egenberedskap.\n\n**Ditt beredskapslager bør inneholde:**\n* **Drikkevann:** Ca. 20 liter per person (til drikke, matlaging, hygiene).\n* **Mat:** Tørrvarer og hermetikk med lang holdbarhet som tåler romtemperatur (f.eks. knekkebrød, havregryn, pasta, ris, hermetiske grønnsaker/middagsretter, pålegg, tørket frukt, nøtter, kjeks).\n* **Medisiner og førstehjelp:** Nødvendige medisiner for minst 7 dager, førstehjelpsskrin, smertestillende, jodtabletter (for de under 40 år, gravide, ammende).\n* **Hygieneartikler:** Våtservietter, hånddesinfeksjon, toalettpapir, bleier, bind/tamponger etc.\n* **Varme og lys:** Varme klær, pledd/soveposer, stearinlys, fyrstikker/lighter, lommelykt/hodelykt med ekstra batterier.\n* **Informasjon:** Batteridrevet DAB-radio, ladet batteribank, liste med viktige telefonnumre.\n* **Annet:** Litt kontanter, flere betalingskort, eventuelt kokeapparat som ikke krever strøm (stormkjøkken, gassbluss) med brensel.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
-    },
-    "afterCrisis": {
-      "title": "Informasjon om Etter en Krise",
-      "content": "Tiden etter en krise kan være krevende.\n\n* **Ta vare på deg selv og andre:** Det er normalt å oppleve sterke følelser. Snakk med familie, venner eller naboer. Oppretthold daglige rutiner så godt det lar seg gjøre.\n* **Hjelp til:** Bistå andre i nærmiljøet hvis du har mulighet.\n* **Dokumentasjon:** Ta vare på kvitteringer og ta bilder av skader for eventuelle forsikringsoppgjør.\n* **Følg informasjon:** Hold deg oppdatert på informasjon fra myndighetene om opprydding, reparasjoner og gjenoppretting av tjenester.\n* **Refleksjon og læring:** Tenk gjennom hva som fungerte bra og hva som kunne vært gjort annerledes. Bruk erfaringene til å justere og forbedre din egenberedskap.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
-    }
+  "login": {
+    "login": "Logg inn",
+    "signup": "Registrer",
+    "forgot-password": "Glemt passord?",
+    "re-enter": "Skriv inn på nytt",
+    "consent": "Jeg godtar",
+    "privacy-policy": "personvernerklæringen.",
+    "email-notifs-warning": "at krisefikser.no kan sende meg varsler via e-post.",
+    "submit": "Send inn",
+    "name": "Navn"
   },
-  "infoPage": {
-    "selectThemePrompt": "Vennligst velg et tema fra sidefeltet for å se informasjon.",
-    "aboutThisTheme": "Om dette temaet",
-    "themeDescription": "Viktig informasjon for å hjelpe deg med å forberede og håndtere situasjonen.",
-    "readMore": "Les mer",
-    "emergencyContacts": "Nødkontakter",
-    "relatedThemes": "Relaterte temaer",
-    "browseThemesDescription": "Bla gjennom våre informasjonsressurser for å lære om ulike krisesituasjoner og hvordan du kan forberede deg.",
-    "preparednessStorageBrief": "Lær hvordan du kan forberede hjemmet ditt med nødvendige forsyninger for nødsituasjoner.",
-    "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalen etter en krisehendelse.",
-    "learnMoreTopic": "Klikk for å lære mer om dette temaet.",
-    "close": "Lukk",
-    "readMoreTitle": "Ytterligere ressurser",
-    "readMoreDescription": "Finn mer detaljert informasjon og offisielle ressurser om dette temaet.",
-    "emergencyContactsTitle": "Nødkontakter",
-    "emergencyContactsDescription": "Viktige kontakter for nødsituasjoner.",
-    "officialWebsites": "Offisielle nettsider",
-    "additionalResources": "Ytterligere ressurser",
-    "generalEmergencyContacts": {
-      "title": "Generelle nødnumre",
-      "police": "Politi: 112",
-      "ambulance": "Ambulanse: 113",
-      "fire": "Brannvesen: 110",
-      "civilDefense": "Sivilforsvaret: 51 51 66 00"
-    },
-    "themeSpecificResources": {
-      "pandemic": {
-        "websites": [
-          {
-            "name": "Folkehelseinstituttet (FHI)",
-            "url": "https://www.fhi.no/",
-            "description": "Offisiell helsemyndighet med oppdatert informasjon om sykdomsutbrudd og forebyggende tiltak."
-          },
-          {
-            "name": "Helsenorge",
-            "url": "https://www.helsenorge.no/",
-            "description": "Offisiell helseinformasjonsportal med veiledning om helsetjenester under pandemier."
-          },
-          {
-            "name": "Verdens helseorganisasjon (WHO)",
-            "url": "https://www.who.int/",
-            "description": "Global helsemyndighet med pandemiinformasjon og internasjonale retningslinjer."
-          }
-        ],
-        "contacts": [
-          {
-            "name": "Helseinformasjonslinjen",
-            "contact": "815 55 015",
-            "description": "For generelle helseråd og informasjon."
-          },
-          {
-            "name": "Kommunale helsetjenester",
-            "contact": "Sjekk nettsiden til din kommune",
-            "description": "For lokal pandemirespons og testinformasjon."
-          }
-        ]
-      },
-      "war": {
-        "websites": [
-          {
-            "name": "Direktoratet for samfunnssikkerhet og beredskap (DSB)",
-            "url": "https://www.dsb.no/",
-            "description": "Informasjon om samfunnssikkerhet og beredskap."
-          },
-          {
-            "name": "Forsvaret",
-            "url": "https://www.forsvaret.no/",
-            "description": "Offisiell informasjon fra det norske forsvaret."
-          }
-        ],
-        "contacts": [
-          {
-            "name": "Sivilforsvaret",
-            "contact": "51 51 66 00",
-            "description": "For informasjon om sivile beskyttelsestiltak."
-          }
-        ]
-      },
-      "flood": {
-        "websites": [
-          {
-            "name": "Norges vassdrags- og energidirektorat (NVE)",
-            "url": "https://www.nve.no/",
-            "description": "Flomvarsler og vannressursforvaltning."
-          },
-          {
-            "name": "Varsom.no",
-            "url": "https://www.varsom.no/",
-            "description": "Offisiell varslingstjeneste for flom, jordskred og snøskred."
-          }
-        ],
-        "contacts": [
-          {
-            "name": "NVE Flomvarsling",
-            "contact": "22 95 95 95",
-            "description": "For flomrelaterte henvendelser og rapportering."
-          }
-        ]
-      },
-      "forestFire": {
-        "websites": [
-          {
-            "name": "Meteorologisk institutt - Skogbrannfare",
-            "url": "https://www.yr.no/nb/skogbrannfare",
-            "description": "Gjeldende skogbrannfarenivåer over hele Norge."
-          },
-          {
-            "name": "DSB - Brannsikkerhet",
-            "url": "https://www.dsb.no/brannsikkerhet/",
-            "description": "Informasjon om brannforebygging og sikkerhet."
-          }
-        ],
-        "contacts": [
-          {
-            "name": "Meld fra om skogbrann",
-            "contact": "110",
-            "description": "Nødnummer for å melde fra om branner."
-          }
-        ]
-      },
-      "powerOutage": {
-        "websites": [
-          {
-            "name": "Norges vassdrags- og energidirektorat (NVE)",
-            "url": "https://www.nve.no/",
-            "description": "Informasjon om energiforsyning og reguleringer."
-          }
-        ],
-        "contacts": [
-          {
-            "name": "Lokalt nettselskap",
-            "contact": "Sjekk strømregningen din for kontaktinformasjon",
-            "description": "Meld fra om strømbrudd og få statusoppdateringer."
-          }
-        ]
-      },
-      "preparednessStorage": {
-        "websites": [
-          {
-            "name": "DSB - Egenberedskap",
-            "url": "https://www.sikkerhverdag.no/egenberedskap/",
-            "description": "Offisielle retningslinjer for egenberedskap for husholdninger."
-          }
-        ],
-        "contacts": []
-      }
-    }
+  "errors": {
+    "wrong-username-or-password": "Feil brukernavn eller passord",
+    "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det."
+  },
+  "crisis": {
+    "crisis-status": "Krisestatus",
+    "more-crisis-info": "Les mer om din nåværende krisesituasjon",
+    "no-crisis": "Ingen pågående krise"
+  },
+  "navigation": {
+    "home": "Hjem",
+    "language": "Språk"
+  },
+  "time": {
+    "after": "etter",
+    "before": "før",
+    "during": "under"
+  },
+  "info": {
+    "news": "Nyheter",
+    "notifications": "Varslinger",
+    "nr-of-people-in-household": "Antall personer i husholdningen"
+  },
+  "reflect": {
+    "reflection": "Reflekter etter krisen",
+    "need-help-q": "Trenger du hjelp?",
+    "what-2-do-after-crisis": "Hva bør du gjøre etter en krise?"
+  },
+  "map": {
+    "defibrillator": "Hjertestarter",
+    "medical-help": "Legehjelp",
+    "fire-extinguishing": "Brannslukking",
+    "shelter": "Tilfluktsrom",
+    "address": "Adresse",
+    "opening-hours": "Åpningstider",
+    "directions": "Veibeskrivelse"
+  },
+  "time-units": {
+    "month": "1 måned | {count} måneder",
+    "day": "1 dag | {count} dager",
+    "hour": "1 time | {count} timer"
+  },
+  "storage": {
+    "food-and-drinks": "Mat og drikke",
+    "medicine": "Medisin",
+    "your-storage": "Ditt beredskapslager"
   }
 }

@@ -8,6 +8,7 @@ import { RouterView } from 'vue-router'
     <HeaderNavbar />
     <RouterView />
   </div>
+
 </template>
 
 <style scoped></style>
