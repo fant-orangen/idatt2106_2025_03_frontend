@@ -9,3 +9,11 @@
     <div>Contact us at: mageik@stud.ntnu.no</div>
   </div>
 </template>
+
+<style scoped>
+.footer {
+  box-shadow:
+    0 -4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 -2px 4px -1px rgba(0, 0, 0, 0.06); /* Shadow above */
+}
+</style>
