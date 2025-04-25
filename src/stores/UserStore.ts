@@ -25,7 +25,7 @@ interface RegistrationData {
   password: string;
   firstName: string;
   lastName: string;
-  phone: string;
+  phoneNumber: string;
 }
 
 

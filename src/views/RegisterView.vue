@@ -60,7 +60,7 @@ async function handleRegister() {
       password: password.value,
       firstName: firstName.value,
       lastName: lastName.value,
-      phone: phone.value,
+      phoneNumber: phone.value,
     })
 
     successMessage.value = t('success.registration-successful') as string
@@ -75,83 +75,83 @@ async function handleRegister() {
 <template>
   <div class="register-wrapper">
     <div class="register-container">
-      <h1 class="text-xl font-bold text-center mb-4">{{ $t('login.signup') }}</h1>
+      <h1 class="text-xl font-bold text-center mb-4">{{ t('login.signup') }}</h1>
       <form @submit.prevent="handleRegister" class="space-y-4">
         <!-- First Name Field -->
         <div class="form-group">
-          <Label for="firstName" class="block text-sm font-medium">{{ $t('login.first-name') }}</Label>
+          <Label for="firstName" class="block text-sm font-medium">{{ t('login.first-name') }}</Label>
           <Input
             id="firstName"
             type="text"
             v-model="firstName"
-            :placeholder="$t('login.first-name')"
+            :placeholder="t('login.first-name')"
             required
           />
         </div>
 
         <!-- Last Name Field -->
         <div class="form-group">
-          <Label for="lastName" class="block text-sm font-medium">{{ $t('login.last-name') }}</Label>
+          <Label for="lastName" class="block text-sm font-medium">{{ t('login.last-name') }}</Label>
           <Input
             id="lastName"
             type="text"
             v-model="lastName"
-            :placeholder="$t('login.last-name')"
+            :placeholder="t('login.last-name')"
             required
           />
         </div>
 
         <!-- Email Field -->
         <div class="form-group">
-          <Label for="email" class="block text-sm font-medium">{{ $t('login.email') }}</Label>
+          <Label for="email" class="block text-sm font-medium">{{ t('login.email') }}</Label>
           <Input
             id="email"
             type="email"
             v-model="email"
-            :placeholder="$t('login.email')"
+            :placeholder="t('login.email')"
             required
           />
         </div>
 
         <!-- Phone Field -->
         <div class="form-group">
-          <Label for="phone" class="block text-sm font-medium">{{ $t('login.phone') }}</Label>
+          <Label for="phone" class="block text-sm font-medium">{{ t('login.phone') }}</Label>
           <Input
             id="phone"
             type="tel"
             v-model="phone"
-            :placeholder="$t('login.phone')"
+            :placeholder="t('login.phone')"
             required
           />
         </div>
 
         <!-- Password Field -->
         <div class="form-group">
-          <Label for="password" class="block text-sm font-medium">{{ $t('login.password') }}</Label>
+          <Label for="password" class="block text-sm font-medium">{{ t('login.password') }}</Label>
           <Input
             id="password"
             type="password"
             v-model="password"
-            :placeholder="$t('login.password')"
+            :placeholder="t('login.password')"
             required
           />
         </div>
 
         <!-- Confirm Password Field -->
         <div class="form-group">
-          <Label for="confirmPassword" class="block text-sm font-medium">{{ $t('login.confirm-password') }}</Label>
+          <Label for="confirmPassword" class="block text-sm font-medium">{{ t('login.confirm-password') }}</Label>
           <Input
             id="confirmPassword"
             type="password"
             v-model="confirmPassword"
-            :placeholder="$t('login.confirm-password')"
+            :placeholder="t('login.confirm-password')"
             required
           />
         </div>
 
         <!-- Submit Button -->
         <Button type="submit" class="w-full bg-primary text-white hover:bg-primary/90 dark:bg-primary dark:text-black dark:hover:bg-primary/80">
-          {{ $t('login.signup') }}
+          {{ t('login.signup') }}
         </Button>
 
         <!-- Success Message -->
