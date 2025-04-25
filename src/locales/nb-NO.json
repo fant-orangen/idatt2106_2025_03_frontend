@@ -23,6 +23,12 @@
     "password": "Passord",
     "confirm-password": "Bekreft passord"
   },
+  "admin": {
+    "administrate": "Administrer",
+    "make-new-event": "Legg til en ny hendelse",
+    "make-new-POI": "Legg til et nytt interessepunkt",
+    "make-new-activity": "Lag en ny aktivitet"
+  },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
     "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det.",
@@ -43,7 +49,11 @@
     "home": "Hjem",
     "language": "Språk",
     "before-crisis-page": "Før en krise",
-    "activities": "Aktiviteter"
+    "activities": "Aktiviteter",
+    "admin-panel": "Admin side",
+    "new-event": "Ny hendelse",
+    "new-POI": "Nytt interessepunkt",
+    "new-activity": "Ny aktivivtet"
   },
   "time": {
     "after": "etter",
@@ -54,7 +64,8 @@
     "news": "Nyheter",
     "notifications": "Varslinger",
     "nr-of-people-in-household": "Antall personer i husholdningen",
-    "info-about-storage": "Les mer om beredskapslageret"
+    "info-about-storage": "Les mer om beredskapslageret",
+    "current-situation": "Nåværende hendelser"
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",

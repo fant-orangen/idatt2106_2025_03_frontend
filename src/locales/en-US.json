@@ -22,6 +22,12 @@
     "password": "Password",
     "confirm-password": "Confirm Password"
   },
+  "admin": {
+    "administrate": "Administrate",
+    "make-new-event": "Add a new event",
+    "make-new-POI": "Add a new point of interest",
+    "make-new-activity": "Make a new activity"
+  },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
     "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
@@ -42,7 +48,11 @@
     "home": "Home",
     "language": "Language",
     "before-crisis-page": "Before a crisis",
-    "activities": "Activities"
+    "activities": "Activities",
+    "admin-panel": "Admin panel",
+    "new-event": "New event",
+    "new-POI": "New point of interest",
+    "new-activity": "New activity"
   },
   "time": {
     "after": "after",
@@ -53,7 +63,8 @@
     "news": "News",
     "notifications": "Notifications",
     "nr-of-people-in-household": "Number of people in household",
-    "info-about-storage": "Read more about emergency storages"
+    "info-about-storage": "Read more about emergency storages",
+    "current-situation": "Current situation"
   },
   "reflect": {
     "reflection": "Reflect after crisis",
