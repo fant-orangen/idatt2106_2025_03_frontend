@@ -23,6 +23,7 @@
 
     <div style="margin: 10px;">
       <p>Before a crisis occurs you need to make sure you are prepared to take care of yourself... <br> You can find more information about what to store in your emergency storage, and learn more about different crisis' with some of our activities! <br>LALALALALA</p>
+
     </div>
 
     <div class="grid">
@@ -52,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button
 import router from '@/router/index.ts'
 import { Breadcrumb,
   BreadcrumbItem,
