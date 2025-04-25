@@ -12,7 +12,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const currentStatus = 'no-crisis'
+const currentStatus = 'crisis.no-crisis'
 </script>
 
 <template>
@@ -22,7 +22,7 @@ const currentStatus = 'no-crisis'
         <CardHeader class="items-center">
           <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
             <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />
-            {{ $t('crisis-status') }}
+            {{ $t('crisis.crisis-status') }}
           </CardTitle>
         </CardHeader>
         <CardContent class="flex justify-center items-center">
@@ -32,9 +32,15 @@ const currentStatus = 'no-crisis'
     </div>
     <div class="container flex flex-row gap-40">
       <div class="before-during-after flex flex-col gap-20">
-        <Button class="h-30 w-80" @click="router.push('before-crisis')"> {{ $t('before') }}</Button>
-        <Button class="h-30 w-80" @click="router.push('during-crisis')"> {{ $t('during') }}</Button>
-        <Button class="h-30 w-80" @click="router.push('after-crisis')"> {{ $t('after') }}</Button>
+        <Button class="h-30 w-80" @click="router.push('before-crisis')">
+          {{ $t('time.before') }}</Button
+        >
+        <Button class="h-30 w-80" @click="router.push('during-crisis')">
+          {{ $t('time.during') }}</Button
+        >
+        <Button class="h-30 w-80" @click="router.push('after-crisis')">
+          {{ $t('time.after') }}</Button
+        >
       </div>
       <div class="map flex justify-center items-center bg-accent-foreground flex-grow text-black">
         map
