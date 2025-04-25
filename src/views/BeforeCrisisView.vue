@@ -2,7 +2,7 @@
   <div class="page">
     <div class="top">
       <h1>Før</h1>
-      <Button variant="primary">Les mer</Button>
+      <Button variant="primary" @click="router.push('/info')">Les mer</Button>
     </div>
     <div class="grid">
       <div>
@@ -22,13 +22,13 @@
 
 <script setup lang="ts">
 import { Button } from '@/components/ui/button'
-
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const goToHousehold = () => {
   router.push('/household')
 }
+
 </script>
 
 <style scoped>
