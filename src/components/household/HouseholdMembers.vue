@@ -46,6 +46,16 @@
         @save="handleSaveUser"
         @cancel="showAddUser = false"
       />
+
+      <Button variant="outline" class="mt-2 w-full" @click="inviteUser">
+        {{ $t('household.invite-user') }}
+      </Button>
+
+      <AddUser
+        v-if="showInviteUser"
+        @invited="handleUserInvited"
+        @cancel="showInviteUser = false"
+      />
     </CardContent>
   </Card>
 </template>
@@ -57,6 +67,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AddEmptyUser from './AddEmptyUser.vue';
 import { BabyIcon, PawPrintIcon, UserIcon } from 'lucide-vue-next';
+import AddUser from './AddUser.vue';
 useI18n();
 
 interface HouseholdMember {
@@ -105,6 +116,20 @@ const handleSaveUser = (userData) => {
   });
 
   showAddUser.value = false;
+};
+// Add this ref
+const showInviteUser = ref(false);
+
+// Add these methods
+const inviteUser = () => {
+  showAddUser.value = false;
+  showInviteUser.value = true;
+};
+
+const handleUserInvited = (userData) => {
+  // Show success message or update UI as needed
+  console.log('User invited:', userData);
+  showInviteUser.value = false;
 };
 </script>
 

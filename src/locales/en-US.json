@@ -103,7 +103,21 @@
     "beredskapslager": "Emergency Storage",
     "no-expiring-items": "No items are about to expire.",
     "days-left": "days left",
-    "your-shelter-store": "Your Shelter Store"},
+    "your-shelter-store": "Your Shelter Store",
+    "invite-user": "Invite User",
+    "email-address": "Email Address",
+    "enter-email": "Enter email address",
+    "access-level": "Access Level",
+    "select-access-level": "Select access level",
+    "editor": "Editor",
+    "viewer": "Viewer",
+    "personal-message": "Personal Message",
+    "optional-message": "Optional: Add a personal message",
+    "send-invitation": "Send Invitation",
+    "invitation-sent": "Invitation sent successfully",
+    "invitation-failed": "Failed to send invitation",
+    "add-user-title": "Invite User to Household"
+  },
   "sidebar": {
     "title": "Themes",
     "themes": {
