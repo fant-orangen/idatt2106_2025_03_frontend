@@ -33,10 +33,10 @@
           {{ $t('info.info-about-storage') }} 
           <font-awesome-icon icon="fa-solid fa-arrow-right"/>
         </Button>
-        <Button @click="router.push('')">
+        <Button @click="router.push('/household')">
           {{ $t('storage.your-storage') }}
           <font-awesome-icon icon="fa-solid fa-arrow-right" />
-        </Button> <!--legg til path for your storage-->
+        </Button>
       </div>
 
       <div>
@@ -61,6 +61,7 @@ import { Breadcrumb,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator, } from '@/components/ui/breadcrumb' 
+
 </script>
 
 <style scoped>
