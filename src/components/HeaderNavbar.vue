@@ -51,7 +51,7 @@ function selectLanguage(language: { label: string; code: string }): void {
     class="navbar shadow-md bg-secondary text-secondary-foreground flex justify-between items-center px-5 py-3 transition-all duration-300"
   >
     <div class="navbar-right flex gap-4">
-      <RouterLink to="/" class="hover:text-primary"> {{ $t('home') }}</RouterLink>
+      <RouterLink to="/" class="hover:text-primary"> {{ $t('navigation.home') }}</RouterLink>
       <div class="dropdown relative">
         <button
           class="dropbtn flex items-center gap-2 text-secondary-foreground hover:text-primary"
@@ -77,16 +77,16 @@ function selectLanguage(language: { label: string; code: string }): void {
     </div>
     <div class="navbar-left flex items-center gap-4">
       <RouterLink
-        to="/"
+        to="/login"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
-        {{ $t('login') }}</RouterLink
+        {{ $t('login.login') }}</RouterLink
       >
       <RouterLink
         to="/"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
-        {{ $t('signup') }}</RouterLink
+        {{ $t('login.signup') }}</RouterLink
       >
       <RouterLink to="/" class="no-border">
         <font-awesome-icon :icon="['fas', 'user']" size="lg" />
