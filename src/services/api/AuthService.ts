@@ -6,8 +6,8 @@
  *
  * @module AuthService
  */
-import api from '@/services/api/AxiosInstance.ts';
-import type { RegistrationData } from '@/models/User';
+import api from '@/services/api/AxiosInstance.ts'
+import type { RegistrationData } from '@/models/User'
 
 /**
  * Authenticates a user and retrieves an access token.
@@ -21,18 +21,19 @@ import type { RegistrationData } from '@/models/User';
  * @returns {Promise<AxiosResponse>} Promise resolving to the server response
  * @throws {Error} When authentication fails or network issues occur
  */
-export async function fetchToken({ username, password }: { username: string, password: string }) {
-  return await api.post('/auth/login',
+export async function fetchToken({ username, password }: { username: string; password: string }) {
+  return await api.post(
+    '/auth/login',
     JSON.stringify({
       email: username,
-      password: password
+      password: password,
     }),
     {
       headers: {
-        'Content-Type': 'application/json'
-      }
-    }
-  );
+        'Content-Type': 'application/json',
+      },
+    },
+  )
 }
 
 /**
@@ -46,6 +47,6 @@ export async function fetchToken({ username, password }: { username: string, pas
  * @throws {Error} When registration fails or network issues occur
  */
 export async function register(userData: RegistrationData) {
-  console.log("User data:" + userData)
+  console.log('User data:' + userData)
   return await api.post('/auth/register', userData)
 }

@@ -13,19 +13,19 @@ const password = ref('')
 const userStore = useUserStore()
 const errorMessage = ref('')
 
-// Disable scrolling when the page is loaded
-onMounted(() => {
-  document.body.style.overflow = 'hidden'
-})
+// // Disable scrolling when the page is loaded
+// onMounted(() => {
+//   document.body.style.overflow = 'hidden'
+// })
 
-// Re-enable scrolling when the page is unloaded
-onUnmounted(() => {
-  document.body.style.overflow = ''
-})
+// // Re-enable scrolling when the page is unloaded
+// onUnmounted(() => {
+//   document.body.style.overflow = ''
+// })
 
 /**
  * Handles the login process by verifying the user's credentials.
- * 
+ *
  * @async
  * @function handleLogin
  * @returns {Promise<void>} Resolves when the login process is complete.
@@ -46,33 +46,33 @@ async function handleLogin() {
 <template>
   <div class="login-wrapper">
     <div class="login-container">
-        <h1 class="text-xl font-bold text-center mb-4">{{ $t('login.login') }}</h1>
-        <form @submit.prevent="handleLogin" class="space-y-4">
+      <h1 class="text-xl font-bold text-center mb-4">{{ $t('login.login') }}</h1>
+      <form @submit.prevent="handleLogin" class="space-y-4">
         <div class="form-group">
-            <Label for="email" class="block text-sm font-medium">{{ $t('login.email') }}</Label>
-            <Input
+          <Label for="email" class="block text-sm font-medium">{{ $t('login.email') }}</Label>
+          <Input
             id="email"
             type="email"
             v-model="email"
             :placeholder="$t('login.email')"
             required
-            />
+          />
         </div>
         <div class="form-group">
-            <Label for="password" class="block text-sm font-medium">{{ $t('login.password') }}</Label>
-            <Input
+          <Label for="password" class="block text-sm font-medium">{{ $t('login.password') }}</Label>
+          <Input
             id="password"
             type="password"
             v-model="password"
             :placeholder="$t('login.password')"
             required
-            />
+          />
         </div>
         <Button type="submit" class="w-full bg-primary text-white hover:bg-primary/90">
-            {{ $t('login.login') }}
+          {{ $t('login.login') }}
         </Button>
         <p v-if="errorMessage" class="error text-red-500 text-center mt-2">{{ errorMessage }}</p>
-        </form>
+      </form>
     </div>
   </div>
 </template>
