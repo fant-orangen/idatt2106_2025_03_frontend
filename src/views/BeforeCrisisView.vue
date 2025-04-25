@@ -59,7 +59,7 @@ import { Breadcrumb,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator, } from '@/components/ui/breadcrumb'
+  BreadcrumbSeparator, } from '@/components/ui/breadcrumb' 
 </script>
 
 <style scoped>
