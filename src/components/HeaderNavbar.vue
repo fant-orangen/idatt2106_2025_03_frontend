@@ -83,7 +83,7 @@ function selectLanguage(language: { label: string; code: string }): void {
         {{ $t('login') }}</RouterLink
       >
       <RouterLink
-        to="/"
+        to="/register"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('signup') }}</RouterLink

@@ -45,7 +45,7 @@ async function handleLogin() {
 <template>
   <div class="login-wrapper">
     <div class="login-container">
-        <h1 class="text-xl font-bold text-center mb-4">Login</h1>
+        <h1 class="text-xl font-bold text-center mb-4">{{ $t('login')}}</h1>
         <form @submit.prevent="handleLogin" class="space-y-4">
         <div class="form-group">
             <Label for="email" class="block text-sm font-medium">Email</Label>
@@ -89,7 +89,7 @@ async function handleLogin() {
 
 /* Styling for the login form container */
 .login-container {
-  max-width: 400px;
+  min-width: 400px;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ddd;
