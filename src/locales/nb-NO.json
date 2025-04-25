@@ -28,7 +28,9 @@
   },
   "navigation": {
     "home": "Hjem",
-    "language": "Språk"
+    "language": "Språk",
+    "before-crisis-page": "Før en krise",
+    "activities": "Aktiviteter"
   },
   "time": {
     "after": "etter",
@@ -38,7 +40,8 @@
   "info": {
     "news": "Nyheter",
     "notifications": "Varslinger",
-    "nr-of-people-in-household": "Antall personer i husholdningen"
+    "nr-of-people-in-household": "Antall personer i husholdningen",
+    "info-about-storage": "Les mer om beredskapslageret"
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",
@@ -62,6 +65,7 @@
   "storage": {
     "food-and-drinks": "Mat og drikke",
     "medicine": "Medisin",
-    "your-storage": "Ditt beredskapslager"
+    "your-storage": "Ditt beredskapslager",
+    "storage": "Beredskapslager"
   }
 }
