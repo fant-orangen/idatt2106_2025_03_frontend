@@ -81,7 +81,7 @@ function goToPage(route: string) {
         </button>
         <div
           v-if="showDropdown"
-          class="dropdown-content absolute bg-card text-card-foreground shadow-lg mt-2 rounded-md w-[200px]"
+          class="dropdown-content absolute bg-card text-card-foreground shadow-lg mt-2 rounded-md w-[200px] z-50"
         >
           <div
             v-for="language in languages"
@@ -102,7 +102,7 @@ function goToPage(route: string) {
         {{ $t('login.login') }}</RouterLink
       >
       <RouterLink
-        to="/"
+        to="/register"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('login.signup') }}</RouterLink

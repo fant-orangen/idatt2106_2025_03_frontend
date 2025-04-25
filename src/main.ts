@@ -13,11 +13,12 @@ import {
   faSignIn,
   faBell,
   faTriangleExclamation,
+  faArrowRight
 } from '@fortawesome/free-solid-svg-icons'
 
 /* add icons to the library */
-library.add(faUserSolid, faGlobe, faSignIn, faBell, faTriangleExclamation)
-library.add(faUserRegular)
+library.add(faUser, faGlobe, faSignIn, faBell, faTriangleExclamation, faArrowRight)
+
 
 import App from './App.vue'
 import router from './router'

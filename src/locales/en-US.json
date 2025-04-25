@@ -15,11 +15,23 @@
     "privacy-policy": "the privacy policy.",
     "email-notifs-warning": "letting krisefikser.no send me notifications via email.",
     "submit": "Submit",
-    "name": "Name"
+    "first-name": "First Name",
+    "last-name": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "password": "Password",
+    "confirm-password": "Confirm Password"
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
-    "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it."
+    "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
+    "login-failed": "Login failed. Please check your credentials.",
+    "passwords-do-not-match": "Passwords do not match.",
+    "registration-failed": "Registration failed. Please try again."
+  },
+  "success": {
+    "registration-successful": "Registration successful! You can now log in.",
+    "login-successful": "Login successful!"
   },
   "crisis": {
     "crisis-status": "Crisis Status",
@@ -28,7 +40,9 @@
   },
   "navigation": {
     "home": "Home",
-    "language": "Language"
+    "language": "Language",
+    "before-crisis-page": "Before a crisis",
+    "activities": "Activities"
   },
   "time": {
     "after": "after",
@@ -38,7 +52,8 @@
   "info": {
     "news": "News",
     "notifications": "Notifications",
-    "nr-of-people-in-household": "Number of people in household"
+    "nr-of-people-in-household": "Number of people in household",
+    "info-about-storage": "Read more about emergency storages"
   },
   "reflect": {
     "reflection": "Reflect after crisis",
@@ -62,6 +77,139 @@
   "storage": {
     "food-and-drinks": "Food and Drinks",
     "medicine": "Medicine",
+    "storage": "Emergency storage",
     "your-storage": "Your emergency storage"
+  },
+  "household": {
+    "my-household": "My Household",
+    "no-members-found": "No household members found.",
+    "person": "person",
+    "people": "people",
+    "in-household": "in household",
+    "add-empty-user": "Add Empty User",
+    "name": "Name",
+    "enter-name": "Enter name",
+    "last-name": "Last Name",
+    "enter-last-name": "Enter last name",
+    "type": "Type",
+    "select-type": "Select type",
+    "adult": "Adult",
+    "child": "Child",
+    "pet": "Pet",
+    "description": "Description",
+    "additional-info": "Additional information",
+    "save": "Save",
+    "cancel": "Cancel",
+    "beredskapslager": "Emergency Storage",
+    "no-expiring-items": "No items are about to expire.",
+    "days-left": "days left",
+    "your-shelter-store": "Your Shelter Store"},
+  "sidebar": {
+    "title": "Themes",
+    "themes": {
+      "crisisSituations": {
+        "title": "Different types of crisis situations",
+        "pandemic": "Pandemic",
+        "war": "War",
+        "extremeWeather": {
+          "title": "Extreme Weather",
+          "flood": "Flood",
+          "hurricane": "Hurricane",
+          "drought": "Drought",
+          "heatwave": "Heatwave"
+        },
+        "forestFire": "Forest Fire",
+        "powerOutage": "Power Outage",
+        "waterShortage": "Water Shortage",
+        "cyberAttack": "Cyber Attack",
+        "majorAccident": "Major Accident"
+      },
+      "preparednessStorage": "Preparedness Storage",
+      "afterCrisis": "After a Crisis"
+    }
+  },
+  "themes": {
+    "crisisSituations": {
+      "pandemic": {
+        "title": "Pandemic Information",
+        "content": "During a pandemic, it is crucial to follow advice from health authorities (like [Helsenorge.no](https://www.helsenorge.no/) and FHI) to limit the spread of infection.\n\n**Key measures include:**\n* Good hand and cough hygiene.\n* Maintaining distance from others.\n* Staying home when sick.\n* Ensuring you have necessary medications and hygiene items readily available.\n\nBe prepared for services such as transportation and shops to be affected. Maintain a stock of food and drink as recommended in the self-preparedness guidelines. Follow official information and be critical of sources.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+      },
+      "war": {
+        "title": "War Information",
+        "content": "Although Norway is a safe country, it's important to be prepared for various scenarios, including acts of war. In such a situation:\n\n* **Follow authorities' advice closely.** Information will be provided through official channels like NRK P1.\n* **Seek information:** Stay updated through reliable sources.\n* **Find cover:** Familiarize yourself with the nearest public shelter (check [kart.dsb.no](https://kart.dsb.no)). If none is available, seek cover in basements or central rooms of buildings, away from windows as they can shatter.\n* **Have your emergency kit ready:** Ensure you have enough food, water, and other necessities for at least one week.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+      },
+      "extremeWeather": {
+        "flood": {
+          "title": "Flood Information",
+          "content": "In case of flood risk:\n\n* **Follow warnings:** Stay updated on weather forecasts from [MET Norway (Yr.no)](https://www.yr.no) and flood warnings from [NVE (varsom.no)](https://www.varsom.no).\n* **Secure property:** Fasten or move loose items outdoors. Move valuable possessions and hazardous materials (chemicals, fuel) up from basements and ground floors.\n* **Seal openings:** Seal vents and drains to prevent water intrusion.\n* **Consider evacuation:** Follow advice from authorities regarding potential evacuation.\n* **Avoid floodwaters:** Do not drive, walk, or swim in floodwaters – currents can be strong, and there may be hidden dangers.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) and [varsom.no](https://www.varsom.no)*"
+        },
+        "hurricane": {
+          "title": "Hurricane/Severe Storm Information",
+          "content": "When a hurricane or severe storm is forecast:\n\n* **Follow forecasts:** Stay updated via [MET Norway (Yr.no)](https://www.yr.no).\n* **Secure loose items:** Fasten garden furniture, trampolines, bins, and anything else that could be blown away.\n* **Stay indoors:** Avoid unnecessary travel. Close windows and doors securely.\n* **Prepare for power outages:** Have flashlights, a battery-powered radio, a charged power bank, and any alternative heat source ready. Ensure you have sufficient food and water.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+        },
+        "drought": {
+          "title": "Drought Information",
+          "content": "During prolonged drought periods:\n\n* **Conserve water:** Follow any water usage restrictions issued by your municipality. Limit watering lawns/gardens, washing cars, etc.\n* **Check for fire bans:** Drought increases fire risk. Be aware of and adhere to all fire restrictions.\n* **Monitor water sources:** If you rely on private wells, monitor water levels.\n\n*[Source: Relevant Municipal/NVE information]*"
+        },
+        "heatwave": {
+          "title": "Heatwave Information",
+          "content": "During extreme heat:\n\n* **Stay hydrated:** Drink plenty of water, even if you don't feel thirsty.\n* **Keep cool:** Stay indoors in cool places during the hottest parts of the day. Use fans or air conditioning if available. Take cool showers or baths.\n* **Check on vulnerable people:** Look out for elderly neighbors, infants, and those with chronic health conditions.\n* **Never leave children or pets in parked cars.**\n\n*[Source: Helsenorge.no]*"
+        }
+      },
+      "forestFire": {
+        "title": "Forest Fire Information",
+        "content": "To prevent and manage forest fire risks:\n\n* **Respect fire bans:** Check local regulations and the general fire ban period (April 15 - September 15). Be extremely cautious with any open flame.\n* **Check danger levels:** Stay updated on [skogbrannfare.met.no](https://skogbrannfare.met.no).\n* **Have an evacuation plan:** If you live in an area at risk, plan where you can go and what you need to take.\n* **Stay informed:** Follow information from local authorities and the fire department.\n* **Protect your home:** Close windows and vents to prevent smoke from entering. Remove flammable materials from near the house walls.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) and [DSB - Forest Fire](https://www.dsb.no/brannsikkerhet/brannberedskap/skogbrann/)*"
+      },
+      "powerOutage": {
+        "title": "Power Outage Information",
+        "content": "During a power outage:\n\n* **Use alternative light sources:** Flashlights, battery-powered lamps, or glow sticks are safer than candles.\n* **Keep refrigerator/freezer closed:** A full freezer will keep food frozen for about 48 hours if unopened.\n* **Stay warm:** Dress in layers. Close off unused rooms. Use safe alternative heating methods if available.\n* **Conserve phone battery:** Use your phone sparingly. Consider having a power bank charged and ready.\n* **Be careful with generators:** If using a generator, follow all safety instructions and never operate it indoors.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+      },
+      "waterShortage": {
+        "title": "Water Shortage Information",
+        "content": "In case of water shortage or contamination:\n\n* **Follow official advice:** Authorities may issue boil water advisories or other instructions.\n* **Use emergency water supplies:** Use stored water or other safe sources for drinking, cooking, and hygiene.\n* **Conserve water:** Minimize usage for non-essential purposes.\n* **Know how to purify water:** Be familiar with methods like boiling, using water purification tablets, or filtering.\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+      },
+      "cyberAttack": {
+        "title": "Cyber Attack Information",
+        "content": "To protect yourself from cyber threats:\n\n* **Use strong, unique passwords:** Create different passwords for important accounts.\n* **Enable two-factor authentication:** This adds an extra layer of security.\n* **Be cautious with emails and links:** Don't click on suspicious links or download attachments from unknown sources.\n* **Keep software updated:** Install updates promptly to patch security vulnerabilities.\n* **Back up important data:** Regularly back up important files to an external device or secure cloud service.\n\n*[Source: National Security Authority (NSM)](https://www.nsm.no/)*"
+      },
+      "majorAccident": {
+        "title": "Major Accident Information",
+        "content": "In case of a major accident (industrial, transportation, etc.):\n\n* **Follow evacuation orders:** If authorities instruct you to evacuate, do so immediately.\n* **Shelter in place if directed:** If told to stay indoors, close windows and doors, turn off ventilation systems, and move to an interior room if possible.\n* **Stay informed:** Listen to local radio or check official websites for instructions.\n* **Avoid the affected area:** Keep roads clear for emergency vehicles.\n\n*[Source: DSB](https://www.dsb.no/)*"
+      }
+    },
+    "preparednessStorage": {
+      "title": "Preparedness Storage",
+      "content": "The Norwegian Directorate for Civil Protection (DSB) recommends that all households be self-sufficient for at least three days. Your emergency preparedness storage should include:\n\n**Food and Drink:**\n* Nine liters of water per person\n* Non-perishable food that can be eaten without preparation or with minimal heating\n\n**Medications and Hygiene:**\n* Necessary prescription medications\n* Pain relievers and other basic medicines\n* First aid kit\n* Hygiene products\n* Wet wipes and disinfectant\n\n**Heat and Light Sources:**\n* Flashlights with extra batteries\n* Candles, matches/lighter\n* Warm clothes, blankets, sleeping bags\n* Alternative heating source (if possible)\n\n**Other Important Items:**\n* Battery-powered or hand-crank radio\n* Extra batteries/power banks for mobile phones\n* Cash in small denominations\n* Fuel in the car\n* Paper copies of important documents\n* Basic tools\n\n*[Source: DSB - Self-Preparedness](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+    },
+    "afterCrisis": {
+      "title": "After a Crisis",
+      "content": "After experiencing a crisis:\n\n**Take care of immediate needs:**\n* Ensure your safety and the safety of those around you\n* Seek medical attention if needed\n* Find safe shelter if your home is damaged\n* Contact family members to let them know you're safe\n\n**Begin recovery:**\n* Document damage (take photos) for insurance purposes\n* Contact your insurance company\n* Apply for disaster assistance if available\n* Clean and repair your home when it's safe to do so\n\n**Mental health is important:**\n* It's normal to experience stress, anxiety, or other emotional reactions\n* Talk about your experiences with family, friends, or professionals\n* Take care of your physical health (sleep, nutrition, exercise)\n* Seek professional help if needed\n\n**Learn from the experience:**\n* Evaluate your emergency plan and supplies\n* Make improvements based on what you learned\n* Help others in your community\n\n*[Source: Helsenorge.no and DSB](https://www.dsb.no/)*"
+    }
+  },
+  "infoPage": {
+    "aboutThisTheme": "About this theme",
+    "themeDescription": "Essential information to help you prepare and respond.",
+    "readMore": "Read more",
+    "emergencyContacts": "Emergency contacts",
+    "readMoreTitle": "Additional Resources",
+    "readMoreDescription": "Find more detailed information about this topic from official sources.",
+    "officialWebsites": "Official Websites",
+    "additionalResources": "For more information, visit these official resources:",
+    "close": "Close",
+    "emergencyContactsTitle": "Emergency Contacts",
+    "emergencyContactsDescription": "Important contacts for emergency situations.",
+    "generalEmergencyContacts": {
+      "title": "General Emergency Numbers",
+      "police": "Police: 112",
+      "ambulance": "Ambulance: 113",
+      "fire": "Fire Department: 110",
+      "civilDefense": "Civil Defense: 51 51 51 51"
+    },
+    "relatedThemes": "Related Themes",
+    "selectThemePrompt": "Select a theme to learn more",
+    "browseThemesDescription": "Browse through our information resources to learn about different crisis situations and how to prepare.",
+    "preparednessStorageBrief": "Learn what supplies you should have ready for emergencies.",
+    "afterCrisisBrief": "Find guidance on recovery and returning to normalcy after a crisis.",
+    "learnMoreTopic": "Click to learn more about this topic."
   }
 }
