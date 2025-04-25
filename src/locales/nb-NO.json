@@ -26,11 +26,13 @@
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
     "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det.",
+    "login-failed": "Innlogging mislyktes. Vennligst sjekk legitimasjonen din.",
     "passwords-do-not-match": "Passordene stemmer ikke overens.",
     "registration-failed": "Registrering mislyktes. Vennligst prøv igjen."  
   },
   "success": {
-    "registration-successful": "Registrering vellykket! Du kan nå logge inn."
+    "registration-successful": "Registrering vellykket! Du kan nå logge inn.",
+    "login-successful": "Innlogging vellykket!"
   },
   "crisis": {
     "crisis-status": "Krisestatus",
