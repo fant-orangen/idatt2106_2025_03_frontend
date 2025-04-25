@@ -1,12 +1,77 @@
 {
-  "login": "Login",
-  "signup": "Sign Up",
-  "home": "Home",
-  "language": "Language",
-  "crisis-status": "Crisis Status",
-  "no-crisis": "No ongoing crisis",
-  "more-crisis-info": "Read more about your current crisis situation",
-  "before": "before",
-  "during": "during",
-  "after": "after"
+  "actions": {
+    "to-reflect": "to reflect",
+    "read-more": "Read more",
+    "add-empty-account-to-household": "Add an empty user to the household",
+    "add": "Add",
+    "switch-household": "Switch household"
+  },
+  "login": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "forgot-password": "Forgot Password?",
+    "re-enter": "Re-enter",
+    "consent": "I agree to",
+    "privacy-policy": "the privacy policy.",
+    "email-notifs-warning": "letting krisefikser.no send me notifications via email.",
+    "submit": "Submit",
+    "first-name": "First Name",
+    "last-name": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "password": "Password",
+    "confirm-password": "Confirm Password"
+  },
+  "errors": {
+    "wrong-username-or-password": "Incorrect username or password",
+    "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
+    "passwords-do-not-match": "Passwords do not match.",
+    "registration-failed": "Registration failed. Please try again."
+  },
+  "success": {
+    "registration-successful": "Registration successful! You can now log in."
+  },
+  "crisis": {
+    "crisis-status": "Crisis Status",
+    "more-crisis-info": "Read more about your current crisis situation",
+    "no-crisis": "No ongoing crisis"
+  },
+  "navigation": {
+    "home": "Home",
+    "language": "Language"
+  },
+  "time": {
+    "after": "after",
+    "before": "before",
+    "during": "during"
+  },
+  "info": {
+    "news": "News",
+    "notifications": "Notifications",
+    "nr-of-people-in-household": "Number of people in household"
+  },
+  "reflect": {
+    "reflection": "Reflect after crisis",
+    "need-help-q": "Do you need help?",
+    "what-2-do-after-crisis": "What should you do after a crisis?"
+  },
+  "map": {
+    "defibrillator": "Defibrillator",
+    "medical-help": "Medical Assistance",
+    "fire-extinguishing": "Fire Extinguishing",
+    "shelter": "Shelter",
+    "address": "Address",
+    "opening-hours": "Opening Hours",
+    "directions": "Directions"
+  },
+  "time-units": {
+    "month": "1 month | {count} months",
+    "day": "1 day | {count} days",
+    "hour": "1 hour | {count} hours"
+  },
+  "storage": {
+    "food-and-drinks": "Food and Drinks",
+    "medicine": "Medicine",
+    "your-storage": "Your emergency storage"
+  }
 }

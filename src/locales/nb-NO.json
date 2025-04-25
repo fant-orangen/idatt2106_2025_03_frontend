@@ -1,12 +1,78 @@
 {
-  "login": "Logg inn",
-  "signup": "Registrer",
-  "home": "Hjem",
-  "language": "Språk",
-  "crisis-status": "Krisestatus",
-  "no-crisis": "Ingen pågående krise",
-  "more-crisis-info": "Les mer om din nåværende krisesituasjon",
-  "before": "før",
-  "during": "under",
-  "after": "etter"
+  "actions": {
+    "to-reflect": "for å reflektere",
+    "read-more": "Les mer",
+    "add-empty-account-to-household": "Legg til en tom bruker i husholdningen",
+    "add": "Legg til",
+    "switch-household": "Bytt husholdning"
+  },
+  "login": {
+    "login": "Logg inn",
+    "signup": "Registrer",
+    "forgot-password": "Glemt passord?",
+    "re-enter": "Skriv inn på nytt",
+    "consent": "Jeg godtar",
+    "privacy-policy": "personvernerklæringen.",
+    "email-notifs-warning": "at krisefikser.no kan sende meg varsler via e-post.",
+    "submit": "Send inn",
+    "name": "Navn",
+    "first-name": "Fornavn",
+    "last-name": "Etternavn",
+    "email": "E-post",
+    "phone": "Telefonummer",
+    "password": "Passord",
+    "confirm-password": "Bekreft passord"
+  },
+  "errors": {
+    "wrong-username-or-password": "Feil brukernavn eller passord",
+    "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det.",
+    "passwords-do-not-match": "Passordene stemmer ikke overens.",
+    "registration-failed": "Registrering mislyktes. Vennligst prøv igjen."  
+  },
+  "success": {
+    "registration-successful": "Registrering vellykket! Du kan nå logge inn."
+  },
+  "crisis": {
+    "crisis-status": "Krisestatus",
+    "more-crisis-info": "Les mer om din nåværende krisesituasjon",
+    "no-crisis": "Ingen pågående krise"
+  },
+  "navigation": {
+    "home": "Hjem",
+    "language": "Språk"
+  },
+  "time": {
+    "after": "etter",
+    "before": "før",
+    "during": "under"
+  },
+  "info": {
+    "news": "Nyheter",
+    "notifications": "Varslinger",
+    "nr-of-people-in-household": "Antall personer i husholdningen"
+  },
+  "reflect": {
+    "reflection": "Reflekter etter krisen",
+    "need-help-q": "Trenger du hjelp?",
+    "what-2-do-after-crisis": "Hva bør du gjøre etter en krise?"
+  },
+  "map": {
+    "defibrillator": "Hjertestarter",
+    "medical-help": "Legehjelp",
+    "fire-extinguishing": "Brannslukking",
+    "shelter": "Tilfluktsrom",
+    "address": "Adresse",
+    "opening-hours": "Åpningstider",
+    "directions": "Veibeskrivelse"
+  },
+  "time-units": {
+    "month": "1 måned | {count} måneder",
+    "day": "1 dag | {count} dager",
+    "hour": "1 time | {count} timer"
+  },
+  "storage": {
+    "food-and-drinks": "Mat og drikke",
+    "medicine": "Medisin",
+    "your-storage": "Ditt beredskapslager"
+  }
 }
