@@ -19,7 +19,7 @@ import { Lock, User } from 'lucide-vue-next'
   <h1 class="text-4xl font-bold text-foreground w-full max-w-4xl px-4 mb-6 mt-10 ml-20">
     Settings
   </h1>
-  <div class="page-content flex flex-col items-center mt-10 w-full">
+  <div class="page-content flex flex-col items-center mt-10 mb-20 w-full">
     <!-- Tabs -->
     <Tabs default-value="account" class="w-full max-w-4xl">
       <!-- Tabs List -->
