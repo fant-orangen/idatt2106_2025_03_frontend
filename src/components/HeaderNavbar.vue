@@ -3,8 +3,28 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { CreditCard, Keyboard, Settings, User } from 'lucide-vue-next'
+
+import { Button } from '@/components/ui/button'
 
 const { locale } = useI18n()
+const router = useRouter()
 
 let prevScrollpos: number = window.pageYOffset
 const showDropdown = ref(false)
@@ -42,6 +62,10 @@ function selectLanguage(language: { label: string; code: string }): void {
   selectedLanguage.value = language.label
   showDropdown.value = false
   locale.value = language.code
+}
+
+function goToPage(route: string) {
+  router.push(route)
 }
 </script>
 
@@ -88,9 +112,28 @@ function selectLanguage(language: { label: string; code: string }): void {
       >
         {{ $t('login.signup') }}</RouterLink
       >
-      <RouterLink to="/" class="no-border">
-        <font-awesome-icon :icon="['fas', 'user']" size="lg" />
-      </RouterLink>
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="ghost" class="cursor-pointer p-0">
+            <font-awesome-icon :icon="['fas', 'user']" size="lg" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <!-- TODO: Include authentication for these pages -->
+              <User class="mr-2 h-4 w-4" />
+              <span @click="goToPage('/profile')">Profile (WIP)</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/settings')">
+              <Settings class="mr-2 h-4 w-4" />
+              <span>Settings (WIP)</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <RouterLink to="/" class="no-border">
         <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
       </RouterLink>

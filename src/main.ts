@@ -5,8 +5,10 @@ import { createPinia } from 'pinia'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+import { faUser as faUserRegular } from '@fortawesome/free-regular-svg-icons'
+
 import {
-  faUser,
+  faUser as faUserSolid,
   faGlobe,
   faSignIn,
   faBell,
@@ -14,7 +16,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 /* add icons to the library */
-library.add(faUser, faGlobe, faSignIn, faBell, faTriangleExclamation)
+library.add(faUserSolid, faGlobe, faSignIn, faBell, faTriangleExclamation)
+library.add(faUserRegular)
 
 import App from './App.vue'
 import router from './router'
