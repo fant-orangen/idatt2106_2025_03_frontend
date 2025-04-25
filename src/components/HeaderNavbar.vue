@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
+import { Globe, User, Bell, Settings } from 'lucide-vue-next'
 
 import {
   DropdownMenu,
@@ -14,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Settings, User } from 'lucide-vue-next'
 
 import { Button } from '@/components/ui/button'
 
@@ -76,7 +76,7 @@ function goToPage(route: string) {
           class="dropbtn flex items-center gap-2 text-secondary-foreground hover:text-primary"
           @click="toggleDropdown"
         >
-          <font-awesome-icon :icon="['fas', 'globe']" size="lg" />
+          <Globe class="h-5 w-5" />
           {{ selectedLanguage }}
         </button>
         <div
@@ -109,8 +109,8 @@ function goToPage(route: string) {
       >
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <Button variant="ghost" class="cursor-pointer p-0">
-            <font-awesome-icon :icon="['fas', 'user']" size="lg" />
+          <Button variant="outline" size="icon" class="cursor-pointer p-0">
+            <User class="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
@@ -118,7 +118,6 @@ function goToPage(route: string) {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
-              <!-- TODO: Include authentication for these pages -->
               <User class="mr-2 h-4 w-4" />
               <span @click="goToPage('/profile')">Profile (WIP)</span>
             </DropdownMenuItem>
@@ -130,7 +129,7 @@ function goToPage(route: string) {
         </DropdownMenuContent>
       </DropdownMenu>
       <RouterLink to="/" class="no-border">
-        <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
+        <Bell class="h-5 w-5" />
       </RouterLink>
       <button
         variant="outline"
