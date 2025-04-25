@@ -8,7 +8,6 @@ import { useI18n } from 'vue-i18n';
 // Initialize i18n for use in script section
 const { t } = useI18n();
 
-// --- Leaflet Icon Fix ---
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
@@ -22,11 +21,10 @@ onMounted(() => {
     shadowUrl: shadowUrl,
   });
 });
-// --- End Leaflet Icon Fix ---
 
 const props = withDefaults(
   defineProps<{
-    pois?: PoiData[]; // Changed from markers to pois
+    pois?: PoiData[];
     centerLat?: number;
     centerLon?: number;
     initialZoom?: number;
