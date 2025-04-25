@@ -17,7 +17,16 @@
             class="w-full mb-2 justify-start"
             @click="selectMember(member)"
           >
-            {{ member.firstName }} {{ member.lastName }}
+            <div class="flex items-center gap-2 w-full">
+              <!-- Icon based on member type -->
+              <span class="flex-shrink-0">
+                <UserIcon v-if="member.type === 'adult'" class="h-4 w-4" />
+                <BabyIcon v-else-if="member.type === 'child'" class="h-4 w-4" />
+                <PawPrintIcon v-else-if="member.type === 'pet'" class="h-4 w-4" />
+              </span>
+              <!-- Member name -->
+              <span>{{ member.firstName }} {{ member.lastName }}</span>
+            </div>
           </Button>
         </div>
       </div>
@@ -47,31 +56,28 @@ import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AddEmptyUser from './AddEmptyUser.vue';
-
-// Initialize i18n
+import { BabyIcon, PawPrintIcon, UserIcon } from 'lucide-vue-next';
 useI18n();
 
-// Types
 interface HouseholdMember {
   id: number;
   firstName: string;
   lastName: string;
+  type: string;
 }
 
-// Props and emits
 const emit = defineEmits(['memberSelected']);
 const showAddUser = ref(false);
 
-// State
 const householdMembers = ref<HouseholdMember[]>([]);
 
 // Mock data for demonstration (replace with actual API calls)
 onMounted(() => {
   // Simulate fetching household members from backend
   householdMembers.value = [
-    { id: 1, firstName: 'John', lastName: 'Doe' },
-    { id: 2, firstName: 'Jane', lastName: 'Doe' },
-    { id: 3, firstName: 'Alice', lastName: 'Smith' },
+    { id: 1, firstName: 'John', lastName: 'Doe', type: 'adult' },
+    { id: 2, firstName: 'Jane', lastName: 'Doe', type: 'child'  },
+    { id: 3, firstName: 'Alice', lastName: 'Smith', type: 'pet' },
   ];
 });
 
