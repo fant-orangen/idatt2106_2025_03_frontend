@@ -11,15 +11,10 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { CreditCard, Keyboard, Settings, User } from 'lucide-vue-next'
+import { Settings, User } from 'lucide-vue-next'
 
 import { Button } from '@/components/ui/button'
 
