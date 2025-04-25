@@ -11,39 +11,7 @@ import { fetchToken } from '@/services/api/AuthService.ts';
 import { register } from '@/services/api/AuthService.ts';
 import { computed, ref } from 'vue';
 import api from '@/services/api/AxiosInstance.ts';
-
-
-/**
- * Interface representing the data required for user registration.
- *
- * Maps to the backend UserCreateDto structure expected by the registration endpoint.
- *
- * @interface RegistrationData
- */
-interface RegistrationData {
-  email: string;
-  password: string;
-  displayName: string; // Already here for registration
-  firstName: string;
-  lastName: string;
-  phone: string;
-}
-
-
-/**
- * Interface representing the user's profile information.
- *
- * Contains personal information fields that can be displayed and edited.
- *
- * @interface UserProfile
- */
-interface UserProfile {
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  displayName: string; // <-- Add displayName here
-}
+import type { RegistrationData, UserProfile } from '@/models/User.ts'
 
 /**
  * Defines and exports the user store for global user state management.
@@ -57,13 +25,11 @@ export const useUserStore = defineStore("user", () => {
   const role = ref<string | null>(localStorage.getItem('role'));
   const userId = ref<string | null>(localStorage.getItem('userId'));
 
-  // Initialize profile state including displayName
   const profile = ref<UserProfile>({ // Use the UserProfile interface
     email: '',
     firstName: '',
     lastName: '',
     phone: '',
-    displayName: '' // <-- Initialize displayName
   });
 
 
@@ -162,15 +128,13 @@ export const useUserStore = defineStore("user", () => {
    * @returns {Promise<void>} Promise that resolves upon successful registration and login
    * @throws {Error} If registration or subsequent login fails
    */
-  async function registerUser(userData: RegistrationData) { // Use the defined interface
+  async function registerUser(userData: RegistrationData) {
     try {
-      // Call the register service with the correctly structured data
       await register(userData);
-      // After successful registration, log in using email and password
       await verifyLogin(userData.email, userData.password);
     } catch (error) {
       console.error("Registration or subsequent login failed:", error);
-      throw error; // Re-throw the error to be handled by the component
+      throw error;
     }
   }
 
@@ -186,18 +150,17 @@ export const useUserStore = defineStore("user", () => {
   async function fetchProfile() {
     try {
       const response = await api.get('/users/profile');
-      // Map backend response to the profile ref structure, including displayName
+      // Map backend response to the profile ref structure
       profile.value = {
         email: response.data.email || '',
         firstName: response.data.firstName || '',
         lastName: response.data.lastName || '',
-        phone: response.data.phone || '',
-        displayName: response.data.displayName || '' // <-- Map displayName
+        phone: response.data.phone || ''
       };
     } catch (error) {
       console.error("Failed to fetch profile:", error);
       // Reset profile on error
-      profile.value = { email: '', firstName: '', lastName: '', phone: '', displayName: '' };
+      profile.value = { email: '', firstName: '', lastName: '', phone: ''};
       throw error;
     }
   }
@@ -209,7 +172,7 @@ export const useUserStore = defineStore("user", () => {
    *
    * @param updatedProfile - An object matching UserProfile interface, plus the required password.
    */
-    // The payload for update must match UserCreateDto, so it needs password and displayName
+    // The payload for update must match UserCreateDto
   interface UpdatePayload extends UserProfile {
     password?: string; // New password (optional)
     currentPassword?: string; // Current password for verification (required by backend endpoint logic)
@@ -233,7 +196,6 @@ export const useUserStore = defineStore("user", () => {
         firstName: updatedProfile.firstName,
         lastName: updatedProfile.lastName,
         phone: updatedProfile.phone,
-        displayName: updatedProfile.displayName, // <-- Include displayName
         currentPassword: updatedProfile.currentPassword // <-- Include currentPassword
       };
 
@@ -252,7 +214,6 @@ export const useUserStore = defineStore("user", () => {
         firstName: response.data.firstName || '',
         lastName: response.data.lastName || '',
         phone: response.data.phone || '',
-        displayName: response.data.displayName || '' // <-- Update displayName
       };
     } catch (error) {
       console.error("Failed to update profile:", error);
@@ -272,7 +233,7 @@ export const useUserStore = defineStore("user", () => {
     username.value = null;
     role.value = null;
     userId.value = null; // Clear userId
-    profile.value = { email: '', firstName: '', lastName: '', phone: '', displayName: '' }; // Reset profile including displayName
+    profile.value = { email: '', firstName: '', lastName: '', phone: ''};
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('role');
@@ -302,7 +263,7 @@ export const useUserStore = defineStore("user", () => {
   return {
     token,
     username,
-    profile, // profile now includes displayName
+    profile,
     role,
     userId,
     login,
