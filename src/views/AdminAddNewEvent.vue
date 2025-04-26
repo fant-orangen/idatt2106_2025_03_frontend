@@ -124,10 +124,9 @@
 						</SelectTrigger>
 						<SelectContent>
 							<SelectGroup>
-								<SelectLabel>Krisetype</SelectLabel>
-								<SelectItem value="Lav">Lav</SelectItem>
-								<SelectItem value="Middels">Middels</SelectItem>
-								<SelectItem value="Høy">Høy</SelectItem>
+								<SelectItem value="Lav">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
+								<SelectItem value="Middels">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
+								<SelectItem value="Høy">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
 							</SelectGroup>
 						</SelectContent>
 					</Select>
