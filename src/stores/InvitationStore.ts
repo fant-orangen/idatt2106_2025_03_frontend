@@ -45,54 +45,6 @@ export const useInvitationStore = defineStore("invitation", () => {
   }
 
   /**
-   * Accepts an invitation.
-   *
-   * @param {number} invitationId - The ID of the invitation to accept
-   * @returns {Promise<void>} Promise that resolves when the invitation is accepted
-   */
-  async function acceptInvitation(invitationId: number): Promise<void> {
-    isLoading.value = true;
-    error.value = null;
-
-    try {
-      await respondToInvitation(invitationId, InvitationStatus.ACCEPTED);
-      // Remove the invitation from the pending list
-      pendingInvitations.value = pendingInvitations.value.filter(
-        invitation => invitation.id !== invitationId
-      );
-    } catch (err) {
-      console.error('Error accepting invitation:', err);
-      error.value = 'Failed to accept invitation';
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /**
-   * Declines an invitation.
-   *
-   * @param {number} invitationId - The ID of the invitation to decline
-   * @returns {Promise<void>} Promise that resolves when the invitation is declined
-   */
-  async function declineInvitation(invitationId: number): Promise<void> {
-    isLoading.value = true;
-    error.value = null;
-
-    try {
-      await respondToInvitation(invitationId, InvitationStatus.DECLINED);
-      // Remove the invitation from the pending list
-      pendingInvitations.value = pendingInvitations.value.filter(
-        invitation => invitation.id !== invitationId
-      );
-    } catch (err) {
-      console.error('Error declining invitation:', err);
-      error.value = 'Failed to decline invitation';
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  /**
    * Computed property that returns true if there are pending invitations.
    */
   const hasPendingInvitations = computed(() => pendingInvitations.value.length > 0);
@@ -103,7 +55,5 @@ export const useInvitationStore = defineStore("invitation", () => {
     error,
     hasPendingInvitations,
     fetchInvitations,
-    acceptInvitation,
-    declineInvitation
   };
 });
