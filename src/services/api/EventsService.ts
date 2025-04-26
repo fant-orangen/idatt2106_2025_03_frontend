@@ -17,7 +17,7 @@ import api from '@/services/api/AxiosInstance';
 * @throws {Error} When the event creation fails or network issues occur.
 */
 export async function createEvent(eventData: any) {
-  return await api.post('/events', eventData, { // change the url when the end point is created
+  return await api.post('/crisis-events', eventData, {
     headers: {
       'Content-Type': 'application/json'
     }
