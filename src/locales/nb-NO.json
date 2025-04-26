@@ -231,6 +231,8 @@
     "radius": "Sett inn radiusen til hendelsen din i meter. Omtrent hvor stort område vil hendelsen påvirke?",
     "priority": "Prioritetsnivået er viktig, og vil vises som lav (grønn), middels (oransje) og høy (rød) for brukere på kartet.",
     "description": "For eksempel: Hendelsen skjedde på (dato og sted) ... og vil mest sannsynlig vare i (tid)... Det kan bli mangel på (ressurs)...",
+    "time": "Tidspunkt for når hendelsen først inntraff.",
+    "date": "Dato for når hendelsen først inntraff.",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
       "latitude": "Breddegraden må være mellom -90 og 90.",
@@ -249,7 +251,9 @@
       "radius":"Radius",
       "priority": "Krisenivå",
       "description": "Informasjon",
-      "submit":"Lagre"
+      "submit":"Lagre",
+      "time": "Tidspunkt",
+      "date": "Dato"
     }
   }
 }

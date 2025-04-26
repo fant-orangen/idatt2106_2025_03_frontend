@@ -230,6 +230,8 @@
     "radius": "Insert the radius of your event in meters. Approximately how large is the area affected by the event?",
     "priority": "The priority level is important, and will show up as low (green), medium (orange), and high (red) to users on the map.",
     "description": "For example: The event occurred on (date and location) ... and will most likely last for (time)... There might be a shortage of (resource)...",
+    "time": "Time when the event first occurred.",
+    "date": "Date when the event first occurred.",
     "errors": {
       "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
       "latitude": "The latitude must be between -90 and 90.",
@@ -248,7 +250,9 @@
         "radius":"Radius",
         "priority": "Crisis level",
         "description": "Information",
-        "submit":"Submit"
+        "submit":"Submit",
+        "time": "Time",
+        "date": "Date"
       }
     }
 }

@@ -37,7 +37,7 @@
 		<br>
 
 		<!--Latitude field-->
-		<div class="position">
+		<div class="container">
 			<FormField v-slot="{ field, meta, errorMessage }" name="latitude">
 			<FormItem>
 				<FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
@@ -85,6 +85,34 @@
 			</FormItem>
 		</FormField><br>
 
+		
+		<div class="container">
+			<!--Choose time of event first occurring-->
+			<FormField v-slot="{ field, meta, errorMessage }" name="time">
+				<FormItem>
+					<FormLabel>{{$t('add-event-info.titles.time')}}</FormLabel>
+					<FormControl>
+						<Input type="time" v-bind="field" />
+					</FormControl>
+					<FormDescription>{{ $t('add-event-info.time') }}</FormDescription>
+					<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+				</FormItem>
+			</FormField>
+
+			<!--Choose date of event first occurring-->
+			<FormField v-slot="{ field, meta, errorMessage }" name="date">
+			<FormItem>
+				<FormLabel>{{$t('add-event-info.titles.date')}}</FormLabel>
+				<FormControl>
+					<Input type="date" v-bind="field" />
+				</FormControl>
+				<FormDescription>{{ $t('add-event-info.date') }}</FormDescription>
+				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+			</FormItem>
+		</FormField>
+		</div>
+		<br>
+
 		<!--Choosing a priority-->
 		<FormField v-slot="{ field, meta, errorMessage }" name="priority">
 			<FormItem>
@@ -92,7 +120,7 @@
 				<FormControl>
 					<Select v-bind="field">
 						<SelectTrigger style="cursor: pointer;">
-							<SelectValue placeholder="Select a priority"/>
+							<SelectValue placeholder="Velg et krisenivå"/>
 						</SelectTrigger>
 						<SelectContent>
 							<SelectGroup>
@@ -107,7 +135,9 @@
 				<FormDescription>{{ $t('add-event-info.priority') }}</FormDescription>
 				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
 			</FormItem>
-			</FormField><br>
+		</FormField>
+		
+		<br>
 
 			<!--Description of event-->
 			<FormField v-slot="{ field, meta, errorMessage }" name="description">
@@ -144,6 +174,7 @@
 </template>
 
 <script setup lang="ts">
+	import { createEvent } from '@/services/api/EventsService'
 	import { Button } from '@/components/ui/button'
 	import { useForm } from 'vee-validate'
 	import { toTypedSchema } from '@vee-validate/zod'
@@ -165,16 +196,16 @@
 		BreadcrumbList,
 		BreadcrumbPage,
 		BreadcrumbSeparator, 
-} from '@/components/ui/breadcrumb'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+	} from '@/components/ui/breadcrumb'
+	import {
+		Select,
+		SelectContent,
+		SelectGroup,
+		SelectItem,
+		SelectLabel,
+		SelectTrigger,
+		SelectValue,
+	} from '@/components/ui/select'
 
 const { t } = useI18n();
 
@@ -199,12 +230,12 @@ const formSchema = toTypedSchema(
   })
 	.refine((data) => {
 		/*If latitude and longitude is missing, the address field need to be set */
-		if ((data.latitude === undefined || isNaN(data.latitude)) || (data.longitude === undefined || isNAN(data.longitude))) {
+		if ((data.latitude === undefined || isNaN(data.latitude)) || (data.longitude === undefined || isNaN(data.longitude))) {
 			return !!data.address && data.address.length > 0;
 		}
 		return true;
 	}, {
-		message : t('add-event-info.errors.posistion-missing'),
+		message : t('add-event-info.errors.position-missing'),
 		path: ['address'], 
 	})
 );
@@ -222,8 +253,17 @@ const formSchema = toTypedSchema(
 		}
 	});
 
-	const onSubmit = form.handleSubmit((values) => {
-		console.log('Form submitted!', values)
+	const onSubmit = form.handleSubmit(async (values) => {
+		try {
+			const response = await createEvent(values);
+
+			console.log('Event created successfully!', response.data);
+
+			router.push('/admin-panel'); //redirect user to the panel 
+		} catch (error) {
+			console.error('An error occured while submitting the event: ', error);
+		}
+		
 	});
 
 </script>
@@ -244,17 +284,17 @@ h1 {
 }
 
 .info {
-	max-width:400px;
+	max-width:450px;
 }
-.position {
+
+.container {
 	display: flex;
 	flex-flow: row nowrap;
 	gap: 10px;
-	justify-content: center;
 }
 
 Input {	
-	max-width: 400px;
+	width: 100%;
 }
 
 .box { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder, 
