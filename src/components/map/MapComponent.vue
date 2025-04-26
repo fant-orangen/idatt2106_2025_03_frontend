@@ -85,7 +85,7 @@ onMounted(() => {
   console.log("Map component mounted");
 
   // Fix icon paths globally
-  // @ts-ignore
+  // @ts-expect-error
   delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
 
@@ -104,7 +104,7 @@ onMounted(() => {
       attribution: '© OSM © CartoDB',
       noWrap: false // Allow the map to be repeated
     }
-  ).addTo(map.value);
+  ).addTo(map.value as L.Map);
 
   // Create marker cluster
   markerClusterGroup.value = L.markerClusterGroup({
@@ -112,7 +112,7 @@ onMounted(() => {
     disableClusteringAtZoom: 18,
     maxClusterRadius: 50,
     removeOutsideVisibleBounds: false // Keep markers in memory
-  }).addTo(map.value);
+  }).addTo(map.value as L.Map);
 
   // Set up event listeners for debugging and refresh
   map.value.on('zoomend moveend', () => {
@@ -278,7 +278,7 @@ watch(
 
     // --- Force Cluster Group Recreation ---
 
-    // 1. Remove existing cluster group if it exists on the map
+    // 1. Remove the existing cluster group if it exists on the map
     if (markerClusterGroup.value && map.value.hasLayer(markerClusterGroup.value)) {
       console.log("Removing existing marker cluster group from map.");
       map.value.removeLayer(markerClusterGroup.value);
@@ -318,7 +318,7 @@ watch(
           return;
         }
 
-        // Create marker with improved options for better zoom behavior
+        // Create a marker with improved options for better zoom behavior
         const marker = L.marker([lat, lon], {
           riseOnHover: true,
           bubblingMouseEvents: false, // Improves event handling
@@ -333,9 +333,9 @@ watch(
         });
 
         // Store reference to the coordinates on the marker for easier access
-        // @ts-ignore
+        // @ts-expect-error
         marker.poiLat = lat;
-        // @ts-ignore
+        // @ts-expect-error
         marker.poiLng = lon;
 
         markers.push(marker);
@@ -415,7 +415,7 @@ watch(
         icon: userIcon,
         zIndexOffset: 1000 // Ensure user marker stays on top
       })
-      .addTo(map.value)
+      .addTo(map.value as L.Map)
       .bindPopup(`<strong>${translatedStrings.yourLocation}</strong>`)
       .bindTooltip(translatedStrings.yourLocation, {
         permanent: false,

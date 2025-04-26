@@ -199,7 +199,7 @@ async function getUserLocation() {
   }
 }
 
-// Reset filters - FIXED VERSION
+// Reset filters
 function resetFilters() {
   console.log("Resetting filters");
   selectedPoiType.value = null;
@@ -215,7 +215,7 @@ function resetFilters() {
   }, 10);
 }
 
-// Apply filtering - FIXED VERSION
+// Apply filtering
 async function applyFilters() {
   console.log("Applying filters");
   poiError.value = null;
@@ -274,13 +274,13 @@ async function applyFilters() {
   } catch (error) {
     console.error('Error applying filters:', error);
     poiError.value = t('map.filter-error');
-    pointsOfInterest.value = []; // Clear on error
+    pointsOfInterest.value = [];
   } finally {
     isLoadingPois.value = false;
   }
 }
 
-// Find nearest shelter - FIXED VERSION
+// Find nearest shelter
 async function findNearestShelter() {
   console.log("Finding nearest shelter");
   if (!userLocation.value) {
@@ -331,7 +331,7 @@ async function findNearestShelter() {
   }
 }
 
-// Find nearest POI of selected type - FIXED VERSION
+// Find nearest POI of selected type
 async function findNearestPoi() {
   console.log("Finding nearest POI");
   if (!userLocation.value || !selectedPoiType.value) return;
@@ -373,7 +373,7 @@ watch(distanceInMeters, (val) => {
   else if (val > 5000000) distanceInMeters.value = 5000000;
 });
 
-// Load all POIs on mount - FIXED VERSION
+// Load all POIs on mount
 onMounted(async () => {
   console.log("Map overview component mounted");
   isLoadingPois.value = true;
