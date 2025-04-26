@@ -5,6 +5,7 @@ import { RouterLink } from 'vue-router'
 interface Notification {
   id: string | number; // Adjust the type based on your data
   message: string;
+  time: string;
 }
 
 defineProps<{
@@ -16,13 +17,15 @@ defineProps<{
   <div class="w-64">
     <h2 class="text-lg font-bold mb-2">Notifications</h2>
     <div v-if="notifications.length > 0">
-      <ul class="notification-list">
+      <ul class="timeline">
         <li
           v-for="notification in notifications"
           :key="notification.id"
-          class="notification-item text-sm py-2"
         >
-          {{ notification.message }}
+          <div class="dot"></div>
+          <div class="timeline-content">
+            <strong>{{ notification.time }}</strong> – {{ notification.message }}
+          </div>
         </li>
       </ul>
     </div>
@@ -30,50 +33,66 @@ defineProps<{
       <p class="text-sm text-gray-700">No new notifications.</p>
     </div>
     <RouterLink
-    to="/notifications"
-    class="text-primary hover:underline text-sm font-medium mt-4 block">
-    {{ $t('notifications.all-notifications') }}
+      to="/notifications"
+      class="text-primary hover:underline text-sm font-medium mt-4 block"
+    >
+      {{ $t('notifications.all-notifications') }}
     </RouterLink>
   </div>
 </template>
 
 <style scoped>
-/* Notification list styling */
-.notification-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* Centered container styling */
+.notification-page {
+  max-width: 768px; /* Same as NewsView */
+  margin: 0 auto; /* Center horizontally */
+  padding: 1.5rem;
+  background-color: var(--background-color, #f9f9f9);
+  color: var(--text-color, #333);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.notification-item {
+/* Breadcrumb styling */
+.breadcrumb {
+  font-size: 0.875rem;
+  color: var(--color-muted-foreground);
+  margin-bottom: 1rem;
+}
+
+.breadcrumb .current {
+  color: var(--color-foreground);
+  font-weight: 500;
+}
+
+/* Timeline styling */
+.timeline {
   position: relative;
-  padding-left: 1.5rem; /* Space for the dot */
-  margin-bottom: 1rem; /* Space between items */
+  margin: 1.5rem 0;
+  padding-left: 2rem;
+  list-style: none;
+  border-left: 2px solid var(--color-foreground);
 }
 
-.notification-item::before {
-  content: '';
+.timeline li {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.dot {
   position: absolute;
-  left: 0.5rem; /* Position the dot */
-  top: 0.8rem; /* Center the dot vertically */
-  bottom: 0.8rem; /* Align with the top */
-  width: 0.5rem;
-  height: 0.5rem;
-  background-color: var(--primary-color, #007bff); /* Dot color */
-  border-radius: 50%; /* Make it circular */
+  left: -2.4rem;
+  top: 0.45rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: var(--color-foreground);
+  border-radius: 50%;
+  z-index: 1;
 }
 
-.notification-item::after {
-  content: '';
-  position: absolute;
-  left: 0.6rem; /* Align with the dot */
-  top: 1.6rem; /* Start below the dot */
-  width: 2px;
-  height: calc(100% - 0.7rem); /* Adjust height dynamically */
-  background-color: var(--primary-color, #007bff); /* Line color */
-}
-
-.notification-item:last-child::after {
-  display: none; /* Remove the line for the last item */
+.timeline-content {
+  position: relative;
+  z-index: 2;
+  color: var(--text-color);
 }
 </style>
