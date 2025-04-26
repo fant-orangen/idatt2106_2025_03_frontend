@@ -124,9 +124,9 @@
 						</SelectTrigger>
 						<SelectContent>
 							<SelectGroup>
-								<SelectItem value="Lav">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
-								<SelectItem value="Middels">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
-								<SelectItem value="Høy">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
+								<SelectItem value="Low">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
+								<SelectItem value="Medium">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
+								<SelectItem value="High">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
 							</SelectGroup>
 						</SelectContent>
 					</Select>
@@ -173,7 +173,7 @@
 </template>
 
 <script setup lang="ts">
-	import { createEvent } from '@/services/api/EventsService'
+	import { createEvent } from '@/services/api/AdminServices'
 	import { Button } from '@/components/ui/button'
 	import { useForm } from 'vee-validate'
 	import { toTypedSchema } from '@vee-validate/zod'
@@ -208,24 +208,33 @@
 
 const { t } = useI18n();
 
-/* 
-	Validate the different feids for correct input.
-*/
+/**
+ * Validate the different feids for correct input.
+ */
 const formSchema = toTypedSchema(
   z.object({
     title: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
     latitude: z.preprocess((val) => Number(val), z.number()
 			.min(-90, t('add-event-info.errors.latitude'))
-  		.max(90, t('add-event-info.errors.latitude'))).optional(),    
+  		.max(90, t('add-event-info.errors.latitude')))
+			.optional(),    
+		
 		longitude: z.preprocess((val) => Number(val), z.number()
   		.min(-90, t('add-event-info.errors.longitude'))
-  		.max(90, t('add-event-info.errors.longitude'))).optional(),
-		address: z.string().min(2, t('add-event-info.errors.address')).max(100, 'add-event-info.errors.title').optional(),
+  		.max(90, t('add-event-info.errors.longitude')))
+			.optional(),
+		
+		address: z.string()
+			.max(100, 'add-event-info.errors.address')
+			.optional(),
+		
 		radius: z.preprocess((val) => Number(val), z.number()
 			.min(1, t('add-event-info.errors.radius'))
 			.max(10000, t('add-event-info.errors.radius'))),
-    priority: z.enum(["Lav", "Middels", "Høy"], t('add-event-info.errors.priority')),
-    description: z.string().min(10, t('add-event-info.errors.description')).max(500, t('add-event-info.errors.description')),
+    
+		priority: z.enum(["Low", "Medium", "High"]),
+    
+		description: z.string().min(10, t('add-event-info.errors.description')).max(500, t('add-event-info.errors.description')),
   })
 	.refine((data) => {
 		/*If latitude and longitude is missing, the address field need to be set */
@@ -301,7 +310,7 @@ Input {
 	border-radius: 8px;
 	border: solid grey;
 	min-width: 300px;
-	min-height: 400px;
+	max-height: 400px;
 	background-color: lightgreen;
 }
 

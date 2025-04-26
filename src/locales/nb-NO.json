@@ -239,9 +239,11 @@
       "longitude": "Lengdegraden må være mellom -180 og 180.",
       "radius": "Radiusen må være minst 1 meter og kan ikke overstige 10 000 meter.",
       "priority": "Du må velge en prioritet.",
+      "type": "Du må velge hvilket type interessepunkt det er.",
       "description": "Beskrivelsen må være minst 10 tegn og kan ikke overstige 500 tegn.",
       "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
-      "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn."
+      "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
+      "contact-info": "Skriv inn et gyldig telefonnummer."
     },
     "titles": {
       "address":"Adresse",
@@ -254,6 +256,31 @@
       "submit":"Lagre",
       "time": "Tidspunkt",
       "date": "Dato"
+    },
+    "crisis-level": {
+      "low": "Lav",
+      "medium": "Middels",
+      "high": "Høy"
+    }
+  }, 
+  "add-POI-info": {
+    "info": {
+      "title": "Dette vil være tittelen på interessepunktet.",
+      "coordinates": "Sett inn koordinatene eller adressen til punktet. Du kan også klikke på kartet for å få koordinatene automatisk!",
+      "type": "Velg hvilket type interessepunkt dette skal være.",
+      "description": "Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?"
+    },
+    "titles": {
+      "type": "Type",
+      "open-from": "Åpent fra",
+      "open-to": "Åpent til",
+      "contact-info": "Kontaktinformasjon"
+    },
+    "POI-type": {
+      "defibrillator": "Hjertestarter",
+      "shelter": "Tilfluktsrom",
+      "water-source": "Kilde til vann",
+      "food": "Matstasjon"
     }
   }
 }
