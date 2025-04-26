@@ -221,6 +221,15 @@
       "content": "After experiencing a crisis:\n\n**Take care of immediate needs:**\n* Ensure your safety and the safety of those around you\n* Seek medical attention if needed\n* Find safe shelter if your home is damaged\n* Contact family members to let them know you're safe\n\n**Begin recovery:**\n* Document damage (take photos) for insurance purposes\n* Contact your insurance company\n* Apply for disaster assistance if available\n* Clean and repair your home when it's safe to do so\n\n**Mental health is important:**\n* It's normal to experience stress, anxiety, or other emotional reactions\n* Talk about your experiences with family, friends, or professionals\n* Take care of your physical health (sleep, nutrition, exercise)\n* Seek professional help if needed\n\n**Learn from the experience:**\n* Evaluate your emergency plan and supplies\n* Make improvements based on what you learned\n* Help others in your community\n\n*[Source: Helsenorge.no and DSB](https://www.dsb.no/)*"
     }
   },
+  "invitation": {
+    "title": "Household Invitation",
+    "description": "You have been invited to join a household. Please respond to this invitation.",
+    "from": "From",
+    "household": "Household",
+    "message": "Message",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
   "infoPage": {
     "aboutThisTheme": "About this theme",
     "themeDescription": "Essential information to help you prepare and respond.",

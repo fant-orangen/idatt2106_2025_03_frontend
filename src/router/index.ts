@@ -38,8 +38,8 @@ const routes = [
   },
   {
     path: '/household',
-    name: 'HouseholdManager',
-    component: () => import('@/views/HouseholdManager.vue'),
+    name: 'Household',
+    component: () => import('@/views/HouseholdView.vue'),
   },
   {
     path: '/food-and-drinks',
