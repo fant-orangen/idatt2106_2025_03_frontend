@@ -18,21 +18,21 @@ onMounted(() => {
   <div class="news-page w-full max-w-3xl mx-auto p-6">
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <span>Home</span> &gt; <span class="current">News</span>
+      <span>{{ $t('navigation.home')}}</span> &gt; <span class="current">{{ $t('info.news')}}</span>
     </div>
 
     <!-- Page Title -->
-    <h1 class="text-2xl font-bold mb-4">News</h1>
+    <h1 class="text-2xl font-bold mb-4">{{ $t('info.news')}}</h1>
 
     <!-- News Timeline -->
     <div v-if="news.length === 0" class="text-center">
-      <p>No news available.</p>
+      <p>{{ $t('errors.no-news-available')}}</p>
     </div>
     <ul v-else class="timeline">
       <li v-for="item in news" :key="item.id">
         <div class="dot"></div>
         <div class="timeline-content">
-          <strong>{{ item.time }}</strong> – {{ item.title || 'Untitled' }}
+          <strong>{{ item.time }}</strong> – {{ item.title || $t('notifications.untiteled') }}
           <p>{{ item.message }}</p>
         </div>
       </li>

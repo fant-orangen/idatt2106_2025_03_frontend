@@ -12,7 +12,7 @@ const notifications = notificationStore.notifications
   <div class="notification-page w-full max-w-3xl mx-auto p-6">
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <span>Home</span> &gt; <span class="current">Notifications</span>
+      <span>{{ $t('navigation.home')}}</span> &gt; <span class="current">{{ $t('notifications.notifications')}}</span>
     </div>
 
     <!-- Page Title -->

@@ -22,11 +22,14 @@
     "notifications": "Notifications",
     "new-notification": "New Notification",
     "no-notifications": "No notifications available",
-    "all-notifications": "See all notifications"
+    "no-new-notifications": "No new notifications",
+    "all-notifications": "See all notifications",
+    "untitled": "Untitled"
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
-    "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it."
+    "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
+    "no-news-available": "No news available"
   },
   "crisis": {
     "crisis-status": "Crisis Status",

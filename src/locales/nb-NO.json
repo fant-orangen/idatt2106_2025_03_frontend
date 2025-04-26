@@ -22,11 +22,14 @@
     "notifications": "Varslinger",
     "new-notification": "Ny varsling",
     "no-notifications": "Ingen varslinger tilgjengelig",
-    "all-notifications": "Se alle varslinger"
+    "no-new-notifications": "Ingen nye varslinger",
+    "all-notifications": "Se alle varslinger",
+    "untitled": "Uten tittel"
   },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
-    "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det."
+    "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det.",
+    "no-news-available": "Ingen nyheter tilgjengelig"
   },
   "crisis": {
     "crisis-status": "Krisestatus",

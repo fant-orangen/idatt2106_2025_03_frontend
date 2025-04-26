@@ -15,7 +15,7 @@ defineProps<{
 
 <template>
   <div class="w-64">
-    <h2 class="text-lg font-bold mb-2">Notifications</h2>
+    <h2 class="text-lg font-bold mb-2">{{ $t ('notifications.notifications')}}</h2>
     <div v-if="notifications.length > 0">
       <ul class="timeline">
         <li
@@ -30,7 +30,7 @@ defineProps<{
       </ul>
     </div>
     <div v-else>
-      <p class="text-sm text-gray-700">No new notifications.</p>
+      <p class="text-sm text-gray-700">{{ $t('notifications.no-new-notifications')}}</p>
     </div>
     <RouterLink
       to="/notifications"
