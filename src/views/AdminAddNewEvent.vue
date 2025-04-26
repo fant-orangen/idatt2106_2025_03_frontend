@@ -21,102 +21,121 @@
 
 	<!--This is the Form where the user types its input for the new event-->
 <div class="info">
-<form @submit="onSubmit">
-	<FormField v-slot="{ field, meta, errorMessage }" name="title">
-		<FormItem>
-			<FormLabel>Tittel</FormLabel>
-			<FormControl>
-				<Input type="text" placeholder="Title" v-bind="field" />
-			</FormControl>
-			<FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
-			<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-		</FormItem>
-	</FormField>
-	<br>
 
-	<div class="position">
-		<FormField v-slot="{ field, meta, errorMessage }" name="latitude">
-		<FormItem>
-			<FormLabel>Latitude</FormLabel>
-			<FormControl>
-				<Input class="w-[100px]" placeholder="latitude" v-bind="field" />
-			</FormControl>
-			<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-		</FormItem>
-	</FormField>
+	<!--Title of the event-->
+	<form @submit="onSubmit">
+		<FormField v-slot="{ field, meta, errorMessage }" name="title">
+			<FormItem>
+				<FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
+				<FormControl>
+					<Input type="text" placeholder="Title" v-bind="field" />
+				</FormControl>
+				<FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
+				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+			</FormItem>
+		</FormField>
+		<br>
 
-	<FormField v-slot="{ field, meta, errorMessage }" name="longitude">
-		<FormItem>
-			<FormLabel>Longitude</FormLabel>
-			<FormControl>
-				<Input class="w-[100px]" placeholder="longitude" v-bind="field" />
-			</FormControl>
-			<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-		</FormItem>
-	</FormField>
-</div>
-<p class="text-muted-foreground text-sm">{{ $t('add-event-info.coordinates') }}</p>
-	<br>
+		<!--Latitude field-->
+		<div class="position">
+			<FormField v-slot="{ field, meta, errorMessage }" name="latitude">
+			<FormItem>
+				<FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
+				<FormControl>
+					<Input class="w-[100px]" type="number" placeholder="latitude" v-bind="field" />
+				</FormControl>
+				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+			</FormItem>
+		</FormField>
 
-	<FormField v-slot="{ field, meta, errorMessage }" name="radius">
-		<FormItem>
-			<FormLabel>Radius</FormLabel>
-			<FormControl>
-				<Input type="number" placeholder="meters" v-bind="field" />
-			</FormControl>
-			<FormDescription>{{ $t('add-event-info.radius') }}</FormDescription>
-			<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-		</FormItem>
-	</FormField><br>
+		<!--Longitude field-->
+		<FormField v-slot="{ field, meta, errorMessage }" name="longitude">
+			<FormItem>
+				<FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
+				<FormControl>
+					<Input class="w-[100px]" type="number" placeholder="longitude" v-bind="field" />
+				</FormControl>
+				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+			</FormItem>
+		</FormField>
 
-	<FormField v-slot="{ field, meta, errorMessage }" name="priority">
-		<FormItem>
-			<FormLabel>Krisetype</FormLabel>
-			<FormControl>
-				<Select v-bind="field">
-					<SelectTrigger style="cursor: pointer;">
-						<SelectValue placeholder="Select a priority"/>
-					</SelectTrigger>
-					<SelectContent>
-						<SelectGroup>
-							<SelectLabel>Krisetype</SelectLabel>
-							<SelectItem value="Lav">Lav</SelectItem>
-							<SelectItem value="Middels">Middels</SelectItem>
-							<SelectItem value="Høy">Høy</SelectItem>
-						</SelectGroup>
-					</SelectContent>
-				</Select>
-			</FormControl>
-			<FormDescription>{{ $t('add-event-info.priority') }}</FormDescription>
-			<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-		</FormItem>
+		<!--Address field-->
+		<FormField v-slot="{ field, meta, errorMessage }" name="address">
+			<FormItem>
+				<FormLabel>{{$t('add-event-info.titles.address')}}</FormLabel>
+				<FormControl>
+					<Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
+				</FormControl>
+				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+			</FormItem>
+		</FormField>
+	</div>
+	<p class="text-muted-foreground text-sm">{{ $t('add-event-info.coordinates') }}</p>
+		<br>
+
+		<!--Field for selecting a radius for the event-->
+		<FormField v-slot="{ field, meta, errorMessage }" name="radius">
+			<FormItem>
+				<FormLabel>{{$t('add-event-info.titles.radius')}}</FormLabel>
+				<FormControl>
+					<Input type="number" placeholder="meters" v-bind="field" />
+				</FormControl>
+				<FormDescription>{{ $t('add-event-info.radius') }}</FormDescription>
+				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+			</FormItem>
 		</FormField><br>
 
-		<FormField v-slot="{ field, meta, errorMessage }" name="description">
-		<FormItem>
-			<FormLabel>Informasjon:</FormLabel>
-			<FormControl>
-				<textarea class="
-      'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
-      'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
-      'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
-      " style="min-height:100px;" placeholder="Description" v-bind="field"></textarea>
-			</FormControl>
-			<FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
-			<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-		</FormItem>
-		</FormField><br>
+		<!--Choosing a priority-->
+		<FormField v-slot="{ field, meta, errorMessage }" name="priority">
+			<FormItem>
+				<FormLabel>{{$t('add-event-info.titles.priority')}}</FormLabel>
+				<FormControl>
+					<Select v-bind="field">
+						<SelectTrigger style="cursor: pointer;">
+							<SelectValue placeholder="Select a priority"/>
+						</SelectTrigger>
+						<SelectContent>
+							<SelectGroup>
+								<SelectLabel>Krisetype</SelectLabel>
+								<SelectItem value="Lav">Lav</SelectItem>
+								<SelectItem value="Middels">Middels</SelectItem>
+								<SelectItem value="Høy">Høy</SelectItem>
+							</SelectGroup>
+						</SelectContent>
+					</Select>
+				</FormControl>
+				<FormDescription>{{ $t('add-event-info.priority') }}</FormDescription>
+				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+			</FormItem>
+			</FormField><br>
 
-	<Button>Submit</Button>
-</form>
+			<!--Description of event-->
+			<FormField v-slot="{ field, meta, errorMessage }" name="description">
+			<FormItem>
+				<FormLabel>{{$t('add-event-info.titles.description')}}:</FormLabel>
+				<FormControl>
+					<textarea class="
+				'file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+				'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
+				'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+				" style="min-height:100px;" placeholder="Description" v-bind="field"></textarea>
+				</FormControl>
+				<FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
+				<FormMessage v-if="meta.touched  || meta.submitFailed">{{ errorMessage }}</FormMessage>
+			</FormItem>
+			</FormField><br>
 
+		<Button>{{$t('add-event-info.titles.submit')}}</Button>
+	</form>
 </div>
 
 <!--This is the map-->
 <div>
 	<div>
-		<p>MAP<3</p>
+		<p>MAP preview, should be able to click on map to get coordinates</p>
 	</div>
+
+	<div class="box"></div>
 
 </div>
 
@@ -125,10 +144,6 @@
 </template>
 
 <script setup lang="ts">
-
-// TODO: error message for input felter vises ikke. må fikses!
-
-
 	import { Button } from '@/components/ui/button'
 	import { useForm } from 'vee-validate'
 	import { toTypedSchema } from '@vee-validate/zod'
@@ -163,29 +178,44 @@ import {
 
 const { t } = useI18n();
 
+/* 
+	Validate the different feids for correct input.
+*/
 const formSchema = toTypedSchema(
   z.object({
     title: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
     latitude: z.preprocess((val) => Number(val), z.number()
 			.min(-90, t('add-event-info.errors.latitude'))
-  		.max(90, t('add-event-info.errors.latitude'))),    
+  		.max(90, t('add-event-info.errors.latitude'))).optional(),    
 		longitude: z.preprocess((val) => Number(val), z.number()
   		.min(-90, t('add-event-info.errors.longitude'))
-  		.max(90, t('add-event-info.errors.longitude'))),    
+  		.max(90, t('add-event-info.errors.longitude'))).optional(),
+		address: z.string().min(2, t('add-event-info.errors.address')).max(100, 'add-event-info.errors.title').optional(),
 		radius: z.preprocess((val) => Number(val), z.number()
 			.min(1, t('add-event-info.errors.radius'))
 			.max(10000, t('add-event-info.errors.radius'))),
     priority: z.enum(["Lav", "Middels", "Høy"], t('add-event-info.errors.priority')),
     description: z.string().min(10, t('add-event-info.errors.description')).max(500, t('add-event-info.errors.description')),
   })
+	.refine((data) => {
+		/*If latitude and longitude is missing, the address field need to be set */
+		if ((data.latitude === undefined || isNaN(data.latitude)) || (data.longitude === undefined || isNAN(data.longitude))) {
+			return !!data.address && data.address.length > 0;
+		}
+		return true;
+	}, {
+		message : t('add-event-info.errors.posistion-missing'),
+		path: ['address'], 
+	})
 );
 
 	const form = useForm({
-		validateSchema: formSchema,
+		validationSchema: formSchema,
 		initialValues: {
 			title: '',
 			latitude: '',
 			longitude: '',
+			address: '',
 			radius: '',
 			priority: '',
 			description: ''
@@ -202,7 +232,7 @@ const formSchema = toTypedSchema(
 
 h1 {
 	font-size: 2em;
-	margin: 20px;
+	text-align: center;
 }
 
 .page {
@@ -220,10 +250,20 @@ h1 {
 	display: flex;
 	flex-flow: row nowrap;
 	gap: 10px;
+	justify-content: center;
 }
 
 Input {	
 	max-width: 400px;
+}
+
+.box { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder, 
+	kartet kan godt være litt større enn størrelsen jeg har satt på boksen*/
+	border-radius: 8px;
+	border: solid grey;
+	min-width: 300px;
+	min-height: 400px;
+	background-color: lightgreen;
 }
 
 
