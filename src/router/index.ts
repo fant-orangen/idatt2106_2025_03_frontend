@@ -11,7 +11,8 @@ const routes = [
   { path : '/register', component: () => import('@/views/RegisterView.vue') },
   { path: '/before-crisis', component: () => import('@/views/BeforeCrisisView.vue') },
   { path: '/during-crisis', component: () => import('@/views/DuringCrisisView.vue') },
-  { path: '/household', component: () => import('@/views/HouseholdManager.vue')}
+  { path: '/household', component: () => import('@/views/HouseholdView.vue')},
+  { path: '/shelter-frontpage', component: () => import('@/components/shelter/CategoryPage.vue')}
 
 ]
 

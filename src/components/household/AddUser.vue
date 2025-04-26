@@ -79,7 +79,6 @@ const inviteUser = async () => {
     // Example:
     // await userService.inviteToHousehold({
     //   email: email.value,
-    //   accessLevel: accessLevel.value,
     //   message: message.value
     // });
 

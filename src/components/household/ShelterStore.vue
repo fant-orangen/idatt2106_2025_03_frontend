@@ -145,7 +145,7 @@ onMounted(() => {
 // Methods
 const viewBeredskapslager = () => {
   // Navigate to the shelter store page
-  router.push('/lager');
+  router.push('/shelter-frontpage');
 };
 </script>
 
