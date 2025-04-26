@@ -1,5 +1,117 @@
+<template>
+  <div class="filter-toggle flex justify-end gap-4 mb-4">
+    <Button @click="findNearestShelter" variant="destructive">
+      <font-awesome-icon :icon="['fas', 'house-chimney']" class="mr-2" />
+      {{ t('map.nearest-shelter') }}
+    </Button>
+    <Button @click="isFilterMenuVisible = !isFilterMenuVisible">
+      <font-awesome-icon
+        :icon="['fas', isFilterMenuVisible ? 'chevron-up' : 'chevron-down']"
+        class="mr-2"
+      />
+      {{ isFilterMenuVisible ? t('map.hide-filter') : t('map.show-filter') }}
+    </Button>
+  </div>
+
+  <Card v-if="isFilterMenuVisible" class="mb-8 filter-card">
+    <CardHeader>
+      <CardTitle>{{ t('map.filter') }}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+        <div>
+          <Button @click="getUserLocation" class="w-full">
+            {{ t('map.my-location') }}
+          </Button>
+          <p
+            v-if="locationStatus"
+            class="text-sm mt-1"
+            :class="{ 'text-red-500': locationStatus === t('map.location-error') }"
+          >
+            {{ locationStatus }}
+          </p>
+          <p v-if="userLocation" class="text-sm text-green-600 mt-1">
+            Lat: {{ userLocation.latitude.toFixed(4) }}, Lon: {{ userLocation.longitude.toFixed(4) }}
+          </p>
+        </div>
+
+        <div>
+          <label for="distance" class="text-sm font-medium block mb-1">
+            {{ t('map.distance') }}
+          </label>
+          <Input
+            id="distance"
+            type="number"
+            v-model.number="distanceInMeters"
+            :disabled="!userLocation"
+            min="100"
+            max="5000000"
+            step="100"
+            class="w-full"
+          />
+        </div>
+
+        <div>
+          <label for="poi-type" class="text-sm font-medium block mb-1">
+            {{ t('map.poi-type') }}
+          </label>
+          <Select v-model="selectedPoiType" class="w-full">
+            <SelectTrigger id="poi-type" class="w-full">
+              <SelectValue :placeholder="t('map.all-types')" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem :value="null">{{ t('map.all-types') }}</SelectItem>
+              <SelectItem
+                v-for="type in poiTypes"
+                :key="type.id"
+                :value="type.id"
+              >
+                {{ type.name }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center gap-4 mt-4">
+        <div class="flex gap-4">
+          <Button variant="outline" @click="resetFilters">
+            {{ t('map.reset-filter') }}
+          </Button>
+          <Button
+            variant="secondary"
+            @click="findNearestPoi"
+            :disabled="!userLocation || !selectedPoiType"
+          >
+            {{ t('map.find-nearest') }}
+          </Button>
+        </div>
+        <Button
+          variant="outline"
+          class="border-primary text-primary hover:bg-primary/10 hover:text-primary focus-visible:ring-primary/50"
+          @click="applyFilters"
+        >
+          {{ t('map.apply-filter') }}
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+
+  <div class="map-wrapper relative z-0 h-[50em]">
+    <div v-if="isLoadingPois" class="overlay">{{ t('map.loading') }}</div>
+    <div v-else-if="poiError" class="overlay text-red-600">
+      {{ poiError }}
+    </div>
+    <MapComponent
+      v-else
+      :pois="pointsOfInterest"
+      :userLocation="userLocation"
+      :crisisEvents="dummyCrises"
+    />
+  </div>
+</template>
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import MapComponent from '@/components/map/MapComponent.vue';
 import {
@@ -26,33 +138,35 @@ import {
 } from '@/components/ui/select';
 
 type CrisisEvent = { latitude: number; longitude: number; level: 1 | 2 | 3 };
-
 const { t } = useI18n();
-
-// Dummy crisis data for testing
-const dummyCrises: CrisisEvent[] = [
-  { latitude: 63.4305, longitude: 10.3951, level: 3 },
-  { latitude: 63.4419, longitude: 10.4254, level: 1 }
-];
 
 // Reactive state
 const allPois = ref<PoiData[]>([]);
 const pointsOfInterest = ref<PoiData[]>([]);
 const isLoadingPois = ref(false);
 const poiError = ref<string | null>(null);
+const dummyCrises = ref<CrisisEvent[]>([]);
 
 // Filter state
 const userLocation = ref<{ latitude: number; longitude: number } | null>(null);
 const selectedPoiType = ref<number | null>(null);
 const distanceInMeters = ref(1000);
-const isFilterApplied = ref(false);
-const locationStatus = ref<string | null>(null);
 const isFilterMenuVisible = ref(false);
+const locationStatus = ref<string | null>(null);
+
+// Helper for ensuring numerical coordinates
+function ensureNumericCoordinates(poi: PoiData): PoiData {
+  return {
+    ...poi,
+    latitude: typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude,
+    longitude: typeof poi.longitude === 'string' ? parseFloat(poi.longitude) : poi.longitude
+  };
+}
 
 // Derive POI types
 const poiTypes = computed(() => {
   const types = new Map<number, string>();
-  allPois.value.forEach(poi => {
+  allPois.value.forEach((poi) => {
     if (!types.has(poi.poiTypeId)) {
       types.set(poi.poiTypeId, poi.poiTypeName);
     }
@@ -79,259 +193,234 @@ async function getUserLocation() {
       latitude: pos.coords.latitude,
       longitude: pos.coords.longitude
     };
-    // Ensure UI updates with success message
-    setTimeout(() => {
-      locationStatus.value = t('map.location-success');
-    }, 100);
-  } catch (error) {
-    console.error('Geolocation error:', error);
+    locationStatus.value = t('map.location-success');
+  } catch {
     locationStatus.value = t('map.location-error');
   }
 }
 
-// Reset filters to show all POIs
+// Reset filters - FIXED VERSION
 function resetFilters() {
+  console.log("Resetting filters");
   selectedPoiType.value = null;
   distanceInMeters.value = 1000;
-  isFilterApplied.value = false;
   poiError.value = null;
-  pointsOfInterest.value = [...allPois.value];
+  locationStatus.value = null;
+
+  // Force reactivity by clearing and then setting with delay
+  pointsOfInterest.value = [];
+  setTimeout(() => {
+    pointsOfInterest.value = [...allPois.value];
+    console.log("Filters reset, showing all POIs:", pointsOfInterest.value.length);
+  }, 10);
 }
 
-// Apply filtering
+// Apply filtering - FIXED VERSION
 async function applyFilters() {
+  console.log("Applying filters");
   poiError.value = null;
-  // If no type selected and distance <= 0, reset
-  if (!selectedPoiType.value && distanceInMeters.value <= 0) {
+
+  const hasType = selectedPoiType.value !== null;
+  const hasLocation = userLocation.value !== null && distanceInMeters.value > 0;
+
+  // If neither a type nor a valid location+distance, reset to show all.
+  if (!hasType && !hasLocation) {
     resetFilters();
     return;
   }
 
   isLoadingPois.value = true;
   try {
-    if (userLocation.value && distanceInMeters.value > 0) {
-      pointsOfInterest.value = await fetchPoisNearby(
+    let results = [];
+
+    // 1) LOCATION-ONLY
+    if (hasLocation && !hasType) {
+      results = await fetchPoisNearby(
+        userLocation.value.latitude,
+        userLocation.value.longitude,
+        distanceInMeters.value
+      );
+    }
+    // 2) LOCATION + TYPE
+    else if (hasLocation && hasType) {
+      results = await fetchPoisNearby(
         userLocation.value.latitude,
         userLocation.value.longitude,
         distanceInMeters.value,
-        selectedPoiType.value || undefined
+        selectedPoiType.value
       );
-    } else if (selectedPoiType.value) {
-      pointsOfInterest.value = await fetchPoisByType(selectedPoiType.value);
-    } else {
-      pointsOfInterest.value = [...allPois.value];
     }
-    isFilterApplied.value = true;
-  } catch {
+    // 3) TYPE-ONLY
+    else if (!hasLocation && hasType) {
+      results = await fetchPoisByType(
+        selectedPoiType.value
+      );
+    }
+
+    // Create a completely new array and trigger reactivity with proper assignment
+    pointsOfInterest.value = [];
+
+    // Force reactivity by briefly setting to empty then to results
+    setTimeout(() => {
+      pointsOfInterest.value = Array.isArray(results) ? [...results] : [];
+
+      if (results.length === 0) {
+        console.log("No POIs found matching the criteria");
+      } else {
+        console.log(`Found ${results.length} POIs matching the criteria`);
+      }
+    }, 10);
+
+  } catch (error) {
+    console.error('Error applying filters:', error);
     poiError.value = t('map.filter-error');
+    pointsOfInterest.value = []; // Clear on error
   } finally {
     isLoadingPois.value = false;
   }
 }
 
-// Find nearest POI of selected type
-async function findNearestPoi() {
+// Find nearest shelter - FIXED VERSION
+async function findNearestShelter() {
+  console.log("Finding nearest shelter");
   if (!userLocation.value) {
     locationStatus.value = t('map.location-needed');
     await getUserLocation();
     if (!userLocation.value) return;
   }
-  if (!selectedPoiType.value) {
-    poiError.value = t('map.select-type');
-    return;
-  }
+
   isLoadingPois.value = true;
   poiError.value = null;
+
+  try {
+    const shelterTypeId = poiTypes.value.find((type) =>
+      /shelter|tilfluktsrom/i.test(type.name)
+    )?.id;
+
+    if (!shelterTypeId) {
+      poiError.value = t('map.no-shelter-type');
+      isLoadingPois.value = false;
+      return;
+    }
+
+    const nearest = await fetchNearestPoiByType(
+      shelterTypeId,
+      userLocation.value.latitude,
+      userLocation.value.longitude
+    );
+
+    // Force reactivity with proper array construction
+    pointsOfInterest.value = [];
+
+    setTimeout(() => {
+      if (nearest) {
+        // Ensure numeric coordinates
+        pointsOfInterest.value = [ensureNumericCoordinates(nearest)];
+        console.log("Nearest shelter found:", nearest);
+      } else {
+        pointsOfInterest.value = [];
+        poiError.value = t('map.find-error');
+      }
+    }, 10);
+  } catch (error) {
+    console.error('Error finding nearest shelter:', error);
+    poiError.value = t('map.find-error');
+    pointsOfInterest.value = [];
+  } finally {
+    isLoadingPois.value = false;
+  }
+}
+
+// Find nearest POI of selected type - FIXED VERSION
+async function findNearestPoi() {
+  console.log("Finding nearest POI");
+  if (!userLocation.value || !selectedPoiType.value) return;
+
+  isLoadingPois.value = true;
+  poiError.value = null;
+
   try {
     const nearest = await fetchNearestPoiByType(
       selectedPoiType.value,
       userLocation.value.latitude,
       userLocation.value.longitude
     );
-    if (nearest) {
-      pointsOfInterest.value = [nearest];
-      isFilterApplied.value = true;
-    } else {
-      poiError.value = t('map.no-poi-found', { type: poiTypes.value.find(p => p.id === selectedPoiType.value)?.name });
-    }
-  } catch {
+
+    // Force reactivity with proper array construction
+    pointsOfInterest.value = [];
+
+    setTimeout(() => {
+      if (nearest) {
+        // Ensure numeric coordinates
+        pointsOfInterest.value = [ensureNumericCoordinates(nearest)];
+        console.log("Nearest POI found:", nearest);
+      } else {
+        pointsOfInterest.value = [];
+        poiError.value = t('map.find-error');
+      }
+    }, 10);
+  } catch (error) {
+    console.error('Error finding nearest POI:', error);
     poiError.value = t('map.find-error');
+    pointsOfInterest.value = [];
   } finally {
     isLoadingPois.value = false;
   }
 }
 
-// Find nearest shelter
-async function findNearestShelter() {
-  if (!userLocation.value) {
-    locationStatus.value = t('map.location-needed');
-    await getUserLocation();
-    if (!userLocation.value) return;
-  }
-  isLoadingPois.value = true;
-  poiError.value = null;
-  try {
-    const shelterTypeId = poiTypes.value.find(type =>
-      type.name.toLowerCase().includes('shelter') ||
-      type.name.toLowerCase().includes('tilfluktsrom')
-    )?.id;
-    if (!shelterTypeId) {
-      poiError.value = t('map.no-shelter-type');
-      return;
-    }
-    const nearest = await fetchNearestPoiByType(
-      shelterTypeId,
-      userLocation.value.latitude,
-      userLocation.value.longitude
-    );
-    if (nearest) {
-      pointsOfInterest.value = [nearest];
-      isFilterApplied.value = true;
-    } else {
-      poiError.value = t('map.no-shelter-found');
-    }
-  } catch {
-    poiError.value = t('map.find-error');
-  } finally {
-    isLoadingPois.value = false;
-  }
-}
-
-// Validate distance input
-watch(distanceInMeters, (newValue) => {
-  if (newValue < 100) {
-    distanceInMeters.value = 100;
-  } else if (newValue > 5000000) {
-    distanceInMeters.value = 5000000;
-  }
+watch(distanceInMeters, (val) => {
+  if (val < 100) distanceInMeters.value = 100;
+  else if (val > 5000000) distanceInMeters.value = 5000000;
 });
 
-// Initial load of POIs
+// Load all POIs on mount - FIXED VERSION
 onMounted(async () => {
+  console.log("Map overview component mounted");
   isLoadingPois.value = true;
   poiError.value = null;
+
   try {
     const pois = await fetchPublicPois();
-    allPois.value = pois;
-    pointsOfInterest.value = pois;
-  } catch {
+
+    // First set allPois
+    allPois.value = [...pois];
+
+    // Clear pointsOfInterest first
+    pointsOfInterest.value = [];
+
+    // Then set pointsOfInterest with a small delay
+    setTimeout(() => {
+      pointsOfInterest.value = [...pois];
+      console.log("Initial POIs loaded:", pointsOfInterest.value.length);
+    }, 10);
+  } catch (error) {
+    console.error('Error loading POIs:', error);
     poiError.value = t('map.load-error');
+    allPois.value = [];
+    pointsOfInterest.value = [];
   } finally {
     isLoadingPois.value = false;
   }
 });
 </script>
-
-<template>
-  <!-- Toggle Buttons -->
-  <div class="filter-toggle w-full max-w-7xl flex justify-end gap-4 mb-4 relative z-20">
-    <Button @click="findNearestShelter" variant="destructive">
-      <font-awesome-icon :icon="['fas', 'house-chimney']" class="mr-2"/>
-      {{ t('map.nearest-shelter') }}
-    </Button>
-    <Button @click="isFilterMenuVisible = !isFilterMenuVisible">
-      <font-awesome-icon :icon="['fas', isFilterMenuVisible ? 'chevron-up' : 'chevron-down']" class="mr-2"/>
-      {{ isFilterMenuVisible ? t('map.hide-filter') : t('map.show-filter') }}
-    </Button>
-  </div>
-
-  <!-- Filter Card -->
-  <div v-if="isFilterMenuVisible" class="filter-card w-full max-w-7xl mb-8 relative z-20">
-    <Card>
-      <CardHeader>
-        <CardTitle>{{ t('map.filter') }}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Location -->
-          <div>
-            <Button @click="getUserLocation" class="w-full">{{ t('map.my-location') }}</Button>
-            <p v-if="locationStatus" class="text-sm" :class="{ 'text-red-500': locationStatus === t('map.location-error') }">{{ locationStatus }}</p>
-            <p v-if="userLocation" class="text-sm text-green-600">Lat: {{ userLocation.latitude.toFixed(4) }}, Lon: {{ userLocation.longitude.toFixed(4) }}</p>
-          </div>
-          <!-- Distance -->
-          <div>
-            <label for="distance" class="text-sm font-medium">{{ t('map.distance') }}</label>
-            <Input
-              id="distance"
-              type="number"
-              v-model.number="distanceInMeters"
-              :disabled="!userLocation"
-              min="100"
-              max="10000"
-              step="100"
-              @input="e => {
-                const val = parseInt(e.target.value);
-                if (isNaN(val) || val < 100) e.target.value = '100';
-                if (val > 5000000) e.target.value = '5000000';
-              }"
-            />
-          </div>
-          <!-- POI Type -->
-          <div>
-            <label for="poi-type" class="text-sm font-medium">{{ t('map.poi-type') }}</label>
-            <Select v-model="selectedPoiType">
-              <SelectTrigger id="poi-type">
-                <SelectValue :placeholder="t('map.all-types')" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem :value="null">{{ t('map.all-types') }}</SelectItem>
-                <SelectItem v-for="type in poiTypes" :key="type.id" :value="type.id">{{ type.name }}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div class="flex justify-between gap-4 mt-4">
-          <div class="flex flex-col gap-1">
-            <Button @click="findNearestPoi" :disabled="!userLocation || !selectedPoiType" variant="secondary">
-              <font-awesome-icon :icon="['fas', 'location-crosshairs']" class="mr-2"/>
-              {{ t('map.find-nearest') }}
-            </Button>
-            <p v-if="!userLocation" class="text-xs text-muted-foreground">{{ t('map.location-required') }}</p>
-          </div>
-          <div class="flex gap-4">
-            <Button variant="outline" @click="resetFilters">{{ t('map.reset-filter') }}</Button>
-            <Button @click="applyFilters">{{ t('map.apply-filter') }}</Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-
-  <!-- Map -->
-  <div class="map-wrapper relative z-0" style="height:50em; min-height:300px; overflow:visible;">
-    <div v-if="isLoadingPois" class="flex items-center justify-center h-full">{{ t('map.loading') }}</div>
-    <div v-else-if="poiError" class="flex items-center justify-center h-full text-red-600">{{ poiError }}</div>
-    <MapComponent
-      v-else
-      :pois="pointsOfInterest"
-      :userLocation="userLocation"
-      :crisisEvents="dummyCrises"
-    />
-  </div>
-</template>
-
 <style scoped>
-/* Ensure dropdown floats above map */
-:deep([role="dialog"]),
-:deep(.select-content),
-:deep(.SelectContent),
-:deep(.select-dropdown),
-:deep(.radix-select-content) {
-  z-index: 10000 !important;
-}
-
-/* Filter UI stacking */
 .filter-toggle,
 .filter-card {
   position: relative;
   z-index: 20;
 }
-
 .map-wrapper {
   position: relative;
   z-index: 0;
   overflow: visible;
+}
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 10;
 }
 </style>

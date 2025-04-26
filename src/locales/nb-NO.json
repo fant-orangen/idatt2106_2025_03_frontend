@@ -73,7 +73,10 @@
     "nearest-shelter": "Finn nærmeste tilfluktsrom",
     "location-needed": "Posisjon er nødvendig for å finne nærmeste tilfluktsrom. Vennligst tillat posisjonstilgang.",
     "location-required": "Posisjon er nødvendig for dette filteret",
-    "find-nearest": "Finn nærmeste"
+    "find-nearest": "Finn nærmeste",
+    "show-directions": "Vis veibeskrivelse",
+    "close-directions": "Lukk",
+    "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse"
   },
   "time-units": {
     "month": "1 måned | {count} måneder",

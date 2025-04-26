@@ -73,7 +73,10 @@
     "nearest-shelter": "Find Nearest Shelter",
     "location-needed": "Location needed to find nearest shelter. Please allow location access.",
     "location-required": "Location required for this filter",
-    "find-nearest": "Find Nearest"
+    "find-nearest": "Find Nearest",
+    "show-directions": "Show directions",
+    "close-directions": "Close",
+    "need-location": "Please enable your location to show directions"
   },
   "time-units": {
     "month": "1 month | {count} months",
