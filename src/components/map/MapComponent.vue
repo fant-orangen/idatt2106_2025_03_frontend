@@ -80,6 +80,17 @@ const forceMapRefresh = () => {
   }
 };
 
+// Function to refresh marker positions
+function refreshMarkerPositions() {
+  if (!map.value || !markerClusterGroup.value) return;
+
+  // Refresh marker cluster groups
+  markerClusterGroup.value.refreshClusters();
+
+  // Force map to recognize changes
+  map.value.invalidateSize({ animate: false });
+}
+
 // Initialize the Leaflet map and make the routing function globally available
 onMounted(() => {
   console.log("Map component mounted");
@@ -91,9 +102,9 @@ onMounted(() => {
 
   // Create map
   map.value = L.map(mapContainerId, {
-    fadeAnimation: false, // Disable to prevent position issues
-    markerZoomAnimation: true, // Keep for better UX
-    zoomAnimation: true // Keep for better UX
+    fadeAnimation: false,
+    markerZoomAnimation: false, // Disable marker zoom animation to prevent issues
+    zoomAnimation: true
   }).setView([props.centerLat!, props.centerLon!], props.initialZoom!);
 
   // Add tile layer
@@ -104,20 +115,30 @@ onMounted(() => {
       attribution: '© OSM © CartoDB',
       noWrap: false // Allow the map to be repeated
     }
-  ).addTo(map.value as L.Map);
+  ).addTo(map.value);
 
   // Create marker cluster
   markerClusterGroup.value = L.markerClusterGroup({
     spiderfyOnMaxZoom: true,
     disableClusteringAtZoom: 18,
     maxClusterRadius: 50,
-    removeOutsideVisibleBounds: false // Keep markers in memory
-  }).addTo(map.value as L.Map);
+    removeOutsideVisibleBounds: false, // Keep markers in memory
+    animate: false, // Disable cluster animations
+    animateAddingMarkers: false // Disable animations when adding markers
+  }).addTo(map.value);
 
   // Set up event listeners for debugging and refresh
   map.value.on('zoomend moveend', () => {
     console.log(`Map view changed: zoom=${map.value?.getZoom()}`);
     forceMapRefresh();
+  });
+
+  // Add additional event listener for zoom to update markers during zoom
+  map.value.on('zoom', () => {
+    // Force immediate update of markers during zoom
+    if (markerClusterGroup.value) {
+      markerClusterGroup.value.refreshClusters();
+    }
   });
 
   // Expose the routing function to the global scope so the popup can access it
@@ -291,7 +312,9 @@ watch(
       disableClusteringAtZoom: 18,
       maxClusterRadius: 50,
       zoomToBoundsOnClick: true,
-      removeOutsideVisibleBounds: false // Keep markers in memory
+      removeOutsideVisibleBounds: false, // Keep markers in memory
+      animate: false, // Disable cluster animations
+      animateAddingMarkers: false // Disable animations when adding markers
     });
 
     // --- Marker processing logic (using the new cluster group) ---
@@ -322,7 +345,11 @@ watch(
         const marker = L.marker([lat, lon], {
           riseOnHover: true,
           bubblingMouseEvents: false, // Improves event handling
-          zIndexOffset: 100 // Stack markers above route line
+          zIndexOffset: 100, // Stack markers above route line
+          // The following disables any animations for this marker
+          nonBubblingEvents: ['click', 'dblclick', 'mouseover', 'mouseout'],
+          // Ensure marker position is always correct
+          interactive: true
         });
 
         marker.bindPopup(createPopupContent(poi));
@@ -364,6 +391,9 @@ watch(
 
     // Force map to recognize changes
     map.value.invalidateSize({ animate: false });
+
+    // Refresh marker positions
+    refreshMarkerPositions();
 
     // Short delay to ensure map is fully ready before fitting bounds
     setTimeout(() => {
@@ -415,7 +445,7 @@ watch(
         icon: userIcon,
         zIndexOffset: 1000 // Ensure user marker stays on top
       })
-      .addTo(map.value as L.Map)
+      .addTo(map.value)
       .bindPopup(`<strong>${translatedStrings.yourLocation}</strong>`)
       .bindTooltip(translatedStrings.yourLocation, {
         permanent: false,
@@ -426,6 +456,9 @@ watch(
 
       // Invalidate size when user location changes
       map.value.invalidateSize();
+
+      // Refresh marker positions
+      refreshMarkerPositions();
 
       // If we have an active route and user location changes, update the route
       if (routingControl.value) {
@@ -584,6 +617,11 @@ onBeforeUnmount(() => {
 :deep(.leaflet-marker-icon),
 :deep(.leaflet-marker-shadow) {
   transition: none !important;
+  transform-origin: center bottom !important;
+  /* Prevent default transition effects from being applied */
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
 }
 
 /* Styling for the routing control panel */
@@ -622,7 +660,7 @@ onBeforeUnmount(() => {
 
 /* Fix for zoom transition issues */
 :deep(.leaflet-zoom-anim .leaflet-zoom-animated) {
-  transition: transform 0.25s cubic-bezier(0,0,0.25,1);
+  transition: none !important;
 }
 
 :deep(.leaflet-fade-anim .leaflet-popup) {
