@@ -178,7 +178,7 @@ const poiTypes = computed(() => {
 async function getUserLocation() {
   if (!navigator.geolocation) {
     locationStatus.value = t('map.location-error');
-    return;
+    return false;
   }
   try {
     locationStatus.value = t('map.getting-location');
@@ -194,8 +194,10 @@ async function getUserLocation() {
       longitude: pos.coords.longitude
     };
     locationStatus.value = t('map.location-success');
+    return true;
   } catch {
     locationStatus.value = t('map.location-error');
+    return false;
   }
 }
 
@@ -283,10 +285,12 @@ async function applyFilters() {
 // Find nearest shelter
 async function findNearestShelter() {
   console.log("Finding nearest shelter");
+
+  // Make sure we have user location
   if (!userLocation.value) {
     locationStatus.value = t('map.location-needed');
-    await getUserLocation();
-    if (!userLocation.value) return;
+    const success = await getUserLocation();
+    if (!success || !userLocation.value) return;
   }
 
   isLoadingPois.value = true;

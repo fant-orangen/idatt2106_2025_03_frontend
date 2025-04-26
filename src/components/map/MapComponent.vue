@@ -422,6 +422,28 @@ watch(
       // Final invalidate size to ensure everything renders correctly
       map.value?.invalidateSize({ animate: false });
     }, 100);
+
+    // Ensure user marker is present if we have user location
+    setTimeout(() => {
+      if (props.userLocation && !userMarker.value && map.value) {
+        console.log("Restoring user marker after POI update");
+        userMarker.value = L.marker(
+          [props.userLocation.latitude, props.userLocation.longitude],
+          {
+            icon: userIcon,
+            zIndexOffset: 1000
+          }
+        )
+        .addTo(map.value)
+        .bindPopup(`<strong>${translatedStrings.yourLocation}</strong>`)
+        .bindTooltip(translatedStrings.yourLocation, {
+          permanent: false,
+          direction: 'top',
+          className: 'user-location-label',
+          offset: [0, -30],
+        });
+      }
+    }, 150); // Slightly longer timeout to ensure it runs after the other setTimeout
   },
   {
     deep: true
@@ -431,16 +453,20 @@ watch(
 // Watch the userLocation prop: add or remove the blue marker.
 watch(
   userLocation,
-  async (loc) => {
+  async (loc, oldLoc) => {
     if (!map.value) return;
 
     await nextTick(); // Ensure map is ready
 
-    if (userMarker.value) {
-      userMarker.value.remove();
-      userMarker.value = null;
-    }
+    // Only proceed if we have a location (either new or existing)
     if (loc) {
+      // Remove existing marker if there is one
+      if (userMarker.value) {
+        userMarker.value.remove();
+        userMarker.value = null;
+      }
+
+      // Create a new marker at the location
       userMarker.value = L.marker([loc.latitude, loc.longitude], {
         icon: userIcon,
         zIndexOffset: 1000 // Ensure user marker stays on top
