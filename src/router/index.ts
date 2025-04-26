@@ -42,6 +42,11 @@ const routes = [
     component: () => import('@/views/HouseholdView.vue'),
   },
   {
+    path: '/no-household',
+    name: 'No-Household',
+    component: () => import('@/views/HouseholdNotMemberView.vue'),
+  },
+  {
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
     component: () => import('@/views/FoodAndDrinksView.vue'),
