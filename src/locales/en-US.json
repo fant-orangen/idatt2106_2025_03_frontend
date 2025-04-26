@@ -15,11 +15,23 @@
     "privacy-policy": "the privacy policy.",
     "email-notifs-warning": "letting krisefikser.no send me notifications via email.",
     "submit": "Submit",
-    "name": "Name"
+    "first-name": "First Name",
+    "last-name": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "password": "Password",
+    "confirm-password": "Confirm Password"
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
-    "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it."
+    "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
+    "login-failed": "Login failed. Please check your credentials.",
+    "passwords-do-not-match": "Passwords do not match.",
+    "registration-failed": "Registration failed. Please try again."
+  },
+  "success": {
+    "registration-successful": "Registration successful! You can now log in.",
+    "login-successful": "Login successful!"
   },
   "crisis": {
     "crisis-status": "Crisis Status",

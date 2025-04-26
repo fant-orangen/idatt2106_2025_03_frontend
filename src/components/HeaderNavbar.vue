@@ -3,8 +3,23 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+import { Globe, User, Bell, Settings } from 'lucide-vue-next'
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
+import { Button } from '@/components/ui/button'
 
 const { locale } = useI18n()
+const router = useRouter()
 
 let prevScrollpos: number = window.pageYOffset
 const showDropdown = ref(false)
@@ -43,6 +58,10 @@ function selectLanguage(language: { label: string; code: string }): void {
   showDropdown.value = false
   locale.value = language.code
 }
+
+function goToPage(route: string) {
+  router.push(route)
+}
 </script>
 
 <template>
@@ -57,7 +76,7 @@ function selectLanguage(language: { label: string; code: string }): void {
           class="dropbtn flex items-center gap-2 text-secondary-foreground hover:text-primary"
           @click="toggleDropdown"
         >
-          <font-awesome-icon :icon="['fas', 'globe']" size="lg" />
+          <Globe class="h-5 w-5" />
           {{ selectedLanguage }}
         </button>
         <div
@@ -83,16 +102,34 @@ function selectLanguage(language: { label: string; code: string }): void {
         {{ $t('login.login') }}</RouterLink
       >
       <RouterLink
-        to="/"
+        to="/register"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('login.signup') }}</RouterLink
       >
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button variant="outline" size="icon" class="cursor-pointer p-0">
+            <User class="h-5 w-5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <User class="mr-2 h-4 w-4" />
+              <span @click="goToPage('/profile')">Profile (WIP)</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/settings')">
+              <Settings class="mr-2 h-4 w-4" />
+              <span>Settings (WIP)</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <RouterLink to="/" class="no-border">
-        <font-awesome-icon :icon="['fas', 'user']" size="lg" />
-      </RouterLink>
-      <RouterLink to="/" class="no-border">
-        <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
+        <Bell class="h-5 w-5" />
       </RouterLink>
       <button
         variant="outline"
