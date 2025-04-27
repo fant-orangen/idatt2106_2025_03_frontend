@@ -29,7 +29,40 @@
             </button>
           </div>
         </div>
+
+        <!-- Edit form -->
+        <div v-if="medicine.edit" class="space-y-4 mt-4">
+          <div class="grid grid-cols-5 gap-3 items-center">
+            <input
+              v-model="medicine.amount"
+              type="number"
+              class="bg-secondary py-2 px-3 rounded-md text-center"
+              placeholder="Quantity"
+              />
+            <select v-model="medicine.unit" class="bg-secondary py-2 px-3 rounded-md">
+              <option value="stk">stk</option>
+              <option value="ml">ml</option>
+              <option value="mg">mg</option>
+              <option value="eske">eske</option>
+              <option vlaue="tube">tube</option>
+            </select>
+            <input
+              v-model="medicine.expires"
+              type="date"
+              class="bg-secondary py-2 px-3 rounded-md text-center"
+              />
+            <input
+              v-model="medicine.notes"
+              type="text"
+              class="bg-secondary py-2 px-3 rounded-md"
+              placeholder="Notes (e.g., requires refrigeration.)"
+              />
+            <button @click="removeMedicine(index)" class="text-red-400 text-sm underline">
+                    {{ $t("delete") }}
+            </button>
+        </div>
       </div>
+    </div>
 
     </div>
   </div>
