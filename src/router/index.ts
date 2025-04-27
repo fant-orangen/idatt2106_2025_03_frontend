@@ -42,11 +42,6 @@ const routes = [
     component: () => import('@/views/HouseholdView.vue'),
   },
   {
-    path: '/no-household',
-    name: 'No-Household',
-    component: () => import('@/views/HouseholdNotMemberView.vue'),
-  },
-  {
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
     component: () => import('@/views/FoodAndDrinksView.vue'),
@@ -55,6 +50,21 @@ const routes = [
     path: '/shelter-frontpage',
     name: 'shelter-frontpage',
     component: () => import('@/components/shelter/CategoryPage.vue')
+  },
+  {
+    path: '/admin-panel',
+    name: 'AdminPanel',
+    component: () => import('@/views/AdminPanel.vue'),
+  },
+  {
+    path: '/add-new-event',
+    name: 'AddNewEvent',
+    component: () => import('@/views/AdminAddNewEvent.vue'),
+  },
+  {
+    path: '/add-new-POI',
+    name: 'AddNewPOI',
+    component: () => import('@/views/AdminAddNewPOI.vue'),
   },
   {
     path: '/:pathMatch(.*)*',
