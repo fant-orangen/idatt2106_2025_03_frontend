@@ -35,7 +35,6 @@ export enum InvitationStatus {
  * @interface InvitationResponseDto
  */
 export interface InvitationResponseDto {
-  invitationId: number;
+  id: number;
   status: InvitationStatus;
-  message?: string;
 }
