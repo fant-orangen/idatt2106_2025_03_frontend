@@ -1,18 +1,24 @@
 <template>
   <div class="household-container">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Left side: Household members component -->
-      <HouseholdMembers @member-selected="handleMemberSelected" />
+    <!-- Show when user has no household -->
+    <MemberNotInHousehold v-if="!householdStore.isMemberOfHousehold" @household-updated="refreshHouseholdData" />
 
-      <!-- Right side: Shelter store component -->
+    <!-- Show when user has a household -->
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <HouseholdMembers @member-selected="handleMemberSelected" />
       <ShelterStore @view-beredskapslager="handleViewBeredskapslager" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue';
+import { useHouseholdStore } from '@/stores/HouseholdStore';
 import HouseholdMembers from '@/components/household/HouseholdMembers.vue';
 import ShelterStore from '@/components/household/ShelterStore.vue';
+import MemberNotInHousehold from '@/components/household/MemberNotInHousehold.vue';
+
+const householdStore = useHouseholdStore();
 
 // Types
 interface HouseholdMember {
@@ -31,6 +37,15 @@ const handleViewBeredskapslager = () => {
   console.log('View beredskapslager in parent');
   // Implement navigation to beredskapslager page
 };
+
+const refreshHouseholdData = async () => {
+  await householdStore.fetchCurrentHousehold();
+};
+
+// Fetch household data when the component mounts
+onMounted(async () => {
+  await householdStore.fetchCurrentHousehold();
+});
 </script>
 
 <style scoped>

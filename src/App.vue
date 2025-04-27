@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import HeaderNavbar from './components/HeaderNavbar.vue'
 import Footer from './components/Footer.vue'
+import InvitationPopup from './components/invitation/InvitationPopup.vue'
 import { RouterView } from 'vue-router'
 </script>
 
@@ -11,5 +12,6 @@ import { RouterView } from 'vue-router'
       <RouterView />
     </div>
     <Footer />
+    <InvitationPopup />
   </div>
 </template>
