@@ -19,9 +19,16 @@ export interface Household {
  */
 export interface Member {
   id: number;
-  name: string;
-  email?: string;
-  householdId: number;
+  firstName: string;
+  lastName: string;
+  type: string;
+}
+
+export interface EmptyMember {
+  firstName: string;
+  lastName: string;
+  type: string;
+  description?: string;
 }
 
 /**

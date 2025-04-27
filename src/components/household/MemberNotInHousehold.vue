@@ -21,7 +21,7 @@
 
       <div v-if="showCreateForm" class="mt-4 text-center">
         <Button variant="ghost" size="sm" @click="showCreateForm = false">
-          {{ t('common.cancel') }}
+          {{ t('household.cancel') }}
         </Button>
       </div>
     </div>
@@ -38,4 +38,11 @@ import CreateNewHousehold from '@/components/household/CreateNewHousehold.vue';
 
 const { t } = useI18n();
 const showCreateForm = ref(false);
+
+const emit = defineEmits(['household-updated']);
+
+const handleHouseholdUpdate = () => {
+  emit('household-updated');
+  showCreateForm.value = false;
+};
 </script>
