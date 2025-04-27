@@ -49,3 +49,16 @@ export async function createPOI(poiData: any) {
     }
   });
 }
+
+
+/**
+ * Thinking that this should get all current events in a list
+ * @returns 
+ */
+export async function getCurrentEvents() {
+  return await api.get('/crisis-events', { //endre url når laget
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
