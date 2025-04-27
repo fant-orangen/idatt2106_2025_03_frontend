@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineEmits } from 'vue';
+import { ref, onMounted, defineEmits, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -90,7 +90,7 @@ import AddEmptyUser from './AddEmptyUser.vue';
 import { BabyIcon, PawPrintIcon, UserIcon, XIcon } from 'lucide-vue-next';
 import AddUser from './AddUser.vue';
 import { addEmptyMember, removeEmptyMemberFromHousehold, getEmptyHouseholdMembers, getHouseholdMembers } from '@/services/HouseholdService.ts'
-import type { Member, EmptyMember } from '@/models/Household.ts'
+import type { Member } from '@/models/Household.ts'
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 useI18n();
 
@@ -100,28 +100,28 @@ const manageMode = ref(false);
 const householdStore = useHouseholdStore();
 const showInviteUser = ref(false);
 
-const householdMembers = ref<Member[]>([]);
+const householdMembers = computed(() => householdStore.members);
 
-// Mock data for demonstration (replace with actual API calls)
 onMounted(async() => {
-  // Simulate fetching household members from backend
-  householdMembers.value = [
-    { id: 1, firstName: 'John', lastName: 'Doe', type: 'adult' },
-    { id: 2, firstName: 'Jane', lastName: 'Doe', type: 'child'  },
-    { id: 3, firstName: 'Alice', lastName: 'Smith', type: 'pet' },
-  ];
   try {
-    const currentHouseholdId = householdStore.currentHousehold?.id || 1;
+    if (!householdStore.currentHousehold) {
+      await householdStore.fetchCurrentHousehold();
+    }
+    const currentHouseholdId = householdStore.currentHousehold?.id;
+    if (!currentHouseholdId) return;
+    householdStore.setLoading(true);
+    const regularMembers = await getHouseholdMembers(currentHouseholdId);
     const emptyMembers = await getEmptyHouseholdMembers(currentHouseholdId);
-    householdMembers.value = [...householdMembers.value, ...emptyMembers];
+    householdStore.setMembers([...regularMembers, ...emptyMembers]);
   } catch (error) {
-    console.error('Failed to fetch empty members:', error);
+    console.error('Failed to fetch household members:', error);
+    householdStore.setError('Failed to fetch household members');
+  } finally {
+    householdStore.setLoading(false);
   }
 });
 
-// Methods
 const selectMember = (member: Member) => {
-  //get user id and fetch profile information.
   console.log('Selected member:', member);
   emit('memberSelected', member);
 };
@@ -138,19 +138,18 @@ const handleSaveUser = async (userData: {
 }) => {
   try {
     const currentHouseholdId = householdStore.currentHousehold?.id || 1;
-
     const newMemberData = {
       firstName: userData.firstName,
       lastName: userData.lastName,
       type: userData.type,
       ...(userData.description ? { description: userData.description } : {})
     };
-
     const createdMember = await addEmptyMember(currentHouseholdId, newMemberData);
-    householdMembers.value.push(createdMember);
+    householdStore.addMember(createdMember);
     showAddUser.value = false;
   } catch (error) {
     console.error('Failed to save empty user:', error);
+    householdStore.setError('Failed to save empty user');
   }
 };
 
@@ -172,9 +171,10 @@ const removeMember = async (memberId: number) => {
   try {
     const currentHouseholdId = householdStore.currentHousehold?.id || 1;
     await removeEmptyMemberFromHousehold(currentHouseholdId, memberId);
-    householdMembers.value = householdMembers.value.filter(member => member.id !== memberId);
+    householdStore.removeMember(memberId);
   } catch (error) {
     console.error('Failed to remove member:', error);
+    householdStore.setError('Failed to remove member');
   }
 };
 </script>
