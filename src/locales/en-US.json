@@ -137,7 +137,52 @@
     "send-invitation": "Send Invitation",
     "invitation-sent": "Invitation sent successfully",
     "invitation-failed": "Failed to send invitation",
-    "add-user-title": "Invite User to Household"
+    "add-user-title": "Invite User to Household",
+    "create_new": "Create New Household",
+    "create_description": "Create your own household to manage your emergency preparedness.",
+    "create_button": "Create New Household",
+    "no-household": "You don't have a household yet",
+    "no-household-description": "Create or join a household to manage your emergency preparedness together with family members or friends.",
+    "manage-household": "Manage Household",
+    "leave-household": "Leave Household",
+    "leave-confirm": "Are you sure you want to leave this household?",
+    "leave-success": "You have successfully left the household",
+    "generate-invitation": "Generate Invitation Code",
+    "copy-invitation": "Copy Invitation Code",
+    "copied-to-clipboard": "Copied to clipboard!",
+    "share-invitation": "Share this code with someone you want to invite to your household.",
+    "users": "Users",
+    "no-users": "No users in this household yet",
+
+    "create": {
+      "title": "Create New Household",
+      "subtitle": "Set up your household for emergency preparedness",
+      "nameLabel": "Household Name",
+      "namePlaceholder": "Enter household name",
+      "locationLabel": "Location",
+      "locationPlaceholder": "Enter address (optional)",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Enter household description (optional)",
+      "submitButton": "Create Household",
+      "errors": {
+        "nameRequired": "Household name is required",
+        "generic": "Failed to create household"
+      }
+    },
+
+    "join": {
+      "title": "Join Household",
+      "subtitle": "Join an existing household with an invitation code",
+      "tokenLabel": "Invitation Code",
+      "tokenPlaceholder": "Enter invitation code",
+      "submitButton": "Join Household",
+      "success": "Successfully joined household",
+      "errors": {
+        "tokenRequired": "Invitation code is required",
+        "invalidToken": "Invalid invitation code",
+        "generic": "Failed to join household"
+      }
+    }
   },
   "sidebar": {
     "title": "Themes",

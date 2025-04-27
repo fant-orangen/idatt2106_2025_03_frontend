@@ -58,6 +58,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { inviteUserByEmail } from '@/services/HouseholdService';
 
 const { t } = useI18n();
 const emit = defineEmits(['invited', 'cancel']);
@@ -75,15 +76,11 @@ const inviteUser = async () => {
   status.value = '';
 
   try {
-    // Here you would make an API call to send the invitation
-    // Example:
-    // await userService.inviteToHousehold({
-    //   email: email.value,
-    //   message: message.value
-    // });
-
-    // Simulate API call with timeout
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Send invitation to the backend
+    await inviteUserByEmail({
+      email: email.value,
+      message: message.value || undefined
+    });
 
     status.value = t('household.invitation-sent');
     isSuccess.value = true;

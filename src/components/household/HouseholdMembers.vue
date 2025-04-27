@@ -68,19 +68,13 @@ import { Button } from '@/components/ui/button';
 import AddEmptyUser from './AddEmptyUser.vue';
 import { BabyIcon, PawPrintIcon, UserIcon } from 'lucide-vue-next';
 import AddUser from './AddUser.vue';
+import type { Member, EmptyMember } from '@/models/Household.ts'
 useI18n();
-
-interface HouseholdMember {
-  id: number;
-  firstName: string;
-  lastName: string;
-  type: string;
-}
 
 const emit = defineEmits(['memberSelected']);
 const showAddUser = ref(false);
 
-const householdMembers = ref<HouseholdMember[]>([]);
+const householdMembers = ref<Member[]>([]);
 
 // Mock data for demonstration (replace with actual API calls)
 onMounted(() => {
@@ -93,7 +87,7 @@ onMounted(() => {
 });
 
 // Methods
-const selectMember = (member: HouseholdMember) => {
+const selectMember = (member: Member) => {
   console.log('Selected member:', member);
   // Emit event to parent component
   emit('memberSelected', member);
@@ -103,18 +97,13 @@ const addEmptyUser = () => {
   showAddUser.value = true;
 };
 const handleSaveUser = (userData) => {
-  const newId = householdMembers.value.length > 0
-    ? Math.max(...householdMembers.value.map(m => m.id)) + 1
-    : 1;
-
-  householdMembers.value.push({
-    id: newId,
+  const newMember: Member = {
     firstName: userData.firstName,
     lastName: userData.lastName,
     type: userData.type,
-    description: userData.description
-  });
-
+    ...(userData.description ? { description: userData.description } : {})
+  };
+  householdMembers.value.push(newMember);
   showAddUser.value = false;
 };
 // Add this ref
