@@ -137,7 +137,66 @@
     "beredskapslager": "Emergency Storage",
     "no-expiring-items": "No items are about to expire.",
     "days-left": "days left",
-    "your-shelter-store": "Your Shelter Store"},
+    "your-shelter-store": "Your Shelter Store",
+    "invite-user": "Invite User",
+    "email-address": "Email Address",
+    "enter-email": "Enter email address",
+    "access-level": "Access Level",
+    "select-access-level": "Select access level",
+    "editor": "Editor",
+    "viewer": "Viewer",
+    "personal-message": "Personal Message",
+    "optional-message": "Optional: Add a personal message",
+    "send-invitation": "Send Invitation",
+    "invitation-sent": "Invitation sent successfully",
+    "invitation-failed": "Failed to send invitation",
+    "add-user-title": "Invite User to Household",
+    "create_new": "Create New Household",
+    "create_description": "Create your own household to manage your emergency preparedness.",
+    "create_button": "Create New Household",
+    "no-household": "You don't have a household yet",
+    "no-household-description": "Create or join a household to manage your emergency preparedness together with family members or friends.",
+    "manage-household": "Manage Household",
+    "leave-household": "Leave Household",
+    "leave-confirm": "Are you sure you want to leave this household?",
+    "leave-success": "You have successfully left the household",
+    "generate-invitation": "Generate Invitation Code",
+    "copy-invitation": "Copy Invitation Code",
+    "copied-to-clipboard": "Copied to clipboard!",
+    "share-invitation": "Share this code with someone you want to invite to your household.",
+    "users": "Users",
+    "no-users": "No users in this household yet",
+
+    "create": {
+      "title": "Create New Household",
+      "subtitle": "Set up your household for emergency preparedness",
+      "nameLabel": "Household Name",
+      "namePlaceholder": "Enter household name",
+      "locationLabel": "Location",
+      "locationPlaceholder": "Enter address (optional)",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Enter household description (optional)",
+      "submitButton": "Create Household",
+      "errors": {
+        "nameRequired": "Household name is required",
+        "generic": "Failed to create household"
+      }
+    },
+
+    "join": {
+      "title": "Join Household",
+      "subtitle": "Join an existing household with an invitation code",
+      "tokenLabel": "Invitation Code",
+      "tokenPlaceholder": "Enter invitation code",
+      "submitButton": "Join Household",
+      "success": "Successfully joined household",
+      "errors": {
+        "tokenRequired": "Invitation code is required",
+        "invalidToken": "Invalid invitation code",
+        "generic": "Failed to join household"
+      }
+    }
+  },
   "sidebar": {
     "title": "Themes",
     "themes": {
@@ -219,6 +278,15 @@
       "title": "After a Crisis",
       "content": "After experiencing a crisis:\n\n**Take care of immediate needs:**\n* Ensure your safety and the safety of those around you\n* Seek medical attention if needed\n* Find safe shelter if your home is damaged\n* Contact family members to let them know you're safe\n\n**Begin recovery:**\n* Document damage (take photos) for insurance purposes\n* Contact your insurance company\n* Apply for disaster assistance if available\n* Clean and repair your home when it's safe to do so\n\n**Mental health is important:**\n* It's normal to experience stress, anxiety, or other emotional reactions\n* Talk about your experiences with family, friends, or professionals\n* Take care of your physical health (sleep, nutrition, exercise)\n* Seek professional help if needed\n\n**Learn from the experience:**\n* Evaluate your emergency plan and supplies\n* Make improvements based on what you learned\n* Help others in your community\n\n*[Source: Helsenorge.no and DSB](https://www.dsb.no/)*"
     }
+  },
+  "invitation": {
+    "title": "Household Invitation",
+    "description": "You have been invited to join a household. Please respond to this invitation.",
+    "from": "From",
+    "household": "Household",
+    "message": "Message",
+    "accept": "Accept",
+    "decline": "Decline"
   },
   "infoPage": {
     "aboutThisTheme": "About this theme",
