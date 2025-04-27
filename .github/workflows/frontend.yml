@@ -3,14 +3,14 @@ name: Frontend CI
 on:
   push:
     branches: [ "dev", "main" ]
-    paths: [ "frontend/**", ".github/workflows/frontend.yml" ]
+    paths: [ "idatt2106_2025_03_frontend/**", ".github/workflows/frontend.yml" ]
   pull_request:
     branches: [ "dev", "main" ]
-    paths: [ "frontend/**", ".github/workflows/frontend.yml" ]
+    paths: [ "idatt2106_2025_03_frontend/**", ".github/workflows/frontend.yml" ]
 
 defaults:
   run:
-    working-directory: ./frontend
+    working-directory: ./idatt2106_2025_03_frontend
 
 jobs:
   build:
