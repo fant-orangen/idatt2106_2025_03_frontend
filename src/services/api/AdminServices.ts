@@ -52,11 +52,28 @@ export async function createPOI(poiData: any) {
 
 
 /**
- * Thinking that this should get all current events in a list
- * @returns 
+ * Fetches all current crisis events from the backend API.
+ * Makes a GET request to the '/crisis-events/all' endpoint.
+ * Automatically includes the authentication token if available.
+ * @returns {Promise<AxiosResponse<any, any>>} Server response with a list of events. 
  */
 export async function getCurrentEvents() {
-  return await api.get('/crisis-events', { //endre url når laget
+  return await api.get('/crisis-events/all', {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
+ * Updates an existing crisis event in the backend.
+ * Sends a PUT request to the '/crisis-events/{id}' endpoint with the updated event data.
+ * @param {number} id - The ID of the event to update.
+ * @param {object} eventData  - An object containing the updated event fields.
+ * @returns  {Promise<AxiosResponse<any, any>>} A promise resolving to the server response after the update operation.
+ */
+export async function updateCurrentEvent(id: number, eventData: any) {
+  return await api.put('/crisis-events/'+ id, eventData, {
     headers: {
       'Content-Type': 'application/json'
     }
