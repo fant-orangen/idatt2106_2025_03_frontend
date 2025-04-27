@@ -35,9 +35,9 @@
 			</div>
 		</div>
 
-		<div>
+    <div class="map flex-grow">
 			<h1>{{ $t('info.current-situation') }}</h1>
-			<p> map should be here <br>Se wireframe for siden 'admin panel' <br><br> her har jeg ingen plan om å kunne trykke på kartet, det er på 'Legg til hendelse' osv. <br>her trengs kun en preview av map:)</p>
+      <MapOverviewComponent />
 		</div>
 	</div>
 </template>
@@ -51,8 +51,9 @@ import {
 	BreadcrumbLink,
 	BreadcrumbList,
 	BreadcrumbPage,
-	BreadcrumbSeparator, 
+	BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
+import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
 
 </script>
 
