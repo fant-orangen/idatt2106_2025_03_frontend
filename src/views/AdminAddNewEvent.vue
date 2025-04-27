@@ -176,7 +176,7 @@
 	import * as z from 'zod'
 	import { useI18n } from 'vue-i18n';
 	import { Input } from '@/components/ui/input'
-  import { Textarea } from '@/components/ui/textarea'
+  	import { Textarea } from '@/components/ui/textarea'
 	import {
 		FormControl,
 		FormDescription,
@@ -217,12 +217,12 @@ const formSchema = toTypedSchema(
 			.optional(),    
 		
 		longitude: z.preprocess((val) => Number(val), z.number()
-  		.min(-90, t('add-event-info.errors.longitude'))
-  		.max(90, t('add-event-info.errors.longitude')))
+  		.min(-180, t('add-event-info.errors.longitude'))
+  		.max(180, t('add-event-info.errors.longitude')))
 			.optional(),
 		
 		address: z.string()
-			.max(100, 'add-event-info.errors.address')
+			.max(100, t('add-event-info.errors.address'))
 			.optional(),
 		
 		radius: z.preprocess((val) => Number(val), z.number()

@@ -207,8 +207,8 @@ const formSchema = toTypedSchema(
   		.max(90, t('add-event-info.errors.latitude'))).optional(),    
 		
 		longitude: z.preprocess((val) => Number(val), z.number()
-  		.min(-90, t('add-event-info.errors.longitude'))
-  		.max(90, t('add-event-info.errors.longitude'))).optional(),
+  		.min(-180, t('add-event-info.errors.longitude'))
+  		.max(180, t('add-event-info.errors.longitude'))).optional(),
 		
 		address: z.string()
 			.max(100, 'add-event-info.errors.address').optional(),
