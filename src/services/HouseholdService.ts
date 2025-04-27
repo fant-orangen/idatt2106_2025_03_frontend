@@ -7,7 +7,7 @@
  * @module HouseholdService
  */
 import api from '@/services/api/AxiosInstance.ts'
-import type { CreateHouseholdDto, Household } from '@/models/Household'
+import type { CreateHouseholdDto, Household, EmailInvitationDto } from '@/models/Household'
 import type { Member } from '@/models/Household.ts';
 
 /**
@@ -18,9 +18,9 @@ export async function getCurrentHousehold(): Promise<Household | null> {
   try {
     const response = await api.get('/households/current');
     return response.data;
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     // If status is 404, it means user is not in a household
-    if (error.response?.status === 404) {
+    if (error && typeof error === 'object' && 'response' in error && error.response?.status === 404) {
       return null;
     }
     throw error;
@@ -86,4 +86,13 @@ export async function updateHousehold(
 export async function getHouseholdMembers(householdId: number): Promise<Member[]> {
   const response = await api.get(`/households/${householdId}/members`);
   return response.data;
+}
+
+/**
+ * Send an invitation to join the household by email
+ * @param invitationData The invitation data including email and optional message
+ * @returns Promise that resolves when the invitation is sent
+ */
+export async function inviteUserByEmail(invitationData: EmailInvitationDto): Promise<void> {
+  await api.post('/households/invitations/email', invitationData);
 }

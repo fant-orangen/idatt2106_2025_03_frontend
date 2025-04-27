@@ -52,3 +52,11 @@ export interface InvitationTokenResponse {
   token: string;
   expiresAt: string;
 }
+
+/**
+ * Data required to send an email invitation to a user
+ */
+export interface EmailInvitationDto {
+  email: string;
+  message?: string;
+}

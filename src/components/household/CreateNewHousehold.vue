@@ -76,6 +76,7 @@ const householdDescription = ref('');
 
 // State
 const error = ref('');
+const isLoading = ref(false);
 
 async function createNewHousehold() {
   if (!householdName.value.trim()) {
@@ -84,9 +85,10 @@ async function createNewHousehold() {
   }
 
   error.value = '';
+  isLoading.value = true;
 
   try {
-    await createNewHousehold({
+    await createHousehold({
       name: householdName.value.trim(),
       location: householdLocation.value.trim() || undefined,
       description: householdDescription.value.trim() || undefined
@@ -94,8 +96,10 @@ async function createNewHousehold() {
 
     // Redirect to household page after successful creation
     router.push('/household');
-  } catch (err: any) {
-    error.value = err.message || t('household.create.errors.generic');
+  } catch (err: Error | unknown) {
+    error.value = err instanceof Error ? err.message : t('household.create.errors.generic');
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>
