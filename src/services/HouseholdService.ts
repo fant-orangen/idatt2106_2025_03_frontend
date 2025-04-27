@@ -18,12 +18,11 @@ export async function getCurrentHousehold(): Promise<Household | null> {
   try {
     const response = await api.get('/households/current');
     return response.data;
-  } catch (error: unknown) {
-    if (error && typeof error === 'object' &&
-      'response' in error &&
-      error.response &&
-      'status' in error.response &&
-      error.response.status === 404) {
+  } catch (error) {
+    // Cast to AxiosError to access response safely
+    if (error instanceof Error && 'response' in error &&
+      error.response && typeof error.response === 'object' &&
+      'status' in error.response && error.response.status === 404) {
       return null;
     }
     throw error;
