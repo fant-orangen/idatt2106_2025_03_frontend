@@ -64,9 +64,49 @@
       </div>
     </div>
 
+      <!-- Add new medicine to the list -->
+      <div class="pt-6 space-y-2">
+        <h2 class="text-lg font-semibold">{{ (" Add Medicine ")}}</h2>
+        <div class="grid grid-cols-5 gap-4 items-center">
+          <input
+            v-model="newMedicineName"
+            placeholder="Medicine name"
+            class="bg-secondary py-2 px-3 rounded-md"
+            />
+          <input
+          v-model="newMedicineAmount"
+          type="number"
+          placeholder="Quantity"
+          clas="bg-secondary py-2 px-3 rounded-md"
+          />
+          <select v-model="newMedicineUnit" class="bg-secondary py-2 px-3 rounded-md">
+            <option disabled value="">Select Unit</option>
+            <option value="stk">stk</option>
+            <option value="ml">ml</option>
+            <option value="mg">mg</option>
+            <option value="eske">eske</option>
+            <option value="tube">tube</option>
+            </select>
+          <input
+            v-model="newMedicineExpires"
+            type="date"
+            class="bg-secondary py-2 px-3 rounded-md"
+          />
+        <input
+          v-model="newMedicineNotes"
+          placeholder="Notes (optional)"
+          class="bg-secondary py-2 px-3 rounded-md"
+        />>
+      </div>
+        <button
+          @click="addMedicine"
+          class="mt-4 text-sm text-blue-400 hover:underline"
+          >
+          + {{ $t("Add medicine") }}
+        </button>
+      </div>
     </div>
   </div>
-
 </template>
 
 <script setup>
