@@ -47,6 +47,21 @@ const routes = [
     component: () => import('@/views/FoodAndDrinksView.vue'),
   },
   {
+    path: '/admin-panel',
+    name: 'AdminPanel',
+    component: () => import('@/views/AdminPanel.vue'),
+  },
+  {
+    path: '/add-new-event',
+    name: 'AddNewEvent',
+    component: () => import('@/views/AdminAddNewEvent.vue'),
+  },
+  {
+    path: '/add-new-POI',
+    name: 'AddNewPOI',
+    component: () => import('@/views/AdminAddNewPOI.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),

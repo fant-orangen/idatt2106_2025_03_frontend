@@ -23,6 +23,13 @@
     "password": "Passord",
     "confirm-password": "Bekreft passord"
   },
+  "admin": {
+    "administrate": "Administrer",
+    "make-new-event": "Legg til en ny hendelse",
+    "make-new-POI": "Legg til et nytt interessepunkt",
+    "make-new-activity": "Lag en ny aktivitet",
+    "edit-event": "Rediger en pågående hendelse"
+  },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
     "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det.",
@@ -43,7 +50,11 @@
     "home": "Hjem",
     "language": "Språk",
     "before-crisis-page": "Før en krise",
-    "activities": "Aktiviteter"
+    "activities": "Aktiviteter",
+    "admin-panel": "Admin side",
+    "new-event": "Ny hendelse",
+    "new-POI": "Nytt interessepunkt",
+    "new-activity": "Ny aktivivtet"
   },
   "time": {
     "after": "etter",
@@ -54,7 +65,8 @@
     "news": "Nyheter",
     "notifications": "Varslinger",
     "nr-of-people-in-household": "Antall personer i husholdningen",
-    "info-about-storage": "Les mer om beredskapslageret"
+    "info-about-storage": "Les mer om beredskapslageret",
+    "current-situation": "Nåværende hendelser"
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",
@@ -233,5 +245,63 @@
     "preparednessStorageBrief": "Lær hvilke forsyninger du bør ha klare for nødsituasjoner.",
     "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalitet etter en krise.",
     "learnMoreTopic": "Klikk for å lære mer om dette temaet."
+  },
+  "add-event-info": {
+    "title": "Dette vil være tittelen på hendelsen din.",
+    "coordinates": "Sett inn koordinatene eller adressen til hendelsen din. Du kan også klikke på kartet for å få koordinatene automatisk!",
+    "radius": "Sett inn radiusen til hendelsen din i meter. Omtrent hvor stort område vil hendelsen påvirke?",
+    "priority": "Prioritetsnivået er viktig, og vil vises som lav (grønn), middels (oransje) og høy (rød) for brukere på kartet.",
+    "description": "For eksempel: Hendelsen skjedde på (dato og sted) ... og vil mest sannsynlig vare i (tid)... Det kan bli mangel på (ressurs)...",
+    "time": "Tidspunkt for når hendelsen først inntraff.",
+    "date": "Dato for når hendelsen først inntraff.",
+    "errors": {
+      "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
+      "latitude": "Breddegraden må være mellom -90 og 90.",
+      "longitude": "Lengdegraden må være mellom -180 og 180.",
+      "radius": "Radiusen må være minst 1 meter og kan ikke overstige 10 000 meter.",
+      "priority": "Du må velge en prioritet.",
+      "type": "Du må velge hvilket type interessepunkt det er.",
+      "description": "Beskrivelsen må være minst 10 tegn og kan ikke overstige 500 tegn.",
+      "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
+      "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
+      "contact-info": "Skriv inn et gyldig telefonnummer."
+    },
+    "titles": {
+      "address":"Adresse",
+      "title": "Tittel",
+      "longitude": "Lengdegrad",
+      "latitude": "Breddegrad",
+      "radius":"Radius",
+      "priority": "Krisenivå",
+      "description": "Informasjon",
+      "submit":"Lagre",
+      "time": "Tidspunkt",
+      "date": "Dato"
+    },
+    "crisis-level": {
+      "low": "Lav",
+      "medium": "Middels",
+      "high": "Høy"
+    }
+  }, 
+  "add-POI-info": {
+    "info": {
+      "title": "Dette vil være tittelen på interessepunktet.",
+      "coordinates": "Sett inn koordinatene eller adressen til punktet. Du kan også klikke på kartet for å få koordinatene automatisk!",
+      "type": "Velg hvilket type interessepunkt dette skal være.",
+      "description": "Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?"
+    },
+    "titles": {
+      "type": "Type",
+      "open-from": "Åpent fra",
+      "open-to": "Åpent til",
+      "contact-info": "Kontaktinformasjon"
+    },
+    "POI-type": {
+      "defibrillator": "Hjertestarter",
+      "shelter": "Tilfluktsrom",
+      "water-source": "Kilde til vann",
+      "food": "Matstasjon"
+    }
   }
 }
