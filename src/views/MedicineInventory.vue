@@ -20,9 +20,9 @@
             </span>
           </div>
 
-          <div class="text-center">{{ medicine.count }} {{ medicine.unit }} </div>
+          <div class="text-center">{{ medicine.amount }} {{ medicine.unit }} </div>
           <div class="text-center">{{ medicine.expires }}</div>
-          <div class="text-center">{{ medicine.notes || ":" }}</div>
+          <div class="text-center">{{ medicine.notes || "Notes:" }}</div>
           <div class="text-right">
             <button @click="toggleEdit(index)" class="text-sm text-blue-400 underline">
               {{ medicine.edit ? $t("Save") : $t("Edit") }}
@@ -44,7 +44,7 @@
               <option value="ml">ml</option>
               <option value="mg">mg</option>
               <option value="eske">eske</option>
-              <option vlaue="tube">tube</option>
+              <option value="tube">tube</option>
             </select>
             <input
               v-model="medicine.expires"
@@ -77,7 +77,7 @@
           v-model="newMedicineAmount"
           type="number"
           placeholder="Quantity"
-          clas="bg-secondary py-2 px-3 rounded-md"
+          class="bg-secondary py-2 px-3 rounded-md"
           />
           <select v-model="newMedicineUnit" class="bg-secondary py-2 px-3 rounded-md">
             <option disabled value="">Select Unit</option>
@@ -96,7 +96,7 @@
           v-model="newMedicineNotes"
           placeholder="Notes (optional)"
           class="bg-secondary py-2 px-3 rounded-md"
-        />>
+        />
       </div>
         <button
           @click="addMedicine"
@@ -129,7 +129,7 @@ const toggleEdit = (index) => {
 };
 
 const addMedicine = () => {
-  if (!newMedicineName.value || !newMedicineAmount.value || newMedicineUnit || !newMedicineExpires) {
+  if (!newMedicineName.value || !newMedicineAmount.value || !newMedicineUnit.value || !newMedicineExpires) {
     return;
   }
 
