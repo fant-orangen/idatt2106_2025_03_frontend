@@ -54,7 +54,8 @@
     "admin-panel": "Admin side",
     "new-event": "Ny hendelse",
     "new-POI": "Nytt interessepunkt",
-    "new-activity": "Ny aktivivtet"
+    "new-activity": "Ny aktivivtet",
+    "go-back": "Tilbake"
   },
   "time": {
     "after": "etter",
@@ -276,7 +277,8 @@
       "description": "Informasjon",
       "submit":"Lagre",
       "time": "Tidspunkt",
-      "date": "Dato"
+      "date": "Dato",
+      "choose-event": "Velg en hendelse"
     },
     "crisis-level": {
       "low": "Lav",

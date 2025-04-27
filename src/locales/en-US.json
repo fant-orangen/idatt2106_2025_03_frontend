@@ -53,7 +53,8 @@
     "admin-panel": "Admin panel",
     "new-event": "New event",
     "new-POI": "New point of interest",
-    "new-activity": "New activity"
+    "new-activity": "New activity",
+    "go-back": "Go back"
   },
   "time": {
     "after": "after",
@@ -275,7 +276,8 @@
       "description": "Information",
       "submit":"Submit",
       "time": "Time",
-      "date": "Date"
+      "date": "Date",
+      "choose-event": "Choose an event"
     },
     "crisis-level": {
       "low": "Low",
