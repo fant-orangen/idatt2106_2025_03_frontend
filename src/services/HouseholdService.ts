@@ -18,9 +18,12 @@ export async function getCurrentHousehold(): Promise<Household | null> {
   try {
     const response = await api.get('/households/current');
     return response.data;
-  } catch (error: Error | unknown) {
-    // If status is 404, it means user is not in a household
-    if (error && typeof error === 'object' && 'response' in error && error.response?.status === 404) {
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' &&
+      'response' in error &&
+      error.response &&
+      'status' in error.response &&
+      error.response.status === 404) {
       return null;
     }
     throw error;
