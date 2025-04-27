@@ -110,4 +110,62 @@
 </template>
 
 <script setup>
+
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { differenceInDays } from "date-fns";
+
+const { t } = useI18n();
+const medicines= ref([]);
+
+const newMedicineName= ref("");
+const newMedicineAmount= ref("");
+const newMedicineUnit= ref("");
+const newMedicineExpires= ref("");
+const newMedicineNotes= ref("");
+
+const toggleEdit = (index) => {
+  medicines.value[index].edit = !medicines.value[index].edit;
+};
+
+const addMedicine = () => {
+  if (!newMedicineName.value || !newMedicineAmount.value || newMedicineUnit || !newMedicineExpires) {
+    return;
+  }
+
+  medicines.value.push({
+    name: newMedicineName.value,
+    amount: newMedicineAmount.value,
+    unit: newMedicineUnit.value,
+    expires: newMedicineExpires.value,
+    notes: newMedicineNotes.value || "",
+    edit: false
+  });
+
+  /**
+   * Reset from fields
+   */
+
+  newMedicineName.value = "";
+  newMedicineAmount.value = "";
+  newMedicineUnit.value = "";
+  newMedicineExpires.value = "";
+};
+const removeMedicine= (index) => {
+  medicines.value.splice(index, 1);
+};
+
+/**
+ * Temporary method to test frontend. Will be modified when connecting to backend.
+ * @param expiresDateString
+ * @returns {boolean} if it expires in less than 30 days.
+ */
+const isExpiringSoon = (expiresDateString) => {
+  if (!expiresDateString) return false;
+  const today= new Date();
+  const expiresDate = new Date(expiresDateString);
+  const daysLeft = differenceInDays(expiresDate, today);
+
+  return daysLeft <= 30 && daysLeft >= 0;
+  };
 </script>
