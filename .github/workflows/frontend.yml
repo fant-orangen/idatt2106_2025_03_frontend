@@ -3,36 +3,58 @@ name: Frontend CI
 on:
   push:
     branches: [ "dev", "main" ]
-    paths: [ "**", ".github/workflows/frontend.yml" ]
+    paths:
+      - 'frontend/**' # Trigger only on frontend changes
+      - '.github/workflows/frontend.yml' # Or changes to the workflow itself
   pull_request:
     branches: [ "dev", "main" ]
-    paths: [ "**", ".github/workflows/frontend.yml" ]
+    paths:
+      - 'frontend/**' # Trigger only on frontend changes
+      - '.github/workflows/frontend.yml' # Or changes to the workflow itself
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 20.x ] # <-- Consider simplifying to one Node version for now
+        # Consider testing primarily against one LTS version in CI for speed, unless multi-version support is critical
+        node-version: [ 20.x ] # Example: Using Node 20 LTS
+
+    # Set default working directory for all steps in this job
+    defaults:
+      run:
+        working-directory: ./frontend
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # +++ Add PNPM setup +++
-      - uses: pnpm/action-setup@v3
+      # Setup PNPM
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
         with:
-          version: 8 # Or 9, or your preferred version
+          version: 8 # Specify the pnpm version (align with local if possible)
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      # Setup Node.js with pnpm caching
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm' # +++ Change cache to pnpm +++
+          cache: 'pnpm'
+          # cache-dependency-path: 'frontend/pnpm-lock.yaml' # Optional: pnpm cache usually works well without this
 
-      # +++ Use pnpm install (will create pnpm-lock.yaml if not present) +++
-      - run: pnpm install --frozen-lockfile # Use --frozen-lockfile for CI reliability
+      # Install dependencies using pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile # Installs based on pnpm-lock.yaml in ./frontend
 
-      # +++ Use pnpm run +++
-      - run: pnpm run build --if-present
-      - run: pnpm run test:unit -- --run
-      # - run: pnpm run test:e2e
+      # Build project using pnpm
+      - name: Build project
+        run: pnpm run build --if-present
+
+      # Run unit tests using pnpm
+      - name: Run unit tests
+        run: pnpm run test:unit -- --run
+
+      # Skip end-to-end tests for now
+      # - name: Run e2e tests
+      #   run: pnpm run test:e2e
