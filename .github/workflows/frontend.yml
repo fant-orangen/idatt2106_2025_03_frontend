@@ -25,7 +25,7 @@ jobs:
           # cache: 'npm'
           # cache-dependency-path: 'package-lock.json'
 
-      - run: npm ci
+      - run: npm install --no-optional
       - run: npm run build --if-present
       - run: npm run test:unit -- --run
       # Skip end-to-end tests for now as they require a server to be running
