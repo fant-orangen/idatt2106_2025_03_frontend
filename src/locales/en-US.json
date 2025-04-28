@@ -20,7 +20,8 @@
     "email": "Email",
     "phone": "Phone",
     "password": "Password",
-    "confirm-password": "Confirm Password"
+    "confirm-password": "Confirm Password",
+    "username": "Username"
   },
   "admin": {
     "administrate": "Administrate",
@@ -29,7 +30,12 @@
     "make-new-activity": "Make a new activity",
     "edit-event": "Edit a current event",
     "super-admin": "Super Admin",
-    "edit-admin": "Handle admin users"
+    "edit-admin": "Handle admin users",
+    "edit-profile": "Edit profile",
+    "delete-user": "Delete user",
+    "revoke-rights": "Revoke admin rights",
+    "send-pw-link": "Send new password link",
+    "new-admin": "Add new admin"
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",

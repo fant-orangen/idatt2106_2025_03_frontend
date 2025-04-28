@@ -43,7 +43,7 @@ export async function createEvent(eventData: any) {
 * @throws {Error} When the POI creation fails or network issues occur.
 */
 export async function createPOI(poiData: any) {
-  return await api.post('/POI', poiData, { // change url when made
+  return await api.post('/poi', poiData, { // change url when made
     headers: {
       'Content-Type': 'application/json'
     }
@@ -70,7 +70,7 @@ export async function getCurrentEvents() {
  * Sends a PUT request to the '/crisis-events/{id}' endpoint with the updated event data.
  * @param {number} id - The ID of the event to update.
  * @param {object} eventData  - An object containing the updated event fields.
- * @returns  {Promise<AxiosResponse<any, any>>} A promise resolving to the server response after the update operation.
+ * @returns {Promise<AxiosResponse<any, any>>} A promise resolving to the server response after the update operation.
  */
 export async function updateCurrentEvent(id: number, eventData: any) {
   return await api.put('/crisis-events/'+ id, eventData, {
@@ -85,7 +85,43 @@ export async function updateCurrentEvent(id: number, eventData: any) {
  * @returns 
  */
 export async function getAdminUsers() {
-  return await api.get('/crisis-events/all', {
+  return await api.get('/super-admin/all', {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
+ * 
+ * @returns 
+ */
+export async function addNewAdmin(admin: any) {
+  return await api.post('/super-admin', admin, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
+ * 
+ * @returns 
+ */
+export async function revokeAdminRights(adminID: any) {
+  return await api.put('/super-admin/revoke/' + adminID, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
+ * 
+ * @returns 
+ */
+export async function deleteAdmin(adminID: any) {
+  return await api.put('/super-admin/delete/' + adminID, {
     headers: {
       'Content-Type': 'application/json'
     }

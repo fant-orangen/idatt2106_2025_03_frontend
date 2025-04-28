@@ -21,7 +21,8 @@
     "email": "E-post",
     "phone": "Telefonummer",
     "password": "Passord",
-    "confirm-password": "Bekreft passord"
+    "confirm-password": "Bekreft passord",
+    "username": "Brukernavn"
   },
   "admin": {
     "administrate": "Administrer",
@@ -30,7 +31,12 @@
     "make-new-activity": "Lag en ny aktivitet",
     "edit-event": "Rediger en pågående hendelse",
     "super-admin": "Super Admin",
-    "edit-admin": "Håndter admin brukere"
+    "edit-admin": "Håndter admin brukere",
+    "edit-profile": "Rediger profil",
+    "delete-user": "Slett bruker",
+    "revoke-rights": "Ta bort admin rettigheter",
+    "send-pw-link": "Send ny passord lenke",
+    "new-admin": "Lag ny admin"
   },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
