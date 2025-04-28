@@ -16,7 +16,7 @@ import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { useI18n } from 'vue-i18n';
 
 // Import shared types
-import { POI, UserLocation, CrisisEvent, MarkerMovedEvent, MarkerAddedEvent, MarkerRemovedEvent } from '@/types/map';
+import type { POI, UserLocation, CrisisEvent, MarkerMovedEvent, MarkerAddedEvent, MarkerRemovedEvent, POIMarker } from '@/types/map';
 
 // Fix default Leaflet icon paths
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
@@ -82,11 +82,11 @@ export default defineComponent({
     const markerClusterGroup = ref<L.MarkerClusterGroup | null>(null);
     const userMarker = ref<L.Marker | null>(null);
     const adminMarkers = ref<L.Marker[]>([]);
-    const mapContainerId = 'map-' + Math.random().toString(36).substring(2, 9);
+    const mapContainerId: string = 'map-' + Math.random().toString(36).substring(2, 9);
     const routingControl = ref<L.Routing.Control | null>(null);
     const activeRouteMarker = ref<L.Marker | null>(null);
     const tempMarker = ref<L.Marker | null>(null);
-    const markersMap = ref<Map<string | number, L.Marker>>(new Map()); // Store markers by POI ID for easier reference
+    const markersMap = ref<Map<string | number, POIMarker>>(new Map()); // Store markers by POI ID for easier reference
 
     // Translation strings with fallbacks
     const translatedStrings: TranslatedStrings = {
@@ -126,7 +126,11 @@ export default defineComponent({
     // Initialize map
     onMounted(() => {
       // Fix icon paths globally
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      // Use type assertion to access _getIconUrl property
+      const defaultIconPrototype = L.Icon.Default.prototype as any;
+      if (defaultIconPrototype._getIconUrl) {
+        delete defaultIconPrototype._getIconUrl;
+      }
       L.Icon.Default.mergeOptions({
         iconRetinaUrl,
         iconUrl,
@@ -163,14 +167,18 @@ export default defineComponent({
           ).addTo(map.value as L.Map);
 
           // Create marker cluster
-          markerClusterGroup.value = L.markerClusterGroup({
+          const clusterOptions: L.MarkerClusterGroupOptions = {
             spiderfyOnMaxZoom: true,
             disableClusteringAtZoom: 18,
             maxClusterRadius: 50,
             removeOutsideVisibleBounds: false,
             animate: false,
             animateAddingMarkers: false
-          }).addTo(map.value as L.Map);
+          };
+          markerClusterGroup.value = L.markerClusterGroup(clusterOptions);
+          if (map.value) {
+            map.value.addLayer(markerClusterGroup.value as unknown as L.Layer);
+          }
 
           // Set up map event listeners
           map.value.on('zoomend moveend', () => {
@@ -183,7 +191,8 @@ export default defineComponent({
             console.log("Admin mode enabled, adding click listener");
             map.value.on('click', (e: L.LeafletMouseEvent) => {
               console.log("Map clicked at", e.latlng);
-              emit('map-clicked', e);
+              // Emit in the format expected by AdminAddNewPOI.vue
+              emit('map-clicked', { latlng: e.latlng });
             });
           }
 
@@ -314,8 +323,8 @@ export default defineComponent({
       // Create the routing control
       routingControl.value = L.Routing.control({
         waypoints: [
-          L.latLng(props.userLocation.latitude, props.userLocation.longitude),
-          L.latLng(lat, lng)
+          { latLng: L.latLng(props.userLocation.latitude, props.userLocation.longitude) },
+          { latLng: L.latLng(lat, lng) }
         ],
         lineOptions: {
           styles: [
@@ -341,14 +350,16 @@ export default defineComponent({
         showAlternatives: true,
         useZoomParameter: true,
         draggableWaypoints: false,
-        createMarker: function() {
+        createMarker: function(_i: number, _waypoint: L.Routing.Waypoint, _n: number): L.Marker | null {
           return null; // No waypoint markers
         },
       }).addTo(map.value as L.Map);
 
       // Add a custom title to the directions panel
       routingControl.value.on('routesfound', () => {
-        const container = routingControl.value!.getContainer();
+        if (!routingControl.value) return;
+
+        const container = routingControl.value.getContainer();
 
         // Only add title if it doesn't exist yet and container exists
         if (container && !container.querySelector('.routing-title')) {
@@ -472,12 +483,13 @@ export default defineComponent({
           });
 
           // Store reference to coordinates
-          (marker as any).poiLat = lat;
-          (marker as any).poiLng = lon;
+          const poiMarker = marker as POIMarker;
+          poiMarker.poiLat = lat;
+          poiMarker.poiLng = lon;
 
           // Store in markers map if POI has an ID
           if (poi.id) {
-            markersMap.value.set(poi.id, marker);
+            markersMap.value.set(poi.id, poiMarker);
           }
 
           markers.push(marker);
@@ -503,26 +515,34 @@ export default defineComponent({
         try {
           // Use a short timeout to ensure the map is ready
           setTimeout(() => {
-            map.value?.fitBounds(bounds.pad(0.2), {
-              animate: false,
-              maxZoom: 15 // Limit how far it zooms in
-            });
-            forceMapRefresh();
+            if (map.value) {
+              map.value.fitBounds(bounds.pad(0.2), {
+                animate: false,
+                maxZoom: 15 // Limit how far it zooms in
+              });
+              forceMapRefresh();
+            }
           }, 100);
-        } catch(e) {
+        } catch(e: unknown) {
           console.error("Error fitting bounds:", e);
           // Fallback to default view
-          map.value?.setView([props.centerLat, props.centerLon], props.initialZoom);
+          if (map.value) {
+            map.value.setView([props.centerLat, props.centerLon], props.initialZoom);
+          }
         }
       } else if (markers.length === 0 && props.userLocation) {
         // Center on user if no markers
-        map.value?.setView(
-          [props.userLocation.latitude, props.userLocation.longitude],
-          13
-        );
+        if (map.value) {
+          map.value.setView(
+            [props.userLocation.latitude, props.userLocation.longitude],
+            13
+          );
+        }
       } else if (markers.length === 0) {
         // Fallback to default view
-        map.value?.setView([props.centerLat, props.centerLon], props.initialZoom);
+        if (map.value) {
+          map.value.setView([props.centerLat, props.centerLon], props.initialZoom);
+        }
       }
     }
 
@@ -589,22 +609,20 @@ export default defineComponent({
     }
 
     // Watch for POI changes
-    watch(() => props.pois, (newPois) => {
-      if (newPois) {
-        updatePOIs(newPois);
-      }
+    watch(() => props.pois, (newPois: POI[]) => {
+      updatePOIs(newPois);
     }, { deep: true, immediate: false });
 
     // Watch for user location changes
-    watch(() => props.userLocation, (newLocation) => {
+    watch(() => props.userLocation, (newLocation: UserLocation | null) => {
       if (newLocation) {
         updateUserLocation(newLocation);
       }
     }, { deep: true, immediate: false });
 
     // Watch for crisis events changes
-    watch(() => props.crisisEvents, (newEvents) => {
-      if (newEvents && newEvents.length > 0) {
+    watch(() => props.crisisEvents, (newEvents: CrisisEvent[]) => {
+      if (newEvents.length > 0) {
         updateCrisisEvents(newEvents);
       }
     }, { deep: true, immediate: false });

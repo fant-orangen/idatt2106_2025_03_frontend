@@ -215,8 +215,8 @@
           <MapComponent
             ref="mapComponent"
             :adminMode="true"
-            :centerLat="initialCenter.lat"
-            :centerLon="initialCenter.lng"
+            :centerLat="initialCenter.lat ?? 63.4305"
+            :centerLon="initialCenter.lng ?? 10.3951"
             :initialZoom="6"
             @map-clicked="handleMapClick"
           />
@@ -226,13 +226,14 @@
   </div>
 </template>
 
-<script>
-import { ref, computed, onMounted, watch } from 'vue'
+<script lang="ts">
+import { ref, computed, onMounted, watch, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { createPOI } from '@/services/api/AdminServices'
 import MapComponent from '@/components/map/MapComponent.vue'
 import AdminMapController from '@/components/admin/AdminMapController.vue'
+import * as L from 'leaflet'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -242,7 +243,32 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb/index.js'
 
-export default {
+// Define interfaces for the component
+interface Location {
+  lat: number | null;
+  lng: number | null;
+}
+
+interface FormData {
+  title: string;
+  type: string;
+  description: string;
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
+  openfrom: string;
+  opento: string;
+  contactinfo: string;
+}
+
+interface MapClickEvent {
+  latlng: {
+    lat: number;
+    lng: number;
+  };
+}
+
+export default defineComponent({
   name: 'AdminAddPOIPage',
   components: {
     BreadcrumbLink,
@@ -259,17 +285,17 @@ export default {
     const router = useRouter()
 
     // Component references
-    const mapComponent = ref(null)
-    const tempMarker = ref(null)
+    const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null)
+    const tempMarker = ref<L.Marker | null>(null)
 
     // Initial center coordinates (Norway)
-    const initialCenter = {
+    const initialCenter: Location = {
       lat: 63.4305,
       lng: 10.3951,
     }
 
     // Form data
-    const formData = ref({
+    const formData = ref<FormData>({
       title: '',
       type: '',
       description: '',
@@ -286,7 +312,7 @@ export default {
 
     // Computed property to get map component instance
     const mapComponentInstance = computed(() => {
-      return mapComponent.value
+      return mapComponent.value! as InstanceType<typeof MapComponent>
     })
 
     // Computed property to check if form is valid
@@ -303,9 +329,9 @@ export default {
     })
 
     // Handle map click to select location
-    function handleMapClick(event) {
+    function handleMapClick(event: MapClickEvent): void {
       console.log('Map clicked at:', event.latlng)
-      const location = {
+      const location: Location = {
         lat: event.latlng.lat,
         lng: event.latlng.lng,
       }
@@ -314,7 +340,7 @@ export default {
     }
 
     // Handle location selected from the map controller
-    function handleLocationSelected(location) {
+    function handleLocationSelected(location: Location): void {
       console.log('Location selected:', location)
 
       // Update form data with selected coordinates
@@ -322,7 +348,9 @@ export default {
       formData.value.longitude = location.lng
 
       // Update marker on the map
-      updateMapMarker(location.lat, location.lng)
+      if (location.lat !== null && location.lng !== null) {
+        updateMapMarker(location.lat, location.lng)
+      }
 
       // Try to get address via reverse geocoding (in a real app)
       // This is just a placeholder
@@ -330,20 +358,20 @@ export default {
     }
 
     // Handle location cleared
-    function handleLocationCleared() {
+    function handleLocationCleared(): void {
       console.log('Location cleared')
       formData.value.latitude = null
       formData.value.longitude = null
 
       // Remove the marker from the map
       if (tempMarker.value && mapComponent.value && mapComponent.value.removeMarker) {
-        mapComponent.value.removeMarker(tempMarker.value)
+        mapComponent.value.removeMarker(tempMarker.value as any)
         tempMarker.value = null
       }
     }
 
     // Update or create marker on the map
-    function updateMapMarker(lat, lng) {
+    function updateMapMarker(lat: number, lng: number): void {
       if (!mapComponent.value || !mapComponent.value.addMarker) {
         console.error('Map component or addMarker method not available')
         return
@@ -351,7 +379,7 @@ export default {
 
       // Remove existing marker if there is one
       if (tempMarker.value && mapComponent.value.removeMarker) {
-        mapComponent.value.removeMarker(tempMarker.value)
+        mapComponent.value.removeMarker(tempMarker.value as any)
       }
 
       // Add new marker
@@ -360,7 +388,7 @@ export default {
     }
 
     // Submit the form
-    async function submitPOI() {
+    async function submitPOI(): Promise<void> {
       if (!isFormValid.value) {
         formError.value = t('admin.form-invalid') || 'Vennligst fyll ut alle påkrevde felt.'
         return
@@ -401,14 +429,14 @@ export default {
     }
 
     // Cancel and return to admin panel
-    function cancelForm() {
+    function cancelForm(): void {
       router.push('/admin-panel')
     }
 
     // Update marker title when title changes
     watch(
       () => formData.value.title,
-      (newTitle) => {
+      (newTitle: string) => {
         if (tempMarker.value && mapComponent.value) {
           // In a real implementation, you would update the marker's popup or tooltip
           console.log('Updating marker title to:', newTitle)
@@ -417,7 +445,7 @@ export default {
     )
 
     // Initialize
-    onMounted(() => {
+    onMounted((): void => {
       console.log('AdminAddPOIPage mounted')
     })
 
@@ -436,7 +464,7 @@ export default {
       cancelForm,
     }
   },
-}
+})
 </script>
 
 <style scoped>

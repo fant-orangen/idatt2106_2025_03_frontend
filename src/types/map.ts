@@ -1,5 +1,5 @@
-// src/types/map.ts
 import * as L from 'leaflet';
+import type { PoiData } from '@/models/PoiData';
 
 export interface POI {
   id?: string | number;
@@ -41,9 +41,29 @@ export interface MarkerRemovedEvent {
   marker: L.Marker;
 }
 
+// Custom marker with POI coordinates
+export interface POIMarker extends L.Marker {
+  poiLat: number;
+  poiLng: number;
+}
+
 // Make TypeScript recognize these Leaflet extensions
 declare global {
   namespace L {
+    // MarkerClusterGroup options
+    interface MarkerClusterGroupOptions {
+      spiderfyOnMaxZoom?: boolean;
+      disableClusteringAtZoom?: number;
+      maxClusterRadius?: number;
+      removeOutsideVisibleBounds?: boolean;
+      animate?: boolean;
+      animateAddingMarkers?: boolean;
+      chunkedLoading?: boolean;
+      zoomToBoundsOnClick?: boolean;
+      showCoverageOnHover?: boolean;
+      iconCreateFunction?: (cluster: any) => L.DivIcon;
+    }
+
     // MarkerClusterGroup
     interface MarkerClusterGroup extends L.FeatureGroup {
       addLayer(layer: L.Layer): this;
@@ -57,22 +77,31 @@ declare global {
       unspiderfy(): this;
     }
 
-    function markerClusterGroup(options?: any): MarkerClusterGroup;
+    function markerClusterGroup(options?: MarkerClusterGroupOptions): MarkerClusterGroup;
 
     // Routing namespace
     namespace Routing {
+      interface LineOptions {
+        styles?: Array<{
+          color?: string;
+          weight?: number;
+          opacity?: number;
+        }>;
+        extendToWaypoints: boolean;
+        missingRouteTolerance: number;
+      }
+
+      interface Waypoint {
+        latLng: L.LatLng;
+        name?: string;
+        options?: any;
+      }
+
       interface RoutingControlOptions {
-        waypoints: L.LatLng[];
-        lineOptions?: {
-          styles?: any[];
-          extendToWaypoints?: boolean;
-          missingRouteTolerance?: number;
-        };
-        altLineOptions?: {
-          styles?: any[];
-          extendToWaypoints?: boolean;
-          missingRouteTolerance?: number;
-        };
+        /** now optional, matching the original DT type */
+        waypoints?: Waypoint[] | L.LatLng[];
+        lineOptions?: LineOptions;
+        altLineOptions?: LineOptions;
         show?: boolean;
         collapsible?: boolean;
         collapsed?: boolean;
@@ -83,31 +112,34 @@ declare global {
         showAlternatives?: boolean;
         useZoomParameter?: boolean;
         draggableWaypoints?: boolean;
-        createMarker?: Function;
+        createMarker?: (i: number, waypoint: Waypoint, n: number) => L.Marker | null;
       }
 
       interface Control {
         new(options: RoutingControlOptions): Control;
-        addTo(map: L.Map): Control;
-        on(event: string, fn: Function): Control;
+        addTo(map: L.Map): this;
+        on(event: string, fn: (e: any) => void): this;
         getContainer(): HTMLElement;
-        getWaypoints(): any[];
-        setWaypoints(waypoints: any[]): Control;
-        spliceWaypoints(index: number, waypointsToRemove: number, ...wayPoints: any[]): Control;
+        getWaypoints(): Waypoint[];
+        setWaypoints(waypoints: Waypoint[]): this;
+        spliceWaypoints(index: number, waypointsToRemove: number, ...waypoints: Waypoint[]): this;
       }
     }
 
     // Fix for Default icon
     namespace Icon {
       interface Default {
-        prototype: any;
+        prototype: {
+          _getIconUrl?: string;
+          [key: string]: any;
+        };
       }
     }
   }
 }
 
 // Export a compatibility helper to convert PoiData to POI
-export function convertPoiData(poiData: any): POI {
+export function convertPoiData(poiData: PoiData): POI {
   return {
     id: poiData.id,
     name: poiData.name,
@@ -117,8 +149,12 @@ export function convertPoiData(poiData: any): POI {
     address: poiData.address || undefined,
     openingHours: poiData.openingHours || undefined,
     contactInfo: poiData.contactInfo || undefined,
-    latitude: typeof poiData.latitude === 'string' ? parseFloat(poiData.latitude) : poiData.latitude,
-    longitude: typeof poiData.longitude === 'string' ? parseFloat(poiData.longitude) : poiData.longitude,
+    latitude: typeof poiData.latitude === 'string'
+      ? parseFloat(poiData.latitude)
+      : poiData.latitude,
+    longitude: typeof poiData.longitude === 'string'
+      ? parseFloat(poiData.longitude)
+      : poiData.longitude,
     createdAt: poiData.createdAt,
     updatedAt: poiData.updatedAt
   };

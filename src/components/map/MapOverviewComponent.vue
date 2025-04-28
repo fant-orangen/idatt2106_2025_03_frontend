@@ -121,7 +121,8 @@ import {
   fetchNearestPoiByType
 } from '@/services/api/PoiService';
 import type { PoiData } from '@/models/PoiData';
-import { POI, UserLocation, CrisisEvent, convertPoiData } from '@/types/map';
+import type { POI, UserLocation, CrisisEvent } from '@/types/map';
+import { convertPoiData } from '@/types/map';
 import {
   Card,
   CardContent,
@@ -161,6 +162,7 @@ const convertedPois = computed<POI[]>(() => {
 
 // Helper for ensuring numerical coordinates
 function ensureNumericCoordinates(poi: PoiData): PoiData {
+  // Create a copy to avoid modifying the original
   return {
     ...poi,
     latitude: typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude,
@@ -171,12 +173,12 @@ function ensureNumericCoordinates(poi: PoiData): PoiData {
 // Derive POI types
 const poiTypes = computed(() => {
   const types = new Map<number, string>();
-  allPois.value.forEach((poi) => {
+  allPois.value.forEach((poi: PoiData) => {
     if (poi.poiTypeId && !types.has(poi.poiTypeId)) {
       types.set(poi.poiTypeId, poi.poiTypeName);
     }
   });
-  return Array.from(types.entries()).map(([id, name]) => ({ id, name }));
+  return Array.from(types.entries()).map(([id, name]: [number, string]) => ({ id, name }));
 });
 
 // Geolocation helper
@@ -200,7 +202,7 @@ async function getUserLocation() {
     };
     locationStatus.value = t('map.location-success');
     return true;
-  } catch {
+  } catch (error: unknown) {
     locationStatus.value = t('map.location-error');
     return false;
   }
@@ -238,6 +240,7 @@ async function applyFilters() {
 
   isLoadingPois.value = true;
   try {
+    // Initialize with empty array
     let fetchedResults: PoiData[] = [];
 
     // 1) LOCATION-ONLY
@@ -249,18 +252,20 @@ async function applyFilters() {
       );
     }
     // 2) LOCATION + TYPE
-    else if (hasLocation && hasType && userLocation.value && selectedPoiType.value !== null) {
+    else if (hasLocation && hasType && userLocation.value) {
+      // We already know selectedPoiType.value !== null from hasType
       fetchedResults = await fetchPoisNearby(
         userLocation.value.latitude,
         userLocation.value.longitude,
         distanceInMeters.value,
-        selectedPoiType.value
+        selectedPoiType.value!
       );
     }
     // 3) TYPE-ONLY
-    else if (!hasLocation && hasType && selectedPoiType.value !== null) {
+    else if (!hasLocation && hasType) {
+      // We already know selectedPoiType.value !== null from hasType
       fetchedResults = await fetchPoisByType(
-        selectedPoiType.value
+        selectedPoiType.value!
       );
     }
 
@@ -278,7 +283,7 @@ async function applyFilters() {
       }
     }, 10);
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error applying filters:', error);
     poiError.value = t('map.filter-error');
     pointsOfInterest.value = [];
@@ -331,7 +336,7 @@ async function findNearestShelter() {
         poiError.value = t('map.find-error');
       }
     }, 10);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error finding nearest shelter:', error);
     poiError.value = t('map.find-error');
     pointsOfInterest.value = [];
@@ -368,7 +373,7 @@ async function findNearestPoi() {
         poiError.value = t('map.find-error');
       }
     }, 10);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error finding nearest POI:', error);
     poiError.value = t('map.find-error');
     pointsOfInterest.value = [];
@@ -377,7 +382,7 @@ async function findNearestPoi() {
   }
 }
 
-watch(distanceInMeters, (val) => {
+watch(distanceInMeters, (val: number) => {
   if (val < 100) distanceInMeters.value = 100;
   else if (val > 5000000) distanceInMeters.value = 5000000;
 });
@@ -402,7 +407,7 @@ onMounted(async () => {
       pointsOfInterest.value = [...pois];
       console.log("Initial POIs loaded:", pointsOfInterest.value.length);
     }, 10);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error loading POIs:', error);
     poiError.value = t('map.load-error');
     allPois.value = [];

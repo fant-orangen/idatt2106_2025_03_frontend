@@ -65,27 +65,45 @@
   </div>
 </template>
 
-<script>
-import { ref, defineEmits, defineProps } from 'vue';
+<script lang="ts">
+import { ref, defineComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
+import type { PropType } from 'vue';
+import * as L from 'leaflet';
 
-export default {
+// Define interfaces for the component
+interface Location {
+  lat: number | null;
+  lng: number | null;
+}
+
+interface MapComponent {
+  mapContainerId?: string;
+  addMarker?: (lat: number, lng: number, title?: string) => L.Marker | null;
+  removeMarker?: (marker: L.Marker) => void;
+  centerMap?: (lat: number, lng: number, zoom?: number) => void;
+  forceMapRefresh?: () => void;
+  tempMarker?: any;
+  resetMap?: () => void;
+}
+
+export default defineComponent({
   name: 'AdminMapController',
   props: {
     mapComponent: {
-      type: Object,
+      type: Object as PropType<MapComponent>,
       required: true
     }
   },
   emits: ['location-selected', 'location-cleared'],
   setup(props, { emit }) {
     const { t } = useI18n();
-    const searchAddress = ref('');
-    const statusMessage = ref('');
-    const selectedLocation = ref({ lat: null, lng: null });
+    const searchAddress = ref<string>('');
+    const statusMessage = ref<string>('');
+    const selectedLocation = ref<Location>({ lat: null, lng: null });
 
     // Get user's current location
-    async function getUserLocation() {
+    async function getUserLocation(): Promise<void> {
       statusMessage.value = t('admin.getting-location') || 'Henter posisjon...';
 
       if (!navigator.geolocation) {
@@ -94,7 +112,7 @@ export default {
       }
 
       try {
-        const position = await new Promise((resolve, reject) => {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
             enableHighAccuracy: true,
             timeout: 5000,
@@ -102,16 +120,16 @@ export default {
           });
         });
 
-        const location = {
+        const location: Location = {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
 
         // Center map on user location
-        if (props.mapComponent && props.mapComponent.centerMap) {
+        if (props.mapComponent && props.mapComponent.centerMap && location.lat !== null && location.lng !== null) {
           props.mapComponent.centerMap(location.lat, location.lng, 15);
         } else {
-          console.error("Map component or centerMap method not available");
+          console.error("Map component or centerMap method not available, or location coordinates are null");
         }
 
         statusMessage.value = t('admin.location-found') || 'Posisjon funnet.';
@@ -125,7 +143,7 @@ export default {
     }
 
     // Search for a location by address
-    async function searchLocation() {
+    async function searchLocation(): Promise<void> {
       if (!searchAddress.value) {
         statusMessage.value = t('admin.enter-valid-address') || 'Vennligst skriv inn en gyldig adresse.';
         return;
@@ -137,7 +155,7 @@ export default {
         // This would be replaced with a real geocoding service
         const location = await geocodeAddress(searchAddress.value);
 
-        if (location) {
+        if (location && location.lat !== null && location.lng !== null) {
           if (props.mapComponent && props.mapComponent.centerMap) {
             props.mapComponent.centerMap(location.lat, location.lng, 15);
           } else {
@@ -157,7 +175,7 @@ export default {
     }
 
     // Placeholder geocoding function - would be replaced with a real geocoding service
-    async function geocodeAddress(address) {
+    async function geocodeAddress(address: string): Promise<Location> {
       // This is a dummy implementation - in a real app you would call a geocoding API
       console.log(`Geocoding address: ${address}`);
 
@@ -169,19 +187,19 @@ export default {
     }
 
     // Handle selection of a location
-    function setSelectedLocation(location) {
+    function setSelectedLocation(location: Location): void {
       selectedLocation.value = location;
       emit('location-selected', location);
     }
 
     // Clear the currently selected location
-    function clearSelectedLocation() {
+    function clearSelectedLocation(): void {
       selectedLocation.value = { lat: null, lng: null };
       emit('location-cleared');
     }
 
     // Reset the map view
-    function resetMap() {
+    function resetMap(): void {
       if (props.mapComponent && props.mapComponent.centerMap) {
         props.mapComponent.centerMap(63.4305, 10.3951, 6);
         statusMessage.value = t('admin.map-reset') || 'Kart tilbakestilt.';
@@ -204,7 +222,7 @@ export default {
       resetMap
     };
   }
-};
+});
 </script>
 
 <style scoped>
