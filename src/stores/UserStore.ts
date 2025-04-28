@@ -25,7 +25,6 @@ export const useUserStore = defineStore("user", () => {
   const role = ref<string | null>(null);
   const userId = ref<string | null>(null);
   const isAuthenticated = ref(false);
-
   const profile = ref<UserProfile>({
     email: '',
     firstName: '',
@@ -33,40 +32,39 @@ export const useUserStore = defineStore("user", () => {
     phone: '',
   });
 
-  // Initialize from localStorage only if token exists
-  const initializeFromStorage = () => {
+  // Initialize from localStorage and validate token
+  async function initializeFromStorage() {
+    console.log('Initializing from storage...');
     const storedToken = localStorage.getItem('token');
+    const storedUsername = localStorage.getItem('username');
+    const storedRole = localStorage.getItem('role');
+    const storedUserId = localStorage.getItem('userId');
+
     if (storedToken) {
-      token.value = storedToken;
-      username.value = localStorage.getItem('username');
-      role.value = localStorage.getItem('role');
-      userId.value = localStorage.getItem('userId');
-    }
-  };
+      try {
+        // First restore state from localStorage
+        token.value = storedToken;
+        username.value = storedUsername;
+        role.value = storedRole;
+        userId.value = storedUserId;
 
-  // Call initialization
-  initializeFromStorage();
+        // Then validate the token
+        await api.get('/auth/validate', {
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
 
-  // Validate token on store initialization
-  const validateToken = async () => {
-    if (!token.value) {
+        isAuthenticated.value = true;
+        console.log('Token validated successfully');
+      } catch (error) {
+        console.error('Token validation failed:', error);
+        clearAuthState();
+      }
+    } else {
       clearAuthState();
-      return false;
     }
+  }
 
-    try {
-      // Try to fetch profile to validate token
-      await api.get('/users/profile');
-      isAuthenticated.value = true;
-      return true;
-    } catch (error) {
-      console.error('Token validation failed:', error);
-      clearAuthState();
-      return false;
-    }
-  };
-
-  const clearAuthState = () => {
+  function clearAuthState() {
     token.value = null;
     username.value = null;
     role.value = null;
@@ -76,245 +74,74 @@ export const useUserStore = defineStore("user", () => {
     localStorage.removeItem('username');
     localStorage.removeItem('role');
     localStorage.removeItem('userId');
-  };
+  }
 
-  /**
-   * Processes a successful login response.
-   *
-   * Updates store state with authentication information and persists
-   * the data to localStorage.
-   *
-   * @param {number} status - HTTP status code from login response
-   * @param {string} tokenStr - JWT token string from authentication
-   * @param {string} userEmail - User's email address
-   * @returns {void}
-   * @private
-   */
   function login(status: number, tokenStr: string, userEmail: string) {
     if (status === 200) {
-      token.value = tokenStr;
-      username.value = userEmail;
-
-      // Extract role and userId from token and save to localStorage
+      // Extract role and userId from token
       const tokenParts = tokenStr.split('.');
       if (tokenParts.length === 3) {
         try {
           const payload = JSON.parse(atob(tokenParts[1]));
           role.value = payload.role;
           userId.value = payload.userId?.toString();
-          if (payload.role) localStorage.setItem('role', payload.role);
-          if (payload.userId) localStorage.setItem('userId', payload.userId.toString());
 
-          // Set authenticated state
+          // Save to localStorage
+          localStorage.setItem('token', tokenStr);
+          localStorage.setItem('username', userEmail);
+          localStorage.setItem('role', payload.role);
+          localStorage.setItem('userId', payload.userId?.toString() || '');
+
+          // Update state
+          token.value = tokenStr;
+          username.value = userEmail;
           isAuthenticated.value = true;
         } catch (error) {
-          console.error("Error parsing token payload during login:", error);
+          console.error("Error parsing token payload:", error);
           clearAuthState();
         }
-      } else {
-        console.error("Invalid token format received during login.");
-        clearAuthState();
       }
-
-      localStorage.setItem('token', tokenStr);
-      localStorage.setItem('username', userEmail);
-    } else {
-      throw new Error("Login Info Error");
     }
   }
 
-  /**
-   * Authenticates a user with email and password.
-   *
-   * Calls the authentication API and processes the response.
-   *
-   * @param {string} userEmail - User's email address
-   * @param {string} password - User's password
-   * @returns {Promise<void>} Promise that resolves upon successful login
-   * @throws {Error} If authentication fails due to invalid credentials or network errors
-   */
-  async function verifyLogin(userEmail: string, password: string) { // Renamed 'user' to 'userEmail'
+  async function verifyLogin(userEmail: string, password: string) {
     try {
-      console.log(`Starting login for user: ${userEmail}`);
-      // Use userEmail for the 'username' field expected by fetchToken
-      const response = await fetchToken({ username: userEmail, password: password });
-      console.log("Login response:", response.data);
-
-      const tokenStr = response.data.token;
-
-      if (response.status !== 200 || !tokenStr) {
-        throw new Error("Login Info Error: Invalid status or missing token");
-      }
-
-      login(response.status, tokenStr, userEmail); // Pass userEmail here
+      const response = await fetchToken({ username: userEmail, password });
+      login(response.status, response.data.token, userEmail);
     } catch (error) {
       console.error("Login error:", error);
-      // Clear potentially bad state if login fails
-      logout(); // Consider calling logout on failure
       throw error;
     }
   }
 
-  /**
-   * Registers a new user account and automatically logs in.
-   *
-   * Sends registration data to the backend API and then attempts to authenticate
-   * with the provided credentials.
-   *
-   * @param {RegistrationData} userData - User registration details
-   * @returns {Promise<void>} Promise that resolves upon successful registration and login
-   * @throws {Error} If registration or subsequent login fails
-   */
   async function registerUser(userData: RegistrationData) {
     try {
       await register(userData);
       await verifyLogin(userData.email, userData.password);
     } catch (error) {
-      console.error("Registration or subsequent login failed:", error);
+      console.error("Registration error:", error);
       throw error;
     }
   }
 
-
-  /**
-   * Fetches the current user's profile from the backend.
-   *
-   * Updates the store's profile state with the retrieved information.
-   *
-   * @returns {Promise<void>} Promise that resolves when profile is successfully fetched
-   * @throws {Error} If the API request fails
-   */
-  async function fetchProfile() {
-    try {
-      const response = await api.get('/users/profile');
-      // Map backend response to the profile ref structure
-      profile.value = {
-        email: response.data.email || '',
-        firstName: response.data.firstName || '',
-        lastName: response.data.lastName || '',
-        phone: response.data.phone || ''
-      };
-    } catch (error) {
-      console.error("Failed to fetch profile:", error);
-      // Reset profile on error
-      profile.value = { email: '', firstName: '', lastName: '', phone: ''};
-      throw error;
-    }
-  }
-
-
-  /**
-   * Updates the user's profile by sending updated data to the backend.
-   * The payload must match the backend's UserCreateDto structure.
-   *
-   * @param updatedProfile - An object matching UserProfile interface, plus the required password.
-   */
-    // The payload for update must match UserCreateDto
-  interface UpdatePayload extends UserProfile {
-    password?: string; // New password (optional)
-    currentPassword?: string; // Current password for verification (required by backend endpoint logic)
-  }
-
-  /**
-   * Updates the user's profile information.
-   *
-   * Sends updated profile data to the backend API and updates the local state.
-   *
-   * @param {UpdatePayload} updatedProfile - Updated profile data including password for verification
-   * @returns {Promise<void>} Promise that resolves when profile is successfully updated
-   * @throws {Error} If the update fails or password is missing
-   */
-  async function updateProfile(updatedProfile: UpdatePayload) { // Use the extended payload type
-    try {
-      // Construct the payload matching UserUpdateDto (or similar backend DTO)
-      const payload = {
-        email: updatedProfile.email,
-        password: updatedProfile.password, // Send new password if provided
-        firstName: updatedProfile.firstName,
-        lastName: updatedProfile.lastName,
-        phone: updatedProfile.phone,
-        currentPassword: updatedProfile.currentPassword // <-- Include currentPassword
-      };
-
-      // Check if current password is provided, backend requires it for verification
-      if (!payload.currentPassword) {
-        throw new Error("Current password is required to update profile.");
-      }
-
-
-      const response = await api.put('/users/profile', payload);
-
-      // Update local profile state with the response from the backend
-      // Ensure mapping matches UserProfile interface
-      profile.value = {
-        email: response.data.email || '',
-        firstName: response.data.firstName || '',
-        lastName: response.data.lastName || '',
-        phone: response.data.phone || '',
-      };
-    } catch (error) {
-      console.error("Failed to update profile:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Logs out the current user.
-   *
-   * Clears all authentication state from memory and localStorage.
-   *
-   * @returns {void}
-   */
   function logout() {
-    token.value = null;
-    username.value = null;
-    role.value = null;
-    userId.value = null; // Clear userId
-    profile.value = { email: '', firstName: '', lastName: '', phone: ''};
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userId'); // Remove userId from storage
+    clearAuthState();
   }
 
-  /** Computed property indicating if a user is logged in with a valid ID */
-  const isLoggedInUser = computed(() => {
-    return userId.value !== null && userId.value !== '0';
-  });
-
-  /** Computed property indicating if user is authenticated with a valid token */
   const loggedIn = computed(() => isAuthenticated.value);
-
-  /** Computed getter for the username */
-  const getUsername = computed(() => username.value);
-
-  /** Computed getter for the authentication token */
-  const getToken = computed(() => token.value);
-
-  /** Computed getter for the user ID */
-  const getUserId = computed(() => userId.value);
-
-  /** Computed getter for the user role */
-  const getUserRole = computed(() => role.value);
 
   return {
     token,
     username,
-    profile,
     role,
     userId,
+    isAuthenticated,
+    profile,
     login,
     verifyLogin,
     registerUser,
-    fetchProfile,
-    updateProfile,
     logout,
     loggedIn,
-    getUsername,
-    getToken,
-    getUserId,
-    getUserRole,
-    isLoggedInUser,
-    validateToken
+    initializeFromStorage
   };
 });

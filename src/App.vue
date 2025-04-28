@@ -5,22 +5,32 @@ import InvitationPopup from './components/invitation/InvitationPopup.vue'
 import { RouterView } from 'vue-router'
 import { useWebSocket } from '@/composables/useWebSocket';
 import { useUserStore } from '@/stores/UserStore';
-import { onMounted } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const userStore = useUserStore();
 const { isConnected } = useWebSocket();
+const isInitialized = ref(false);
 
-// Validate token on app initialization
+// Initialize the store and validate token
 onMounted(async () => {
-  console.log('App.vue mounted - Validating token');
-  await userStore.validateToken();
-  // Log state after validation
-  console.log('App.vue - State after token validation:', {
+  console.log('App.vue mounted - Initializing store');
+  await userStore.initializeFromStorage();
+  console.log('App.vue - State after initialization:', {
     loggedIn: userStore.loggedIn,
     userId: userStore.userId,
-    profile: userStore.profile
+    profile: userStore.profile,
+    isAuthenticated: userStore.isAuthenticated
   });
+  isInitialized.value = true;
 });
+
+// Watch for changes in authentication state
+watch(
+  () => userStore.isAuthenticated,
+  (newAuthState) => {
+    console.log('Authentication state changed:', newAuthState);
+  }
+);
 </script>
 
 <template>
@@ -31,7 +41,7 @@ onMounted(async () => {
     </div>
     <Footer />
     <InvitationPopup />
-    <div v-if="!isConnected" class="connection-status">
+    <div v-if="isInitialized && !isConnected" class="connection-status">
       Disconnected from notifications
     </div>
   </div>
