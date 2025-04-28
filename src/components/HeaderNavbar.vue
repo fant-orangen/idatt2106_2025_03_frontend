@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
+import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
 import { Globe, User, Settings, Sun, Moon } from 'lucide-vue-next'
 import { getNotifications} from '@/services/NotificationService.ts'
 import type { Notification } from '@/models/Notification.ts'
@@ -18,12 +19,15 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { Button } from '@/components/ui/button'
+import { useUserStore } from '@/stores/UserStore'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import NotificationPopover from '@/components/NotificationPopover.vue'
 
 
 const { locale } = useI18n()
 const router = useRouter()
+const userStore = useUserStore()
+const isDropdownOpen = ref(false)
 
 let prevScrollpos: number = window.pageYOffset
 const showDropdown = ref(false)
@@ -63,6 +67,11 @@ window.onscroll = function (): void {
   }
 
   prevScrollpos = currentScrollPos
+}
+
+function logOut(): void {
+  userStore.logout()
+  router.push('/')
 }
 
 function toggleDropdown(): void {
@@ -112,21 +121,27 @@ function goToPage(route: string) {
     </div>
     <div class="navbar-left flex items-center gap-4">
       <RouterLink
+        v-if="!userStore.loggedIn"
         to="/login"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('login.login') }}</RouterLink
       >
       <RouterLink
+        v-if="!userStore.loggedIn"
         to="/register"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('login.signup') }}</RouterLink
       >
       <div class="flex gap-2">
-        <DropdownMenu>
+        <DropdownMenu v-if="userStore.loggedIn">
           <DropdownMenuTrigger as-child>
-            <Button variant="outline" size="icon" class="cursor-pointer">
+            <Button
+              variant="ghost"
+              size="icon"
+              class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            >
               <User class="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
@@ -142,9 +157,27 @@ function goToPage(route: string) {
                 <Settings class="mr-2 h-4 w-4" />
                 <span>Settings (WIP)</span>
               </DropdownMenuItem>
+              <DropdownMenuSeparator v-if="userStore.loggedIn" />
+              <DropdownMenuItem v-if="userStore.loggedIn" @click="goToPage('/admin-panel')">
+                <ShieldUser class="mr-2 h-4 w-4" />
+                <span>Admin Panel (WIP)</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator v-if="userStore.loggedIn" />
+              <DropdownMenuItem @click="logOut()">
+                <LogOut class="mr-2 h-4 w-4" />
+                <span>Log out </span>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          @click="goToPage('/')"
+        >
+          <Bell class="h-5 w-5" />
+        </Button>
         <Popover>
           <PopoverTrigger as="button" class="no-border">
             <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
@@ -154,9 +187,9 @@ function goToPage(route: string) {
           </PopoverContent>
         </Popover>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
-          class="dark-mode-toggle cursor-pointer p-0"
+          class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
           @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
         >
           <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />

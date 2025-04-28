@@ -1,6 +1,5 @@
-
 /**
- * An interface collection for notifications.
+ * Interface representing a notification message received from the WebSocket.
  *
  * @interface Notification
  */
@@ -16,6 +15,14 @@ export interface Notification {
   readAt?: Date;
   createdAt: Date;
 }
+
+/**
+ * Type for the notification handler function.
+ *
+ * @type NotificationHandler
+ */
+export type NotificationHandler = (notification: Notification) => void;
+
 
 export interface CreateNotificationDto {
   userId: number;
