@@ -157,7 +157,7 @@ const handleSaveUser = async (userData: {
     showInviteUser.value = true;
   };
 
-  const handleUserInvited = (userData) => {
+  const handleUserInvited = (userData: any) => {
     console.log('User invited:', userData);
     showInviteUser.value = false;
   };
