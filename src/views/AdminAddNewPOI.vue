@@ -1,6 +1,5 @@
 <template>
   <div style="margin: 20px">
-    <!--Breadcrumb at the top left-->
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
@@ -16,20 +15,15 @@
     </Breadcrumb>
   </div>
   <div class="admin-add-poi-page">
-    <!-- Page title -->
     <h1>{{ $t('admin.make-new-POI') || 'Legg til et nytt interessepunkt' }}</h1>
 
-    <!-- Main content container -->
     <div class="content-container">
-      <!-- Form section -->
       <div class="form-section">
         <form @submit.prevent="submitPOI">
-          <!-- Basic info section -->
           <div class="form-section-header">
             <h2>{{ $t('admin.basic-info') || 'Grunnleggende informasjon' }}</h2>
           </div>
 
-          <!-- Title -->
           <div class="form-group">
             <label for="title">{{ $t('add-event-info.titles.title') || 'Tittel' }}</label>
             <input
@@ -46,7 +40,6 @@
             </div>
           </div>
 
-          <!-- Type -->
           <div class="form-group">
             <label for="type">{{ $t('add-POI-info.titles.type') || 'Type' }}</label>
             <select id="type" v-model="formData.type" required>
@@ -75,7 +68,6 @@
             </div>
           </div>
 
-          <!-- Description -->
           <div class="form-group">
             <label for="description">{{
                 $t('add-event-info.titles.description') || 'Informasjon'
@@ -98,12 +90,10 @@
             </div>
           </div>
 
-          <!-- Location section -->
           <div class="form-section-header">
             <h2>{{ $t('admin.location-info') || 'Plassering' }}</h2>
           </div>
 
-          <!-- Address -->
           <div class="form-group">
             <label for="address">{{ $t('add-event-info.titles.address') || 'Adresse' }}</label>
             <input
@@ -114,7 +104,6 @@
             />
           </div>
 
-          <!-- Coordinates -->
           <div class="coordinates-container">
             <div class="form-group half-width">
               <label for="latitude">{{
@@ -145,12 +134,10 @@
             </div>
           </div>
 
-          <!-- Hours & Contact section -->
           <div class="form-section-header">
             <h2>{{ $t('admin.hours-contact-info') || 'Åpningstider og kontaktinformasjon' }}</h2>
           </div>
 
-          <!-- Opening Hours -->
           <div class="hours-container">
             <div class="form-group half-width">
               <label for="openfrom">{{ $t('add-POI-info.titles.open-from') || 'Åpent fra' }}</label>
@@ -163,7 +150,6 @@
             </div>
           </div>
 
-          <!-- Contact Info -->
           <div class="form-group">
             <label for="contactinfo">{{
                 $t('add-POI-info.titles.contact-info') || 'Kontaktinformasjon'
@@ -182,12 +168,10 @@
             </div>
           </div>
 
-          <!-- Error message -->
           <div v-if="formError" class="form-error">
             {{ formError }}
           </div>
 
-          <!-- Submit/Cancel buttons -->
           <div class="form-actions">
             <button type="button" class="cancel-button" @click="cancelForm">
               {{ $t('admin.cancel') || 'Avbryt' }}
@@ -201,16 +185,13 @@
         </form>
       </div>
 
-      <!-- Map section -->
       <div class="map-section">
-        <!-- Map controls -->
         <AdminMapController
           :mapComponent="mapComponentInstance"
           @location-selected="handleLocationSelected"
           @location-cleared="handleLocationCleared"
         />
 
-        <!-- Map container -->
         <div class="map-container">
           <MapComponent
             ref="mapComponent"
@@ -230,7 +211,8 @@
 import { ref, computed, onMounted, watch, defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { createPOI } from '@/services/api/AdminServices'
+// Ensure createPOI is correctly imported
+import { createPOI } from '@/services/api/AdminServices' // <-- Make sure path is correct
 import MapComponent from '@/components/map/MapComponent.vue'
 import AdminMapController from '@/components/admin/AdminMapController.vue'
 import * as L from 'leaflet'
@@ -251,7 +233,7 @@ interface Location {
 
 interface FormData {
   title: string;
-  type: string;
+  type: string; // Keep as string from select input
   description: string;
   address: string;
   latitude: number | null;
@@ -297,7 +279,7 @@ export default defineComponent({
     // Form data
     const formData = ref<FormData>({
       title: '',
-      type: '',
+      type: '', // Keep as string from select input
       description: '',
       address: '',
       latitude: null,
@@ -312,15 +294,17 @@ export default defineComponent({
 
     // Computed property to get map component instance
     const mapComponentInstance = computed(() => {
-      return mapComponent.value! as InstanceType<typeof MapComponent>
-    })
+      // Ensure mapComponent.value is defined before accessing its properties
+      return mapComponent.value ? (mapComponent.value as InstanceType<typeof MapComponent>) : null;
+    });
 
     // Computed property to check if form is valid
     const isFormValid = computed(() => {
+      // Keep existing validation logic
       return (
         formData.value.title &&
         formData.value.title.length >= 2 &&
-        formData.value.type &&
+        formData.value.type && // Ensure a type is selected
         formData.value.description &&
         formData.value.description.length >= 10 &&
         formData.value.latitude !== null &&
@@ -330,40 +314,35 @@ export default defineComponent({
 
     // Handle map click to select location
     function handleMapClick(event: MapClickEvent): void {
+      // Keep existing logic
       console.log('Map clicked at:', event.latlng)
       const location: Location = {
         lat: event.latlng.lat,
         lng: event.latlng.lng,
       }
-
       handleLocationSelected(location)
     }
 
     // Handle location selected from the map controller
     function handleLocationSelected(location: Location): void {
+      // Keep existing logic
       console.log('Location selected:', location)
-
-      // Update form data with selected coordinates
       formData.value.latitude = location.lat
       formData.value.longitude = location.lng
-
-      // Update marker on the map
       if (location.lat !== null && location.lng !== null) {
         updateMapMarker(location.lat, location.lng)
+        // Optional: Attempt reverse geocoding here if needed
+        // tryReverseGeocode(location.lat, location.lng);
       }
-
-      // Try to get address via reverse geocoding (in a real app)
-      // This is just a placeholder
       console.log('Selected location:', location)
     }
 
     // Handle location cleared
     function handleLocationCleared(): void {
+      // Keep existing logic
       console.log('Location cleared')
       formData.value.latitude = null
       formData.value.longitude = null
-
-      // Remove the marker from the map
       if (tempMarker.value && mapComponent.value && mapComponent.value.removeMarker) {
         mapComponent.value.removeMarker(tempMarker.value as any)
         tempMarker.value = null
@@ -372,22 +351,30 @@ export default defineComponent({
 
     // Update or create marker on the map
     function updateMapMarker(lat: number, lng: number): void {
+      // Keep existing logic
       if (!mapComponent.value || !mapComponent.value.addMarker) {
         console.error('Map component or addMarker method not available')
         return
       }
-
-      // Remove existing marker if there is one
       if (tempMarker.value && mapComponent.value.removeMarker) {
         mapComponent.value.removeMarker(tempMarker.value as any)
       }
-
-      // Add new marker
-      const title = formData.value.title || 'Nytt interessepunkt'
+      const title = formData.value.title || t('navigation.new-POI') || 'Nytt interessepunkt'
+      // Add marker using MapComponent's method
       tempMarker.value = mapComponent.value.addMarker(lat, lng, title)
+
+      // --- ADDED: Update marker popup/tooltip if possible ---
+      if (tempMarker.value) {
+        if (typeof tempMarker.value.bindPopup === 'function') {
+          tempMarker.value.bindPopup(`<b>${title}</b><br>${formData.value.description || ''}`).openPopup();
+        } else if (typeof tempMarker.value.bindTooltip === 'function') {
+          tempMarker.value.bindTooltip(title).openTooltip();
+        }
+      }
+      // --- END ADDED ---
     }
 
-    // Submit the form
+    // *** MODIFIED: submitPOI function ***
     async function submitPOI(): Promise<void> {
       if (!isFormValid.value) {
         formError.value = t('admin.form-invalid') || 'Vennligst fyll ut alle påkrevde felt.'
@@ -397,59 +384,121 @@ export default defineComponent({
       isSubmitting.value = true
       formError.value = ''
 
+      // --- ADDED: Map frontend type string to backend poiTypeId integer ---
+      // Based on data.sql and frontend options
+      // Adjust IDs as needed based on your actual database setup or add new types.
+      let poiTypeId: number | null = null;
+      switch (formData.value.type) {
+        case 'shelter':
+          poiTypeId = 4; // Matches 'Shelter' in data.sql
+          break;
+        case 'water-source':
+          poiTypeId = 6; // Matches 'Water Distribution Point'
+          break;
+        case 'food-station':
+          poiTypeId = 5; // Matches 'Grocery Store' (assuming this is the intent for food distribution)
+          break;
+        case 'defibrillator':
+          // Assuming Defibrillator might relate to Hospital or needs a new type ID
+          // Use a placeholder or add a specific type ID in your backend/DB
+          poiTypeId = 1; // Example: Using 'Hospital' ID as placeholder
+          console.warn("Mapping 'defibrillator' to POI Type ID 1 (Hospital). Adjust if needed.");
+          break;
+        default:
+          formError.value = t('add-event-info.errors.type') || 'Ugyldig interessepunkttype valgt.';
+          isSubmitting.value = false;
+          return;
+      }
+      // --- END ADDED ---
+
+      // --- ADDED: Combine opening hours ---
+      let openingHours = '';
+      if (formData.value.openfrom && formData.value.opento) {
+        openingHours = `${formData.value.openfrom} - ${formData.value.opento}`;
+      } else if (formData.value.openfrom) {
+        openingHours = `Fra ${formData.value.openfrom}`; // Adjusted translation
+      } else if (formData.value.opento) {
+        openingHours = `Til ${formData.value.opento}`; // Adjusted translation
+      }
+      // --- END ADDED ---
+
+
       try {
-        // Format data for API
+        // --- MODIFIED: Format data for API according to CreatePoiDto ---
+        // Backend expects 'name', 'latitude', 'longitude', 'poiTypeId' as mandatory
+        // Other fields like address, description, openingHours, contactInfo are optional
         const poiData = {
-          title: formData.value.title,
-          latitude: formData.value.latitude,
-          longitude: formData.value.longitude,
-          address: formData.value.address || '',
-          type: formData.value.type,
-          openfrom: formData.value.openfrom || '',
-          opento: formData.value.opento || '',
-          contactinfo: formData.value.contactinfo || '',
-          description: formData.value.description,
+          // Map 'title' to 'name' as expected by backend DTO
+          name: formData.value.title,
+          latitude: formData.value.latitude!, // Use non-null assertion as isFormValid checks this
+          longitude: formData.value.longitude!, // Use non-null assertion
+          address: formData.value.address || null, // Send null if empty
+          // Use the mapped poiTypeId
+          poiTypeId: poiTypeId,
+          description: formData.value.description || null,
+          // Use combined openingHours
+          openingHours: openingHours || null,
+          contactInfo: formData.value.contactinfo || null, // Send null if empty
         }
+        // --- END MODIFIED ---
 
         console.log('Submitting POI data:', poiData)
 
-        // Call API to create the POI
+        // Call API to create the POI - Service endpoint URL should be corrected in AdminServices.ts
         const response = await createPOI(poiData)
         console.log('POI created:', response.data)
 
-        // Navigate back to admin panel
+        // Consider adding a success notification (e.g., using a toast library)
+        // toast.success('POI created successfully!')
+
         router.push('/admin-panel')
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error creating POI:', error)
-        formError.value =
-          t('admin.submission-error') || 'Feil ved lagring av interessepunkt. Prøv igjen senere.'
+        // Display more specific error from backend if possible
+        const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
+        formError.value = `${t('admin.submission-error') || 'Feil ved lagring.'} ${errorMsg}`;
       } finally {
         isSubmitting.value = false
       }
     }
+    // *** END MODIFIED: submitPOI function ***
+
 
     // Cancel and return to admin panel
     function cancelForm(): void {
+      // Keep existing logic
       router.push('/admin-panel')
     }
 
-    // Update marker title when title changes
+    // *** MODIFIED: Watcher for title changes ***
+    // Update marker tooltip/popup when title changes
     watch(
       () => formData.value.title,
       (newTitle: string) => {
         if (tempMarker.value && mapComponent.value) {
-          // In a real implementation, you would update the marker's popup or tooltip
-          console.log('Updating marker title to:', newTitle)
+          const markerTitle = newTitle || t('navigation.new-POI') || 'Nytt interessepunkt';
+          // Update popup or tooltip content if the marker exists and methods are available
+          if (typeof tempMarker.value.setPopupContent === 'function') {
+            tempMarker.value.setPopupContent(`<b>${markerTitle}</b><br>${formData.value.description || ''}`);
+          }
+          if (typeof tempMarker.value.setTooltipContent === 'function') {
+            tempMarker.value.setTooltipContent(markerTitle);
+          }
+          console.log('Updated marker title/popup to:', markerTitle);
         }
       },
     )
+    // *** END MODIFIED ***
 
     // Initialize
     onMounted((): void => {
       console.log('AdminAddPOIPage mounted')
+      // Optional: Fetch POI Types from backend if needed for dynamic select options
+      // fetchPoiTypes();
     })
 
     return {
+      // Keep existing return values
       mapComponent,
       mapComponentInstance,
       initialCenter,
@@ -468,6 +517,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+/* Keep existing styles */
 .admin-add-poi-page {
   max-width: 1200px;
   margin: 0 auto;
