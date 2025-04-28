@@ -2,10 +2,10 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { getNotifications } from '@/services/NotificationService';
-import type { Notification } from '@/models/Notification';
+import type { NotificationMessage } from '@/models/NotificationMessage.ts';
 
 const { t } = useI18n();
-const news = ref<Notification[]>([]);
+const news = ref<NotificationMessage[]>([]);
 
 onMounted(async () => {
   try {

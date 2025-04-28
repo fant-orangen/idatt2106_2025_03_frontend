@@ -8,7 +8,7 @@
  */
 
 import api from '@/services/api/AxiosInstance';
-import type { Notification } from '@/models/Notification'
+import type { NotificationMessage } from '@/models/NotificationMessage.ts'
 
 const baseUrl = '/notifications';
 
@@ -17,13 +17,13 @@ const baseUrl = '/notifications';
  * @param userId The user ID
  * @returns Array of notifications
  */
-export async function getNotifications(): Promise<Notification[]> {
+export async function getNotifications(): Promise<NotificationMessage[]> {
   const response = await api.get(`${baseUrl}`);
   return response.data.map(mapDatesToObjects);
 }
 
 
-function mapDatesToObjects(notification: any): Notification {
+function mapDatesToObjects(notification: any): NotificationMessage {
   return {
     ...notification,
     notifyAt: notification.notifyAt ? new Date(notification.notifyAt) : undefined,

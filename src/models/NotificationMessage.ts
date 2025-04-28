@@ -1,9 +1,9 @@
 /**
  * Interface representing a notification message received from the WebSocket.
  *
- * @interface Notification
+ * @interface NotificationMessage
  */
-export interface Notification {
+export interface NotificationMessage {
   id: number;
   userId: number;
   preferenceType: 'expiration_reminder' | 'crisis_alert' | 'location_request';
@@ -21,13 +21,13 @@ export interface Notification {
  *
  * @type NotificationHandler
  */
-export type NotificationHandler = (notification: Notification) => void;
+export type NotificationHandler = (notification: NotificationMessage) => void;
 
 
 export interface CreateNotificationDto {
   userId: number;
-  preferenceType: Notification['preferenceType'];
-  targetType: Notification['targetType'];
+  preferenceType: NotificationMessage['preferenceType'];
+  targetType: NotificationMessage['targetType'];
   targetId?: number;
   description?: string;
   notifyAt: Date;

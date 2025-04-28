@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import type { Notification } from '@/models/Notification'
+import type { NotificationMessage } from '@/models/NotificationMessage.ts'
 
 defineProps<{
-  notifications: Notification[];
+  notifications: NotificationMessage[];
 }>();
 </script>
 

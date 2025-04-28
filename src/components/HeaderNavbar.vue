@@ -5,7 +5,7 @@ import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
 import { getNotifications} from '@/services/NotificationService.ts'
-import type { Notification } from '@/models/Notification.ts'
+import type { NotificationMessage } from '@/models/NotificationMessage.ts'
 
 import {
   DropdownMenu,
@@ -42,7 +42,7 @@ const selectedLanguage = ref(languages[0].label)
 const colorMode = useColorMode()
 
 // Get the top 3 notifications
-const topNotifications = ref<Notification[]>([])
+const topNotifications = ref<NotificationMessage[]>([])
 
 onMounted(async () => {
   try {
