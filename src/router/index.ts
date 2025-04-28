@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/UserStore'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -55,21 +56,31 @@ const routes = [
     path: '/admin-panel',
     name: 'AdminPanel',
     component: () => import('@/views/AdminPanel.vue'),
+    meta: { requiresAdmin: true }, 
   },
   {
     path: '/add-new-event',
     name: 'AddNewEvent',
     component: () => import('@/views/AdminAddNewEvent.vue'),
+    meta: { requiresAdmin: true }, 
   },
   {
     path: '/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
+    meta: { requiresAdmin: true }, 
   },
   {
     path: '/edit-event',
     name: 'EditEvent',
-    component: () => import('@/views/AdminEditEvent.vue')
+    component: () => import('@/views/AdminEditEvent.vue'),
+    meta: { requiresAdmin: true }, 
+  },
+  {
+    path: '/handle-admins',
+    name: 'HandleAdmins',
+    component: () => import('@/views/SuperAdminAdministrate.vue'),
+    meta: { requiresSuperAdmin: true }, 
   },
   {
     path: '/:pathMatch(.*)*',
@@ -82,5 +93,25 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore();
+
+  if (to.meta.requiresSuperAdmin) {
+    if (userStore.isSuperAdminUser) {
+      next(); //super admin ok
+    } else {
+      next( {name: 'NotFound' }); //Not superadmin
+    }
+  } else if (to.meta.requiresAdmin) {
+    if (userStore.isAdminUser) {
+      next(); //validated that the user is an admin/superadmin - next link is ok
+    } else {
+      next({name: 'NotFound'}); // Redirect 
+    }
+  } else {
+    next(); // no need of special authentication
+  }
+});
 
 export default router

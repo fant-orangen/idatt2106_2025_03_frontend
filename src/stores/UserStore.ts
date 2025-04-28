@@ -260,6 +260,10 @@ export const useUserStore = defineStore("user", () => {
   /** Computed getter for the user role */
   const getUserRole = computed(() => role.value);
 
+  const isSuperAdminUser = computed(() => role.value === 'SUPER_ADMIN');
+
+  const isAdminUser = computed (() => role.value === 'ADMIN' || role.value === 'SUPER_ADMIN');
+
   return {
     token,
     username,
@@ -277,6 +281,8 @@ export const useUserStore = defineStore("user", () => {
     getToken,
     getUserId,
     getUserRole,
-    isLoggedInUser
+    isLoggedInUser,
+    isAdminUser,
+    isSuperAdminUser
   };
 });
