@@ -6,8 +6,14 @@
 export interface NotificationMessage {
   id: number;
   userId: number;
-  message: string;
-  timestamp: string;
+  preferenceType: string;
+  targetType: string;
+  targetId?: number;
+  description?: string;
+  notifyAt: string;
+  sentAt?: string;
+  readAt?: string;
+  createdAt: string;
 }
 
 /**

@@ -1,48 +1,51 @@
 import { ref, watch, onUnmounted } from 'vue';
 import { connectNotificationSocket, disconnectNotificationSocket } from '@/services/api/WebSocketService';
 import { useUserStore } from '@/stores/UserStore';
-import type { NotificationHandler } from '@/models/Notification';
+import type { NotificationMessage } from '@/models/Notification';
 
 /**
  * Composable for managing WebSocket connections and notifications.
  *
- * @param onNotification - Callback function to handle incoming notifications
  * @returns Object containing connection state and methods
  */
-export function useWebSocket(onNotification: NotificationHandler) {
+export function useWebSocket() {
   const userStore = useUserStore();
   const isConnected = ref(false);
 
+  const handleNotification = (msg: NotificationMessage) => {
+    console.log('WebSocket notification received:', msg);
+    // TODO: Handle the notification (e.g., show toast, update UI)
+  };
+
   const tryConnect = () => {
-    if (!isConnected.value && userStore.loggedIn && userStore.profile?.id) {
-      try {
-        connectNotificationSocket(onNotification);
-        isConnected.value = true;
-        console.log('WebSocket connected successfully');
-      } catch (error) {
-        console.error('Failed to connect to notification socket:', error);
-        isConnected.value = false;
-      }
+    const userId = userStore.userId;
+    console.log('Attempting WebSocket connection:', { userId, loggedIn: userStore.loggedIn });
+    if (userId && userStore.loggedIn) {
+      connectNotificationSocket(userId, handleNotification);
+      isConnected.value = true;
+      console.log('WebSocket connection initiated');
+    } else {
+      console.log('WebSocket connection skipped:', {
+        reason: !userId ? 'No userId' : 'Not logged in',
+        userId,
+        loggedIn: userStore.loggedIn
+      });
+      isConnected.value = false;
     }
   };
 
   const tryDisconnect = () => {
-    if (isConnected.value) {
-      try {
-        disconnectNotificationSocket();
-        isConnected.value = false;
-        console.log('WebSocket disconnected successfully');
-      } catch (error) {
-        console.error('Error disconnecting from notification socket:', error);
-      }
-    }
+    console.log('Disconnecting WebSocket');
+    disconnectNotificationSocket();
+    isConnected.value = false;
   };
 
-  // Watch for changes in login/profile state
+  // Watch for changes in login state
   watch(
-    () => [userStore.loggedIn, userStore.profile?.id],
-    ([loggedIn, id]) => {
-      if (loggedIn && id) {
+    () => userStore.loggedIn,
+    (loggedIn) => {
+      console.log('Login state changed:', loggedIn);
+      if (loggedIn) {
         tryConnect();
       } else {
         tryDisconnect();
@@ -51,22 +54,25 @@ export function useWebSocket(onNotification: NotificationHandler) {
     { immediate: true }
   );
 
-  // Watch for profile changes to ensure we have the latest ID
+  // Watch for userId changes
   watch(
-    () => userStore.profile,
-    (newProfile) => {
-      if (newProfile?.id && userStore.loggedIn) {
+    () => userStore.userId,
+    (newUserId) => {
+      console.log('User ID changed:', newUserId);
+      if (newUserId && userStore.loggedIn) {
         tryConnect();
       }
-    },
-    { deep: true }
+    }
   );
 
   onUnmounted(() => {
+    console.log('Component unmounting, cleaning up WebSocket');
     tryDisconnect();
   });
 
   return {
-    isConnected
+    isConnected,
+    tryConnect,
+    tryDisconnect
   };
 }

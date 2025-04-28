@@ -4,15 +4,47 @@ import Footer from './components/Footer.vue'
 import InvitationPopup from './components/invitation/InvitationPopup.vue'
 import { RouterView } from 'vue-router'
 import { useWebSocket } from '@/composables/useWebSocket';
-import type { NotificationMessage } from '@/models/Notification';
+import { useUserStore } from '@/stores/UserStore';
+import { onMounted, watch } from 'vue';
 
-const handleNotification = (notification: NotificationMessage) => {
-  console.log('Received notification:', notification);
-  // Here you can add additional notification handling logic
-  // For example, showing a toast, updating UI state, etc.
-};
+const userStore = useUserStore();
+const { isConnected, tryConnect, tryDisconnect } = useWebSocket();
 
-useWebSocket(handleNotification);
+// Validate token on app initialization
+onMounted(async () => {
+  console.log('App.vue mounted - Validating token');
+  await userStore.validateToken();
+});
+
+// Debug logging for initial state
+console.log('App.vue initialized - User store state:', {
+  loggedIn: userStore.loggedIn,
+  userId: userStore.userId,
+  profile: userStore.profile
+});
+
+// Watch for changes in user state
+watch(
+  () => userStore.loggedIn,
+  (newLoggedIn) => {
+    console.log('App.vue - Login state changed:', newLoggedIn);
+    if (newLoggedIn) {
+      tryConnect();
+    } else {
+      tryDisconnect();
+    }
+  }
+);
+
+watch(
+  () => userStore.userId,
+  (newUserId) => {
+    console.log('App.vue - User ID changed:', newUserId);
+    if (newUserId && userStore.loggedIn) {
+      tryConnect();
+    }
+  }
+);
 </script>
 
 <template>
@@ -23,5 +55,8 @@ useWebSocket(handleNotification);
     </div>
     <Footer />
     <InvitationPopup />
+    <div v-if="!isConnected" class="connection-status">
+      Disconnected from notifications
+    </div>
   </div>
 </template>

@@ -24,6 +24,7 @@ export const useUserStore = defineStore("user", () => {
   const username = ref<string | null>(localStorage.getItem('username'));
   const role = ref<string | null>(localStorage.getItem('role'));
   const userId = ref<string | null>(localStorage.getItem('userId'));
+  const isAuthenticated = ref(false);
 
   const profile = ref<UserProfile>({ // Use the UserProfile interface
     email: '',
@@ -32,6 +33,36 @@ export const useUserStore = defineStore("user", () => {
     phone: '',
   });
 
+  // Validate token on store initialization
+  const validateToken = async () => {
+    if (!token.value) {
+      clearAuthState();
+      return false;
+    }
+
+    try {
+      // Try to fetch profile to validate token
+      await api.get('/users/profile');
+      isAuthenticated.value = true;
+      return true;
+    } catch (error) {
+      console.error('Token validation failed:', error);
+      clearAuthState();
+      return false;
+    }
+  };
+
+  const clearAuthState = () => {
+    token.value = null;
+    username.value = null;
+    role.value = null;
+    userId.value = null;
+    isAuthenticated.value = false;
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userId');
+  };
 
   /**
    * Processes a successful login response.
@@ -245,8 +276,8 @@ export const useUserStore = defineStore("user", () => {
     return userId.value !== null && userId.value !== '0';
   });
 
-  /** Computed property indicating if user is authenticated with a token */
-  const loggedIn = computed(() => token.value !== null);
+  /** Computed property indicating if user is authenticated with a valid token */
+  const loggedIn = computed(() => isAuthenticated.value);
 
   /** Computed getter for the username */
   const getUsername = computed(() => username.value);
@@ -277,6 +308,7 @@ export const useUserStore = defineStore("user", () => {
     getToken,
     getUserId,
     getUserRole,
-    isLoggedInUser
+    isLoggedInUser,
+    validateToken
   };
 });
