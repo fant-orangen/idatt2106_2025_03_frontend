@@ -28,7 +28,40 @@
     "make-new-event": "Legg til en ny hendelse",
     "make-new-POI": "Legg til et nytt interessepunkt",
     "make-new-activity": "Lag en ny aktivitet",
-    "edit-event": "Rediger en pågående hendelse"
+    "edit-event": "Rediger en pågående hendelse",
+    "basic-info": "Grunnleggende informasjon",
+    "poi-title-placeholder": "Skriv inn tittel på interessepunktet",
+    "select-poi-type": "Velg hvilken type interessepunkt dette skal være",
+    "description-placeholder": "Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?",
+    "location-info": "Plassering",
+    "address-placeholder": "Eksempelveien 2",
+    "hours-contact-info": "Åpningstider og kontaktinformasjon",
+    "contact-info-description": "Telefonnummer til en ansvarlig kontaktperson.",
+    "form-invalid": "Vennligst fyll ut alle påkrevde felt.",
+    "submission-error": "Feil ved lagring av interessepunkt. Prøv igjen senere.",
+    "cancel": "Avbryt",
+    "submitting": "Lagrer...",
+    "submit": "Lagre",
+    "map-controls": "Kartkontroller",
+    "get-location": "Hent posisjon",
+    "reset-map": "Tilbakestill kart",
+    "search-location": "Søk etter adresse",
+    "enter-address": "Skriv inn adresse",
+    "search": "Søk",
+    "selected-location": "Valgt plassering",
+    "latitude": "Breddegrad",
+    "longitude": "Lengdegrad",
+    "clear-selection": "Fjern valgt plassering",
+    "map-instructions": "Klikk på kartet for å velge plassering for nytt interessepunkt.",
+    "getting-location": "Henter posisjon...",
+    "location-unavailable": "Stedstjenester er ikke tilgjengelig i nettleseren din.",
+    "location-found": "Posisjon funnet.",
+    "location-error": "Kunne ikke hente posisjon.",
+    "enter-valid-address": "Vennligst skriv inn en gyldig adresse.",
+    "searching": "Søker...",
+    "address-not-found": "Kunne ikke finne adressen.",
+    "search-error": "Feil ved søk etter adresse.",
+    "map-reset": "Kart tilbakestilt."
   },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
@@ -302,8 +335,8 @@
     "POI-type": {
       "defibrillator": "Hjertestarter",
       "shelter": "Tilfluktsrom",
-      "water-source": "Kilde til vann",
-      "food": "Matstasjon"
+      "water-source": "Vannkilde",
+      "food": "Matutdeling"
     }
   }
 }
