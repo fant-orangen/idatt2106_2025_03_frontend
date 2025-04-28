@@ -116,8 +116,18 @@ import { useI18n } from "vue-i18n";
 import { differenceInDays } from "date-fns"; // temporary use of date-fns, will most likely be modified when connected to backend
 
 const { t } = useI18n();
+/**
+ * Reactive list of all medicines in the inventory.
+ * Each medicine has the fields name, amount, unit, expires, notes and edit.
+ * @type {Ref<UnwrapRef<*[]>, UnwrapRef<*[]> | *[]>}
+ */
 
 const medicines = ref([]);
+
+/**
+ * Reactive variables to store input for new medicine entries.
+ * @type {Ref<UnwrapRef<string>, UnwrapRef<string> | string>}
+ */
 
 const newMedicineName = ref("");
 const newMedicineAmount = ref("");
@@ -125,9 +135,19 @@ const newMedicineUnit = ref("");
 const newMedicineExpires = ref("");
 const newMedicineNotes = ref("");
 
+/**
+ * Toggle edit mode for a specific medicine item.
+ * @param index index of the medicine in the list.
+ */
 const toggleEdit = (index) => {
   medicines.value[index].edit = !medicines.value[index].edit;
 };
+
+/**
+ * Add a new medicine entry to the list.
+ * Fields must not be empty when proceeding.
+ * After adding the medicine, the input fields are reset to empty.
+ */
 
 const addMedicine = () => {
   if (!newMedicineName.value || !newMedicineAmount.value || !newMedicineUnit.value || !newMedicineExpires.value) {
@@ -150,10 +170,20 @@ const addMedicine = () => {
   newMedicineNotes.value = "";
 };
 
+/**
+ * Remove a medicine entry from the inventory.
+ * @param index index of the medicine to remove from the list.
+ */
 const removeMedicine = (index) => {
   medicines.value.splice(index, 1);
 };
 
+/**
+ * Check if a given medicine is expiring soon (within 30 days)
+ *
+ * @param expiresDateString the expiration date in ISO string format.
+ * @returns {boolean} true if the medicine expires within the next 30 days.
+ */
 const isExpiringSoon = (expiresDateString) => {
   if (!expiresDateString) return false;
   const today = new Date();
