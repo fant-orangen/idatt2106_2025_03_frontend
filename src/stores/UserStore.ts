@@ -20,18 +20,32 @@ import type { RegistrationData, UserProfile } from '@/models/User.ts'
  * methods for login, registration, and profile management.
  */
 export const useUserStore = defineStore("user", () => {
-  const token = ref<string | null>(localStorage.getItem('token'));
-  const username = ref<string | null>(localStorage.getItem('username'));
-  const role = ref<string | null>(localStorage.getItem('role'));
-  const userId = ref<string | null>(localStorage.getItem('userId'));
+  const token = ref<string | null>(null);
+  const username = ref<string | null>(null);
+  const role = ref<string | null>(null);
+  const userId = ref<string | null>(null);
   const isAuthenticated = ref(false);
 
-  const profile = ref<UserProfile>({ // Use the UserProfile interface
+  const profile = ref<UserProfile>({
     email: '',
     firstName: '',
     lastName: '',
     phone: '',
   });
+
+  // Initialize from localStorage only if token exists
+  const initializeFromStorage = () => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      token.value = storedToken;
+      username.value = localStorage.getItem('username');
+      role.value = localStorage.getItem('role');
+      userId.value = localStorage.getItem('userId');
+    }
+  };
+
+  // Call initialization
+  initializeFromStorage();
 
   // Validate token on store initialization
   const validateToken = async () => {
@@ -76,42 +90,34 @@ export const useUserStore = defineStore("user", () => {
    * @returns {void}
    * @private
    */
-  function login(status: number, tokenStr: string, userEmail: string) { // Changed 'user' to 'userEmail' for clarity
+  function login(status: number, tokenStr: string, userEmail: string) {
     if (status === 200) {
       token.value = tokenStr;
-      username.value = userEmail; // Store email as username identifier
+      username.value = userEmail;
 
       // Extract role and userId from token and save to localStorage
       const tokenParts = tokenStr.split('.');
-      // **** START CORRECTION ****
-      // Check if the token looks like a valid JWT (3 parts) before parsing
       if (tokenParts.length === 3) {
-        // **** END CORRECTION ****
         try {
           const payload = JSON.parse(atob(tokenParts[1]));
           role.value = payload.role;
-          userId.value = payload.userId?.toString(); // Ensure userId is stored as string
+          userId.value = payload.userId?.toString();
           if (payload.role) localStorage.setItem('role', payload.role);
-          if (payload.userId) localStorage.setItem('userId', payload.userId.toString()); // Store as string
+          if (payload.userId) localStorage.setItem('userId', payload.userId.toString());
+
+          // Set authenticated state
+          isAuthenticated.value = true;
         } catch (error) {
-          console.error("Error parsing token payload during login:", error); // Changed console message
-          // Handle error, maybe clear invalid token? Could clear role/userId here.
-          role.value = null;
-          userId.value = null;
-          localStorage.removeItem('role');
-          localStorage.removeItem('userId');
+          console.error("Error parsing token payload during login:", error);
+          clearAuthState();
         }
       } else {
-        console.error("Invalid token format received during login."); // Keep this log
-        // Handle invalid token format - Ensure role/userId are cleared
-        role.value = null;
-        userId.value = null;
-        localStorage.removeItem('role');
-        localStorage.removeItem('userId');
+        console.error("Invalid token format received during login.");
+        clearAuthState();
       }
 
       localStorage.setItem('token', tokenStr);
-      localStorage.setItem('username', userEmail); // Store email in localStorage
+      localStorage.setItem('username', userEmail);
     } else {
       throw new Error("Login Info Error");
     }
