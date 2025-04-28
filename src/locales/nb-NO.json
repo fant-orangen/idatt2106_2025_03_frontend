@@ -2,7 +2,7 @@
   "actions": {
     "to-reflect": "for å reflektere",
     "read-more": "Les mer",
-    "add-empty-account-to-household": "Legg til en tom bruker i husholdningen",
+    "add-empty-account-to-household": "Legg til et husholdsmedlem",
     "add": "Legg til",
     "switch-household": "Bytt husholdning"
   },
@@ -21,21 +21,67 @@
     "email": "E-post",
     "phone": "Telefonummer",
     "password": "Passord",
-    "confirm-password": "Bekreft passord"
+    "confirm-password": "Bekreft passord",
+    "reset-password-description": "Skriv inn e-postadressen din nedenfor for å tilbakestille passordet ditt.",
+    "enter-email": "Skriv inn e-post",
+    "reset-password": "Tilbakestill passord"
   },
   "admin": {
     "administrate": "Administrer",
     "make-new-event": "Legg til en ny hendelse",
     "make-new-POI": "Legg til et nytt interessepunkt",
     "make-new-activity": "Lag en ny aktivitet",
-    "edit-event": "Rediger en pågående hendelse"
+    "edit-event": "Rediger en pågående hendelse",
+    "basic-info": "Grunnleggende informasjon",
+    "poi-title-placeholder": "Skriv inn tittel på interessepunktet",
+    "select-poi-type": "Velg hvilken type interessepunkt dette skal være",
+    "description-placeholder": "Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?",
+    "location-info": "Plassering",
+    "address-placeholder": "Eksempelveien 2",
+    "hours-contact-info": "Åpningstider og kontaktinformasjon",
+    "contact-info-description": "Telefonnummer til en ansvarlig kontaktperson.",
+    "form-invalid": "Vennligst fyll ut alle påkrevde felt.",
+    "submission-error": "Feil ved lagring av interessepunkt. Prøv igjen senere.",
+    "cancel": "Avbryt",
+    "submitting": "Lagrer...",
+    "submit": "Lagre",
+    "map-controls": "Kartkontroller",
+    "get-location": "Hent posisjon",
+    "reset-map": "Tilbakestill kart",
+    "search-location": "Søk etter adresse",
+    "enter-address": "Skriv inn adresse",
+    "search": "Søk",
+    "selected-location": "Valgt plassering",
+    "latitude": "Breddegrad",
+    "longitude": "Lengdegrad",
+    "clear-selection": "Fjern valgt plassering",
+    "map-instructions": "Klikk på kartet for å velge plassering for nytt interessepunkt.",
+    "getting-location": "Henter posisjon...",
+    "location-unavailable": "Stedstjenester er ikke tilgjengelig i nettleseren din.",
+    "location-found": "Posisjon funnet.",
+    "location-error": "Kunne ikke hente posisjon.",
+    "enter-valid-address": "Vennligst skriv inn en gyldig adresse.",
+    "searching": "Søker...",
+    "address-not-found": "Kunne ikke finne adressen.",
+    "search-error": "Feil ved søk etter adresse.",
+    "map-reset": "Kart tilbakestilt."
+  },
+  "notifications": {
+    "notification": "Varsling",
+    "notifications": "Varslinger",
+    "new-notification": "Ny varsling",
+    "no-notifications": "Ingen varslinger tilgjengelig",
+    "no-new-notifications": "Ingen nye varslinger",
+    "all-notifications": "Se alle varslinger",
+    "untitled": "Uten tittel"
   },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
     "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det.",
     "login-failed": "Innlogging mislyktes. Vennligst sjekk legitimasjonen din.",
     "passwords-do-not-match": "Passordene stemmer ikke overens.",
-    "registration-failed": "Registrering mislyktes. Vennligst prøv igjen."
+    "registration-failed": "Registrering mislyktes. Vennligst prøv igjen.",
+    "no-news-available": "Ingen nyheter tilgjengelig"
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",
@@ -118,16 +164,14 @@
     "your-storage": "Ditt beredskapslager"
   },
   "household": {
-    "my-household": "Min husholdning",
-    "no-members-found": "Ingen husholdningsmedlemmer funnet.",
+    "my-household": "Mitt hushold",
+    "no-members-found": "Ingen medlemmer funnet i husholdet.",
     "person": "person",
     "people": "personer",
-    "in-household": "i husholdningen",
-    "add-empty-user": "Legg til tom bruker",
+    "in-household": "i husholdet",
+    "add-empty-user": "Legg til husholdsmedlem",
     "name": "Navn",
     "enter-name": "Skriv inn navn",
-    "last-name": "Etternavn",
-    "enter-last-name": "Skriv inn etternavn",
     "type": "Type",
     "select-type": "Velg type",
     "adult": "Voksen",
@@ -138,9 +182,70 @@
     "save": "Lagre",
     "cancel": "Avbryt",
     "beredskapslager": "Beredskapslager",
-    "no-expiring-items": "Ingen varer er i ferd med å utløpe.",
+    "no-expiring-items": "Ingen varer nær utløpsdato.",
     "days-left": "dager igjen",
-    "your-shelter-store": "Ditt beredskapslager"},
+    "your-shelter-store": "Ditt beredskapslager",
+    "invite-user": "Inviter bruker",
+    "email-address": "E-postadresse",
+    "enter-email": "Skriv inn e-postadresse",
+    "access-level": "Tilgangsnivå",
+    "select-access-level": "Velg tilgangsnivå",
+    "editor": "Redaktør",
+    "viewer": "Seer",
+    "personal-message": "Personlig melding",
+    "optional-message": "Valgfritt: Legg til en personlig melding",
+    "send-invitation": "Send invitasjon",
+    "invitation-sent": "Invitasjon sendt",
+    "invitation-failed": "Kunne ikke sende invitasjon",
+    "add-user-title": "Inviter bruker til hushold",
+    "create_new": "Opprett nytt hushold",
+    "create_description": "Opprett ditt eget hushold for å håndtere beredskap.",
+    "create_button": "Opprett nytt hushold",
+    "no-household": "Du har ikke et hushold ennå",
+    "no-household-description": "Opprett eller bli med i et hushold for å håndtere beredskap sammen med familie eller venner.",
+    "manage-household": "Administrer hushold",
+    "leave-household": "Forlat hushold",
+    "leave-confirm": "Er du sikker på at du vil forlate dette husholdet?",
+    "leave-success": "Du har forlatt husholdet",
+    "generate-invitation": "Generer invitasjonskode",
+    "copy-invitation": "Kopier invitasjonskode",
+    "copied-to-clipboard": "Kopiert til utklippstavlen!",
+    "share-invitation": "Del denne koden med noen du vil invitere til husholdet ditt.",
+    "users": "Brukere",
+    "no-users": "Ingen brukere i dette husholdet ennå",
+    "done": "ferdig",
+    "manage-members": "administrer medlemmer",
+
+    "create": {
+      "title": "Opprett nytt hushold",
+      "subtitle": "Sett opp ditt hushold for beredskap",
+      "nameLabel": "Husholdsnavn",
+      "namePlaceholder": "Skriv inn husholdsnavn",
+      "locationLabel": "Sted",
+      "locationPlaceholder": "Skriv inn adresse (valgfritt)",
+      "descriptionLabel": "Beskrivelse",
+      "descriptionPlaceholder": "Skriv inn beskrivelse av husholdet (valgfritt)",
+      "submitButton": "Opprett hushold",
+      "errors": {
+        "nameRequired": "Husholdsnavn er påkrevd",
+        "generic": "Kunne ikke opprette hushold"
+      }
+    },
+
+    "join": {
+      "title": "Bli med i hushold",
+      "subtitle": "Bli med i et eksisterende hushold med en invitasjonskode",
+      "tokenLabel": "Invitasjonskode",
+      "tokenPlaceholder": "Skriv inn invitasjonskode",
+      "submitButton": "Bli med i hushold",
+      "success": "Vellykket blitt med i hushold",
+      "errors": {
+        "tokenRequired": "Invitasjonskode er påkrevd",
+        "invalidToken": "Ugyldig invitasjonskode",
+        "generic": "Kunne ikke bli med i hushold"
+      }
+    }
+  },
   "sidebar": {
     "title": "Temaer",
     "themes": {
@@ -249,6 +354,58 @@
     "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalitet etter en krise.",
     "learnMoreTopic": "Klikk for å lære mer om dette temaet."
   },
+  "settings": {
+    "title": "Innstillinger",
+    "tabs": {
+      "account": "Konto",
+      "notifications": "Varslinger"
+    },
+    "account": {
+      "title": "Kontoinnstillinger",
+      "subtitle": "Konto",
+      "description": "Gjør endringer i kontoen din her. Klikk lagre når du er ferdig.",
+      "fullName": "Fullt navn",
+      "email": "E-post",
+      "saveChanges": "Lagre endringer",
+      "password": {
+        "title": "Passord",
+        "description": "Endre passordet ditt her. Etter lagring blir du logget ut.",
+        "current": "Nåværende passord",
+        "new": "Nytt passord"
+      },
+      "security": {
+        "title": "Kontosikkerhet",
+        "description": "Forbedre sikkerheten til kontoen din med totrinnsverifisering, som krever en kode sendt til e-posten din i tillegg til passordet ditt for innlogging.",
+        "twoStep": "Slå på totrinnsverifisering"
+      },
+      "delete": {
+        "title": "Slett konto",
+        "description": "Slett kontoen din og alle tilknyttede data permanent. Denne handlingen er irreversibel og kan ikke angres.",
+        "button": "Slett konto"
+      }
+    }
+  },
+  "notifications": {
+    "title": "Varslingsinnstillinger",
+    "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
+    "email": {
+      "title": "E-postvarsler",
+      "description": "Motta oppdateringer og varsler via e-post.",
+      "system": "Systemvarsler",
+      "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
+   },
+    "notifications": {
+      "title": "Varslingsinnstillinger",
+      "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
+      "email": {
+        "title": "E-postvarsler",
+        "description": "Motta oppdateringer og varsler via e-post.",
+        "system": "Systemvarsler",
+        "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
+      },
+      "saveChanges": "Lagre endringer"
+    }
+  },
   "add-event-info": {
     "title": "Dette vil være tittelen på hendelsen din.",
     "coordinates": "Sett inn koordinatene eller adressen til hendelsen din. Du kan også klikke på kartet for å få koordinatene automatisk!",
@@ -270,14 +427,14 @@
       "contact-info": "Skriv inn et gyldig telefonnummer."
     },
     "titles": {
-      "address":"Adresse",
+      "address": "Adresse",
       "title": "Tittel",
       "longitude": "Lengdegrad",
       "latitude": "Breddegrad",
-      "radius":"Radius",
+      "radius": "Radius",
       "priority": "Krisenivå",
       "description": "Informasjon",
-      "submit":"Lagre",
+      "submit": "Lagre",
       "time": "Tidspunkt",
       "date": "Dato",
       "choose-event": "Velg en hendelse"
@@ -287,7 +444,7 @@
       "medium": "Middels",
       "high": "Høy"
     }
-  }, 
+  },
   "add-POI-info": {
     "info": {
       "title": "Dette vil være tittelen på interessepunktet.",
@@ -302,10 +459,10 @@
       "contact-info": "Kontaktinformasjon"
     },
     "POI-type": {
-      "defibrillator": "Hjertestarter",
-      "shelter": "Tilfluktsrom",
-      "water-source": "Kilde til vann",
-      "food": "Matstasjon"
+    "defibrillator": "Hjertestarter",
+    "shelter": "Tilfluktsrom",
+    "water-source": "Vannkilde",
+    "food": "Matutdeling"
     }
   }
 }

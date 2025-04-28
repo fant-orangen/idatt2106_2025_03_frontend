@@ -31,7 +31,7 @@
 					<Input type="text" placeholder="Title" v-bind="field" />
 				</FormControl>
 				<FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+				<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 			</FormItem>
 		</FormField>
 		<br>
@@ -44,7 +44,7 @@
 				<FormControl>
 					<Input class="w-[100px]" type="number" placeholder="latitude" v-bind="field" />
 				</FormControl>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+				<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 			</FormItem>
 		</FormField>
 
@@ -55,8 +55,8 @@
 				<FormControl>
 					<Input class="w-[100px]" type="number" placeholder="longitude" v-bind="field" />
 				</FormControl>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-			</FormItem>
+        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+      </FormItem>
 		</FormField>
 
 		<!--Address field-->
@@ -66,8 +66,8 @@
 				<FormControl>
 					<Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
 				</FormControl>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-			</FormItem>
+        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+      </FormItem>
 		</FormField>
 	</div>
 	<p class="text-muted-foreground text-sm">{{ $t('add-event-info.coordinates') }}</p>
@@ -81,11 +81,11 @@
 					<Input type="number" placeholder="meters" v-bind="field" />
 				</FormControl>
 				<FormDescription>{{ $t('add-event-info.radius') }}</FormDescription>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-			</FormItem>
+        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+      </FormItem>
 		</FormField><br>
 
-		
+
 		<div class="container">
 			<!--Choose time of event first occurring-->
 			<FormField v-slot="{ field, meta, errorMessage }" name="time">
@@ -95,7 +95,7 @@
 						<Input type="time" v-bind="field" />
 					</FormControl>
 					<FormDescription>{{ $t('add-event-info.time') }}</FormDescription>
-					<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+          <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 				</FormItem>
 			</FormField>
 
@@ -107,7 +107,7 @@
 					<Input type="date" v-bind="field" />
 				</FormControl>
 				<FormDescription>{{ $t('add-event-info.date') }}</FormDescription>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 			</FormItem>
 		</FormField>
 		</div>
@@ -132,10 +132,10 @@
 					</Select>
 				</FormControl>
 				<FormDescription>{{ $t('add-event-info.priority') }}</FormDescription>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 			</FormItem>
 		</FormField>
-		
+
 		<br>
 
 			<!--Description of event-->
@@ -146,7 +146,7 @@
 					<Textarea placeholder="Description" v-bind="field"></Textarea>
 				</FormControl>
 				<FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
-				<FormMessage v-if="meta.touched  || meta.submitFailed">{{ errorMessage }}</FormMessage>
+        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 			</FormItem>
 			</FormField><br>
 
@@ -170,6 +170,7 @@
 
 <script setup lang="ts">
 	import { createEvent } from '@/services/api/AdminServices'
+  import router from '@/router/index.ts'
 	import { Button } from '@/components/ui/button'
 	import { useForm } from 'vee-validate'
 	import { toTypedSchema } from '@vee-validate/zod'
@@ -191,14 +192,13 @@
 		BreadcrumbLink,
 		BreadcrumbList,
 		BreadcrumbPage,
-		BreadcrumbSeparator, 
+		BreadcrumbSeparator,
 	} from '@/components/ui/breadcrumb'
 	import {
 		Select,
 		SelectContent,
 		SelectGroup,
 		SelectItem,
-		SelectLabel,
 		SelectTrigger,
 		SelectValue,
 	} from '@/components/ui/select'
@@ -214,23 +214,23 @@ const formSchema = toTypedSchema(
     latitude: z.preprocess((val) => Number(val), z.number()
 			.min(-90, t('add-event-info.errors.latitude'))
   		.max(90, t('add-event-info.errors.latitude')))
-			.optional(),    
-		
+			.optional(),
+
 		longitude: z.preprocess((val) => Number(val), z.number()
   		.min(-180, t('add-event-info.errors.longitude'))
   		.max(180, t('add-event-info.errors.longitude')))
 			.optional(),
-		
+
 		address: z.string()
 			.max(100, t('add-event-info.errors.address'))
 			.optional(),
-		
+
 		radius: z.preprocess((val) => Number(val), z.number()
 			.min(1, t('add-event-info.errors.radius'))
 			.max(10000, t('add-event-info.errors.radius'))),
-    
+
 		priority: z.enum(["Low", "Medium", "High"]),
-    
+
 		description: z.string().min(10, t('add-event-info.errors.description')).max(500, t('add-event-info.errors.description')),
   })
 	.refine((data) => {
@@ -241,7 +241,7 @@ const formSchema = toTypedSchema(
 		return true;
 	}, {
 		message : t('add-event-info.errors.position-missing'),
-		path: ['address'], 
+		path: ['address'],
 	})
 );
 
@@ -253,7 +253,7 @@ const formSchema = toTypedSchema(
 			longitude: '',
 			address: '',
 			radius: '',
-			priority: '',
+      priority: undefined,
 			description: ''
 		}
 	});
@@ -264,11 +264,10 @@ const formSchema = toTypedSchema(
 
 			console.log('Event created successfully!', response.data);
 
-			router.push('/admin-panel'); //redirect user to the panel 
+			router.push('/admin-panel'); //redirect user to the panel
 		} catch (error) {
 			console.error('An error occured while submitting the event: ', error);
 		}
-		
 	});
 
 </script>
@@ -298,11 +297,11 @@ h1 {
 	gap: 10px;
 }
 
-Input {	
+Input {
 	width: 100%;
 }
 
-.box { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder, 
+.box { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder,
 	kartet kan godt være litt større enn størrelsen jeg har satt på boksen*/
 	border-radius: 8px;
 	border: solid grey;

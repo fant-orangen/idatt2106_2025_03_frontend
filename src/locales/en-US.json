@@ -2,7 +2,7 @@
   "actions": {
     "to-reflect": "to reflect",
     "read-more": "Read more",
-    "add-empty-account-to-household": "Add an empty user to the household",
+    "add-empty-account-to-household": "Add a household member",
     "add": "Add",
     "switch-household": "Switch household"
   },
@@ -20,21 +20,67 @@
     "email": "Email",
     "phone": "Phone",
     "password": "Password",
-    "confirm-password": "Confirm Password"
+    "confirm-password": "Confirm Password",
+    "reset-password-description": "Enter your email address below to reset your password.",
+    "enter-email": "Enter your email",
+    "reset-password": "Reset Password"
   },
   "admin": {
     "administrate": "Administrate",
     "make-new-event": "Add a new event",
     "make-new-POI": "Add a new point of interest",
     "make-new-activity": "Make a new activity",
-    "edit-event": "Edit a current event"
+    "edit-event": "Edit a current event",
+    "basic-info": "Basic Information",
+    "poi-title-placeholder": "Enter title for the point of interest",
+    "select-poi-type": "Select the type of point of interest this should be",
+    "description-placeholder": "Write some information describing the point of interest. Where is it located? What can be found there?",
+    "location-info": "Location",
+    "address-placeholder": "Example Street 2",
+    "hours-contact-info": "Opening Hours and Contact Information",
+    "contact-info-description": "Phone number for a responsible contact person.",
+    "form-invalid": "Please fill out all required fields.",
+    "submission-error": "Error saving point of interest. Please try again later.",
+    "cancel": "Cancel",
+    "submitting": "Saving...",
+    "submit": "Save",
+    "map-controls": "Map Controls",
+    "get-location": "Get Location",
+    "reset-map": "Reset Map",
+    "search-location": "Search for address",
+    "enter-address": "Enter address",
+    "search": "Search",
+    "selected-location": "Selected Location",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "clear-selection": "Clear Selected Location",
+    "map-instructions": "Click on the map to select the location for the new point of interest.",
+    "getting-location": "Getting location...",
+    "location-unavailable": "Location services are not available in your browser.",
+    "location-found": "Location found.",
+    "location-error": "Could not get location.",
+    "enter-valid-address": "Please enter a valid address.",
+    "searching": "Searching...",
+    "address-not-found": "Could not find the address.",
+    "search-error": "Error searching for address.",
+    "map-reset": "Map reset."
+  },
+  "notifications": {
+    "notification": "Notification",
+    "notifications": "Notifications",
+    "new-notification": "New Notification",
+    "no-notifications": "No notifications available",
+    "no-new-notifications": "No new notifications",
+    "all-notifications": "See all notifications",
+    "untitled": "Untitled"
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
     "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
     "login-failed": "Login failed. Please check your credentials.",
     "passwords-do-not-match": "Passwords do not match.",
-    "registration-failed": "Registration failed. Please try again."
+    "registration-failed": "Registration failed. Please try again.",
+    "no-news-available": "No news available"
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",
@@ -122,11 +168,9 @@
     "person": "person",
     "people": "people",
     "in-household": "in household",
-    "add-empty-user": "Add Empty User",
+    "add-empty-user": "Add household member",
     "name": "Name",
     "enter-name": "Enter name",
-    "last-name": "Last Name",
-    "enter-last-name": "Enter last name",
     "type": "Type",
     "select-type": "Select type",
     "adult": "Adult",
@@ -168,6 +212,8 @@
     "share-invitation": "Share this code with someone you want to invite to your household.",
     "users": "Users",
     "no-users": "No users in this household yet",
+    "done": "done",
+    "manage-members": "manage members",
 
     "create": {
       "title": "Create New Household",
@@ -316,6 +362,48 @@
     "afterCrisisBrief": "Find guidance on recovery and returning to normalcy after a crisis.",
     "learnMoreTopic": "Click to learn more about this topic."
   },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "account": "Account",
+      "notifications": "Notifications"
+    },
+    "account": {
+      "title": "Account Settings",
+      "subtitle": "Account",
+      "description": "Make changes to your account here. Click save when you're done.",
+      "fullName": "Full name",
+      "email": "E-mail",
+      "saveChanges": "Save changes",
+      "password": {
+        "title": "Password",
+        "description": "Change your password here. After saving, you'll be logged out.",
+        "current": "Current password",
+        "new": "New password"
+      },
+      "security": {
+        "title": "Account Security",
+        "description": "Enhance your account's security with two-step verification, requiring a code sent to your email in addition to your password for login.",
+        "twoStep": "Turn on 2 step verification"
+      },
+      "delete": {
+        "title": "Delete Account",
+        "description": "Permanently delete your account and all associated data. This action is irreversible and cannot be undone.",
+        "button": "Delete Account"
+      }
+    },
+    "notifications": {
+      "title": "Notifications Settings",
+      "description": "Customize how you receive notifications to stay informed.",
+      "email": {
+        "title": "Email Notifications",
+        "description": "Receive updates and alerts via email.",
+        "system": "System Notifications",
+        "systemDescription": "Receive notifications about critical crisis events to stay informed and prepared."
+      },
+      "saveChanges": "Save Changes"
+    }
+  },
   "add-event-info": {
     "title": "This will be the title of your event.",
     "coordinates": "Insert the coordinates or the address of your event. You can also click on the map to get the coordinates automatically!",
@@ -335,16 +423,16 @@
       "position-missing": "Choose to enter either the coordinates of the event, or the address.",
       "address": "The address needs to have at least 2 characters and cannot exceed 100 characters.",
       "contact-info": "Make sure to write a valid phone number."
-      },
+    },
     "titles": {
-      "address":"Address",
+      "address": "Address",
       "title": "Title",
       "longitude": "Longitude",
       "latitude": "Latitude",
-      "radius":"Radius",
+      "radius": "Radius",
       "priority": "Crisis level",
       "description": "Information",
-      "submit":"Submit",
+      "submit": "Submit",
       "time": "Time",
       "date": "Date",
       "choose-event": "Choose an event"
@@ -369,10 +457,10 @@
       "contact-info": "Contact information"
     },
     "POI-type": {
-      "defibrillator": "Defibrillator",
-      "shelter": "Shelter",
-      "water-source": "Water scource",
-      "food": "Food station"
-    }
+    "defibrillator": "Defibrillator",
+    "shelter": "Shelter",
+    "water-source": "Water Source",
+    "food": "Food Distribution"
+  }
   }
 }
