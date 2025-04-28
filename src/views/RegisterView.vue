@@ -25,15 +25,15 @@ const successMessage = ref('')
 // Access the UserStore to handle registration logic
 const userStore = useUserStore()
 
-// Disable scrolling when the page is loaded
-onMounted(() => {
-  document.body.style.overflow = 'hidden'
-})
+// // Disable scrolling when the page is loaded
+// onMounted(() => {
+//   document.body.style.overflow = 'hidden'
+// })
 
-// Re-enable scrolling when the page is unloaded
-onUnmounted(() => {
-  document.body.style.overflow = ''
-})
+// // Re-enable scrolling when the page is unloaded
+// onUnmounted(() => {
+//   document.body.style.overflow = ''
+// })
 
 /**
  * Handles the registration process by sending user details to the backend.
@@ -79,7 +79,9 @@ async function handleRegister() {
       <form @submit.prevent="handleRegister" class="space-y-4">
         <!-- First Name Field -->
         <div class="form-group">
-          <Label for="firstName" class="block text-sm font-medium">{{ t('login.first-name') }}</Label>
+          <Label for="firstName" class="block text-sm font-medium">{{
+            t('login.first-name')
+          }}</Label>
           <Input
             id="firstName"
             type="text"
@@ -104,25 +106,13 @@ async function handleRegister() {
         <!-- Email Field -->
         <div class="form-group">
           <Label for="email" class="block text-sm font-medium">{{ t('login.email') }}</Label>
-          <Input
-            id="email"
-            type="email"
-            v-model="email"
-            :placeholder="t('login.email')"
-            required
-          />
+          <Input id="email" type="email" v-model="email" :placeholder="t('login.email')" required />
         </div>
 
         <!-- Phone Field -->
         <div class="form-group">
           <Label for="phone" class="block text-sm font-medium">{{ t('login.phone') }}</Label>
-          <Input
-            id="phone"
-            type="tel"
-            v-model="phone"
-            :placeholder="t('login.phone')"
-            required
-          />
+          <Input id="phone" type="tel" v-model="phone" :placeholder="t('login.phone')" required />
         </div>
 
         <!-- Password Field -->
@@ -139,7 +129,9 @@ async function handleRegister() {
 
         <!-- Confirm Password Field -->
         <div class="form-group">
-          <Label for="confirmPassword" class="block text-sm font-medium">{{ t('login.confirm-password') }}</Label>
+          <Label for="confirmPassword" class="block text-sm font-medium">{{
+            t('login.confirm-password')
+          }}</Label>
           <Input
             id="confirmPassword"
             type="password"
@@ -150,12 +142,17 @@ async function handleRegister() {
         </div>
 
         <!-- Submit Button -->
-        <Button type="submit" class="w-full bg-primary text-white hover:bg-primary/90 dark:bg-primary dark:text-black dark:hover:bg-primary/80">
+        <Button
+          type="submit"
+          class="w-full bg-primary text-white hover:bg-primary/90 dark:bg-primary dark:text-black dark:hover:bg-primary/80"
+        >
           {{ t('login.signup') }}
         </Button>
 
         <!-- Success Message -->
-        <p v-if="successMessage" class="success text-green-500 text-center mt-2">{{ successMessage }}</p>
+        <p v-if="successMessage" class="success text-green-500 text-center mt-2">
+          {{ successMessage }}
+        </p>
 
         <!-- Error Message -->
         <p v-if="errorMessage" class="error text-red-500 text-center mt-2">{{ errorMessage }}</p>

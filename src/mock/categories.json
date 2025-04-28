@@ -13,24 +13,6 @@
       "icon": "droplet"
     },
     {
-      "id": 3,
-      "name": "Medicine",
-      "description": "First aid and essential medications",
-      "icon": "first-aid"
-    },
-    {
-      "id": 4,
-      "name": "Tools",
-      "description": "Emergency tools and equipment",
-      "icon": "tool"
-    },
-    {
-      "id": 5,
-      "name": "Hygiene",
-      "description": "Personal hygiene and sanitation items",
-      "icon": "shower"
-    },
-    {
       "id": 6,
       "name": "Communication",
       "description": "Communication devices and batteries",

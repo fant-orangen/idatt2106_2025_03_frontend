@@ -56,9 +56,6 @@ import { fetchCategories, type Category } from '@/mock/categoryData';
 import {
   Utensils,
   Droplet,
-  FirstAid,
-  Tool,
-  Shower,
   Radio,
   Package
 } from 'lucide-vue-next';
@@ -95,12 +92,6 @@ const getCategoryIcon = (iconName?: string) => {
       return Utensils;
     case 'droplet':
       return Droplet;
-    case 'first-aid':
-      return FirstAid;
-    case 'tool':
-      return Tool;
-    case 'shower':
-      return Shower;
     case 'radio':
       return Radio;
     default:
