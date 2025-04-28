@@ -164,10 +164,10 @@ function closeEmergencyContacts() {
             <!-- Theme-specific websites -->
             <div v-if="themeResources && $te(`${themeResources}.websites`)">
               <div v-for="(website, index) in $t(`${themeResources}.websites`)" :key="index" class="mb-4 p-4 border rounded-md">
-                <h4 class="font-medium text-primary">{{ website.name }}</h4>
-                <p class="text-sm text-muted-foreground mb-2">{{ website.description }}</p>
-                <a :href="website.url" target="_blank" rel="noopener noreferrer" class="text-sm flex items-center text-primary hover:underline">
-                  {{ website.url }}
+                <h4 class="font-medium text-primary">{{ (website as any).name }}</h4>
+                <p class="text-sm text-muted-foreground mb-2">{{ (website as any).description }}</p>
+                <a :href="(website as any).url" target="_blank" rel="noopener noreferrer" class="text-sm flex items-center text-primary hover:underline">
+                  {{ (website as any).url }}
                   <ExternalLink class="ml-1 h-3 w-3" />
                 </a>
               </div>
@@ -237,12 +237,12 @@ function closeEmergencyContacts() {
                   :key="index"
                   class="p-4 border rounded-md"
                 >
-                  <h4 class="font-medium">{{ contact.name }}</h4>
+                  <h4 class="font-medium">{{ (contact as any).name }}</h4>
                   <div class="flex items-center mt-1 text-primary">
                     <Phone class="h-4 w-4 mr-2" />
-                    <span>{{ contact.contact }}</span>
+                    <span>{{ (contact as any).contact }}</span>
                   </div>
-                  <p class="text-sm text-muted-foreground mt-2">{{ contact.description }}</p>
+                  <p class="text-sm text-muted-foreground mt-2">{{ (contact as any).description }}</p>
                 </div>
               </div>
             </div>
