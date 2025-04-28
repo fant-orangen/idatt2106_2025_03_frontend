@@ -1,16 +1,16 @@
 /**
  * Interface representing the data required for user registration.
- * Corresponds to UserCreateDto in the backend.
+ *
+ * Maps to the backend UserCreateDto structure expected by the registration endpoint.
  *
  * @interface RegistrationData
  */
 export interface RegistrationData {
   email: string;
   password: string;
-  displayName: string;
   firstName: string;
   lastName: string;
-  phone: string;
+  phoneNumber: string;
 }
 
 /**
@@ -101,4 +101,18 @@ export interface AdminUserUpdatePayload {
   lastName: string | null;
   phone: string | null;
   role?: 'USER' | 'ADMIN';
+}
+
+/**
+ * Interface representing the user's profile information.
+ *
+ * Contains personal information fields that can be displayed and edited.
+ *
+ * @interface UserProfile
+ */
+export interface UserProfile {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
 }

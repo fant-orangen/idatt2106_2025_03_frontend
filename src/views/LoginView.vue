@@ -1,30 +1,34 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // Import shadcn-vue components
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 
+// Reactive variables for form fields and error messages
 const email = ref('')
 const password = ref('')
 const userStore = useUserStore()
 const errorMessage = ref('')
 
-// Disable scrolling when the page is loaded
-onMounted(() => {
-  document.body.style.overflow = 'hidden'
-})
+// // Disable scrolling when the page is loaded
+// onMounted(() => {
+//   document.body.style.overflow = 'hidden'
+// })
 
-// Re-enable scrolling when the page is unloaded
-onUnmounted(() => {
-  document.body.style.overflow = ''
-})
+// // Re-enable scrolling when the page is unloaded
+// onUnmounted(() => {
+//   document.body.style.overflow = ''
+// })
 
 /**
  * Handles the login process by verifying the user's credentials.
- * 
+ *
  * @async
  * @function handleLogin
  * @returns {Promise<void>} Resolves when the login process is complete.
@@ -34,9 +38,9 @@ async function handleLogin() {
   try {
     errorMessage.value = ''
     await userStore.verifyLogin(email.value, password.value)
-    alert('Login successful!')
+    alert(t('success.login-successful'))
   } catch (error) {
-    errorMessage.value = 'Login failed. Please check your credentials.'
+    errorMessage.value = t('errors.login-failed')
     console.error('Login error:', error)
   }
 }
@@ -45,33 +49,33 @@ async function handleLogin() {
 <template>
   <div class="login-wrapper">
     <div class="login-container">
-        <h1 class="text-xl font-bold text-center mb-4">Login</h1>
-        <form @submit.prevent="handleLogin" class="space-y-4">
+      <h1 class="text-xl font-bold text-center mb-4">{{ $t('login.login') }}</h1>
+      <form @submit.prevent="handleLogin" class="space-y-4">
         <div class="form-group">
-            <Label for="email" class="block text-sm font-medium">Email</Label>
-            <Input
+          <Label for="email" class="block text-sm font-medium">{{ $t('login.email') }}</Label>
+          <Input
             id="email"
             type="email"
             v-model="email"
-            placeholder="Enter your email"
+            :placeholder="$t('login.email')"
             required
-            />
+          />
         </div>
         <div class="form-group">
-            <Label for="password" class="block text-sm font-medium">Password</Label>
-            <Input
+          <Label for="password" class="block text-sm font-medium">{{ $t('login.password') }}</Label>
+          <Input
             id="password"
             type="password"
             v-model="password"
-            placeholder="Enter your password"
+            :placeholder="$t('login.password')"
             required
-            />
+          />
         </div>
         <Button type="submit" class="w-full bg-primary text-white hover:bg-primary/90">
-            Login
+          {{ $t('login.login') }}
         </Button>
         <p v-if="errorMessage" class="error text-red-500 text-center mt-2">{{ errorMessage }}</p>
-        </form>
+      </form>
     </div>
   </div>
 </template>
@@ -89,7 +93,7 @@ async function handleLogin() {
 
 /* Styling for the login form container */
 .login-container {
-  max-width: 400px;
+  min-width: 400px;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ddd;

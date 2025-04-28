@@ -1,0 +1,22 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Food",
+      "description": "Essential food items for emergency situations",
+      "icon": "utensils"
+    },
+    {
+      "id": 2,
+      "name": "Water",
+      "description": "Water and water purification supplies",
+      "icon": "droplet"
+    },
+    {
+      "id": 6,
+      "name": "Communication",
+      "description": "Communication devices and batteries",
+      "icon": "radio"
+    }
+  ]
+}

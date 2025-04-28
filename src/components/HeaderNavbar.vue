@@ -4,11 +4,26 @@ import { useNotificationStore } from '@/stores/NotificationStore' // Adjust the 
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
+import { useRouter } from 'vue-router'
+import { Globe, User, Bell, Settings, Sun, Moon } from 'lucide-vue-next'
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
+import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import NotificationPopover from '@/components/NotificationPopover.vue'
 
 
 const { locale } = useI18n()
+const router = useRouter()
 
 let prevScrollpos: number = window.pageYOffset
 const showDropdown = ref(false)
@@ -56,6 +71,10 @@ function selectLanguage(language: { label: string; code: string }): void {
   showDropdown.value = false
   locale.value = language.code
 }
+
+function goToPage(route: string) {
+  router.push(route)
+}
 </script>
 
 <template>
@@ -70,12 +89,12 @@ function selectLanguage(language: { label: string; code: string }): void {
           class="dropbtn flex items-center gap-2 text-secondary-foreground hover:text-primary"
           @click="toggleDropdown"
         >
-          <font-awesome-icon :icon="['fas', 'globe']" size="lg" />
+          <Globe class="h-5 w-5" />
           {{ selectedLanguage }}
         </button>
         <div
           v-if="showDropdown"
-          class="dropdown-content absolute bg-card text-card-foreground shadow-lg mt-2 rounded-md w-[200px]"
+          class="dropdown-content absolute bg-card text-card-foreground shadow-lg mt-2 rounded-md w-[200px] z-50"
         >
           <div
             v-for="language in languages"
@@ -96,35 +115,50 @@ function selectLanguage(language: { label: string; code: string }): void {
         {{ $t('login.login') }}</RouterLink
       >
       <RouterLink
-        to="/"
+        to="/register"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('login.signup') }}</RouterLink
       >
-      <RouterLink to="/" class="no-border">
-        <font-awesome-icon :icon="['fas', 'user']" size="lg" />
-      </RouterLink>
-
-      <!-- Notification Popover -->
-      <Popover>
-        <PopoverTrigger as="button" class="no-border">
-          <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
-        </PopoverTrigger>
-        <PopoverContent>
-          <NotificationPopover :notifications="topNotifications" />
-        </PopoverContent>
-      </Popover>
-
-      <button
-        variant="outline"
-        class="dark-mode-toggle flex items-center justify-center p-0 text-secondary-foreground hover:text-primary cursor-pointer"
-        @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
-      >
-        <Icon
-          :icon="colorMode === 'dark' ? 'radix-icons:sun' : 'radix-icons:moon'"
-          class="h-[1.2rem] w-[1.2rem] transition-all"
-        />
-      </button>
+      <div class="flex gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button variant="outline" size="icon" class="cursor-pointer">
+              <User class="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <User class="mr-2 h-4 w-4" />
+                <span @click="goToPage('/profile')">Profile (WIP)</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="goToPage('/settings')">
+                <Settings class="mr-2 h-4 w-4" />
+                <span>Settings (WIP)</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Popover>
+          <PopoverTrigger as="button" class="no-border">
+            <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
+          </PopoverTrigger>
+          <PopoverContent>
+            <NotificationPopover :notifications="topNotifications" />
+          </PopoverContent>
+        </Popover>
+        <Button
+          variant="outline"
+          size="icon"
+          class="dark-mode-toggle cursor-pointer p-0"
+          @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+        >
+          <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   </div>
 </template>
