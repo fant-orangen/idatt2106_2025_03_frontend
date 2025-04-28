@@ -1,6 +1,6 @@
 <template>
   <div style="margin: 20px">
-    <!--Breadcrumb at the top left-->
+    <!-- Breadcrumb at the top left -->
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
@@ -10,11 +10,14 @@
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage href="/add-new-POI">{{ $t('navigation.new-POI') }}</BreadcrumbPage>
+          <BreadcrumbPage href="/add-new-POI">
+            {{ $t('navigation.new-POI') }}
+          </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
   </div>
+
   <div class="admin-add-poi-page">
     <!-- Page title -->
     <h1>{{ $t('admin.make-new-POI') || 'Legg til et nytt interessepunkt' }}</h1>
@@ -37,7 +40,8 @@
               v-model="formData.title"
               type="text"
               :placeholder="
-                $t('admin.poi-title-placeholder') || 'Skriv inn tittel på interessepunktet'
+                $t('admin.poi-title-placeholder') ||
+                'Skriv inn tittel på interessepunktet'
               "
               required
             />
@@ -52,7 +56,8 @@
             <select id="type" v-model="formData.type" required>
               <option value="" disabled selected>
                 {{
-                  $t('admin.select-poi-type') || 'Velg hvilken type interessepunkt dette skal være'
+                  $t('admin.select-poi-type') ||
+                  'Velg hvilken type interessepunkt dette skal være'
                 }}
               </option>
               <option value="defibrillator">
@@ -70,16 +75,17 @@
             </select>
             <div class="form-description">
               {{
-                $t('add-POI-info.info.type') || 'Velg hvilken type interessepunkt dette skal være.'
+                $t('add-POI-info.info.type') ||
+                'Velg hvilken type interessepunkt dette skal være.'
               }}
             </div>
           </div>
 
           <!-- Description -->
           <div class="form-group">
-            <label for="description">{{
-              $t('add-event-info.titles.description') || 'Informasjon'
-            }}</label>
+            <label for="description">
+              {{ $t('add-event-info.titles.description') || 'Informasjon' }}
+            </label>
             <textarea
               id="description"
               v-model="formData.description"
@@ -93,7 +99,7 @@
             <div class="form-description">
               {{
                 $t('add-POI-info.info.description') ||
-                'Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'
+                'Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'
               }}
             </div>
           </div>
@@ -105,7 +111,9 @@
 
           <!-- Address -->
           <div class="form-group">
-            <label for="address">{{ $t('add-event-info.titles.address') || 'Adresse' }}</label>
+            <label for="address">
+              {{ $t('add-event-info.titles.address') || 'Adresse' }}
+            </label>
             <input
               id="address"
               v-model="formData.address"
@@ -117,9 +125,9 @@
           <!-- Coordinates -->
           <div class="coordinates-container">
             <div class="form-group half-width">
-              <label for="latitude">{{
-                $t('add-event-info.titles.latitude') || 'Breddegrad'
-              }}</label>
+              <label for="latitude">
+                {{ $t('add-event-info.titles.latitude') || 'Breddegrad' }}
+              </label>
               <input
                 id="latitude"
                 v-model="formData.latitude"
@@ -129,11 +137,10 @@
                 readonly
               />
             </div>
-
             <div class="form-group half-width">
-              <label for="longitude">{{
-                $t('add-event-info.titles.longitude') || 'Lengdegrad'
-              }}</label>
+              <label for="longitude">
+                {{ $t('add-event-info.titles.longitude') || 'Lengdegrad' }}
+              </label>
               <input
                 id="longitude"
                 v-model="formData.longitude"
@@ -147,27 +154,32 @@
 
           <!-- Hours & Contact section -->
           <div class="form-section-header">
-            <h2>{{ $t('admin.hours-contact-info') || 'Åpningstider og kontaktinformasjon' }}</h2>
+            <h2>
+              {{ $t('admin.hours-contact-info') || 'Åpningstider og kontaktinformasjon' }}
+            </h2>
           </div>
 
           <!-- Opening Hours -->
           <div class="hours-container">
             <div class="form-group half-width">
-              <label for="openfrom">{{ $t('add-POI-info.titles.open-from') || 'Åpent fra' }}</label>
+              <label for="openfrom">
+                {{ $t('add-POI-info.titles.open-from') || 'Åpent fra' }}
+              </label>
               <input id="openfrom" v-model="formData.openfrom" type="time" />
             </div>
-
             <div class="form-group half-width">
-              <label for="opento">{{ $t('add-POI-info.titles.open-to') || 'Åpent til' }}</label>
+              <label for="opento">
+                {{ $t('add-POI-info.titles.open-to') || 'Åpent til' }}
+              </label>
               <input id="opento" v-model="formData.opento" type="time" />
             </div>
           </div>
 
           <!-- Contact Info -->
           <div class="form-group">
-            <label for="contactinfo">{{
-              $t('add-POI-info.titles.contact-info') || 'Kontaktinformasjon'
-            }}</label>
+            <label for="contactinfo">
+              {{ $t('add-POI-info.titles.contact-info') || 'Kontaktinformasjon' }}
+            </label>
             <input
               id="contactinfo"
               v-model="formData.contactinfo"
@@ -192,9 +204,14 @@
             <button type="button" class="cancel-button" @click="cancelForm">
               {{ $t('admin.cancel') || 'Avbryt' }}
             </button>
-
-            <button type="submit" class="submit-button" :disabled="!isFormValid || isSubmitting">
-              <span v-if="isSubmitting">{{ $t('admin.submitting') || 'Lagrer...' }}</span>
+            <button
+              type="submit"
+              class="submit-button"
+              :disabled="!isFormValid || isSubmitting"
+            >
+              <span v-if="isSubmitting">
+                {{ $t('admin.submitting') || 'Lagrer...' }}
+              </span>
               <span v-else>{{ $t('admin.submit') || 'Lagre' }}</span>
             </button>
           </div>
@@ -245,27 +262,27 @@ import {
 
 // Define interfaces for the component
 interface Location {
-  lat: number | null;
-  lng: number | null;
+  lat: number | null
+  lng: number | null
 }
 
 interface FormData {
-  title: string;
-  type: string;
-  description: string;
-  address: string;
-  latitude: number | null;
-  longitude: number | null;
-  openfrom: string;
-  opento: string;
-  contactinfo: string;
+  title: string
+  type: string
+  description: string
+  address: string
+  latitude: number | null
+  longitude: number | null
+  openfrom: string
+  opento: string
+  contactinfo: string
 }
 
 interface MapClickEvent {
   latlng: {
-    lat: number;
-    lng: number;
-  };
+    lat: number
+    lng: number
+  }
 }
 
 export default defineComponent({
@@ -284,15 +301,12 @@ export default defineComponent({
     const { t } = useI18n()
     const router = useRouter()
 
-    // Component references
+    // Component refs
     const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null)
     const tempMarker = ref<L.Marker | null>(null)
 
-    // Initial center coordinates (Norway)
-    const initialCenter: Location = {
-      lat: 63.4305,
-      lng: 10.3951,
-    }
+    // Initial center (Norway)
+    const initialCenter: Location = { lat: 63.4305, lng: 10.3951 }
 
     // Form data
     const formData = ref<FormData>({
@@ -310,99 +324,66 @@ export default defineComponent({
     const isSubmitting = ref(false)
     const formError = ref('')
 
-    // Computed property to get map component instance
-    const mapComponentInstance = computed(() => {
-      return mapComponent.value! as InstanceType<typeof MapComponent>
-    })
+    const mapComponentInstance = computed(
+      () => mapComponent.value! as InstanceType<typeof MapComponent>,
+    )
 
-    // Computed property to check if form is valid
     const isFormValid = computed(() => {
       return (
-        formData.value.title &&
         formData.value.title.length >= 2 &&
-        formData.value.type &&
-        formData.value.description &&
+        !!formData.value.type &&
         formData.value.description.length >= 10 &&
         formData.value.latitude !== null &&
         formData.value.longitude !== null
       )
     })
 
-    // Handle map click to select location
     function handleMapClick(event: MapClickEvent): void {
-      console.log('Map clicked at:', event.latlng)
-      const location: Location = {
-        lat: event.latlng.lat,
-        lng: event.latlng.lng,
-      }
-
-      handleLocationSelected(location)
+      handleLocationSelected({ lat: event.latlng.lat, lng: event.latlng.lng })
     }
 
-    // Handle location selected from the map controller
     function handleLocationSelected(location: Location): void {
-      console.log('Location selected:', location)
-
-      // Update form data with selected coordinates
       formData.value.latitude = location.lat
       formData.value.longitude = location.lng
-
-      // Update marker on the map
       if (location.lat !== null && location.lng !== null) {
         updateMapMarker(location.lat, location.lng)
       }
-
-      // Try to get address via reverse geocoding (in a real app)
-      // This is just a placeholder
-      console.log('Selected location:', location)
     }
 
-    // Handle location cleared
     function handleLocationCleared(): void {
-      console.log('Location cleared')
       formData.value.latitude = null
       formData.value.longitude = null
-
-      // Remove the marker from the map
-      if (tempMarker.value && mapComponent.value && mapComponent.value.removeMarker) {
+      if (tempMarker.value && mapComponent.value?.removeMarker) {
         mapComponent.value.removeMarker(tempMarker.value as any)
         tempMarker.value = null
       }
     }
 
-    // Update or create marker on the map
     function updateMapMarker(lat: number, lng: number): void {
       if (!mapComponent.value || !mapComponent.value.addMarker) {
-        console.error('Map component or addMarker method not available')
+        console.error('Map component not ready')
         return
       }
-
-      // Remove existing marker if there is one
       if (tempMarker.value && mapComponent.value.removeMarker) {
         mapComponent.value.removeMarker(tempMarker.value as any)
       }
-
-      // Add new marker
       const title = formData.value.title || 'Nytt interessepunkt'
       tempMarker.value = mapComponent.value.addMarker(lat, lng, title)
     }
 
-    // Submit the form
     async function submitPOI(): Promise<void> {
       if (!isFormValid.value) {
         formError.value = t('admin.form-invalid') || 'Vennligst fyll ut alle påkrevde felt.'
         return
       }
-
       isSubmitting.value = true
       formError.value = ''
 
       try {
-        // Format data for API
         const poiData = {
           title: formData.value.title,
-          latitude: formData.value.latitude,
-          longitude: formData.value.longitude,
+          latitude: formData.value.latitude!,
+          longitude: formData.value.longitude!,
           address: formData.value.address || '',
           type: formData.value.type,
           openfrom: formData.value.openfrom || '',
@@ -410,17 +391,10 @@ export default defineComponent({
           contactinfo: formData.value.contactinfo || '',
           description: formData.value.description,
         }
-
-        console.log('Submitting POI data:', poiData)
-
-        // Call API to create the POI
-        const response = await createPOI(poiData)
-        console.log('POI created:', response.data)
-
-        // Navigate back to admin panel
+        await createPOI(poiData)
         router.push('/admin-panel')
-      } catch (error) {
-        console.error('Error creating POI:', error)
+      } catch (err) {
+        console.error(err)
         formError.value =
           t('admin.submission-error') || 'Feil ved lagring av interessepunkt. Prøv igjen senere.'
       } finally {
@@ -428,24 +402,20 @@ export default defineComponent({
       }
     }
 
-    // Cancel and return to admin panel
     function cancelForm(): void {
       router.push('/admin-panel')
     }
 
-    // Update marker title when title changes
     watch(
       () => formData.value.title,
-      (newTitle: string) => {
+      (newTitle) => {
         if (tempMarker.value && mapComponent.value) {
-          // In a real implementation, you would update the marker's popup or tooltip
-          console.log('Updating marker title to:', newTitle)
+          console.log('Update marker title to:', newTitle)
         }
       },
     )
 
-    // Initialize
-    onMounted((): void => {
+    onMounted(() => {
       console.log('AdminAddPOIPage mounted')
     })
 
@@ -485,125 +455,6 @@ h1 {
   gap: 30px;
 }
 
-.form-section {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.form-section-header {
-  margin-bottom: 15px;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.form-section-header h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0;
-  padding-bottom: 10px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 14px;
-}
-
-input[type='number'] {
-  -moz-appearance: textfield;
-}
-
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input:read-only {
-  background-color: #e9ecef;
-  cursor: not-allowed;
-}
-
-.form-description {
-  font-size: 12px;
-  color: #6c757d;
-  margin-top: 4px;
-}
-
-.coordinates-container,
-.hours-container {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.half-width {
-  flex: 1;
-  margin-bottom: 0;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 30px;
-}
-
-.submit-button,
-.cancel-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.submit-button {
-  background-color: #4a89dc;
-  color: white;
-}
-
-.submit-button:hover:not(:disabled) {
-  background-color: #3a79cc;
-}
-
-.submit-button:disabled {
-  background-color: #a8c6f0;
-  cursor: not-allowed;
-}
-
-.cancel-button {
-  background-color: #f8f9fa;
-  border: 1px solid #ced4da;
-  color: #212529;
-}
-
-.cancel-button:hover {
-  background-color: #e9ecef;
-}
-
-.map-section {
-  display: flex;
-  flex-direction: column;
-}
-
 .map-container {
   flex-grow: 1;
   min-height: 500px;
@@ -627,15 +478,12 @@ input:read-only {
   .content-container {
     grid-template-columns: 1fr;
   }
-
   .map-section {
     order: 1;
   }
-
   .form-section {
     order: 2;
   }
-
   .map-container {
     min-height: 400px;
   }
@@ -647,15 +495,12 @@ input:read-only {
     flex-direction: column;
     gap: 10px;
   }
-
   .half-width {
     margin-bottom: 10px;
   }
-
   .form-actions {
     flex-direction: column-reverse;
   }
-
   .submit-button,
   .cancel-button {
     width: 100%;

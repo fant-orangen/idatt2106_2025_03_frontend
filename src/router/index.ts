@@ -76,6 +76,11 @@ const routes = [
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),
   },
+  {
+    path: '/medicine-inventory',
+    name: 'MedicineInventory',
+    component: () => import('@/views/MedicineInventory.vue'),
+  },
 ]
 
 const router = createRouter({

@@ -35,21 +35,16 @@ export async function fetchPendingInvitations(): Promise<Invitation[]> {
  * @throws {Error} If the request fails
  */
 export async function respondToInvitation(
-  invitationId: number,
+  id: number,
   status: InvitationStatus,
-  message?: string
 ): Promise<Invitation> {
-  try {
-    const payload: InvitationResponseDto = {
-      invitationId,
-      status,
-      message
-    };
 
-    const response = await api.post<Invitation>('/invitations/respond', payload);
-    return response.data;
-  } catch (error) {
-    console.error(`Failed to respond to invitation ${invitationId}:`, error);
-    throw error;
-  }
+  const payload: InvitationResponseDto = {
+    id,
+    status,
+  };
+
+  const response = await api.post<Invitation>('/invitations/respond', payload);
+  return response.data;
+
 }
