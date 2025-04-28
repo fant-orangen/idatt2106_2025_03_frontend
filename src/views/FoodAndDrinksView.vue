@@ -110,9 +110,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { format } from "date-fns";
+import { inventoryService } from '@/services/InventoryService';
 
 const { t } = useI18n();
 
@@ -120,22 +121,7 @@ const { t } = useI18n();
  * List of all food and drink items in inventory.
  * Each item can have multiple batches with amount and expiration date.
  */
-const items = ref([
-  {
-    name: "Vann",
-    unit: "L",
-    caloriesPerUnit: "0",
-    edit: false,
-    batches: [{ amount: "8", expires: "2026-04-24" }]
-  },
-  {
-    name: "Havregryn",
-    unit: "kg",
-    caloriesPerUnit: "389",
-    edit: false,
-    batches: [{ amount: "2", expires: "2025-09-01" }]
-  }
-]);
+const items = ref([]);
 
 /** New product input fields */
 const newProductName = ref("");
@@ -144,6 +130,42 @@ const newProductCalories = ref("");
 
 /** Controls popup for duplicate product */
 const showExistsModal = ref(false);
+
+/** Loading state */
+const isLoading = ref(true);
+const error = ref(null);
+
+/**
+ * Fetch product types from the backend
+ */
+const fetchProductTypes = async () => {
+  try {
+    isLoading.value = true;
+    const response = await inventoryService.getProductTypes();
+
+    if (!response || !response.content) {
+      throw new Error('Invalid response format from server');
+    }
+
+    // Transform the response to match our frontend structure
+    items.value = response.content.map(product => ({
+      name: product.name,
+      unit: product.unit,
+      caloriesPerUnit: product.caloriesPerUnit?.toString() || '0',
+      edit: false,
+      batches: [] // Initialize with empty batches
+    }));
+  } catch (err) {
+    error.value = err;
+    console.error('Error fetching product types:', err);
+    items.value = []; // Reset items on error
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Fetch product types when component mounts
+onMounted(fetchProductTypes);
 
 /**
  * Toggle edit mode for a product item.
