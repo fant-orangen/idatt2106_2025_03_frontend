@@ -1,4 +1,20 @@
 <template>
+  <div style="margin: 20px">
+    <!--Breadcrumb at the top left-->
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/admin-panel">
+            {{ $t('navigation.admin-panel') }}
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage href="/add-new-POI">{{ $t('navigation.new-POI') }}</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  </div>
   <div class="admin-add-poi-page">
     <!-- Page title -->
     <h1>{{ $t('admin.make-new-POI') || 'Legg til et nytt interessepunkt' }}</h1>
@@ -20,7 +36,9 @@
               id="title"
               v-model="formData.title"
               type="text"
-              :placeholder="$t('admin.poi-title-placeholder') || 'Skriv inn tittel på interessepunktet'"
+              :placeholder="
+                $t('admin.poi-title-placeholder') || 'Skriv inn tittel på interessepunktet'
+              "
               required
             />
             <div class="form-description">
@@ -33,30 +51,50 @@
             <label for="type">{{ $t('add-POI-info.titles.type') || 'Type' }}</label>
             <select id="type" v-model="formData.type" required>
               <option value="" disabled selected>
-                {{ $t('admin.select-poi-type') || 'Velg hvilken type interessepunkt dette skal være' }}
+                {{
+                  $t('admin.select-poi-type') || 'Velg hvilken type interessepunkt dette skal være'
+                }}
               </option>
-              <option value="defibrillator">{{ $t('add-POI-info.POI-type.defibrillator') || 'Hjertestarter' }}</option>
-              <option value="shelter">{{ $t('add-POI-info.POI-type.shelter') || 'Tilfluktsrom' }}</option>
-              <option value="water-source">{{ $t('add-POI-info.POI-type.water-source') || 'Vannkilde' }}</option>
-              <option value="food-station">{{ $t('add-POI-info.POI-type.food') || 'Matutdeling' }}</option>
+              <option value="defibrillator">
+                {{ $t('add-POI-info.POI-type.defibrillator') || 'Hjertestarter' }}
+              </option>
+              <option value="shelter">
+                {{ $t('add-POI-info.POI-type.shelter') || 'Tilfluktsrom' }}
+              </option>
+              <option value="water-source">
+                {{ $t('add-POI-info.POI-type.water-source') || 'Vannkilde' }}
+              </option>
+              <option value="food-station">
+                {{ $t('add-POI-info.POI-type.food') || 'Matutdeling' }}
+              </option>
             </select>
             <div class="form-description">
-              {{ $t('add-POI-info.info.type') || 'Velg hvilken type interessepunkt dette skal være.' }}
+              {{
+                $t('add-POI-info.info.type') || 'Velg hvilken type interessepunkt dette skal være.'
+              }}
             </div>
           </div>
 
           <!-- Description -->
           <div class="form-group">
-            <label for="description">{{ $t('add-event-info.titles.description') || 'Informasjon' }}</label>
+            <label for="description">{{
+              $t('add-event-info.titles.description') || 'Informasjon'
+            }}</label>
             <textarea
               id="description"
               v-model="formData.description"
-              :placeholder="$t('admin.description-placeholder') || 'Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'"
+              :placeholder="
+                $t('admin.description-placeholder') ||
+                'Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'
+              "
               rows="4"
               required
             ></textarea>
             <div class="form-description">
-              {{ $t('add-POI-info.info.description') || 'Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?' }}
+              {{
+                $t('add-POI-info.info.description') ||
+                'Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'
+              }}
             </div>
           </div>
 
@@ -79,26 +117,30 @@
           <!-- Coordinates -->
           <div class="coordinates-container">
             <div class="form-group half-width">
-              <label for="latitude">{{ $t('add-event-info.titles.latitude') || 'Breddegrad' }}</label>
+              <label for="latitude">{{
+                $t('add-event-info.titles.latitude') || 'Breddegrad'
+              }}</label>
               <input
                 id="latitude"
                 v-model="formData.latitude"
                 type="number"
                 step="0.000001"
                 required
-                :disabled="true"
+                readonly
               />
             </div>
 
             <div class="form-group half-width">
-              <label for="longitude">{{ $t('add-event-info.titles.longitude') || 'Lengdegrad' }}</label>
+              <label for="longitude">{{
+                $t('add-event-info.titles.longitude') || 'Lengdegrad'
+              }}</label>
               <input
                 id="longitude"
                 v-model="formData.longitude"
                 type="number"
                 step="0.000001"
                 required
-                :disabled="true"
+                readonly
               />
             </div>
           </div>
@@ -112,26 +154,20 @@
           <div class="hours-container">
             <div class="form-group half-width">
               <label for="openfrom">{{ $t('add-POI-info.titles.open-from') || 'Åpent fra' }}</label>
-              <input
-                id="openfrom"
-                v-model="formData.openfrom"
-                type="time"
-              />
+              <input id="openfrom" v-model="formData.openfrom" type="time" />
             </div>
 
             <div class="form-group half-width">
               <label for="opento">{{ $t('add-POI-info.titles.open-to') || 'Åpent til' }}</label>
-              <input
-                id="opento"
-                v-model="formData.opento"
-                type="time"
-              />
+              <input id="opento" v-model="formData.opento" type="time" />
             </div>
           </div>
 
           <!-- Contact Info -->
           <div class="form-group">
-            <label for="contactinfo">{{ $t('add-POI-info.titles.contact-info') || 'Kontaktinformasjon' }}</label>
+            <label for="contactinfo">{{
+              $t('add-POI-info.titles.contact-info') || 'Kontaktinformasjon'
+            }}</label>
             <input
               id="contactinfo"
               v-model="formData.contactinfo"
@@ -139,8 +175,16 @@
               placeholder="+47 123 45 678"
             />
             <div class="form-description">
-              {{ $t('admin.contact-info-description') || 'Telefonnummer til en ansvarlig kontaktperson.' }}
+              {{
+                $t('admin.contact-info-description') ||
+                'Telefonnummer til en ansvarlig kontaktperson.'
+              }}
             </div>
+          </div>
+
+          <!-- Error message -->
+          <div v-if="formError" class="form-error">
+            {{ formError }}
           </div>
 
           <!-- Submit/Cancel buttons -->
@@ -149,11 +193,7 @@
               {{ $t('admin.cancel') || 'Avbryt' }}
             </button>
 
-            <button
-              type="submit"
-              class="submit-button"
-              :disabled="!isFormValid || isSubmitting"
-            >
+            <button type="submit" class="submit-button" :disabled="!isFormValid || isSubmitting">
               <span v-if="isSubmitting">{{ $t('admin.submitting') || 'Lagrer...' }}</span>
               <span v-else>{{ $t('admin.submit') || 'Lagre' }}</span>
             </button>
@@ -186,164 +226,217 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { createPOI } from '@/services/api/AdminServices';
-import MapComponent from '@/components/map/MapComponent.vue';
-import AdminMapController from '@/components/admin/AdminMapController.vue';
+<script>
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { createPOI } from '@/services/api/AdminServices'
+import MapComponent from '@/components/map/MapComponent.vue'
+import AdminMapController from '@/components/admin/AdminMapController.vue'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb/index.js'
 
-const { t } = useI18n();
-const router = useRouter();
+export default {
+  name: 'AdminAddPOIPage',
+  components: {
+    BreadcrumbLink,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbPage,
+    Breadcrumb,
+    BreadcrumbSeparator,
+    MapComponent,
+    AdminMapController,
+  },
+  setup() {
+    const { t } = useI18n()
+    const router = useRouter()
 
-// Component references
-const mapComponent = ref(null);
-const tempMarker = ref(null);
+    // Component references
+    const mapComponent = ref(null)
+    const tempMarker = ref(null)
 
-// Initial center coordinates (Norway)
-const initialCenter = {
-  lat: 63.4305,
-  lng: 10.3951
-};
+    // Initial center coordinates (Norway)
+    const initialCenter = {
+      lat: 63.4305,
+      lng: 10.3951,
+    }
 
-// Form data
-const formData = ref({
-  title: '',
-  type: '',
-  description: '',
-  address: '',
-  latitude: null,
-  longitude: null,
-  openfrom: '',
-  opento: '',
-  contactinfo: ''
-});
+    // Form data
+    const formData = ref({
+      title: '',
+      type: '',
+      description: '',
+      address: '',
+      latitude: null,
+      longitude: null,
+      openfrom: '',
+      opento: '',
+      contactinfo: '',
+    })
 
-const isSubmitting = ref(false);
-const formError = ref('');
+    const isSubmitting = ref(false)
+    const formError = ref('')
 
-// Computed property to get map component instance
-const mapComponentInstance = computed(() => {
-  return mapComponent.value;
-});
+    // Computed property to get map component instance
+    const mapComponentInstance = computed(() => {
+      return mapComponent.value
+    })
 
-// Computed property to check if form is valid
-const isFormValid = computed(() => {
-  return (
-    formData.value.title &&
-    formData.value.type &&
-    formData.value.description &&
-    formData.value.latitude !== null &&
-    formData.value.longitude !== null
-  );
-});
+    // Computed property to check if form is valid
+    const isFormValid = computed(() => {
+      return (
+        formData.value.title &&
+        formData.value.title.length >= 2 &&
+        formData.value.type &&
+        formData.value.description &&
+        formData.value.description.length >= 10 &&
+        formData.value.latitude !== null &&
+        formData.value.longitude !== null
+      )
+    })
 
-// Handle map click to select location
-function handleMapClick(event) {
-  const location = {
-    lat: event.latlng.lat,
-    lng: event.latlng.lng
-  };
+    // Handle map click to select location
+    function handleMapClick(event) {
+      console.log('Map clicked at:', event.latlng)
+      const location = {
+        lat: event.latlng.lat,
+        lng: event.latlng.lng,
+      }
 
-  handleLocationSelected(location);
+      handleLocationSelected(location)
+    }
+
+    // Handle location selected from the map controller
+    function handleLocationSelected(location) {
+      console.log('Location selected:', location)
+
+      // Update form data with selected coordinates
+      formData.value.latitude = location.lat
+      formData.value.longitude = location.lng
+
+      // Update marker on the map
+      updateMapMarker(location.lat, location.lng)
+
+      // Try to get address via reverse geocoding (in a real app)
+      // This is just a placeholder
+      console.log('Selected location:', location)
+    }
+
+    // Handle location cleared
+    function handleLocationCleared() {
+      console.log('Location cleared')
+      formData.value.latitude = null
+      formData.value.longitude = null
+
+      // Remove the marker from the map
+      if (tempMarker.value && mapComponent.value && mapComponent.value.removeMarker) {
+        mapComponent.value.removeMarker(tempMarker.value)
+        tempMarker.value = null
+      }
+    }
+
+    // Update or create marker on the map
+    function updateMapMarker(lat, lng) {
+      if (!mapComponent.value || !mapComponent.value.addMarker) {
+        console.error('Map component or addMarker method not available')
+        return
+      }
+
+      // Remove existing marker if there is one
+      if (tempMarker.value && mapComponent.value.removeMarker) {
+        mapComponent.value.removeMarker(tempMarker.value)
+      }
+
+      // Add new marker
+      const title = formData.value.title || 'Nytt interessepunkt'
+      tempMarker.value = mapComponent.value.addMarker(lat, lng, title)
+    }
+
+    // Submit the form
+    async function submitPOI() {
+      if (!isFormValid.value) {
+        formError.value = t('admin.form-invalid') || 'Vennligst fyll ut alle påkrevde felt.'
+        return
+      }
+
+      isSubmitting.value = true
+      formError.value = ''
+
+      try {
+        // Format data for API
+        const poiData = {
+          title: formData.value.title,
+          latitude: formData.value.latitude,
+          longitude: formData.value.longitude,
+          address: formData.value.address || '',
+          type: formData.value.type,
+          openfrom: formData.value.openfrom || '',
+          opento: formData.value.opento || '',
+          contactinfo: formData.value.contactinfo || '',
+          description: formData.value.description,
+        }
+
+        console.log('Submitting POI data:', poiData)
+
+        // Call API to create the POI
+        const response = await createPOI(poiData)
+        console.log('POI created:', response.data)
+
+        // Navigate back to admin panel
+        router.push('/admin-panel')
+      } catch (error) {
+        console.error('Error creating POI:', error)
+        formError.value =
+          t('admin.submission-error') || 'Feil ved lagring av interessepunkt. Prøv igjen senere.'
+      } finally {
+        isSubmitting.value = false
+      }
+    }
+
+    // Cancel and return to admin panel
+    function cancelForm() {
+      router.push('/admin-panel')
+    }
+
+    // Update marker title when title changes
+    watch(
+      () => formData.value.title,
+      (newTitle) => {
+        if (tempMarker.value && mapComponent.value) {
+          // In a real implementation, you would update the marker's popup or tooltip
+          console.log('Updating marker title to:', newTitle)
+        }
+      },
+    )
+
+    // Initialize
+    onMounted(() => {
+      console.log('AdminAddPOIPage mounted')
+    })
+
+    return {
+      mapComponent,
+      mapComponentInstance,
+      initialCenter,
+      formData,
+      isSubmitting,
+      formError,
+      isFormValid,
+      handleMapClick,
+      handleLocationSelected,
+      handleLocationCleared,
+      submitPOI,
+      cancelForm,
+    }
+  },
 }
-
-// Handle location selected from the map controller
-function handleLocationSelected(location) {
-  // Update form data with selected coordinates
-  formData.value.latitude = location.lat;
-  formData.value.longitude = location.lng;
-
-  // Update marker on the map
-  updateMapMarker(location.lat, location.lng);
-
-  // Try to get address via reverse geocoding (in a real app)
-  // This is just a placeholder
-  console.log('Selected location:', location);
-}
-
-// Handle location cleared
-function handleLocationCleared() {
-  formData.value.latitude = null;
-  formData.value.longitude = null;
-
-  // Remove the marker from the map
-  if (tempMarker.value && mapComponent.value) {
-    mapComponent.value.removeMarker(tempMarker.value);
-    tempMarker.value = null;
-  }
-}
-
-// Update or create marker on the map
-function updateMapMarker(lat, lng) {
-  if (!mapComponent.value) return;
-
-  // Remove existing marker if there is one
-  if (tempMarker.value) {
-    mapComponent.value.removeMarker(tempMarker.value);
-  }
-
-  // Add new marker
-  const title = formData.value.title || 'Nytt interessepunkt';
-  tempMarker.value = mapComponent.value.addMarker(lat, lng, title);
-}
-
-// Submit the form
-async function submitPOI() {
-  if (!isFormValid.value) {
-    formError.value = t('admin.form-invalid') || 'Vennligst fyll ut alle påkrevde felt.';
-    return;
-  }
-
-  isSubmitting.value = true;
-  formError.value = '';
-
-  try {
-    // Format data for API
-    const poiData = {
-      title: formData.value.title,
-      latitude: formData.value.latitude,
-      longitude: formData.value.longitude,
-      address: formData.value.address || '',
-      type: formData.value.type,
-      openfrom: formData.value.openfrom || '',
-      opento: formData.value.opento || '',
-      contactinfo: formData.value.contactinfo || '',
-      description: formData.value.description
-    };
-
-    // Call API to create the POI
-    const response = await createPOI(poiData);
-    console.log('POI created:', response.data);
-
-    // Navigate back to admin panel
-    router.push('/admin-panel');
-  } catch (error) {
-    console.error('Error creating POI:', error);
-    formError.value = t('admin.submission-error') || 'Feil ved lagring av interessepunkt. Prøv igjen senere.';
-  } finally {
-    isSubmitting.value = false;
-  }
-}
-
-// Cancel and return to admin panel
-function cancelForm() {
-  router.push('/admin-panel');
-}
-
-// Update marker title when title changes
-watch(() => formData.value.title, (newTitle) => {
-  if (tempMarker.value && mapComponent.value) {
-    // In a real implementation, you would update the marker's popup or tooltip
-    console.log('Updating marker title to:', newTitle);
-  }
-});
-
-// Initialize
-onMounted(() => {
-  console.log('AdminAddPOIPage mounted');
-});
 </script>
 
 <style scoped>
@@ -393,7 +486,9 @@ label {
   font-weight: 500;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
   padding: 8px 12px;
   border: 1px solid #ced4da;
@@ -402,17 +497,17 @@ input, select, textarea {
   font-size: 14px;
 }
 
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input:disabled {
+input:read-only {
   background-color: #e9ecef;
   cursor: not-allowed;
 }
@@ -423,7 +518,8 @@ input:disabled {
   margin-top: 4px;
 }
 
-.coordinates-container, .hours-container {
+.coordinates-container,
+.hours-container {
   display: flex;
   gap: 15px;
   margin-bottom: 20px;
@@ -441,7 +537,8 @@ input:disabled {
   margin-top: 30px;
 }
 
-.submit-button, .cancel-button {
+.submit-button,
+.cancel-button {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
