@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { getCurrentHousehold } from '@/services/HouseholdService'
 
 const routes = [
   {
@@ -40,6 +41,11 @@ const routes = [
     path: '/household',
     name: 'Household',
     component: () => import('@/views/HouseholdView.vue'),
+  },
+  {
+    path: '/household/create',
+    name: 'CreateHousehold',
+    component: () => import('@/components/household/CreateNewHousehold.vue'),
   },
   {
     path: '/food-and-drinks',
@@ -86,6 +92,26 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+})
+
+// Navigation guard to check household existence
+router.beforeEach(async (to, from, next) => {
+  // Skip check for these routes
+  if (to.path === '/login' || to.path === '/register' || to.path === '/') {
+    return next();
+  }
+
+  try {
+    const household = await getCurrentHousehold();
+    if (household === null && to.path !== '/household/create') {
+      // If no household exists and not already going to create page, redirect to create
+      return next('/household/create');
+    }
+    next();
+  } catch (error) {
+    console.error('Error checking household:', error);
+    next();
+  }
 })
 
 export default router
