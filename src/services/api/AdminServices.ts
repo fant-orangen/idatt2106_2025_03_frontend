@@ -79,3 +79,15 @@ export async function updateCurrentEvent(id: number, eventData: any) {
     }
   });
 }
+
+/**
+ * 
+ * @returns 
+ */
+export async function getAdminUsers() {
+  return await api.get('/crisis-events/all', {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
