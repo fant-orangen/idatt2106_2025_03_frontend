@@ -20,6 +20,7 @@ export interface HouseholdMember {
   firstName: string;
   lastName: string;
   isAdmin?: boolean;
+  name?: string;
 }
 
 /**
@@ -49,11 +50,11 @@ export interface EmailInvitation {
   message?: string;
 }
 
-export interface Member {
-  id: number;
-  firstName: string;
-  lastName: string;
-  type?: string;
+export type Member = HouseholdMember | EmptyHouseholdMember;
+
+export interface EmptyHouseholdMember {
+  id?: number;
+  name: string;
+  type: string;
   description?: string;
-  isAdmin?: boolean;
 }

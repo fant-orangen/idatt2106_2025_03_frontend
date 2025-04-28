@@ -33,14 +33,12 @@
 
               <!-- User Icon -->
               <span class="flex-shrink-0">
-                <UserIcon v-if="member.type === 'adult'" class="h-4 w-4" />
-                <BabyIcon v-else-if="member.type === 'child'" class="h-4 w-4" />
-                <PawPrintIcon v-else-if="member.type === 'pet'" class="h-4 w-4" />
+                <UserIcon class="h-4 w-4" />
               </span>
 
               <!-- Name -->
               <span class="flex-grow">
-                {{ member.firstName }} {{ member.lastName }}
+                {{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}
               </span>
             </div>
           </Button>
@@ -86,10 +84,10 @@ import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AddEmptyUser from './AddEmptyUser.vue';
-import { BabyIcon, PawPrintIcon, UserIcon, XIcon } from 'lucide-vue-next';
+import { UserIcon, XIcon } from 'lucide-vue-next';
 import AddUser from './AddUser.vue';
-import { addEmptyMember, removeEmptyMemberFromHousehold, getEmptyHouseholdMembers, getHouseholdMembers } from '@/services/HouseholdService.ts'
-import type { Member } from '@/models/Household.ts'
+import { getHouseholdMembers, getEmptyHouseholdMembers } from '@/services/HouseholdService.ts'
+import type { HouseholdMember } from '@/models/Household.ts'
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 useI18n();
 
@@ -99,28 +97,19 @@ const manageMode = ref(false);
 const householdStore = useHouseholdStore();
 const showInviteUser = ref(false);
 
-const householdMembers = computed(() => householdStore.members);
+const householdMembers = computed(() => householdStore.members as HouseholdMember[]);
 
-onMounted(async() => {
+onMounted(async () => {
   try {
-    if (!householdStore.currentHousehold) {
-      await householdStore.fetchCurrentHousehold();
-    }
-    const currentHouseholdId = householdStore.currentHousehold?.id;
-    if (!currentHouseholdId) return;
-    householdStore.setLoading(true);
-    const regularMembers = await getHouseholdMembers();
-    const emptyMembers = await getEmptyHouseholdMembers(currentHouseholdId);
-    householdStore.setMembers([...regularMembers, ...emptyMembers]);
+    const members = await getHouseholdMembers();
+    const emptyMembers = await getEmptyHouseholdMembers();
+    householdStore.setMembers([...members, ...emptyMembers]);
   } catch (error) {
-    console.error('Failed to fetch household members:', error);
-    householdStore.setError('Failed to fetch household members');
-  } finally {
-    householdStore.setLoading(false);
+    console.error('Error fetching household members:', error);
   }
 });
 
-const selectMember = (member: Member) => {
+const selectMember = (member: HouseholdMember) => {
   console.log('Selected member:', member);
   emit('memberSelected', member);
 };
@@ -132,45 +121,34 @@ const addEmptyUser = () => {
 const handleSaveUser = async (userData: {
   firstName: string;
   lastName: string;
-  type: string;
-  description?: string;
 }) => {
   try {
-    const currentHouseholdId = householdStore.currentHousehold?.id || 1;
-    const newMemberData = {
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      type: userData.type,
-      ...(userData.description ? { description: userData.description } : {})
-    };
-    const createdMember = await addEmptyMember(currentHouseholdId, newMemberData);
-    householdStore.addMember(createdMember);
+    // TODO: Implement adding regular user
     showAddUser.value = false;
   } catch (error) {
-    console.error('Failed to save empty user:', error);
-    householdStore.setError('Failed to save empty user');
+    console.error('Failed to save user:', error);
+    householdStore.setError('Failed to save user');
   }
 };
 
-  const inviteUser = () => {
-    showAddUser.value = false;
-    showInviteUser.value = true;
-  };
+const inviteUser = () => {
+  showAddUser.value = false;
+  showInviteUser.value = true;
+};
 
-  const handleUserInvited = (userData: { email: string }) => {
-    console.log('User invited:', userData);
-    showInviteUser.value = false;
-  };
+const handleUserInvited = (userData: { email: string }) => {
+  console.log('User invited:', userData);
+  showInviteUser.value = false;
+};
 
-  const toggleManageMode = () => {
-    manageMode.value = !manageMode.value;
-  };
+const toggleManageMode = () => {
+  manageMode.value = !manageMode.value;
+};
 
-
-const removeMember = async (memberId: number) => {
+const removeMember = async (memberId: number | undefined) => {
+  if (!memberId) return;
   try {
-    const currentHouseholdId = householdStore.currentHousehold?.id || 1;
-    await removeEmptyMemberFromHousehold(currentHouseholdId, memberId);
+    // TODO: Implement removing regular user
     householdStore.removeMember(memberId);
   } catch (error) {
     console.error('Failed to remove member:', error);

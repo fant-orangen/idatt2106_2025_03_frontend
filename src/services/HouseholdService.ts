@@ -7,7 +7,7 @@
  * @module HouseholdService
  */
 import api from '@/services/api/AxiosInstance.ts'
-import type { CreateHousehold, Household, EmailInvitation, HouseholdMember } from '@/models/Household'
+import type { CreateHousehold, Household, EmailInvitation, HouseholdMember, EmptyHouseholdMember } from '@/models/Household'
 
 /**
  * Fetches the current user's household
@@ -92,12 +92,11 @@ export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
 }
 
 /**
- * Get all empty members of a household (placeholder users)
- * @param householdId The household ID
+ * Get all empty members of the current household
  * @returns Array of empty household members
  */
-export async function getEmptyHouseholdMembers(householdId: number): Promise<Member[]> {
-  const response = await api.get(`/households/${householdId}/members/empty`);
+export async function getEmptyHouseholdMembers(): Promise<EmptyHouseholdMember[]> {
+  const response = await api.get('/households/members/empty');
   return response.data;
 }
 
