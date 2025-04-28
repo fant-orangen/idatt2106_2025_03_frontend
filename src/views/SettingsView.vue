@@ -13,19 +13,22 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Lock, User } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 </script>
 
 <template>
   <h1 class="text-4xl font-bold text-foreground w-full max-w-4xl px-4 mb-6 mt-10 ml-20">
-    Settings
+    {{ t('settings.title') }}
   </h1>
   <div class="page-content flex flex-col items-center mt-10 mb-20 w-full">
     <!-- Tabs -->
     <Tabs default-value="account" class="w-full max-w-4xl">
       <!-- Tabs List -->
       <TabsList class="grid grid-cols-2 w-1/2 mx-auto mb-4">
-        <TabsTrigger value="account">Account</TabsTrigger>
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
+        <TabsTrigger value="account">{{ t('settings.tabs.account') }}</TabsTrigger>
+        <TabsTrigger value="notifications">{{ t('settings.tabs.notifications') }}</TabsTrigger>
       </TabsList>
 
       <!-- Tabs Content -->
@@ -33,74 +36,70 @@ import { Lock, User } from 'lucide-vue-next'
         <div class="flex flex-col gap-10">
           <Card>
             <CardHeader>
-              <CardTitle class="test text-3xl">Account Settings</CardTitle>
+              <CardTitle class="test text-3xl">{{ t('settings.account.title') }}</CardTitle>
               <CardDescription></CardDescription>
             </CardHeader>
             <CardHeader>
-              <CardTitle>Account</CardTitle>
+              <CardTitle>{{ t('settings.account.subtitle') }}</CardTitle>
               <CardDescription>
-                Make changes to your account here. Click save when you're done.
+                {{ t('settings.account.description') }}
               </CardDescription>
             </CardHeader>
             <CardContent class="account-settings space-y-2">
               <div class="space-y-1">
-                <Label for="name">Full name</Label>
-                <!-- TODO: here the user's email should be -->
+                <Label for="name">{{ t('settings.account.fullName') }}</Label>
                 <Input id="name" default-value="Kari Nordmann" />
               </div>
               <div class="space-y-1">
-                <Label for="email">E-mail</Label>
-                <!-- TODO: here the user's email should be -->
+                <Label for="email">{{ t('settings.account.email') }}</Label>
                 <Input id="email" default-value="alice@example.com" />
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save changes</Button>
+              <Button>{{ t('settings.account.saveChanges') }}</Button>
             </CardFooter>
             <CardHeader>
-              <CardTitle>Password</CardTitle>
+              <CardTitle>{{ t('settings.account.password.title') }}</CardTitle>
               <CardDescription>
-                Change your password here. After saving, you'll be logged out.
+                {{ t('settings.account.password.description') }}
               </CardDescription>
             </CardHeader>
             <CardContent class="password-settings space-y-2">
               <div class="space-y-1">
-                <Label for="current">Current password</Label>
+                <Label for="current">{{ t('settings.account.password.current') }}</Label>
                 <Input id="current" type="password" />
               </div>
               <div class="space-y-1">
-                <Label for="new">New password</Label>
+                <Label for="new">{{ t('settings.account.password.new') }}</Label>
                 <Input id="new" type="password" />
               </div>
             </CardContent>
             <CardFooter>
-              <Button>Save changes</Button>
+              <Button>{{ t('settings.account.saveChanges') }}</Button>
             </CardFooter>
             <CardHeader>
-              <CardTitle>Account Security</CardTitle>
+              <CardTitle>{{ t('settings.account.security.title') }}</CardTitle>
               <CardDescription>
-                Enhance your account's security with two-step verification, requiring a code sent to
-                your email in addition to your password for login.
+                {{ t('settings.account.security.description') }}
               </CardDescription>
             </CardHeader>
             <CardContent class="security-settings space-y-2">
               <div class="space-y-1">
                 <Button variant="outline">
-                  <Lock class="w-4 h-4 mr-2" /> Turn on 2 step verification
+                  <Lock class="w-4 h-4 mr-2" /> {{ t('settings.account.security.twoStep') }}
                 </Button>
               </div>
             </CardContent>
             <CardHeader>
-              <CardTitle>Delete Account</CardTitle>
+              <CardTitle>{{ t('settings.account.delete.title') }}</CardTitle>
               <CardDescription>
-                Permanently delete your account and all associated data. This action is irreversible
-                and cannot be undone.
+                {{ t('settings.account.delete.description') }}
               </CardDescription>
             </CardHeader>
             <CardContent class="security-settings space-y-2">
               <div class="space-y-1">
                 <Button variant="destructive">
-                  <User class="w-4 h-4 mr-2" /> Delete Account
+                  <User class="w-4 h-4 mr-2" /> {{ t('settings.account.delete.button') }}
                 </Button>
               </div>
             </CardContent>
@@ -112,9 +111,11 @@ import { Lock, User } from 'lucide-vue-next'
         <div class="flex flex-col gap-10">
           <Card>
             <CardHeader>
-              <CardTitle class="text-2xl font-bold text-primary">Notifications Settings</CardTitle>
+              <CardTitle class="text-2xl font-bold text-primary">
+                {{ t('settings.notifications.title') }}
+              </CardTitle>
               <CardDescription class="text-muted-foreground">
-                Customize how you receive notifications to stay informed.
+                {{ t('settings.notifications.description') }}
               </CardDescription>
             </CardHeader>
             <CardContent class="space-y-6">
@@ -122,9 +123,11 @@ import { Lock, User } from 'lucide-vue-next'
               <div class="flex items-center justify-between border-b pb-4">
                 <div>
                   <Label for="email-notifications" class="text-lg font-medium">
-                    Email Notifications
+                    {{ t('settings.notifications.email.title') }}
                   </Label>
-                  <p class="text-sm text-muted-foreground">Receive updates and alerts via email.</p>
+                  <p class="text-sm text-muted-foreground">
+                    {{ t('settings.notifications.email.description') }}
+                  </p>
                   <div class="items-top flex gap-x-2 pt-4">
                     <Checkbox id="terms1" />
                     <div class="grid gap-1.5 leading-none">
@@ -132,11 +135,10 @@ import { Lock, User } from 'lucide-vue-next'
                         for="terms1"
                         class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        System Notifications
+                        {{ t('settings.notifications.email.system') }}
                       </label>
                       <p class="text-sm text-muted-foreground">
-                        Receive notifications about critical crisis events to stay informed and
-                        prepared.
+                        {{ t('settings.notifications.email.systemDescription') }}
                       </p>
                     </div>
                   </div>
@@ -145,7 +147,7 @@ import { Lock, User } from 'lucide-vue-next'
             </CardContent>
             <CardFooter class="flex justify-end">
               <Button class="bg-primary text-primary-foreground hover:bg-primary/90">
-                Save Changes
+                {{ t('settings.notifications.saveChanges') }}
               </Button>
             </CardFooter>
           </Card>

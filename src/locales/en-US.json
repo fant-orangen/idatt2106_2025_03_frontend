@@ -103,7 +103,8 @@
     "beredskapslager": "Emergency Storage",
     "no-expiring-items": "No items are about to expire.",
     "days-left": "days left",
-    "your-shelter-store": "Your Shelter Store"},
+    "your-shelter-store": "Your Shelter Store"
+  },
   "sidebar": {
     "title": "Themes",
     "themes": {
@@ -211,5 +212,47 @@
     "preparednessStorageBrief": "Learn what supplies you should have ready for emergencies.",
     "afterCrisisBrief": "Find guidance on recovery and returning to normalcy after a crisis.",
     "learnMoreTopic": "Click to learn more about this topic."
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "account": "Account",
+      "notifications": "Notifications"
+    },
+    "account": {
+      "title": "Account Settings",
+      "subtitle": "Account",
+      "description": "Make changes to your account here. Click save when you're done.",
+      "fullName": "Full name",
+      "email": "E-mail",
+      "saveChanges": "Save changes",
+      "password": {
+        "title": "Password",
+        "description": "Change your password here. After saving, you'll be logged out.",
+        "current": "Current password",
+        "new": "New password"
+      },
+      "security": {
+        "title": "Account Security",
+        "description": "Enhance your account's security with two-step verification, requiring a code sent to your email in addition to your password for login.",
+        "twoStep": "Turn on 2 step verification"
+      },
+      "delete": {
+        "title": "Delete Account",
+        "description": "Permanently delete your account and all associated data. This action is irreversible and cannot be undone.",
+        "button": "Delete Account"
+      }
+    },
+    "notifications": {
+      "title": "Notifications Settings",
+      "description": "Customize how you receive notifications to stay informed.",
+      "email": {
+        "title": "Email Notifications",
+        "description": "Receive updates and alerts via email.",
+        "system": "System Notifications",
+        "systemDescription": "Receive notifications about critical crisis events to stay informed and prepared."
+      },
+      "saveChanges": "Save Changes"
+    }
   }
 }

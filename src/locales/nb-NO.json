@@ -104,7 +104,8 @@
     "beredskapslager": "Beredskapslager",
     "no-expiring-items": "Ingen varer er i ferd med å utløpe.",
     "days-left": "dager igjen",
-    "your-shelter-store": "Ditt beredskapslager"},
+    "your-shelter-store": "Ditt beredskapslager"
+  },
   "sidebar": {
     "title": "Temaer",
     "themes": {
@@ -212,5 +213,47 @@
     "preparednessStorageBrief": "Lær hvilke forsyninger du bør ha klare for nødsituasjoner.",
     "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalitet etter en krise.",
     "learnMoreTopic": "Klikk for å lære mer om dette temaet."
+  },
+  "settings": {
+    "title": "Innstillinger",
+    "tabs": {
+      "account": "Konto",
+      "notifications": "Varslinger"
+    },
+    "account": {
+      "title": "Kontoinnstillinger",
+      "subtitle": "Konto",
+      "description": "Gjør endringer i kontoen din her. Klikk lagre når du er ferdig.",
+      "fullName": "Fullt navn",
+      "email": "E-post",
+      "saveChanges": "Lagre endringer",
+      "password": {
+        "title": "Passord",
+        "description": "Endre passordet ditt her. Etter lagring blir du logget ut.",
+        "current": "Nåværende passord",
+        "new": "Nytt passord"
+      },
+      "security": {
+        "title": "Kontosikkerhet",
+        "description": "Forbedre sikkerheten til kontoen din med totrinnsverifisering, som krever en kode sendt til e-posten din i tillegg til passordet ditt for innlogging.",
+        "twoStep": "Slå på totrinnsverifisering"
+      },
+      "delete": {
+        "title": "Slett konto",
+        "description": "Slett kontoen din og alle tilknyttede data permanent. Denne handlingen er irreversibel og kan ikke angres.",
+        "button": "Slett konto"
+      }
+    },
+    "notifications": {
+      "title": "Varslingsinnstillinger",
+      "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
+      "email": {
+        "title": "E-postvarsler",
+        "description": "Motta oppdateringer og varsler via e-post.",
+        "system": "Systemvarsler",
+        "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
+      },
+      "saveChanges": "Lagre endringer"
+    }
   }
 }
