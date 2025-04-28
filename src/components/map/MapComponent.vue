@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, watch, ref, nextTick, toRefs } from 'vue';
+import { onMounted, onBeforeUnmount, watch, ref, nextTick, toRefs, defineProps, defineEmits } from 'vue';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -16,16 +16,20 @@ import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { useI18n } from 'vue-i18n';
 import type { PoiData } from '@/models/PoiData';
 
+// Define emits for map interactions
+const emit = defineEmits(['map-clicked', 'marker-added', 'marker-removed', 'marker-moved']);
+
 // Pre-translate popup strings
 const { t } = useI18n();
 const translatedStrings = {
-  address: t('map.address'),
-  openingHours: t('map.opening-hours'),
-  contact: t('map.contact'),
-  directions: t('map.directions'),
-  yourLocation: t('map.your-location'),
-  showDirections: t('map.show-directions'),
-  closeDirections: t('map.close-directions')
+  address: t('map.address') || 'Adresse',
+  openingHours: t('map.opening-hours') || 'Åpningstider',
+  contact: t('map.contact') || 'Kontaktinfo',
+  directions: t('map.directions') || 'Veibeskrivelse',
+  yourLocation: t('map.your-location') || 'Din posisjon',
+  showDirections: t('map.show-directions') || 'Vis veibeskrivelse',
+  closeDirections: t('map.close-directions') || 'Lukk veibeskrivelse',
+  clickToSelectLocation: t('map.click-to-select-location') || 'Klikk for å velge plassering'
 };
 
 // Fix default Leaflet icon paths
@@ -42,6 +46,7 @@ const props = withDefaults(
     initialZoom?: number;
     userLocation?: { latitude: number; longitude: number } | null;
     crisisEvents?: { latitude: number; longitude: number; level: number }[];
+    adminMode?: boolean; // New prop for admin mode
   }>(),
   {
     pois: () => [],
@@ -50,15 +55,17 @@ const props = withDefaults(
     initialZoom: 6,
     userLocation: null,
     crisisEvents: () => [],
+    adminMode: false
   }
 );
 
-const { pois, userLocation } = toRefs(props);
+const { pois, userLocation, adminMode } = toRefs(props);
 
 // Map & layers
 const map = ref<L.Map | null>(null);
 const markerClusterGroup = ref<L.MarkerClusterGroup | null>(null);
 const userMarker = ref<L.Marker | null>(null);
+const adminMarkers = ref<L.Marker[]>([]);
 const mapContainerId = 'map-' + Math.random().toString(36).substring(2, 9);
 const routingControl = ref<any>(null);
 const activeRouteMarker = ref<L.Marker | null>(null);
@@ -71,6 +78,16 @@ const userIcon = L.icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
   className: 'user-location-icon',
+});
+
+// Custom icon for admin-created markers
+const adminIcon = L.icon({
+  iconUrl, iconRetinaUrl, shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: 'admin-marker-icon',
 });
 
 // Helper function to force map refresh
@@ -93,75 +110,160 @@ function refreshMarkerPositions() {
 
 // Initialize the Leaflet map and make the routing function globally available
 onMounted(() => {
-  console.log("Map component mounted");
+  console.log("Map component mounted", mapContainerId);
 
   // Fix icon paths globally
   // @ts-expect-error
   delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
 
-  // Create map
-  map.value = L.map(mapContainerId, {
-    fadeAnimation: false,
-    markerZoomAnimation: false, // Disable marker zoom animation to prevent issues
-    zoomAnimation: true
-  }).setView([props.centerLat!, props.centerLon!], props.initialZoom!);
+  // Create map with a slight delay to ensure container is ready
+  setTimeout(() => {
+    try {
+      const mapContainer = document.getElementById(mapContainerId);
+      if (!mapContainer) {
+        console.error(`Map container with ID ${mapContainerId} not found`);
+        return;
+      }
 
-  // Add tile layer
-  L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    {
-      maxZoom: 19,
-      attribution: '© OSM © CartoDB',
-      noWrap: false // Allow the map to be repeated
+      map.value = L.map(mapContainerId, {
+        fadeAnimation: false,
+        markerZoomAnimation: false, // Disable marker zoom animation to prevent issues
+        zoomAnimation: true
+      }).setView([props.centerLat!, props.centerLon!], props.initialZoom!);
+
+      // Add tile layer
+      L.tileLayer(
+        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        {
+          maxZoom: 19,
+          attribution: '© OSM © CartoDB',
+          noWrap: false // Allow the map to be repeated
+        }
+      ).addTo(map.value);
+
+      // Create marker cluster
+      markerClusterGroup.value = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 18,
+        maxClusterRadius: 50,
+        removeOutsideVisibleBounds: false, // Keep markers in memory
+        animate: false, // Disable cluster animations
+        animateAddingMarkers: false // Disable animations when adding markers
+      }).addTo(map.value);
+
+      // Set up event listeners for debugging and refresh
+      map.value.on('zoomend moveend', () => {
+        console.log(`Map view changed: zoom=${map.value?.getZoom()}`);
+        forceMapRefresh();
+      });
+
+      // Add additional event listener for zoom to update markers during zoom
+      map.value.on('zoom', () => {
+        // Force immediate update of markers during zoom
+        if (markerClusterGroup.value) {
+          markerClusterGroup.value.refreshClusters();
+        }
+      });
+
+      // Add click listener for admin mode
+      if (adminMode.value) {
+        console.log("Admin mode enabled, adding click listener");
+        map.value.on('click', (e) => {
+          console.log("Map clicked at", e.latlng);
+          emit('map-clicked', e);
+        });
+      }
+
+      // Expose the routing function to the global scope so the popup can access it
+      // This is necessary because Leaflet creates popups outside Vue's scope
+      window.showRouteFor = (lat: number, lng: number, poiName: string) => {
+        showRouteFor(lat, lng, poiName);
+      };
+
+      window.closeRouting = () => {
+        clearRouting();
+      };
+
+      // Initial map size invalidation
+      setTimeout(() => {
+        forceMapRefresh();
+      }, 100);
+
+      console.log("Map initialization completed successfully");
+    } catch (error) {
+      console.error("Error initializing map:", error);
     }
-  ).addTo(map.value);
+  }, 100); // Short delay to ensure DOM is ready
+});
 
-  // Create marker cluster
-  markerClusterGroup.value = L.markerClusterGroup({
-    spiderfyOnMaxZoom: true,
-    disableClusteringAtZoom: 18,
-    maxClusterRadius: 50,
-    removeOutsideVisibleBounds: false, // Keep markers in memory
-    animate: false, // Disable cluster animations
-    animateAddingMarkers: false // Disable animations when adding markers
+// Method to add a marker programmatically
+function addMarker(lat: number, lng: number, title: string = 'New Marker') {
+  if (!map.value) {
+    console.warn("Cannot add marker: map not initialized");
+    return null;
+  }
+
+  console.log(`Adding marker at ${lat}, ${lng} with title '${title}'`);
+  const marker = L.marker([lat, lng], {
+    icon: adminIcon,
+    draggable: adminMode.value,
+    title: title
   }).addTo(map.value);
 
-  // Set up event listeners for debugging and refresh
-  map.value.on('zoomend moveend', () => {
-    console.log(`Map view changed: zoom=${map.value?.getZoom()}`);
-    forceMapRefresh();
-  });
+  // If in admin mode, make the marker draggable and track its changes
+  if (adminMode.value) {
+    marker.on('dragend', function(event) {
+      const marker = event.target;
+      const position = marker.getLatLng();
+      console.log(`Marker moved to ${position.lat}, ${position.lng}`);
+      emit('marker-moved', {
+        marker: marker,
+        latlng: { lat: position.lat, lng: position.lng }
+      });
+    });
 
-  // Add additional event listener for zoom to update markers during zoom
-  map.value.on('zoom', () => {
-    // Force immediate update of markers during zoom
-    if (markerClusterGroup.value) {
-      markerClusterGroup.value.refreshClusters();
-    }
-  });
+    adminMarkers.value.push(marker);
+    emit('marker-added', {
+      marker: marker,
+      latlng: { lat: lat, lng: lng }
+    });
+  }
 
-  // Expose the routing function to the global scope so the popup can access it
-  // This is necessary because Leaflet creates popups outside Vue's scope
-  window.showRouteFor = (lat: number, lng: number, poiName: string) => {
-    showRouteFor(lat, lng, poiName);
-  };
+  return marker;
+}
 
-  window.closeRouting = () => {
-    clearRouting();
-  };
+// Method to remove a marker
+function removeMarker(marker: L.Marker) {
+  if (!map.value || !marker) return;
 
-  // Initial map size invalidation
-  setTimeout(() => {
-    forceMapRefresh();
-  }, 100);
-});
+  console.log("Removing marker");
+  map.value.removeLayer(marker);
+
+  // Remove from admin markers if applicable
+  const index = adminMarkers.value.indexOf(marker);
+  if (index > -1) {
+    adminMarkers.value.splice(index, 1);
+    emit('marker-removed', { marker });
+  }
+}
+
+// Method to center map on specific coordinates
+function centerMap(lat: number, lng: number, zoom: number = 15) {
+  if (!map.value) {
+    console.warn("Cannot center map: map not initialized");
+    return;
+  }
+
+  console.log(`Centering map at ${lat}, ${lng} with zoom ${zoom}`);
+  map.value.setView([lat, lng], zoom);
+}
 
 // Function to show routing between user location and POI
 function showRouteFor(lat: number, lng: number, poiName: string) {
   if (!map.value || !props.userLocation) {
     console.warn("Cannot show route: map or user location is not available");
-    alert(t('map.need-location'));
+    alert(t('map.need-location') || 'Du må dele din posisjon for å vise veibeskrivelse');
     return;
   }
 
@@ -217,7 +319,7 @@ function showRouteFor(lat: number, lng: number, poiName: string) {
       const controlTitle = document.createElement('div');
       controlTitle.className = 'routing-title';
       controlTitle.innerHTML = `
-        <h3>Directions to ${poiName}</h3>
+        <h3>Veibeskrivelse til ${poiName}</h3>
         <button class="close-routing-btn" onclick="window.closeRouting()">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -346,9 +448,7 @@ watch(
           riseOnHover: true,
           bubblingMouseEvents: false, // Improves event handling
           zIndexOffset: 100, // Stack markers above route line
-          // The following disables any animations for this marker
           nonBubblingEvents: ['click', 'dblclick', 'mouseover', 'mouseout'],
-          // Ensure marker position is always correct
           interactive: true
         });
 
@@ -450,7 +550,7 @@ watch(
   }
 );
 
-// Watch the userLocation prop: add or remove the blue marker.
+// Watch the userLocation prop: add or remove the blue marker
 watch(
   userLocation,
   async (loc, oldLoc) => {
@@ -502,6 +602,8 @@ watch(
 
 // Clean up on unmount
 onBeforeUnmount(() => {
+  console.log("Map component unmounting, cleaning up resources");
+
   // Clean up global functions
   delete window.showRouteFor;
   delete window.closeRouting;
@@ -511,6 +613,10 @@ onBeforeUnmount(() => {
 
   // Clear user marker
   userMarker.value?.remove();
+
+  // Clear admin markers
+  adminMarkers.value.forEach(marker => marker.remove());
+  adminMarkers.value = [];
 
   // Clear marker cluster
   if (markerClusterGroup.value) {
@@ -525,58 +631,100 @@ onBeforeUnmount(() => {
     map.value = null;
   }
 });
+
+// Expose methods to parent components
+defineExpose({
+  addMarker,
+  removeMarker,
+  centerMap
+});
 </script>
 
 <style scoped>
-#mapContainer > div {
-  height: 50em;
+#mapContainer {
+  height: 100%;
   width: 100%;
-  max-width: 80em;
-  margin: auto;
+  position: relative;
 }
 
-/* Scoped styles remain the same, but deep selectors need correct syntax */
-:deep(.poi-popup) {
-  font-family: sans-serif;
-  line-height: 1.5;
+/* Make sure the map container div fills the space */
+:deep(#mapContainer > div) {
+  height: 100%;
+  width: 100%;
 }
-:deep(.poi-popup strong) { font-weight: bold; margin-right: 5px; }
-:deep(.poi-popup hr) { border:0; height:1px; background:#ccc; margin:5px 0; }
-:deep(.poi-popup a) { color:#007bff; text-decoration:none; margin-top:5px; display:inline-block; }
-:deep(.poi-popup a:hover) { text-decoration:underline; }
+
+/* Admin mode styling */
+:deep(.admin-marker-icon) {
+  filter: hue-rotate(90deg); /* Makes the marker green */
+}
+
+:deep(.user-location-icon) {
+  filter: hue-rotate(210deg); /* Makes the marker blue */
+}
+
+:deep(.destination-marker) {
+  background: transparent;
+}
+
+:deep(.destination-marker-inner) {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #4a89dc;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(74, 137, 220, 0.5), 0 0 10px rgba(0, 0, 0, 0.3);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    box-shadow: 0 0 0 0 rgba(74, 137, 220, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(74, 137, 220, 0);
+  }
+  100% {
+    transform: scale(0.8);
+    box-shadow: 0 0 0 0 rgba(74, 137, 220, 0);
+  }
+}
+
+/* Popup styling */
+:deep(.poi-popup) {
+  max-width: 250px;
+}
 
 :deep(.directions-btn) {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 4px;
   background-color: #4a89dc;
   color: white;
-  border: none;
+  padding: 6px 12px;
   border-radius: 4px;
-  padding: 5px 10px;
+  border: none;
   margin-top: 8px;
   cursor: pointer;
-  font-size: 13px;
+  width: 100%;
   transition: background-color 0.2s;
 }
 
 :deep(.directions-btn:hover) {
-  background-color: #3d7acb;
+  background-color: #3a79cc;
 }
 
 :deep(.routing-title) {
-  padding: 10px;
-  background: #f1f5f9;
-  border-bottom: 1px solid #ddd;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-:deep(.routing-title h3) {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 8px 12px;
+  background-color: #4a89dc;
+  color: white;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
 
 :deep(.close-routing-btn) {
@@ -584,129 +732,21 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 4px;
   background: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 3px 6px;
+  color: white;
+  border: none;
   cursor: pointer;
   font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
 }
 
 :deep(.close-routing-btn:hover) {
-  background: #e2e8f0;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-:deep(.poi-label) {
-  background: rgba(255,255,255,0.8);
-  border: 1px solid #666;
-  border-radius: 3px;
-  padding: 2px 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  pointer-events: none;
-  z-index: 650;
-}
-
-:deep(.user-location-icon) {
-  filter: hue-rotate(210deg);
-  z-index: 1000 !important;
-}
-
-:deep(.user-location-label) {
-  background: rgba(0,120,255,0.8);
-  color: white;
-  border: 1px solid #0066cc;
-  border-radius: 3px;
-  padding: 2px 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  z-index: 1000;
-  pointer-events: none;
-}
-
-:deep(.destination-marker-inner) {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: #ff6b6b;
-  border: 2px solid white;
-  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-:deep(.destination-marker) {
-  background: none !important;
-  border: none !important;
-}
-
-/* Fix for marker position during zoom */
-:deep(.leaflet-marker-icon),
-:deep(.leaflet-marker-shadow) {
-  transition: none !important;
-  transform-origin: center bottom !important;
-  /* Prevent default transition effects from being applied */
-  -webkit-transition: none !important;
-  -moz-transition: none !important;
-  -o-transition: none !important;
-}
-
-/* Styling for the routing control panel */
+/* Address leaflet-routing-container zIndex issue that can make it appear under other elements */
 :deep(.leaflet-routing-container) {
-  max-width: 320px;
-  max-height: 400px;
-  overflow-y: auto;
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.2);
-  z-index: 1000; /* Ensure it stays on top */
-}
-
-:deep(.leaflet-routing-container-hide) {
-  display: none !important; /* Forcibly hide when closed */
-}
-
-:deep(.leaflet-routing-alt) {
-  max-height: none;
-  padding: 0 10px 10px 10px;
-}
-
-:deep(.leaflet-routing-alt table) {
-  margin: 0 0 10px 0;
-  width: 100%;
-}
-
-:deep(.leaflet-routing-alt tr:hover) {
-  background-color: #f8f9fa;
-}
-
-/* Hide the default collapse button */
-:deep(.leaflet-routing-collapse-btn) {
-  display: none !important;
-}
-
-/* Fix for zoom transition issues */
-:deep(.leaflet-zoom-anim .leaflet-zoom-animated) {
-  transition: none !important;
-}
-
-:deep(.leaflet-fade-anim .leaflet-popup) {
-  transition: opacity 0.2s linear;
-}
-
-/* Ensure markers stay above route line */
-:deep(.leaflet-marker-pane) {
-  z-index: 600;
-}
-
-:deep(.leaflet-routing-line-pane) {
-  z-index: 500;
-}
-
-:deep(.leaflet-popup-pane) {
-  z-index: 700;
-}
-
-:deep(.leaflet-tooltip-pane) {
-  z-index: 650;
+  z-index: 999 !important;
 }
 </style>
