@@ -48,6 +48,7 @@
     "vue": "^3.5.13",
     "vue-i18n": "^11.1.3",
     "vue-router": "^4.5.0",
+    "vue-sonner": "^1.3.2",
     "zod": "^3.24.3"
   },
   "devDependencies": {
@@ -59,6 +60,8 @@
     "@types/leaflet-routing-machine": "^3.2.8",
     "@types/leaflet.markercluster": "^1.5.5",
     "@types/node": "^22.14.1",
+    "@types/sockjs-client": "^1.5.4",
+    "@types/stompjs": "^2.3.9",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vitest/eslint-plugin": "^1.1.39",
     "@vue/eslint-config-prettier": "^10.2.0",
