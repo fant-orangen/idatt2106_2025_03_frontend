@@ -22,6 +22,13 @@
     "password": "Password",
     "confirm-password": "Confirm Password"
   },
+  "admin": {
+    "administrate": "Administrate",
+    "make-new-event": "Add a new event",
+    "make-new-POI": "Add a new point of interest",
+    "make-new-activity": "Make a new activity",
+    "edit-event": "Edit a current event"
+  },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
     "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
@@ -42,7 +49,12 @@
     "home": "Home",
     "language": "Language",
     "before-crisis-page": "Before a crisis",
-    "activities": "Activities"
+    "activities": "Activities",
+    "admin-panel": "Admin panel",
+    "new-event": "New event",
+    "new-POI": "New point of interest",
+    "new-activity": "New activity",
+    "go-back": "Go back"
   },
   "time": {
     "after": "after",
@@ -53,7 +65,8 @@
     "news": "News",
     "notifications": "Notifications",
     "nr-of-people-in-household": "Number of people in household",
-    "info-about-storage": "Read more about emergency storages"
+    "info-about-storage": "Read more about emergency storages",
+    "current-situation": "Current situation"
   },
   "reflect": {
     "reflection": "Reflect after crisis",
@@ -67,7 +80,28 @@
     "shelter": "Shelter",
     "address": "Address",
     "opening-hours": "Opening Hours",
-    "directions": "Directions"
+    "directions": "Directions",
+    "contact": "Contact",
+    "filter": "Filter POIs",
+    "my-location": "Use my location",
+    "your-location": "Your location",
+    "getting-location": "Getting Your Location",
+    "distance": "Distance (meters)",
+    "poi-type": "POI Type",
+    "all-types": "All Types",
+    "apply-filter": "Apply Filter",
+    "reset-filter": "Reset",
+    "location-error": "Could not get your location. Please check your browser permissions.",
+    "location-success": "Location obtained successfully.",
+    "show-filter": "Show Filter Options",
+    "hide-filter": "Hide Filter Options",
+    "nearest-shelter": "Find Nearest Shelter",
+    "location-needed": "Location needed to find nearest shelter. Please allow location access.",
+    "location-required": "Location required for this filter",
+    "find-nearest": "Find Nearest",
+    "show-directions": "Show directions",
+    "close-directions": "Close",
+    "need-location": "Please enable your location to show directions"
   },
   "time-units": {
     "month": "1 month | {count} months",
@@ -103,7 +137,65 @@
     "beredskapslager": "Emergency Storage",
     "no-expiring-items": "No items are about to expire.",
     "days-left": "days left",
-    "your-shelter-store": "Your Shelter Store"
+    "your-shelter-store": "Your Shelter Store",
+    "invite-user": "Invite User",
+    "email-address": "Email Address",
+    "enter-email": "Enter email address",
+    "access-level": "Access Level",
+    "select-access-level": "Select access level",
+    "editor": "Editor",
+    "viewer": "Viewer",
+    "personal-message": "Personal Message",
+    "optional-message": "Optional: Add a personal message",
+    "send-invitation": "Send Invitation",
+    "invitation-sent": "Invitation sent successfully",
+    "invitation-failed": "Failed to send invitation",
+    "add-user-title": "Invite User to Household",
+    "create_new": "Create New Household",
+    "create_description": "Create your own household to manage your emergency preparedness.",
+    "create_button": "Create New Household",
+    "no-household": "You don't have a household yet",
+    "no-household-description": "Create or join a household to manage your emergency preparedness together with family members or friends.",
+    "manage-household": "Manage Household",
+    "leave-household": "Leave Household",
+    "leave-confirm": "Are you sure you want to leave this household?",
+    "leave-success": "You have successfully left the household",
+    "generate-invitation": "Generate Invitation Code",
+    "copy-invitation": "Copy Invitation Code",
+    "copied-to-clipboard": "Copied to clipboard!",
+    "share-invitation": "Share this code with someone you want to invite to your household.",
+    "users": "Users",
+    "no-users": "No users in this household yet",
+
+    "create": {
+      "title": "Create New Household",
+      "subtitle": "Set up your household for emergency preparedness",
+      "nameLabel": "Household Name",
+      "namePlaceholder": "Enter household name",
+      "locationLabel": "Location",
+      "locationPlaceholder": "Enter address (optional)",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Enter household description (optional)",
+      "submitButton": "Create Household",
+      "errors": {
+        "nameRequired": "Household name is required",
+        "generic": "Failed to create household"
+      }
+    },
+
+    "join": {
+      "title": "Join Household",
+      "subtitle": "Join an existing household with an invitation code",
+      "tokenLabel": "Invitation Code",
+      "tokenPlaceholder": "Enter invitation code",
+      "submitButton": "Join Household",
+      "success": "Successfully joined household",
+      "errors": {
+        "tokenRequired": "Invitation code is required",
+        "invalidToken": "Invalid invitation code",
+        "generic": "Failed to join household"
+      }
+    }
   },
   "sidebar": {
     "title": "Themes",
@@ -187,6 +279,15 @@
       "content": "After experiencing a crisis:\n\n**Take care of immediate needs:**\n* Ensure your safety and the safety of those around you\n* Seek medical attention if needed\n* Find safe shelter if your home is damaged\n* Contact family members to let them know you're safe\n\n**Begin recovery:**\n* Document damage (take photos) for insurance purposes\n* Contact your insurance company\n* Apply for disaster assistance if available\n* Clean and repair your home when it's safe to do so\n\n**Mental health is important:**\n* It's normal to experience stress, anxiety, or other emotional reactions\n* Talk about your experiences with family, friends, or professionals\n* Take care of your physical health (sleep, nutrition, exercise)\n* Seek professional help if needed\n\n**Learn from the experience:**\n* Evaluate your emergency plan and supplies\n* Make improvements based on what you learned\n* Help others in your community\n\n*[Source: Helsenorge.no and DSB](https://www.dsb.no/)*"
     }
   },
+  "invitation": {
+    "title": "Household Invitation",
+    "description": "You have been invited to join a household. Please respond to this invitation.",
+    "from": "From",
+    "household": "Household",
+    "message": "Message",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
   "infoPage": {
     "aboutThisTheme": "About this theme",
     "themeDescription": "Essential information to help you prepare and respond.",
@@ -253,6 +354,65 @@
         "systemDescription": "Receive notifications about critical crisis events to stay informed and prepared."
       },
       "saveChanges": "Save Changes"
+    },
+    "add-event-info": {
+      "title": "This will be the title of your event.",
+      "coordinates": "Insert the coordinates or the address of your event. You can also click on the map to get the coordinates automatically!",
+      "radius": "Insert the radius of your event in meters. Approximately how large is the area affected by the event?",
+      "priority": "The priority level is important, and will show up as low (green), medium (orange), and high (red) to users on the map.",
+      "description": "For example: The event occurred on (date and location) ... and will most likely last for (time)... There might be a shortage of (resource)...",
+      "time": "Time when the event first occurred.",
+      "date": "Date when the event first occurred.",
+      "errors": {
+        "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
+        "latitude": "The latitude must be between -90 and 90.",
+        "longitude": "The longitude must be between -180 and 180.",
+        "radius": "The radius must be at least 1 meter and cannot exceed 10,000 meters.",
+        "priority": "You must select a priority.",
+        "type": "You need to choose the type of POI.",
+        "description": "The description must be at least 10 characters long and cannot exceed 500 characters.",
+        "position-missing": "Choose to enter either the coordinates of the event, or the address.",
+        "address": "The address needs to have at least 2 characters and cannot exceed 100 characters.",
+        "contact-info": "Make sure to write a valid phone number."
+      },
+      "titles": {
+        "address": "Address",
+        "title": "Title",
+        "longitude": "Longitude",
+        "latitude": "Latitude",
+        "radius": "Radius",
+        "priority": "Crisis level",
+        "description": "Information",
+        "submit": "Submit",
+        "time": "Time",
+        "date": "Date",
+        "choose-event": "Choose an event"
+      },
+      "crisis-level": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      }
+    },
+    "add-POI-info": {
+      "info": {
+        "title": "This will be the title of your point of interest (POI).",
+        "coordinates": "Insert the coordinates or the address of your POI. You can also click on the map to get the coordinates automatically!",
+        "type": "Choose what type of POI this is.",
+        "description": "Write some information describing the POI. Where is it? What is its purpose?"
+      },
+      "titles": {
+        "type": "Type",
+        "open-from": "Open from",
+        "open-to": "Open until",
+        "contact-info": "Contact information"
+      },
+      "POI-type": {
+        "defibrillator": "Defibrillator",
+        "shelter": "Shelter",
+        "water-source": "Water scource",
+        "food": "Food station"
+      }
     }
   }
 }

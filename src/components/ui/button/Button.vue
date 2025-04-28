@@ -25,3 +25,11 @@ const props = withDefaults(defineProps<Props>(), {
     <slot />
   </Primitive>
 </template>
+
+<style scoped >
+
+Button:hover {
+  cursor: pointer;
+}
+
+</style>

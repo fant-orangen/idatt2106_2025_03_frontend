@@ -38,13 +38,38 @@ const routes = [
   },
   {
     path: '/household',
-    name: 'HouseholdManager',
-    component: () => import('@/views/HouseholdManager.vue'),
+    name: 'Household',
+    component: () => import('@/views/HouseholdView.vue'),
   },
   {
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
     component: () => import('@/views/FoodAndDrinksView.vue'),
+  },
+  {
+    path: '/shelter-frontpage',
+    name: 'shelter-frontpage',
+    component: () => import('@/components/shelter/CategoryPage.vue')
+  },
+  {
+    path: '/admin-panel',
+    name: 'AdminPanel',
+    component: () => import('@/views/AdminPanel.vue'),
+  },
+  {
+    path: '/add-new-event',
+    name: 'AddNewEvent',
+    component: () => import('@/views/AdminAddNewEvent.vue'),
+  },
+  {
+    path: '/add-new-POI',
+    name: 'AddNewPOI',
+    component: () => import('@/views/AdminAddNewPOI.vue'),
+  },
+  {
+    path: '/edit-event',
+    name: 'EditEvent',
+    component: () => import('@/views/AdminEditEvent.vue')
   },
   {
     path: '/:pathMatch(.*)*',
