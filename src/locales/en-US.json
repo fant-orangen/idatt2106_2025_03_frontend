@@ -354,65 +354,65 @@
         "systemDescription": "Receive notifications about critical crisis events to stay informed and prepared."
       },
       "saveChanges": "Save Changes"
+    }
+  },
+  "add-event-info": {
+    "title": "This will be the title of your event.",
+    "coordinates": "Insert the coordinates or the address of your event. You can also click on the map to get the coordinates automatically!",
+    "radius": "Insert the radius of your event in meters. Approximately how large is the area affected by the event?",
+    "priority": "The priority level is important, and will show up as low (green), medium (orange), and high (red) to users on the map.",
+    "description": "For example: The event occurred on (date and location) ... and will most likely last for (time)... There might be a shortage of (resource)...",
+    "time": "Time when the event first occurred.",
+    "date": "Date when the event first occurred.",
+    "errors": {
+      "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
+      "latitude": "The latitude must be between -90 and 90.",
+      "longitude": "The longitude must be between -180 and 180.",
+      "radius": "The radius must be at least 1 meter and cannot exceed 10,000 meters.",
+      "priority": "You must select a priority.",
+      "type": "You need to choose the type of POI.",
+      "description": "The description must be at least 10 characters long and cannot exceed 500 characters.",
+      "position-missing": "Choose to enter either the coordinates of the event, or the address.",
+      "address": "The address needs to have at least 2 characters and cannot exceed 100 characters.",
+      "contact-info": "Make sure to write a valid phone number."
     },
-    "add-event-info": {
-      "title": "This will be the title of your event.",
-      "coordinates": "Insert the coordinates or the address of your event. You can also click on the map to get the coordinates automatically!",
-      "radius": "Insert the radius of your event in meters. Approximately how large is the area affected by the event?",
-      "priority": "The priority level is important, and will show up as low (green), medium (orange), and high (red) to users on the map.",
-      "description": "For example: The event occurred on (date and location) ... and will most likely last for (time)... There might be a shortage of (resource)...",
-      "time": "Time when the event first occurred.",
-      "date": "Date when the event first occurred.",
-      "errors": {
-        "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
-        "latitude": "The latitude must be between -90 and 90.",
-        "longitude": "The longitude must be between -180 and 180.",
-        "radius": "The radius must be at least 1 meter and cannot exceed 10,000 meters.",
-        "priority": "You must select a priority.",
-        "type": "You need to choose the type of POI.",
-        "description": "The description must be at least 10 characters long and cannot exceed 500 characters.",
-        "position-missing": "Choose to enter either the coordinates of the event, or the address.",
-        "address": "The address needs to have at least 2 characters and cannot exceed 100 characters.",
-        "contact-info": "Make sure to write a valid phone number."
-      },
-      "titles": {
-        "address": "Address",
-        "title": "Title",
-        "longitude": "Longitude",
-        "latitude": "Latitude",
-        "radius": "Radius",
-        "priority": "Crisis level",
-        "description": "Information",
-        "submit": "Submit",
-        "time": "Time",
-        "date": "Date",
-        "choose-event": "Choose an event"
-      },
-      "crisis-level": {
-        "low": "Low",
-        "medium": "Medium",
-        "high": "High"
-      }
+    "titles": {
+      "address": "Address",
+      "title": "Title",
+      "longitude": "Longitude",
+      "latitude": "Latitude",
+      "radius": "Radius",
+      "priority": "Crisis level",
+      "description": "Information",
+      "submit": "Submit",
+      "time": "Time",
+      "date": "Date",
+      "choose-event": "Choose an event"
     },
-    "add-POI-info": {
-      "info": {
-        "title": "This will be the title of your point of interest (POI).",
-        "coordinates": "Insert the coordinates or the address of your POI. You can also click on the map to get the coordinates automatically!",
-        "type": "Choose what type of POI this is.",
-        "description": "Write some information describing the POI. Where is it? What is its purpose?"
-      },
-      "titles": {
-        "type": "Type",
-        "open-from": "Open from",
-        "open-to": "Open until",
-        "contact-info": "Contact information"
-      },
-      "POI-type": {
-        "defibrillator": "Defibrillator",
-        "shelter": "Shelter",
-        "water-source": "Water scource",
-        "food": "Food station"
-      }
+    "crisis-level": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    }
+  },
+  "add-POI-info": {
+    "info": {
+      "title": "This will be the title of your point of interest (POI).",
+      "coordinates": "Insert the coordinates or the address of your POI. You can also click on the map to get the coordinates automatically!",
+      "type": "Choose what type of POI this is.",
+      "description": "Write some information describing the POI. Where is it? What is its purpose?"
+    },
+    "titles": {
+      "type": "Type",
+      "open-from": "Open from",
+      "open-to": "Open until",
+      "contact-info": "Contact information"
+    },
+    "POI-type": {
+      "defibrillator": "Defibrillator",
+      "shelter": "Shelter",
+      "water-source": "Water scource",
+      "food": "Food station"
     }
   }
 }
