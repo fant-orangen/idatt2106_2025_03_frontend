@@ -434,7 +434,7 @@
       "shelter": "Shelter",
       "water-source": "Water Source",
       "food": "Food Distribution"
-
+    },
     "add-POI-info": {
       "info": {
         "title": "This will be the title of your point of interest (POI).",
