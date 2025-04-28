@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
-import { Globe, User, Bell, Settings } from 'lucide-vue-next'
+import { Globe, User, Bell, Settings, Sun, Moon } from 'lucide-vue-next'
 
 import {
   DropdownMenu,
@@ -107,40 +107,40 @@ function goToPage(route: string) {
       >
         {{ $t('login.signup') }}</RouterLink
       >
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button variant="outline" size="icon" class="cursor-pointer p-0">
-            <User class="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <User class="mr-2 h-4 w-4" />
-              <span @click="goToPage('/profile')">Profile (WIP)</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="goToPage('/settings')">
-              <Settings class="mr-2 h-4 w-4" />
-              <span>Settings (WIP)</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <RouterLink to="/" class="no-border">
-        <Bell class="h-5 w-5" />
-      </RouterLink>
-      <button
-        variant="outline"
-        class="dark-mode-toggle flex items-center justify-center p-0 text-secondary-foreground hover:text-primary cursor-pointer"
-        @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
-      >
-        <Icon
-          :icon="colorMode === 'dark' ? 'radix-icons:sun' : 'radix-icons:moon'"
-          class="h-[1.2rem] w-[1.2rem] transition-all"
-        />
-      </button>
+      <div class="flex gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button variant="outline" size="icon" class="cursor-pointer">
+              <User class="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <User class="mr-2 h-4 w-4" />
+                <span @click="goToPage('/profile')">Profile (WIP)</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="goToPage('/settings')">
+                <Settings class="mr-2 h-4 w-4" />
+                <span>Settings (WIP)</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button variant="outline" size="icon" class="cursor-pointer p-0" @click="goToPage('/')">
+          <Bell class="h-5 w-5" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          class="dark-mode-toggle cursor-pointer p-0"
+          @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+        >
+          <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   </div>
 </template>
