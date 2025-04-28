@@ -90,7 +90,7 @@ async function createNewHousehold() {
   try {
     await createHousehold({
       name: householdName.value.trim(),
-      location: householdLocation.value.trim() || undefined,
+      address: householdLocation.value.trim() ? { street: householdLocation.value.trim() } : undefined,
       description: householdDescription.value.trim() || undefined
     });
 
