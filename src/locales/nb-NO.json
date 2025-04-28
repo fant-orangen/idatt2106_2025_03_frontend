@@ -66,12 +66,22 @@
     "search-error": "Feil ved søk etter adresse.",
     "map-reset": "Kart tilbakestilt."
   },
+  "notifications": {
+    "notification": "Varsling",
+    "notifications": "Varslinger",
+    "new-notification": "Ny varsling",
+    "no-notifications": "Ingen varslinger tilgjengelig",
+    "no-new-notifications": "Ingen nye varslinger",
+    "all-notifications": "Se alle varslinger",
+    "untitled": "Uten tittel"
+  },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
     "user-exists": "En konto med denne e-posten eksisterer allerede. Vennligst logg inn eller tilbakestill passordet hvis du har glemt det.",
     "login-failed": "Innlogging mislyktes. Vennligst sjekk legitimasjonen din.",
     "passwords-do-not-match": "Passordene stemmer ikke overens.",
-    "registration-failed": "Registrering mislyktes. Vennligst prøv igjen."
+    "registration-failed": "Registrering mislyktes. Vennligst prøv igjen.",
+    "no-news-available": "Ingen nyheter tilgjengelig"
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",

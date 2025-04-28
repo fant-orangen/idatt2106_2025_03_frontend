@@ -17,6 +17,13 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
   },
   {
+    path: '/notifications',
+    component: () => import('@/views/NotificationView.vue') },
+
+  {
+    path: '/news',
+    component: () => import('@/views/NewsView.vue') },
+  {
     path: '/settings',
     name: 'Settings',
     component: () => import('@/views/SettingsView.vue'),
@@ -85,7 +92,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
+  routes: routes,
 })
 
 export default router

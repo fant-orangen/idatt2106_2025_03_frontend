@@ -65,12 +65,22 @@
     "search-error": "Error searching for address.",
     "map-reset": "Map reset."
   },
+  "notifications": {
+    "notification": "Notification",
+    "notifications": "Notifications",
+    "new-notification": "New Notification",
+    "no-notifications": "No notifications available",
+    "no-new-notifications": "No new notifications",
+    "all-notifications": "See all notifications",
+    "untitled": "Untitled"
+  },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
     "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
     "login-failed": "Login failed. Please check your credentials.",
     "passwords-do-not-match": "Passwords do not match.",
-    "registration-failed": "Registration failed. Please try again."
+    "registration-failed": "Registration failed. Please try again.",
+    "no-news-available": "No news available"
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",

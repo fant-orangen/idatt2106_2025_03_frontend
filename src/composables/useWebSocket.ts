@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import type { NotificationMessage } from '@/models/Notification';
+import type { NotificationMessage } from '@/models/NotificationMessage.ts';
 import SockJS from 'sockjs-client';
 import { Client, over } from 'stompjs';
 

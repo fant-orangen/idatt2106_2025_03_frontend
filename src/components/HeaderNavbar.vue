@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
+import { getNotifications} from '@/services/NotificationService.ts'
+import type { NotificationMessage } from '@/models/NotificationMessage.ts'
 
 import {
   DropdownMenu,
@@ -17,6 +19,9 @@ import {
 
 import { Button } from '@/components/ui/button'
 import { useUserStore } from '@/stores/UserStore'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import NotificationPopover from '@/components/NotificationPopover.vue'
+
 
 const { locale } = useI18n()
 const router = useRouter()
@@ -35,6 +40,18 @@ const selectedLanguage = ref(languages[0].label)
 
 // Dark mode toggle
 const colorMode = useColorMode()
+
+// Get the top 3 notifications
+const topNotifications = ref<NotificationMessage[]>([])
+
+onMounted(async () => {
+  try {
+    topNotifications.value = await getNotifications();
+  } catch (error) {
+    console.error('Failed to fetch notifications:', error);
+  }
+})
+
 
 window.onscroll = function (): void {
   const currentScrollPos: number = window.pageYOffset
@@ -160,6 +177,14 @@ function goToPage(route: string) {
         >
           <Bell class="h-5 w-5" />
         </Button>
+        <Popover>
+          <PopoverTrigger as="button" class="no-border">
+            <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
+          </PopoverTrigger>
+          <PopoverContent>
+            <NotificationPopover :notifications="topNotifications" />
+          </PopoverContent>
+        </Popover>
         <Button
           variant="ghost"
           size="icon"

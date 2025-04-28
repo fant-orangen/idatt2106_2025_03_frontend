@@ -31,7 +31,7 @@
 					<Input type="text" placeholder="Title" v-bind="field" />
 				</FormControl>
 				<FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+				<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 			</FormItem>
 		</FormField>
 		<br>
@@ -44,7 +44,7 @@
 				<FormControl>
 					<Input class="w-[100px]" type="number" placeholder="latitude" v-bind="field" />
 				</FormControl>
-				<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+				<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 			</FormItem>
 		</FormField>
 
