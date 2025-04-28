@@ -20,7 +20,10 @@
     "email": "Email",
     "phone": "Phone",
     "password": "Password",
-    "confirm-password": "Confirm Password"
+    "confirm-password": "Confirm Password",
+    "reset-password-description": "Enter your email address below to reset your password.",
+    "enter-email": "Enter your email",
+    "reset-password": "Reset Password"
   },
   "admin": {
     "administrate": "Administrate",
