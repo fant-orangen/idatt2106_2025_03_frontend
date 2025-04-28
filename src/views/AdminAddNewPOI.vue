@@ -45,7 +45,7 @@
 						<FormControl>
 							<Input class="w-[100px]" type="number" placeholder="latitude" v-bind="field" />
 						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+						<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 					</FormItem>
 				</FormField>
 
@@ -56,7 +56,7 @@
 						<FormControl>
 							<Input class="w-[100px]" type="number" placeholder="longitude" v-bind="field" />
 						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+						<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 					</FormItem>
 				</FormField>
 
@@ -67,7 +67,7 @@
 						<FormControl>
 							<Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
 						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+						<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 					</FormItem>
 				</FormField>
 			</div>
@@ -93,7 +93,7 @@
 						</Select>
 					</FormControl>
 					<FormDescription>{{ $t('add-POI-info.info.type') }}</FormDescription>
-					<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+					<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 				</FormItem>
 			</FormField><br>
 
@@ -106,7 +106,7 @@
 						<FormControl>
 							<Input type="time" v-bind="field" />
 						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+						<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 					</FormItem>
 				</FormField>
 
@@ -117,7 +117,7 @@
 						<FormControl>
 							<Input type="time" v-bind="field" />
 						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+						<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 					</FormItem>
 				</FormField>
 			</div><br>
@@ -129,7 +129,7 @@
 					<FormControl>
 						<Input type="phone" placeholder="+47 123 45 678" v-bind="field" />
 					</FormControl>
-					<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+					<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 				</FormItem>
 			</FormField><br>
 
@@ -141,7 +141,7 @@
 					<Textarea placeholder="Description" v-bind="field"></Textarea>
 				</FormControl>
 				<FormDescription>{{ $t('add-POI-info.info.description') }}</FormDescription>
-				<FormMessage v-if="meta.touched  || meta.submitFailed">{{ errorMessage }}</FormMessage>
+				<FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
 			</FormItem>
 			</FormField><br>
 
