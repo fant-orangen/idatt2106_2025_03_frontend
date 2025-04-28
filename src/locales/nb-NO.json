@@ -36,7 +36,7 @@
     "delete-user": "Slett bruker",
     "revoke-rights": "Ta bort admin rettigheter",
     "send-pw-link": "Send ny passord lenke",
-    "new-admin": "Lag ny admin"
+    "new-admin": "Lag ny adminbruker"
   },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",

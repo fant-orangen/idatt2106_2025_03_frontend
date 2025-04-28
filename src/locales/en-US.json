@@ -35,7 +35,7 @@
     "delete-user": "Delete user",
     "revoke-rights": "Revoke admin rights",
     "send-pw-link": "Send new password link",
-    "new-admin": "Add new admin"
+    "new-admin": "Add new admin user"
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",

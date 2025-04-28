@@ -96,8 +96,8 @@ export async function getAdminUsers() {
  * 
  * @returns 
  */
-export async function addNewAdmin(admin: any) {
-  return await api.post('/super-admin', admin, {
+export async function addNewAdmin(adminEmail: string) {
+  return await api.post('/super-admin', adminEmail, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -110,18 +110,6 @@ export async function addNewAdmin(admin: any) {
  */
 export async function revokeAdminRights(adminID: any) {
   return await api.put('/super-admin/revoke/' + adminID, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
-/**
- * 
- * @returns 
- */
-export async function deleteAdmin(adminID: any) {
-  return await api.put('/super-admin/delete/' + adminID, {
     headers: {
       'Content-Type': 'application/json'
     }
