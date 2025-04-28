@@ -87,6 +87,7 @@ export default defineComponent({
     const activeRouteMarker = ref<L.Marker | null>(null);
     const tempMarker = ref<L.Marker | null>(null);
     const markersMap = ref<Map<string | number, POIMarker>>(new Map()); // Store markers by POI ID for easier reference
+    const crisisCircles = ref<L.Circle[]>([]); // Store crisis event circles for management
 
     // Translation strings with fallbacks
     const translatedStrings: TranslatedStrings = {
@@ -585,27 +586,109 @@ export default defineComponent({
       }
     }
 
-    // Update crisis events - original functionality
+    // ENHANCED: Update crisis events with better management and interactivity
     function updateCrisisEvents(events: CrisisEvent[]): void {
+      if (!map.value) {
+        console.warn("Cannot update crisis events: map not initialized");
+        return;
+      }
+
+      console.log(`Updating crisis events. Count: ${events?.length ?? 0}`);
+
+      // Clear existing crisis circles
+      clearCrisisEvents();
+
+      // If no events, just return after clearing
+      if (!events || events.length === 0) {
+        console.log("No crisis events to display");
+        return;
+      }
+
+      // Add new crisis circles
+      events.forEach(event => {
+        // Skip if missing required properties
+        if (!event.latitude || !event.longitude || event.level === undefined) {
+          console.warn(`Skipping invalid crisis event:`, event);
+          return;
+        }
+
+        // Skip if not active (if isActive property exists and is false)
+        if (event.isActive === false) {
+          return;
+        }
+
+        try {
+          // Calculate radius based on level
+          const radius = event.level * 1000; // 1km, 2km, or 3km based on level
+
+          // Set color based on level
+          const color = event.level === 1 ? 'yellow' :
+            event.level === 2 ? 'orange' : 'red';
+
+          // Create circle
+          const circle = L.circle([event.latitude, event.longitude], {
+            radius,
+            color,
+            fillColor: color,
+            fillOpacity: 0.2,
+            weight: 2,
+            className: `crisis-level-${event.level}`
+          });
+
+          // Create popup content
+          let popupContent = `
+            <div class="crisis-popup">
+              <h3>${event.name}</h3>
+              ${event.description ? `<p>${event.description}</p>` : ''}
+              <p class="crisis-level level-${event.level}">
+                Alert Level: ${event.level}
+              </p>
+              <p class="crisis-time">
+                Started: ${new Date(event.startTime).toLocaleString()}
+              </p>
+            </div>
+          `;
+
+          // Add popup and tooltip
+          circle.bindPopup(popupContent);
+          circle.bindTooltip(event.name, {
+            permanent: false,
+            direction: 'top',
+            className: `crisis-tooltip level-${event.level}`
+          });
+
+          // Add to map and store reference
+          // Here's the fix: Cast map.value to L.Map explicitly before adding the circle
+          if (map.value) {
+            circle.addTo(map.value as L.Map);
+            crisisCircles.value.push(circle);
+          }
+
+          console.log(`Added crisis circle for "${event.name}" at [${event.latitude}, ${event.longitude}]`);
+        } catch (error) {
+          console.error(`Error adding crisis event circle:`, error, event);
+        }
+      });
+
+      // Force map refresh to ensure circles are properly displayed
+      forceMapRefresh();
+    }
+
+    // ADDED: Clear all crisis events from the map
+    function clearCrisisEvents(): void {
       if (!map.value) return;
 
-      // Implementation for crisis events visualization
-      // This would add circles/markers for crisis events
-      events.forEach(event => {
-        if (!event.latitude || !event.longitude || !event.level) return;
+      console.log(`Clearing ${crisisCircles.value.length} crisis circles`);
 
-        const radius = event.level * 1000; // Simple example
-        const color = event.level === 1 ? 'yellow' :
-          event.level === 2 ? 'orange' : 'red';
-
-        L.circle([event.latitude, event.longitude], {
-          radius,
-          color,
-          fillColor: color,
-          fillOpacity: 0.2,
-          weight: 1
-        }).addTo(map.value as L.Map);
+      // Remove each circle from the map
+      crisisCircles.value.forEach(circle => {
+        if (circle) {
+          circle.remove();
+        }
       });
+
+      // Reset the array
+      crisisCircles.value = [];
     }
 
     // Watch for POI changes
@@ -622,9 +705,8 @@ export default defineComponent({
 
     // Watch for crisis events changes
     watch(() => props.crisisEvents, (newEvents: CrisisEvent[]) => {
-      if (newEvents.length > 0) {
-        updateCrisisEvents(newEvents);
-      }
+      console.log("Crisis events prop changed, updating map");
+      updateCrisisEvents(newEvents);
     }, { deep: true, immediate: false });
 
     // Cleanup on component unmount
@@ -641,6 +723,9 @@ export default defineComponent({
 
       // Clear routing
       clearRouting();
+
+      // Clear crisis events
+      clearCrisisEvents();
 
       // Remove user marker
       if (userMarker.value) {
@@ -682,7 +767,6 @@ export default defineComponent({
   }
 });
 </script>
-
 <style scoped>
 #mapContainer {
   height: 100%;
