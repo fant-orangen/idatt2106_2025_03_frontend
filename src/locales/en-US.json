@@ -390,7 +390,7 @@
       },
       "saveChanges": "Save Changes"
     }
-  }
+  },
   "add-event-info": {
     "title": "This will be the title of your event.",
     "coordinates": "Insert the coordinates or the address of your event. You can also click on the map to get the coordinates automatically!",
