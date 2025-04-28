@@ -2,53 +2,40 @@
  * Represents a household in the system
  */
 export interface Household {
-
   id: number;
   name: string;
-  description?: string;
-  address?: {
-    street?: string;
-    city?: string;
-    postalCode?: string;
-    country?: string;
-  };
+  address: string;
+  populationCount: number;
+  latitude?: number;
+  longitude?: number;
+  members: HouseholdMember[];
 }
 
 /**
  * Represents a member of a household
  */
-export interface Member {
+export interface HouseholdMember {
   id: number;
+  email: string;
   firstName: string;
   lastName: string;
-  type: string;
-}
-
-export interface EmptyMember {
-  firstName: string;
-  lastName: string;
-  type: string;
-  description?: string;
 }
 
 /**
  * Data required to create a new household
  */
-export interface CreateHouseholdDto {
+export interface CreateHousehold {
   name: string;
-  description?: string;
-  address?: {
-    street?: string;
-    city?: string;
-    postalCode?: string;
-    country?: string;
-  };
+  address: string;
+  populationCount: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 /**
  * Represents an invitation token response
  */
-export interface InvitationTokenResponse {
+export interface InvitationToken {
   token: string;
   expiresAt: string;
 }
@@ -56,7 +43,7 @@ export interface InvitationTokenResponse {
 /**
  * Data required to send an email invitation to a user
  */
-export interface EmailInvitationDto {
+export interface EmailInvitation {
   email: string;
   message?: string;
 }

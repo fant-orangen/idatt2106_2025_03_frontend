@@ -7,24 +7,25 @@
  * @module HouseholdService
  */
 import api from '@/services/api/AxiosInstance.ts'
-import type { CreateHouseholdDto, Household, EmailInvitationDto } from '@/models/Household'
-import type { Member } from '@/models/Household.ts';
+import type { CreateHousehold, Household, EmailInvitation, HouseholdMember } from '@/models/Household'
 
 /**
  * Fetches the current user's household
  * @returns The current user's household or null if not in a household
+ * @throws Error if there's an error other than 404
  */
 export async function getCurrentHousehold(): Promise<Household | null> {
   try {
-    const response = await api.get('/households/current');
+    const response = await api.get('/households/me');
     return response.data;
   } catch (error) {
-    // Cast to AxiosError to access response safely
+    // Check if it's a 404 error (no household)
     if (error instanceof Error && 'response' in error &&
       error.response && typeof error.response === 'object' &&
       'status' in error.response && error.response.status === 404) {
       return null;
     }
+    // For any other error, throw it
     throw error;
   }
 }
@@ -44,7 +45,7 @@ export async function joinWithToken(token: string): Promise<Household> {
  * @param householdData The household data
  * @returns The created household
  */
-export async function createHousehold(householdData: CreateHouseholdDto): Promise<Household> {
+export async function createHousehold(householdData: CreateHousehold): Promise<Household> {
   const response = await api.post('/households', householdData);
   return response.data;
 }
@@ -85,7 +86,7 @@ export async function updateHousehold(
  * @param householdId The household ID
  * @returns Array of household members
  */
-export async function getHouseholdMembers(householdId: number): Promise<Member[]> {
+export async function getHouseholdMembers(householdId: number): Promise<HouseholdMember[]> {
   const response = await api.get(`/households/${householdId}/members`);
   return response.data;
 }
@@ -95,6 +96,6 @@ export async function getHouseholdMembers(householdId: number): Promise<Member[]
  * @param invitationData The invitation data including email and optional message
  * @returns Promise that resolves when the invitation is sent
  */
-export async function inviteUserByEmail(invitationData: EmailInvitationDto): Promise<void> {
+export async function inviteUserByEmail(invitationData: EmailInvitation): Promise<void> {
   await api.post('/households/invitations/email', invitationData);
 }
