@@ -4,7 +4,6 @@ import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
-import { Globe, User, Settings, Sun, Moon } from 'lucide-vue-next'
 import { getNotifications} from '@/services/NotificationService.ts'
 import type { Notification } from '@/models/Notification.ts'
 
