@@ -1,7 +1,7 @@
 <template>
   <div class="household-container">
     <!-- Show when user has no household -->
-    <MemberNotInHousehold v-if="!householdStore.isMemberOfHousehold" @household-updated="refreshHouseholdData" />
+    <MemberNotInHousehold v-if="false" @household-updated="refreshHouseholdData" />
 
     <!-- Show when user has a household -->
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
