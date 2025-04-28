@@ -53,6 +53,7 @@ export async function createHousehold(householdData: CreateHousehold): Promise<H
 /**
  * Leave the current household
  * @returns Promise that resolves when operation is successful
+ * @throws Error if the user is a household admin or doesn't have a household
  */
 export async function leaveHousehold(): Promise<void> {
   await api.post('/households/leave');
