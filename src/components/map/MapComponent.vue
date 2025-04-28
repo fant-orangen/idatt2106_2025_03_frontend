@@ -1,11 +1,11 @@
 <template>
   <div id="mapContainer">
-    <div :id="mapContainerId"></div>
+    <div :id="mapContainerId" style="width: 100%; height: 100%;"></div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { onMounted, onBeforeUnmount, watch, ref, nextTick, toRefs, defineProps, defineEmits } from 'vue';
+<script>
+import { onMounted, onBeforeUnmount, watch, ref, defineProps, defineEmits } from 'vue';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -14,521 +14,509 @@ import 'leaflet.markercluster';
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { useI18n } from 'vue-i18n';
-import type { PoiData } from '@/models/PoiData';
-
-// Define emits for map interactions
-const emit = defineEmits(['map-clicked', 'marker-added', 'marker-removed', 'marker-moved']);
-
-// Pre-translate popup strings
-const { t } = useI18n();
-const translatedStrings = {
-  address: t('map.address') || 'Adresse',
-  openingHours: t('map.opening-hours') || 'Åpningstider',
-  contact: t('map.contact') || 'Kontaktinfo',
-  directions: t('map.directions') || 'Veibeskrivelse',
-  yourLocation: t('map.your-location') || 'Din posisjon',
-  showDirections: t('map.show-directions') || 'Vis veibeskrivelse',
-  closeDirections: t('map.close-directions') || 'Lukk veibeskrivelse',
-  clickToSelectLocation: t('map.click-to-select-location') || 'Klikk for å velge plassering'
-};
 
 // Fix default Leaflet icon paths
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
-// Props
-const props = withDefaults(
-  defineProps<{
-    pois?: PoiData[];
-    centerLat?: number;
-    centerLon?: number;
-    initialZoom?: number;
-    userLocation?: { latitude: number; longitude: number } | null;
-    crisisEvents?: { latitude: number; longitude: number; level: number }[];
-    adminMode?: boolean; // New prop for admin mode
-  }>(),
-  {
-    pois: () => [],
-    centerLat: 63.4305,
-    centerLon: 10.3951,
-    initialZoom: 6,
-    userLocation: null,
-    crisisEvents: () => [],
-    adminMode: false
-  }
-);
+export default {
+  name: 'MapComponent',
+  props: {
+    // Original props
+    pois: {
+      type: Array,
+      default: () => []
+    },
+    centerLat: {
+      type: Number,
+      default: 63.4305
+    },
+    centerLon: {
+      type: Number,
+      default: 10.3951
+    },
+    initialZoom: {
+      type: Number,
+      default: 6
+    },
+    userLocation: {
+      type: Object,
+      default: null
+    },
+    crisisEvents: {
+      type: Array,
+      default: () => []
+    },
+    // Admin functionality prop
+    adminMode: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['map-clicked', 'marker-added', 'marker-removed', 'marker-moved'],
+  setup(props, { emit }) {
+    const { t } = useI18n();
+    const map = ref(null);
+    const markerClusterGroup = ref(null);
+    const userMarker = ref(null);
+    const adminMarkers = ref([]);
+    const mapContainerId = 'map-' + Math.random().toString(36).substring(2, 9);
+    const routingControl = ref(null);
+    const activeRouteMarker = ref(null);
+    const tempMarker = ref(null);
+    const markersMap = ref(new Map()); // Store markers by POI ID for easier reference
 
-const { pois, userLocation, adminMode } = toRefs(props);
+    // Translation strings with fallbacks
+    const translatedStrings = {
+      address: t('map.address') || 'Adresse',
+      openingHours: t('map.opening-hours') || 'Åpningstider',
+      contact: t('map.contact') || 'Kontakt',
+      directions: t('map.directions') || 'Veibeskrivelse',
+      yourLocation: t('map.your-location') || 'Din posisjon',
+      showDirections: t('map.show-directions') || 'Vis veibeskrivelse',
+      closeDirections: t('map.close-directions') || 'Lukk veibeskrivelse'
+    };
 
-// Map & layers
-const map = ref<L.Map | null>(null);
-const markerClusterGroup = ref<L.MarkerClusterGroup | null>(null);
-const userMarker = ref<L.Marker | null>(null);
-const adminMarkers = ref<L.Marker[]>([]);
-const mapContainerId = 'map-' + Math.random().toString(36).substring(2, 9);
-const routingControl = ref<any>(null);
-const activeRouteMarker = ref<L.Marker | null>(null);
+    // Custom icon for user location
+    const userIcon = L.icon({
+      iconUrl,
+      iconRetinaUrl,
+      shadowUrl,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+      className: 'user-location-icon',
+    });
 
-// Custom icon for user
-const userIcon = L.icon({
-  iconUrl, iconRetinaUrl, shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-  className: 'user-location-icon',
-});
+    // Custom icon for admin-created markers
+    const adminIcon = L.icon({
+      iconUrl,
+      iconRetinaUrl,
+      shadowUrl,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+      className: 'admin-marker-icon',
+    });
 
-// Custom icon for admin-created markers
-const adminIcon = L.icon({
-  iconUrl, iconRetinaUrl, shadowUrl,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-  className: 'admin-marker-icon',
-});
+    // Initialize map
+    onMounted(() => {
+      // Fix icon paths globally
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl,
+        iconUrl,
+        shadowUrl
+      });
 
-// Helper function to force map refresh
-const forceMapRefresh = () => {
-  if (map.value) {
-    map.value.invalidateSize({ animate: false });
-  }
-};
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        try {
+          console.log("Initializing map", mapContainerId);
 
-// Function to refresh marker positions
-function refreshMarkerPositions() {
-  if (!map.value || !markerClusterGroup.value) return;
+          // Ensure container exists
+          const container = document.getElementById(mapContainerId);
+          if (!container) {
+            console.error("Map container not found:", mapContainerId);
+            return;
+          }
 
-  // Refresh marker cluster groups
-  markerClusterGroup.value.refreshClusters();
+          // Create map instance
+          map.value = L.map(mapContainerId, {
+            fadeAnimation: false,
+            markerZoomAnimation: false,
+            zoomAnimation: true
+          }).setView([props.centerLat, props.centerLon], props.initialZoom);
 
-  // Force map to recognize changes
-  map.value.invalidateSize({ animate: false });
-}
+          // Add tile layer
+          L.tileLayer(
+            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+            {
+              maxZoom: 19,
+              attribution: '© OSM © CartoDB',
+              noWrap: false
+            }
+          ).addTo(map.value);
 
-// Initialize the Leaflet map and make the routing function globally available
-onMounted(() => {
-  console.log("Map component mounted", mapContainerId);
+          // Create marker cluster
+          markerClusterGroup.value = L.markerClusterGroup({
+            spiderfyOnMaxZoom: true,
+            disableClusteringAtZoom: 18,
+            maxClusterRadius: 50,
+            removeOutsideVisibleBounds: false,
+            animate: false,
+            animateAddingMarkers: false
+          }).addTo(map.value);
 
-  // Fix icon paths globally
-  // @ts-expect-error
-  delete L.Icon.Default.prototype._getIconUrl;
-  L.Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
+          // Set up map event listeners
+          map.value.on('zoomend moveend', () => {
+            // console.log(`Map view changed: zoom=${map.value?.getZoom()}`);
+            forceMapRefresh();
+          });
 
-  // Create map with a slight delay to ensure container is ready
-  setTimeout(() => {
-    try {
-      const mapContainer = document.getElementById(mapContainerId);
-      if (!mapContainer) {
-        console.error(`Map container with ID ${mapContainerId} not found`);
+          // Add click listener for admin mode only
+          if (props.adminMode) {
+            console.log("Admin mode enabled, adding click listener");
+            map.value.on('click', (e) => {
+              console.log("Map clicked at", e.latlng);
+              emit('map-clicked', e);
+            });
+          }
+
+          // Global functions for routing - these are necessary for the original functionality
+          window.showRouteFor = (lat, lng, poiName) => {
+            showRouteFor(lat, lng, poiName);
+          };
+
+          window.closeRouting = () => {
+            clearRouting();
+          };
+
+          // Initial refresh
+          setTimeout(() => {
+            forceMapRefresh();
+          }, 100);
+
+          console.log("Map initialization completed");
+
+          // Initial population of POIs
+          if (props.pois && props.pois.length > 0) {
+            updatePOIs(props.pois);
+          }
+
+          // Initial user location
+          if (props.userLocation) {
+            updateUserLocation(props.userLocation);
+          }
+
+          // Initial crisis events
+          if (props.crisisEvents && props.crisisEvents.length > 0) {
+            updateCrisisEvents(props.crisisEvents);
+          }
+        } catch (error) {
+          console.error("Error initializing map:", error);
+        }
+      }, 200);
+    });
+
+    // Force map refresh
+    const forceMapRefresh = () => {
+      if (map.value) {
+        map.value.invalidateSize({ animate: false });
+      }
+    };
+
+    // Refresh marker positions
+    function refreshMarkerPositions() {
+      if (!map.value || !markerClusterGroup.value) return;
+      markerClusterGroup.value.refreshClusters();
+      forceMapRefresh();
+    }
+
+    // Add a marker to the map - admin functionality
+    function addMarker(lat, lng, title = 'New Marker') {
+      if (!map.value) {
+        console.warn("Cannot add marker: map not initialized");
+        return null;
+      }
+
+      console.log(`Adding marker at ${lat}, ${lng} with title '${title}'`);
+      const marker = L.marker([lat, lng], {
+        icon: adminIcon,
+        draggable: props.adminMode,
+        title: title
+      }).addTo(map.value);
+
+      // If in admin mode, make the marker draggable
+      if (props.adminMode) {
+        marker.on('dragend', function(event) {
+          const position = event.target.getLatLng();
+          console.log(`Marker moved to ${position.lat}, ${position.lng}`);
+          emit('marker-moved', {
+            marker: event.target,
+            latlng: { lat: position.lat, lng: position.lng }
+          });
+        });
+
+        adminMarkers.value.push(marker);
+        emit('marker-added', {
+          marker: marker,
+          latlng: { lat: lat, lng: lng }
+        });
+      }
+
+      tempMarker.value = marker;
+      return marker;
+    }
+
+    // Remove a marker from the map - admin functionality
+    function removeMarker(marker) {
+      if (!map.value || !marker) return;
+
+      console.log("Removing marker");
+      map.value.removeLayer(marker);
+
+      // Remove from admin markers if applicable
+      const index = adminMarkers.value.indexOf(marker);
+      if (index > -1) {
+        adminMarkers.value.splice(index, 1);
+        emit('marker-removed', { marker });
+      }
+    }
+
+    // Center the map on a location
+    function centerMap(lat, lng, zoom = 15) {
+      if (!map.value) {
+        console.warn("Cannot center map: map not initialized");
         return;
       }
 
-      map.value = L.map(mapContainerId, {
-        fadeAnimation: false,
-        markerZoomAnimation: false, // Disable marker zoom animation to prevent issues
-        zoomAnimation: true
-      }).setView([props.centerLat!, props.centerLon!], props.initialZoom!);
+      // console.log(`Centering map at ${lat}, ${lng} with zoom ${zoom}`);
+      map.value.setView([lat, lng], zoom);
+    }
 
-      // Add tile layer
-      L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-        {
-          maxZoom: 19,
-          attribution: '© OSM © CartoDB',
-          noWrap: false // Allow the map to be repeated
-        }
-      ).addTo(map.value);
+    // Show routing between user location and POI - original functionality
+    function showRouteFor(lat, lng, poiName) {
+      if (!map.value || !props.userLocation) {
+        console.warn("Cannot show route: map or user location is not available");
+        alert(t('map.need-location') || 'Du må dele din posisjon for å vise veibeskrivelse');
+        return;
+      }
 
-      // Create marker cluster
-      markerClusterGroup.value = L.markerClusterGroup({
-        spiderfyOnMaxZoom: true,
-        disableClusteringAtZoom: 18,
-        maxClusterRadius: 50,
-        removeOutsideVisibleBounds: false, // Keep markers in memory
-        animate: false, // Disable cluster animations
-        animateAddingMarkers: false // Disable animations when adding markers
+      clearRouting(); // Clear any existing route
+
+      console.log(`Showing route to ${poiName} (${lat}, ${lng})`);
+
+      // Create the routing control
+      routingControl.value = L.Routing.control({
+        waypoints: [
+          L.latLng(props.userLocation.latitude, props.userLocation.longitude),
+          L.latLng(lat, lng)
+        ],
+        lineOptions: {
+          styles: [
+            {color: '#4a89dc', weight: 4}
+          ],
+          extendToWaypoints: true,
+          missingRouteTolerance: 0
+        },
+        altLineOptions: {
+          styles: [
+            {color: '#4a89dc', weight: 2, opacity: 0.6}
+          ]
+        },
+        show: true,
+        collapsible: false,
+        collapsed: false,
+        autoRoute: true,
+        routeWhileDragging: false,
+        addWaypoints: false,
+        fitSelectedRoutes: true,
+        showAlternatives: true,
+        useZoomParameter: true,
+        draggableWaypoints: false,
+        createMarker: function() {
+          return null; // No waypoint markers
+        },
       }).addTo(map.value);
 
-      // Set up event listeners for debugging and refresh
-      map.value.on('zoomend moveend', () => {
-        console.log(`Map view changed: zoom=${map.value?.getZoom()}`);
-        forceMapRefresh();
-      });
+      // Add a custom title to the directions panel
+      routingControl.value.on('routesfound', () => {
+        const container = routingControl.value.getContainer();
 
-      // Add additional event listener for zoom to update markers during zoom
-      map.value.on('zoom', () => {
-        // Force immediate update of markers during zoom
-        if (markerClusterGroup.value) {
-          markerClusterGroup.value.refreshClusters();
+        // Only add title if it doesn't exist yet
+        if (!container.querySelector('.routing-title')) {
+          // Remove any default collapse buttons
+          const existingCollapseButtons = container.querySelectorAll('.leaflet-routing-collapse-btn');
+          existingCollapseButtons.forEach(btn => btn.remove());
+
+          const controlTitle = document.createElement('div');
+          controlTitle.className = 'routing-title';
+          controlTitle.innerHTML = `
+            <h3>Veibeskrivelse til ${poiName}</h3>
+            <button class="close-routing-btn" onclick="window.closeRouting()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+              ${translatedStrings.closeDirections}
+            </button>
+          `;
+          container.prepend(controlTitle);
         }
       });
 
-      // Add click listener for admin mode
-      if (adminMode.value) {
-        console.log("Admin mode enabled, adding click listener");
-        map.value.on('click', (e) => {
-          console.log("Map clicked at", e.latlng);
-          emit('map-clicked', e);
-        });
+      // Highlight the destination marker
+      activeRouteMarker.value = L.marker([lat, lng], {
+        icon: L.divIcon({
+          className: 'destination-marker',
+          html: '<div class="destination-marker-inner"></div>',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        }),
+        zIndexOffset: 1000 // Ensure it's on top
+      }).addTo(map.value);
+    }
+
+    // Clear routing - original functionality
+    function clearRouting() {
+      if (routingControl.value) {
+        console.log("Clearing routing control");
+        map.value?.removeControl(routingControl.value);
+        routingControl.value = null;
       }
 
-      // Expose the routing function to the global scope so the popup can access it
-      // This is necessary because Leaflet creates popups outside Vue's scope
-      window.showRouteFor = (lat: number, lng: number, poiName: string) => {
-        showRouteFor(lat, lng, poiName);
-      };
-
-      window.closeRouting = () => {
-        clearRouting();
-      };
-
-      // Initial map size invalidation
-      setTimeout(() => {
-        forceMapRefresh();
-      }, 100);
-
-      console.log("Map initialization completed successfully");
-    } catch (error) {
-      console.error("Error initializing map:", error);
+      if (activeRouteMarker.value) {
+        activeRouteMarker.value.remove();
+        activeRouteMarker.value = null;
+      }
     }
-  }, 100); // Short delay to ensure DOM is ready
-});
 
-// Method to add a marker programmatically
-function addMarker(lat: number, lng: number, title: string = 'New Marker') {
-  if (!map.value) {
-    console.warn("Cannot add marker: map not initialized");
-    return null;
-  }
+    // Create popup content for POIs - original functionality
+    function createPopupContent(poi) {
+      let html = `<div class="poi-popup"><strong>${poi.name}</strong> (${poi.poiTypeName})<br>`;
+      if (poi.description) html += `${poi.description}<hr>`;
+      if (poi.address) html += `<strong>${translatedStrings.address}:</strong> ${poi.address}<br>`;
+      if (poi.openingHours) html += `<strong>${translatedStrings.openingHours}:</strong> ${poi.openingHours}<br>`;
+      if (poi.contactInfo) html += `<strong>${translatedStrings.contact}:</strong> ${poi.contactInfo}<br>`;
 
-  console.log(`Adding marker at ${lat}, ${lng} with title '${title}'`);
-  const marker = L.marker([lat, lng], {
-    icon: adminIcon,
-    draggable: adminMode.value,
-    title: title
-  }).addTo(map.value);
-
-  // If in admin mode, make the marker draggable and track its changes
-  if (adminMode.value) {
-    marker.on('dragend', function(event) {
-      const marker = event.target;
-      const position = marker.getLatLng();
-      console.log(`Marker moved to ${position.lat}, ${position.lng}`);
-      emit('marker-moved', {
-        marker: marker,
-        latlng: { lat: position.lat, lng: position.lng }
-      });
-    });
-
-    adminMarkers.value.push(marker);
-    emit('marker-added', {
-      marker: marker,
-      latlng: { lat: lat, lng: lng }
-    });
-  }
-
-  return marker;
-}
-
-// Method to remove a marker
-function removeMarker(marker: L.Marker) {
-  if (!map.value || !marker) return;
-
-  console.log("Removing marker");
-  map.value.removeLayer(marker);
-
-  // Remove from admin markers if applicable
-  const index = adminMarkers.value.indexOf(marker);
-  if (index > -1) {
-    adminMarkers.value.splice(index, 1);
-    emit('marker-removed', { marker });
-  }
-}
-
-// Method to center map on specific coordinates
-function centerMap(lat: number, lng: number, zoom: number = 15) {
-  if (!map.value) {
-    console.warn("Cannot center map: map not initialized");
-    return;
-  }
-
-  console.log(`Centering map at ${lat}, ${lng} with zoom ${zoom}`);
-  map.value.setView([lat, lng], zoom);
-}
-
-// Function to show routing between user location and POI
-function showRouteFor(lat: number, lng: number, poiName: string) {
-  if (!map.value || !props.userLocation) {
-    console.warn("Cannot show route: map or user location is not available");
-    alert(t('map.need-location') || 'Du må dele din posisjon for å vise veibeskrivelse');
-    return;
-  }
-
-  clearRouting(); // Clear any existing route
-
-  console.log(`Showing route to ${poiName} (${lat}, ${lng})`);
-
-  // Create the routing control with fixed options
-  routingControl.value = L.Routing.control({
-    waypoints: [
-      L.latLng(props.userLocation.latitude, props.userLocation.longitude),
-      L.latLng(lat, lng)
-    ],
-    lineOptions: {
-      styles: [
-        {color: '#4a89dc', weight: 4}
-      ],
-      extendToWaypoints: true,
-      missingRouteTolerance: 0
-    },
-    altLineOptions: {
-      styles: [
-        {color: '#4a89dc', weight: 2, opacity: 0.6}
-      ]
-    },
-    show: true,
-    collapsible: false, // Prevent the collapse button from appearing
-    collapsed: false,
-    autoRoute: true,
-    routeWhileDragging: false,
-    addWaypoints: false,
-    fitSelectedRoutes: true,
-    showAlternatives: true,
-    useZoomParameter: true,
-    draggableWaypoints: false, // Prevent waypoints from being dragged
-    createMarker: function(i, waypoint, n) {
-      // Return null for all waypoints (both start and end)
-      return null;
-    },
-
-  }).addTo(map.value);
-
-  // Add a custom title to the directions panel and remove default controls
-  routingControl.value.on('routesfound', () => {
-    const container = routingControl.value.getContainer();
-
-    // Only add title if it doesn't exist yet
-    if (!container.querySelector('.routing-title')) {
-      // Remove any default collapse buttons that might be present
-      const existingCollapseButtons = container.querySelectorAll('.leaflet-routing-collapse-btn');
-      existingCollapseButtons.forEach(btn => btn.remove());
-
-      const controlTitle = document.createElement('div');
-      controlTitle.className = 'routing-title';
-      controlTitle.innerHTML = `
-        <h3>Veibeskrivelse til ${poiName}</h3>
-        <button class="close-routing-btn" onclick="window.closeRouting()">
+      // Add a directions button
+      html += `
+        <button class="directions-btn" onclick="window.showRouteFor(${poi.latitude}, ${poi.longitude}, '${poi.name.replace(/'/g, "\\'").replace(/"/g, '\\"')}')">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+            <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
-          ${translatedStrings.closeDirections}
-        </button>
-      `;
-      container.prepend(controlTitle);
-    }
-  });
+          ${translatedStrings.showDirections}
+        </button>`;
 
-  // Highlight the destination marker
-  activeRouteMarker.value = L.marker([lat, lng], {
-    icon: L.divIcon({
-      className: 'destination-marker',
-      html: '<div class="destination-marker-inner"></div>',
-      iconSize: [20, 20],
-      iconAnchor: [10, 10]
-    }),
-    zIndexOffset: 1000 // Ensure it's on top
-  }).addTo(map.value);
-}
-
-// Function to clear routing
-function clearRouting() {
-  if (routingControl.value) {
-    console.log("Clearing routing control");
-    map.value?.removeControl(routingControl.value);
-    routingControl.value = null;
-  }
-
-  if (activeRouteMarker.value) {
-    activeRouteMarker.value.remove();
-    activeRouteMarker.value = null;
-  }
-}
-
-// Build popup HTML with directions button
-function createPopupContent(poi: PoiData): string {
-  let html = `<div class="poi-popup"><strong>${poi.name}</strong> (${poi.poiTypeName})<br>`;
-  if (poi.description) html += `${poi.description}<hr>`;
-  if (poi.address) html += `<strong>${translatedStrings.address}:</strong> ${poi.address}<br>`;
-  if (poi.openingHours) html += `<strong>${translatedStrings.openingHours}:</strong> ${poi.openingHours}<br>`;
-  if (poi.contactInfo) html += `<strong>${translatedStrings.contact}:</strong> ${poi.contactInfo}<br>`;
-
-  // Add a directions button that calls our global function
-  html += `
-    <button class="directions-btn" onclick="window.showRouteFor(${poi.latitude}, ${poi.longitude}, '${poi.name.replace(/'/g, "\\'").replace(/"/g, '\\"')}')">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-      ${translatedStrings.showDirections}
-    </button>`;
-
-  html += '</div>';
-  return html;
-}
-
-// The critical watch function with improved zoom handling
-watch(
-  pois,
-  async (newPois) => {
-    // Basic guard clauses
-    if (!map.value) {
-      console.log("Map not ready, skipping update.");
-      return;
+      html += '</div>';
+      return html;
     }
 
-    console.log(`POI Watcher triggered. New POIs count: ${newPois?.length ?? 0}`);
-
-    // Clear any existing routing when POIs change
-    clearRouting();
-
-    // Ensure DOM/Vue updates are processed before map operations
-    await nextTick();
-
-    // --- Force Cluster Group Recreation ---
-
-    // 1. Remove the existing cluster group if it exists on the map
-    if (markerClusterGroup.value && map.value.hasLayer(markerClusterGroup.value)) {
-      console.log("Removing existing marker cluster group from map.");
-      map.value.removeLayer(markerClusterGroup.value);
-    }
-
-    // 2. Create a NEW cluster group instance with fixed zoom settings
-    console.log("Creating a new marker cluster group instance.");
-    markerClusterGroup.value = L.markerClusterGroup({
-      spiderfyOnMaxZoom: true,
-      disableClusteringAtZoom: 18,
-      maxClusterRadius: 50,
-      zoomToBoundsOnClick: true,
-      removeOutsideVisibleBounds: false, // Keep markers in memory
-      animate: false, // Disable cluster animations
-      animateAddingMarkers: false // Disable animations when adding markers
-    });
-
-    // --- Marker processing logic (using the new cluster group) ---
-    const bounds = L.latLngBounds([]);
-    const markers: L.Marker[] = [];
-
-    if (!newPois || newPois.length === 0) {
-      console.log("No POIs to process for the new cluster group.");
-      // Reset view only if there are no POIs and no user location marker
-      if (!props.userLocation) {
-        map.value.setView([props.centerLat!, props.centerLon!], props.initialZoom!);
-      } else {
-        map.value.setView([props.userLocation.latitude, props.userLocation.longitude], 13);
+    // Update POIs on the map - core functionality used by both original and admin features
+    function updatePOIs(newPois) {
+      if (!map.value || !markerClusterGroup.value) {
+        console.log("Map or marker cluster not ready, deferring POI update");
+        return;
       }
-    } else {
-      console.log(`Processing ${newPois.length} POIs for the new cluster group...`);
-      newPois.forEach(poi => {
-        // Ensure coordinates are numbers
-        const lat = typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude;
-        const lon = typeof poi.longitude === 'string' ? parseFloat(poi.longitude) : poi.longitude;
 
-        if (!isFinite(lat) || !isFinite(lon)) {
-          console.warn(`Invalid coordinates for POI: ${poi.name} (${lat}, ${lon}) - Skipping.`);
-          return;
-        }
+      console.log(`Updating POIs. Count: ${newPois?.length ?? 0}`);
 
-        // Create a marker with improved options for better zoom behavior
-        const marker = L.marker([lat, lon], {
-          riseOnHover: true,
-          bubblingMouseEvents: false, // Improves event handling
-          zIndexOffset: 100, // Stack markers above route line
-          nonBubblingEvents: ['click', 'dblclick', 'mouseover', 'mouseout'],
-          interactive: true
-        });
+      // Clear routing when POIs change
+      clearRouting();
 
-        marker.bindPopup(createPopupContent(poi));
-        marker.bindTooltip(poi.name, {
-          permanent: false,
-          direction: 'top',
-          className: 'poi-label'
-        });
+      // Remove existing cluster group
+      markerClusterGroup.value.clearLayers();
 
-        // Store reference to the coordinates on the marker for easier access
-        // @ts-expect-error
-        marker.poiLat = lat;
-        // @ts-expect-error
-        marker.poiLng = lon;
+      // Reset markers map
+      markersMap.value.clear();
 
-        markers.push(marker);
-        bounds.extend([lat, lon]);
-      });
+      // Add markers to the cluster group
+      const bounds = L.latLngBounds([]);
+      const markers = [];
 
-      // 3. Add markers to the NEW cluster group instance
-      if (markers.length) {
-        console.log(`Adding ${markers.length} markers to the new cluster group.`);
-        markerClusterGroup.value.addLayers(markers);
-      } else {
-        console.log("No valid markers were created for the new cluster group.");
-      }
-    }
+      if (newPois && newPois.length > 0) {
+        newPois.forEach(poi => {
+          // Skip if no coordinates
+          if (!poi.latitude || !poi.longitude) return;
 
-    // 4. Add the NEW cluster group (even if empty) to the map
-    console.log("Adding the new marker cluster group to the map.");
-    markerClusterGroup.value.addTo(map.value);
+          // Ensure coordinates are numbers
+          const lat = typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude;
+          const lon = typeof poi.longitude === 'string' ? parseFloat(poi.longitude) : poi.longitude;
 
-    // --- Bounds fitting logic ---
-    if (props.userLocation) {
-      bounds.extend([props.userLocation.latitude, props.userLocation.longitude]);
-    }
+          if (!isFinite(lat) || !isFinite(lon)) {
+            console.warn(`Invalid coordinates for POI: ${poi.name}`, lat, lon);
+            return;
+          }
 
-    await nextTick(); // Wait again before fitting bounds
-
-    // Force map to recognize changes
-    map.value.invalidateSize({ animate: false });
-
-    // Refresh marker positions
-    refreshMarkerPositions();
-
-    // Short delay to ensure map is fully ready before fitting bounds
-    setTimeout(() => {
-      if (bounds.isValid() && markers.length > 0) {
-        console.log("Fitting bounds...");
-        try {
-          map.value?.fitBounds(bounds.pad(0.2), {
-            animate: false // Disable animation for more reliable positioning
+          // Create marker
+          const marker = L.marker([lat, lon], {
+            riseOnHover: true,
+            bubblingMouseEvents: false,
+            zIndexOffset: 100
           });
+
+          marker.bindPopup(createPopupContent(poi));
+          marker.bindTooltip(poi.name, {
+            permanent: false,
+            direction: 'top',
+            className: 'poi-label'
+          });
+
+          // Store reference to coordinates
+          marker.poiLat = lat;
+          marker.poiLng = lon;
+
+          // Store in markers map if POI has an ID
+          if (poi.id) {
+            markersMap.value.set(poi.id, marker);
+          }
+
+          markers.push(marker);
+          bounds.extend([lat, lon]);
+        });
+
+        // Add markers to cluster group
+        if (markers.length) {
+          markerClusterGroup.value.addLayers(markers);
+        }
+      }
+
+      // Add user location to bounds if available
+      if (props.userLocation) {
+        bounds.extend([props.userLocation.latitude, props.userLocation.longitude]);
+      }
+
+      // Force refresh
+      forceMapRefresh();
+
+      // Fit bounds if we have valid bounds
+      if (bounds.isValid() && (markers.length > 0 || props.userLocation)) {
+        try {
+          // Use a short timeout to ensure the map is ready
+          setTimeout(() => {
+            map.value?.fitBounds(bounds.pad(0.2), {
+              animate: false,
+              maxZoom: 15 // Limit how far it zooms in
+            });
+            forceMapRefresh();
+          }, 100);
         } catch(e) {
-          console.error("Error fitting bounds:", e, bounds);
-          map.value?.setView([props.centerLat!, props.centerLon!], props.initialZoom!); // Fallback
+          console.error("Error fitting bounds:", e);
+          // Fallback to default view
+          map.value?.setView([props.centerLat, props.centerLon], props.initialZoom);
         }
       } else if (markers.length === 0 && props.userLocation) {
-        console.log("No POI markers, centering on user location.");
-        map.value?.setView([props.userLocation.latitude, props.userLocation.longitude], 13, {
-          animate: false
-        });
-      } else if (markers.length === 0 && !props.userLocation) {
-        console.log("No POI markers or user location, resetting view.");
-        map.value?.setView([props.centerLat!, props.centerLon!], props.initialZoom!, {
-          animate: false
-        });
+        // Center on user if no markers
+        map.value?.setView(
+          [props.userLocation.latitude, props.userLocation.longitude],
+          13
+        );
+      } else if (markers.length === 0) {
+        // Fallback to default view
+        map.value?.setView([props.centerLat, props.centerLon], props.initialZoom);
+      }
+    }
+
+    // Update user location - original functionality
+    function updateUserLocation(location) {
+      if (!map.value) return;
+
+      // Remove existing marker
+      if (userMarker.value) {
+        userMarker.value.remove();
+        userMarker.value = null;
       }
 
-      // Final invalidate size to ensure everything renders correctly
-      map.value?.invalidateSize({ animate: false });
-    }, 100);
-
-    // Ensure user marker is present if we have user location
-    setTimeout(() => {
-      if (props.userLocation && !userMarker.value && map.value) {
-        console.log("Restoring user marker after POI update");
+      // Add user marker
+      if (location) {
         userMarker.value = L.marker(
-          [props.userLocation.latitude, props.userLocation.longitude],
+          [location.latitude, location.longitude],
           {
             icon: userIcon,
             zIndexOffset: 1000
@@ -542,102 +530,111 @@ watch(
           className: 'user-location-label',
           offset: [0, -30],
         });
+
+        // Update route if active
+        if (routingControl.value) {
+          const waypoints = routingControl.value.getWaypoints();
+          if (waypoints && waypoints.length >= 2) {
+            waypoints[0].latLng = L.latLng(location.latitude, location.longitude);
+            routingControl.value.setWaypoints(waypoints);
+          }
+        }
       }
-    }, 150); // Slightly longer timeout to ensure it runs after the other setTimeout
-  },
-  {
-    deep: true
-  }
-);
+    }
 
-// Watch the userLocation prop: add or remove the blue marker
-watch(
-  userLocation,
-  async (loc, oldLoc) => {
-    if (!map.value) return;
+    // Update crisis events - original functionality
+    function updateCrisisEvents(events) {
+      if (!map.value) return;
 
-    await nextTick(); // Ensure map is ready
+      // Implementation for crisis events visualization
+      // This would add circles/markers for crisis events
+      events.forEach(event => {
+        if (!event.latitude || !event.longitude || !event.level) return;
 
-    // Only proceed if we have a location (either new or existing)
-    if (loc) {
-      // Remove existing marker if there is one
+        const radius = event.level * 1000; // Simple example
+        const color = event.level === 1 ? 'yellow' :
+          event.level === 2 ? 'orange' : 'red';
+
+        L.circle([event.latitude, event.longitude], {
+          radius,
+          color,
+          fillColor: color,
+          fillOpacity: 0.2,
+          weight: 1
+        }).addTo(map.value);
+      });
+    }
+
+    // Watch for POI changes
+    watch(() => props.pois, (newPois) => {
+      if (newPois) {
+        updatePOIs(newPois);
+      }
+    }, { deep: true, immediate: false });
+
+    // Watch for user location changes
+    watch(() => props.userLocation, (newLocation) => {
+      if (newLocation) {
+        updateUserLocation(newLocation);
+      }
+    }, { deep: true, immediate: false });
+
+    // Watch for crisis events changes
+    watch(() => props.crisisEvents, (newEvents) => {
+      if (newEvents && newEvents.length > 0) {
+        updateCrisisEvents(newEvents);
+      }
+    }, { deep: true, immediate: false });
+
+    // Cleanup on component unmount
+    onBeforeUnmount(() => {
+      console.log("Map component unmounting");
+
+      // Remove global functions
+      delete window.showRouteFor;
+      delete window.closeRouting;
+
+      // Clear routing
+      clearRouting();
+
+      // Remove user marker
       if (userMarker.value) {
         userMarker.value.remove();
         userMarker.value = null;
       }
 
-      // Create a new marker at the location
-      userMarker.value = L.marker([loc.latitude, loc.longitude], {
-        icon: userIcon,
-        zIndexOffset: 1000 // Ensure user marker stays on top
-      })
-      .addTo(map.value)
-      .bindPopup(`<strong>${translatedStrings.yourLocation}</strong>`)
-      .bindTooltip(translatedStrings.yourLocation, {
-        permanent: false,
-        direction: 'top',
-        className: 'user-location-label',
-        offset: [0, -30],
+      // Remove admin markers
+      adminMarkers.value.forEach(marker => {
+        if (marker) marker.remove();
       });
+      adminMarkers.value = [];
 
-      // Invalidate size when user location changes
-      map.value.invalidateSize();
-
-      // Refresh marker positions
-      refreshMarkerPositions();
-
-      // If we have an active route and user location changes, update the route
-      if (routingControl.value) {
-        const waypoints = routingControl.value.getWaypoints();
-        if (waypoints && waypoints.length >= 2) {
-          // Update the first waypoint (starting point) to the new user location
-          waypoints[0].latLng = L.latLng(loc.latitude, loc.longitude);
-          routingControl.value.setWaypoints(waypoints);
-        }
+      // Clear marker cluster
+      if (markerClusterGroup.value && map.value) {
+        markerClusterGroup.value.clearLayers();
+        map.value.removeLayer(markerClusterGroup.value);
+        markerClusterGroup.value = null;
       }
-    }
-  },
-  { immediate: true }
-);
 
-// Clean up on unmount
-onBeforeUnmount(() => {
-  console.log("Map component unmounting, cleaning up resources");
+      // Remove map
+      if (map.value) {
+        map.value.off();
+        map.value.remove();
+        map.value = null;
+      }
+    });
 
-  // Clean up global functions
-  delete window.showRouteFor;
-  delete window.closeRouting;
-
-  // Clear routing control
-  clearRouting();
-
-  // Clear user marker
-  userMarker.value?.remove();
-
-  // Clear admin markers
-  adminMarkers.value.forEach(marker => marker.remove());
-  adminMarkers.value = [];
-
-  // Clear marker cluster
-  if (markerClusterGroup.value) {
-    markerClusterGroup.value.clearLayers();
-    map.value?.removeLayer(markerClusterGroup.value);
+    return {
+      mapContainerId,
+      // Expose public methods
+      addMarker,
+      removeMarker,
+      centerMap,
+      forceMapRefresh,
+      tempMarker
+    };
   }
-
-  // Remove map
-  if (map.value) {
-    map.value.off();
-    map.value.remove();
-    map.value = null;
-  }
-});
-
-// Expose methods to parent components
-defineExpose({
-  addMarker,
-  removeMarker,
-  centerMap
-});
+};
 </script>
 
 <style scoped>
@@ -647,13 +644,12 @@ defineExpose({
   position: relative;
 }
 
-/* Make sure the map container div fills the space */
+/* Make sure the map container fills its parent */
 :deep(#mapContainer > div) {
   height: 100%;
   width: 100%;
 }
 
-/* Admin mode styling */
 :deep(.admin-marker-icon) {
   filter: hue-rotate(90deg); /* Makes the marker green */
 }
@@ -691,7 +687,6 @@ defineExpose({
   }
 }
 
-/* Popup styling */
 :deep(.poi-popup) {
   max-width: 250px;
 }
@@ -709,7 +704,6 @@ defineExpose({
   margin-top: 8px;
   cursor: pointer;
   width: 100%;
-  transition: background-color 0.2s;
 }
 
 :deep(.directions-btn:hover) {
@@ -738,14 +732,12 @@ defineExpose({
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 4px;
-  transition: background-color 0.2s;
 }
 
 :deep(.close-routing-btn:hover) {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Address leaflet-routing-container zIndex issue that can make it appear under other elements */
 :deep(.leaflet-routing-container) {
   z-index: 999 !important;
 }
