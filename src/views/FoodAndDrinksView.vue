@@ -114,8 +114,10 @@ import { ref, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { format } from "date-fns";
 import { inventoryService } from '@/services/InventoryService';
+import { useProductStore } from '@/stores/ProductStore';
 
 const { t } = useI18n();
+const productStore = useProductStore();
 
 /**
  * List of all food and drink items in inventory.
@@ -149,6 +151,7 @@ const fetchProductTypes = async () => {
 
     // Transform the response to match our frontend structure
     items.value = response.content.map(product => ({
+      id: product.id,
       name: product.name,
       unit: product.unit,
       caloriesPerUnit: product.caloriesPerUnit?.toString() || '0',
@@ -168,11 +171,28 @@ const fetchProductTypes = async () => {
 onMounted(fetchProductTypes);
 
 /**
- * Toggle edit mode for a product item.
+ * Toggle edit mode for a product item and fetch its batches.
  * @param {number} index - Index of the item in items list.
  */
-const toggleEdit = (index) => {
-  items.value[index].edit = !items.value[index].edit;
+const toggleEdit = async (index) => {
+  const item = items.value[index];
+  item.edit = !item.edit;
+
+  if (item.edit) {
+    try {
+      const response = await inventoryService.getProductBatches(item.id);
+      if (response && response.content) {
+        // Transform batches to match our frontend structure
+        item.batches = response.content.map(batch => ({
+          amount: batch.number.toString(),
+          expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : ''
+        }));
+      }
+    } catch (err) {
+      console.error('Error fetching batches:', err);
+      item.batches = [];
+    }
+  }
 };
 
 /**
