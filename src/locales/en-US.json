@@ -2,7 +2,7 @@
   "actions": {
     "to-reflect": "to reflect",
     "read-more": "Read more",
-    "add-empty-account-to-household": "Add an empty user to the household",
+    "add-empty-account-to-household": "Add a household member",
     "add": "Add",
     "switch-household": "Switch household"
   },
@@ -166,11 +166,9 @@
     "person": "person",
     "people": "people",
     "in-household": "in household",
-    "add-empty-user": "Add Empty User",
+    "add-empty-user": "Add household member",
     "name": "Name",
     "enter-name": "Enter name",
-    "last-name": "Last Name",
-    "enter-last-name": "Enter last name",
     "type": "Type",
     "select-type": "Select type",
     "adult": "Adult",

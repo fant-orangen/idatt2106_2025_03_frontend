@@ -2,7 +2,7 @@
   "actions": {
     "to-reflect": "for å reflektere",
     "read-more": "Les mer",
-    "add-empty-account-to-household": "Legg til en tom bruker i husholdningen",
+    "add-empty-account-to-household": "Legg til et husholdsmedlem",
     "add": "Legg til",
     "switch-household": "Bytt husholdning"
   },
@@ -167,11 +167,9 @@
     "person": "person",
     "people": "personer",
     "in-household": "i husholdet",
-    "add-empty-user": "Legg til tom bruker",
-    "name": "Fornavn",
-    "enter-name": "Skriv inn fornavn",
-    "last-name": "Etternavn",
-    "enter-last-name": "Skriv inn etternavn",
+    "add-empty-user": "Legg til husholdsmedlem",
+    "name": "Navn",
+    "enter-name": "Skriv inn navn",
     "type": "Type",
     "select-type": "Velg type",
     "adult": "Voksen",

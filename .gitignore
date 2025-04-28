@@ -28,3 +28,4 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+src/IDATT2106.code-workspace
