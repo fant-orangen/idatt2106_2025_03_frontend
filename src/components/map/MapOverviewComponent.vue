@@ -98,7 +98,7 @@
   </Card>
 
   <div class="map-wrapper relative z-0 h-[50em]">
-    <div v-if="isLoadingPois" class="overlay">{{ t('map.loading') }}</div>
+    <div v-if="isLoadingPois || isLoadingCrisisEvents" class="overlay">{{ t('map.loading') }}</div>
     <div v-else-if="poiError" class="overlay text-red-600">
       {{ poiError }}
     </div>
@@ -106,7 +106,7 @@
       v-else
       :pois="convertedPois"
       :userLocation="userLocation"
-      :crisisEvents="dummyCrises"
+      :crisisEvents="crisisEvents"
     />
   </div>
 </template>
@@ -120,6 +120,7 @@ import {
   fetchPoisNearby,
   fetchNearestPoiByType
 } from '@/services/api/PoiService';
+import { fetchActiveCrisisEvents } from '@/services/api/CrisisEventService';
 import type { PoiData } from '@/models/PoiData';
 import type { POI, UserLocation, CrisisEvent } from '@/types/map';
 import { convertPoiData } from '@/types/map';
@@ -146,7 +147,8 @@ const allPois = ref<PoiData[]>([]);
 const pointsOfInterest = ref<PoiData[]>([]);
 const isLoadingPois = ref(false);
 const poiError = ref<string | null>(null);
-const dummyCrises = ref<CrisisEvent[]>([]);
+const crisisEvents = ref<CrisisEvent[]>([]);
+const isLoadingCrisisEvents = ref(false);
 
 // Filter state
 const userLocation = ref<UserLocation | null>(null);
@@ -181,6 +183,52 @@ const poiTypes = computed(() => {
   return Array.from(types.entries()).map(([id, name]: [number, string]) => ({ id, name }));
 });
 
+/**
+ * Fetches crisis events and processes them for display on the map
+ */
+async function loadCrisisEvents() {
+  isLoadingCrisisEvents.value = true;
+  try {
+    // Fetch active crisis events
+    const events = await fetchActiveCrisisEvents();
+
+    // Debug log for events
+    console.log('Crisis events loaded from service:', events);
+
+    // Ensure each event has proper coordinates
+    const validEvents = events.filter(event => {
+      const hasCoords = event.latitude !== undefined &&
+        event.longitude !== undefined &&
+        event.level !== undefined;
+      if (!hasCoords) {
+        console.warn('Invalid crisis event missing coordinates or level:', event);
+      }
+      return hasCoords;
+    });
+
+    // Ensure numeric coordinates (convert strings if needed)
+    const processedEvents = validEvents.map(event => ({
+      ...event,
+      latitude: typeof event.latitude === 'string' ? parseFloat(event.latitude) : event.latitude,
+      longitude: typeof event.longitude === 'string' ? parseFloat(event.longitude) : event.longitude,
+      level: typeof event.level === 'string' ? parseInt(event.level) : event.level
+    }));
+
+    crisisEvents.value = processedEvents;
+    console.log(`Loaded ${processedEvents.length} valid crisis events:`, processedEvents);
+
+    // Debug check for MapComponent prop
+    setTimeout(() => {
+      console.log('Current crisis events in component state:', crisisEvents.value);
+    }, 500);
+  } catch (error) {
+    console.error('Error loading crisis events:', error);
+    crisisEvents.value = [];
+  } finally {
+    isLoadingCrisisEvents.value = false;
+  }
+}
+
 // Geolocation helper
 async function getUserLocation() {
   if (!navigator.geolocation) {
@@ -201,6 +249,10 @@ async function getUserLocation() {
       longitude: pos.coords.longitude
     };
     locationStatus.value = t('map.location-success');
+
+    // Reload crisis events when location changes
+    loadCrisisEvents();
+
     return true;
   } catch (error: unknown) {
     locationStatus.value = t('map.location-error');
@@ -394,6 +446,7 @@ onMounted(async () => {
   poiError.value = null;
 
   try {
+    // Load POIs
     const pois = await fetchPublicPois();
 
     // First set allPois
@@ -407,6 +460,10 @@ onMounted(async () => {
       pointsOfInterest.value = [...pois];
       console.log("Initial POIs loaded:", pointsOfInterest.value.length);
     }, 10);
+
+    // Load crisis events
+    await loadCrisisEvents();
+
   } catch (error: unknown) {
     console.error('Error loading POIs:', error);
     poiError.value = t('map.load-error');

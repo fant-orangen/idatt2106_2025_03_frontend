@@ -22,9 +22,17 @@ export interface UserLocation {
 }
 
 export interface CrisisEvent {
+  id?: number | string;
+  name: string;
+  description?: string;
   latitude: number;
   longitude: number;
   level: number;
+  startTime: string;
+  isActive?: boolean;
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface MarkerMovedEvent {
