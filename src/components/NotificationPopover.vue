@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-
-// Props for notifications
-interface Notification {
-  id: string | number; // Adjust the type based on your data
-  message: string;
-  time: string;
-}
+import type { Notification } from '@/models/Notification'
 
 defineProps<{
   notifications: Notification[];
@@ -24,7 +18,7 @@ defineProps<{
         >
           <div class="dot"></div>
           <div class="timeline-content">
-            <strong>{{ notification.time }}</strong> – {{ notification.message }}
+            <strong>{{ new Date(notification.notifyAt).toLocaleTimeString() }}</strong> – {{ notification.description || 'No description' }}
           </div>
         </li>
       </ul>

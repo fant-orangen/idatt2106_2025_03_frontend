@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useNotificationStore } from '@/stores/NotificationStore' // Adjust the path as needed
 import { useI18n } from 'vue-i18n'
-import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
-import { Globe, User, Bell, Settings, Sun, Moon } from 'lucide-vue-next'
+import { Globe, User, Settings, Sun, Moon } from 'lucide-vue-next'
+import { getNotifications} from '@/services/NotificationService.ts'
+import type { Notification } from '@/models/Notification.ts'
 
 import {
   DropdownMenu,
@@ -41,9 +41,12 @@ const colorMode = useColorMode()
 // Get the top 3 notifications
 const topNotifications = ref<Notification[]>([])
 
-onMounted(() => {
-  const notificationStore = useNotificationStore()
-  topNotifications.value = notificationStore.topNotifications() as unknown as Notification[]
+onMounted(async () => {
+  try {
+    topNotifications.value = await getNotifications();
+  } catch (error) {
+    console.error('Failed to fetch notifications:', error);
+  }
 })
 
 

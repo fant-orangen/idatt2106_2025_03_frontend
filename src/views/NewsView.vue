@@ -1,39 +1,41 @@
 <script setup lang="ts">
-import { useNewsStore } from '@/stores/NewsStore'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { getNotifications } from '@/services/NotificationService';
+import type { Notification } from '@/models/Notification';
 
-const newsStore = useNewsStore()
-const news = newsStore.news
+const { t } = useI18n();
+const news = ref<Notification[]>([]);
 
-const fetchNews = async () => {
-  await newsStore.fetchNews()
-}
-
-onMounted(() => {
-  fetchNews()
-})
+onMounted(async () => {
+  try {
+    news.value = await getNotifications();
+  } catch (error) {
+    console.error('Failed to load notifications:', error);
+  }
+});
 </script>
 
 <template>
   <div class="news-page w-full max-w-3xl mx-auto p-6">
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <span>{{ $t('navigation.home')}}</span> &gt; <span class="current">{{ $t('info.news')}}</span>
+      <span>{{ t('navigation.home')}}</span> &gt; <span class="current">{{ t('info.news')}}</span>
     </div>
 
     <!-- Page Title -->
-    <h1 class="text-2xl font-bold mb-4">{{ $t('info.news')}}</h1>
+    <h1 class="text-2xl font-bold mb-4">{{ t('info.news')}}</h1>
 
     <!-- News Timeline -->
     <div v-if="news.length === 0" class="text-center">
-      <p>{{ $t('errors.no-news-available')}}</p>
+      <p>{{ t('errors.no-news-available')}}</p>
     </div>
     <ul v-else class="timeline">
       <li v-for="item in news" :key="item.id">
         <div class="dot"></div>
         <div class="timeline-content">
-          <strong>{{ item.time }}</strong> – {{ item.title || $t('notifications.untiteled') }}
-          <p>{{ item.message }}</p>
+          <strong>{{ item.createdAt }}</strong> – {{ item.description || t('notifications.untiteled') }}
+          <p>{{ item.description }}</p>
         </div>
       </li>
     </ul>

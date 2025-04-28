@@ -1,22 +1,30 @@
 <script setup lang="ts">
-import { useNotificationStore } from '@/stores/NotificationStore'
+import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { getNotifications } from '@/services/NotificationService';
+import type { Notification } from '@/models/Notification';
 
-// Use the NotificationStore
-const notificationStore = useNotificationStore()
+const { t } = useI18n();
+const notifications = ref<Notification[]>([]);
 
-// Get all notifications from the store
-const notifications = notificationStore.notifications
+onMounted(async () => {
+  try {
+    notifications.value = await getNotifications();
+  } catch (error) {
+    console.error('Failed to load notifications:', error);
+  }
+});
 </script>
 
 <template>
   <div class="notification-page w-full max-w-3xl mx-auto p-6">
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-      <span>{{ $t('navigation.home')}}</span> &gt; <span class="current">{{ $t('notifications.notifications')}}</span>
+      <span>{{ t('navigation.home')}}</span> &gt; <span class="current">{{ t('notifications.notifications')}}</span>
     </div>
 
     <!-- Page Title -->
-    <h1 class="text-2xl font-bold mb-4">{{ $t('notifications.notifications') }}</h1>
+    <h1 class="text-2xl font-bold mb-4">{{ t('notifications.notifications') }}</h1>
 
     <!-- Notifications Timeline -->
     <div v-if="notifications.length > 0">
@@ -27,7 +35,7 @@ const notifications = notificationStore.notifications
         >
           <div class="dot"></div>
           <div class="timeline-content">
-            <strong>{{ notification.time }}</strong> – {{ notification.message }}
+            <strong>{{ notification.createdAt }}</strong> – {{ notification.description }}
           </div>
         </li>
       </ul>
