@@ -3,32 +3,16 @@ import HeaderNavbar from './components/HeaderNavbar.vue'
 import Footer from './components/Footer.vue'
 import InvitationPopup from './components/invitation/InvitationPopup.vue'
 import { RouterView } from 'vue-router'
-import { onMounted, onUnmounted } from 'vue';
-import { connectNotificationSocket, disconnectNotificationSocket } from '@/services/api/WebSocketService';
-import { useUserStore } from '@/stores/UserStore';
+import { useWebSocket } from '@/composables/useWebSocket';
+import type { NotificationMessage } from '@/models/Notification';
 
-const userStore = useUserStore();
+const handleNotification = (notification: NotificationMessage) => {
+  console.log('Received notification:', notification);
+  // Here you can add additional notification handling logic
+  // For example, showing a toast, updating UI state, etc.
+};
 
-onMounted(() => {
-  // Only connect if user is logged in and has a profile
-  if (userStore.loggedIn && userStore.profile?.id) {
-    try {
-      connectNotificationSocket((notification) => {
-        console.log('Received notification:', notification);
-      });
-    } catch (error) {
-      console.error('Failed to connect to notification socket:', error);
-    }
-  }
-});
-
-onUnmounted(() => {
-  try {
-    disconnectNotificationSocket();
-  } catch (error) {
-    console.error('Error disconnecting from notification socket:', error);
-  }
-});
+useWebSocket(handleNotification);
 </script>
 
 <template>
