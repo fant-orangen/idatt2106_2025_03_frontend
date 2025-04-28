@@ -4,8 +4,8 @@
   </div>
 </template>
 
-<script>
-import { onMounted, onBeforeUnmount, watch, ref, defineProps, defineEmits } from 'vue';
+<script lang="ts">
+import { onMounted, onBeforeUnmount, watch, ref, defineComponent } from 'vue';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -15,17 +15,38 @@ import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { useI18n } from 'vue-i18n';
 
+// Import shared types
+import { POI, UserLocation, CrisisEvent, MarkerMovedEvent, MarkerAddedEvent, MarkerRemovedEvent } from '@/types/map';
+
 // Fix default Leaflet icon paths
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
-export default {
+interface TranslatedStrings {
+  address: string;
+  openingHours: string;
+  contact: string;
+  directions: string;
+  yourLocation: string;
+  showDirections: string;
+  closeDirections: string;
+}
+
+// Declare global functions for window
+declare global {
+  interface Window {
+    showRouteFor: (lat: number, lng: number, poiName: string) => void;
+    closeRouting: () => void;
+  }
+}
+
+export default defineComponent({
   name: 'MapComponent',
   props: {
     // Original props
     pois: {
-      type: Array,
+      type: Array as () => POI[],
       default: () => []
     },
     centerLat: {
@@ -41,11 +62,11 @@ export default {
       default: 6
     },
     userLocation: {
-      type: Object,
+      type: Object as () => UserLocation | null,
       default: null
     },
     crisisEvents: {
-      type: Array,
+      type: Array as () => CrisisEvent[],
       default: () => []
     },
     // Admin functionality prop
@@ -57,18 +78,18 @@ export default {
   emits: ['map-clicked', 'marker-added', 'marker-removed', 'marker-moved'],
   setup(props, { emit }) {
     const { t } = useI18n();
-    const map = ref(null);
-    const markerClusterGroup = ref(null);
-    const userMarker = ref(null);
-    const adminMarkers = ref([]);
+    const map = ref<L.Map | null>(null);
+    const markerClusterGroup = ref<L.MarkerClusterGroup | null>(null);
+    const userMarker = ref<L.Marker | null>(null);
+    const adminMarkers = ref<L.Marker[]>([]);
     const mapContainerId = 'map-' + Math.random().toString(36).substring(2, 9);
-    const routingControl = ref(null);
-    const activeRouteMarker = ref(null);
-    const tempMarker = ref(null);
-    const markersMap = ref(new Map()); // Store markers by POI ID for easier reference
+    const routingControl = ref<L.Routing.Control | null>(null);
+    const activeRouteMarker = ref<L.Marker | null>(null);
+    const tempMarker = ref<L.Marker | null>(null);
+    const markersMap = ref<Map<string | number, L.Marker>>(new Map()); // Store markers by POI ID for easier reference
 
     // Translation strings with fallbacks
-    const translatedStrings = {
+    const translatedStrings: TranslatedStrings = {
       address: t('map.address') || 'Adresse',
       openingHours: t('map.opening-hours') || 'Åpningstider',
       contact: t('map.contact') || 'Kontakt',
@@ -105,7 +126,7 @@ export default {
     // Initialize map
     onMounted(() => {
       // Fix icon paths globally
-      delete L.Icon.Default.prototype._getIconUrl;
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl,
         iconUrl,
@@ -139,7 +160,7 @@ export default {
               attribution: '© OSM © CartoDB',
               noWrap: false
             }
-          ).addTo(map.value);
+          ).addTo(map.value as L.Map);
 
           // Create marker cluster
           markerClusterGroup.value = L.markerClusterGroup({
@@ -149,7 +170,7 @@ export default {
             removeOutsideVisibleBounds: false,
             animate: false,
             animateAddingMarkers: false
-          }).addTo(map.value);
+          }).addTo(map.value as L.Map);
 
           // Set up map event listeners
           map.value.on('zoomend moveend', () => {
@@ -160,14 +181,14 @@ export default {
           // Add click listener for admin mode only
           if (props.adminMode) {
             console.log("Admin mode enabled, adding click listener");
-            map.value.on('click', (e) => {
+            map.value.on('click', (e: L.LeafletMouseEvent) => {
               console.log("Map clicked at", e.latlng);
               emit('map-clicked', e);
             });
           }
 
           // Global functions for routing - these are necessary for the original functionality
-          window.showRouteFor = (lat, lng, poiName) => {
+          window.showRouteFor = (lat: number, lng: number, poiName: string) => {
             showRouteFor(lat, lng, poiName);
           };
 
@@ -203,21 +224,21 @@ export default {
     });
 
     // Force map refresh
-    const forceMapRefresh = () => {
+    const forceMapRefresh = (): void => {
       if (map.value) {
         map.value.invalidateSize({ animate: false });
       }
     };
 
     // Refresh marker positions
-    function refreshMarkerPositions() {
+    function refreshMarkerPositions(): void {
       if (!map.value || !markerClusterGroup.value) return;
       markerClusterGroup.value.refreshClusters();
       forceMapRefresh();
     }
 
     // Add a marker to the map - admin functionality
-    function addMarker(lat, lng, title = 'New Marker') {
+    function addMarker(lat: number, lng: number, title: string = 'New Marker'): L.Marker | null {
       if (!map.value) {
         console.warn("Cannot add marker: map not initialized");
         return null;
@@ -228,7 +249,7 @@ export default {
         icon: adminIcon,
         draggable: props.adminMode,
         title: title
-      }).addTo(map.value);
+      }).addTo(map.value as L.Map);
 
       // If in admin mode, make the marker draggable
       if (props.adminMode) {
@@ -253,7 +274,7 @@ export default {
     }
 
     // Remove a marker from the map - admin functionality
-    function removeMarker(marker) {
+    function removeMarker(marker: L.Marker): void {
       if (!map.value || !marker) return;
 
       console.log("Removing marker");
@@ -268,7 +289,7 @@ export default {
     }
 
     // Center the map on a location
-    function centerMap(lat, lng, zoom = 15) {
+    function centerMap(lat: number, lng: number, zoom: number = 15): void {
       if (!map.value) {
         console.warn("Cannot center map: map not initialized");
         return;
@@ -279,7 +300,7 @@ export default {
     }
 
     // Show routing between user location and POI - original functionality
-    function showRouteFor(lat, lng, poiName) {
+    function showRouteFor(lat: number, lng: number, poiName: string): void {
       if (!map.value || !props.userLocation) {
         console.warn("Cannot show route: map or user location is not available");
         alert(t('map.need-location') || 'Du må dele din posisjon for å vise veibeskrivelse');
@@ -306,7 +327,9 @@ export default {
         altLineOptions: {
           styles: [
             {color: '#4a89dc', weight: 2, opacity: 0.6}
-          ]
+          ],
+          extendToWaypoints: true,
+          missingRouteTolerance: 0
         },
         show: true,
         collapsible: false,
@@ -321,14 +344,14 @@ export default {
         createMarker: function() {
           return null; // No waypoint markers
         },
-      }).addTo(map.value);
+      }).addTo(map.value as L.Map);
 
       // Add a custom title to the directions panel
       routingControl.value.on('routesfound', () => {
-        const container = routingControl.value.getContainer();
+        const container = routingControl.value!.getContainer();
 
-        // Only add title if it doesn't exist yet
-        if (!container.querySelector('.routing-title')) {
+        // Only add title if it doesn't exist yet and container exists
+        if (container && !container.querySelector('.routing-title')) {
           // Remove any default collapse buttons
           const existingCollapseButtons = container.querySelectorAll('.leaflet-routing-collapse-btn');
           existingCollapseButtons.forEach(btn => btn.remove());
@@ -359,14 +382,14 @@ export default {
           iconAnchor: [10, 10]
         }),
         zIndexOffset: 1000 // Ensure it's on top
-      }).addTo(map.value);
+      }).addTo(map.value as L.Map);
     }
 
     // Clear routing - original functionality
-    function clearRouting() {
-      if (routingControl.value) {
+    function clearRouting(): void {
+      if (routingControl.value && map.value) {
         console.log("Clearing routing control");
-        map.value?.removeControl(routingControl.value);
+        map.value.removeControl(routingControl.value);
         routingControl.value = null;
       }
 
@@ -377,7 +400,7 @@ export default {
     }
 
     // Create popup content for POIs - original functionality
-    function createPopupContent(poi) {
+    function createPopupContent(poi: POI): string {
       let html = `<div class="poi-popup"><strong>${poi.name}</strong> (${poi.poiTypeName})<br>`;
       if (poi.description) html += `${poi.description}<hr>`;
       if (poi.address) html += `<strong>${translatedStrings.address}:</strong> ${poi.address}<br>`;
@@ -399,7 +422,7 @@ export default {
     }
 
     // Update POIs on the map - core functionality used by both original and admin features
-    function updatePOIs(newPois) {
+    function updatePOIs(newPois: POI[]): void {
       if (!map.value || !markerClusterGroup.value) {
         console.log("Map or marker cluster not ready, deferring POI update");
         return;
@@ -418,7 +441,7 @@ export default {
 
       // Add markers to the cluster group
       const bounds = L.latLngBounds([]);
-      const markers = [];
+      const markers: L.Marker[] = [];
 
       if (newPois && newPois.length > 0) {
         newPois.forEach(poi => {
@@ -449,8 +472,8 @@ export default {
           });
 
           // Store reference to coordinates
-          marker.poiLat = lat;
-          marker.poiLng = lon;
+          (marker as any).poiLat = lat;
+          (marker as any).poiLng = lon;
 
           // Store in markers map if POI has an ID
           if (poi.id) {
@@ -504,7 +527,7 @@ export default {
     }
 
     // Update user location - original functionality
-    function updateUserLocation(location) {
+    function updateUserLocation(location: UserLocation): void {
       if (!map.value) return;
 
       // Remove existing marker
@@ -522,7 +545,7 @@ export default {
             zIndexOffset: 1000
           }
         )
-        .addTo(map.value)
+        .addTo(map.value as L.Map)
         .bindPopup(`<strong>${translatedStrings.yourLocation}</strong>`)
         .bindTooltip(translatedStrings.yourLocation, {
           permanent: false,
@@ -543,7 +566,7 @@ export default {
     }
 
     // Update crisis events - original functionality
-    function updateCrisisEvents(events) {
+    function updateCrisisEvents(events: CrisisEvent[]): void {
       if (!map.value) return;
 
       // Implementation for crisis events visualization
@@ -561,7 +584,7 @@ export default {
           fillColor: color,
           fillOpacity: 0.2,
           weight: 1
-        }).addTo(map.value);
+        }).addTo(map.value as L.Map);
       });
     }
 
@@ -590,9 +613,13 @@ export default {
     onBeforeUnmount(() => {
       console.log("Map component unmounting");
 
-      // Remove global functions
-      delete window.showRouteFor;
-      delete window.closeRouting;
+      // Remove global functions - using type assertion to avoid TypeScript errors
+      if ('showRouteFor' in window) {
+        (window as any).showRouteFor = undefined;
+      }
+      if ('closeRouting' in window) {
+        (window as any).closeRouting = undefined;
+      }
 
       // Clear routing
       clearRouting();
@@ -612,7 +639,8 @@ export default {
       // Clear marker cluster
       if (markerClusterGroup.value && map.value) {
         markerClusterGroup.value.clearLayers();
-        map.value.removeLayer(markerClusterGroup.value);
+        // Use type assertion to avoid type error with removeLayer
+        map.value.removeLayer(markerClusterGroup.value as unknown as L.Layer);
         markerClusterGroup.value = null;
       }
 
@@ -634,7 +662,7 @@ export default {
       tempMarker
     };
   }
-};
+});
 </script>
 
 <style scoped>
