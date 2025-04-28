@@ -96,12 +96,13 @@ const selectMember = (member: Member) => {
 const addEmptyUser = () => {
   showAddUser.value = true;
 };
-const handleSaveUser = (userData) => {
+const handleSaveUser = (userData: EmptyMember) => {
+  // Create a temporary object that satisfies the Member interface
   const newMember: Member = {
+    id: -1, // Temporary ID, will be replaced by the server
     firstName: userData.firstName,
     lastName: userData.lastName,
-    type: userData.type,
-    ...(userData.description ? { description: userData.description } : {})
+    type: userData.type
   };
   householdMembers.value.push(newMember);
   showAddUser.value = false;
@@ -115,7 +116,11 @@ const inviteUser = () => {
   showInviteUser.value = true;
 };
 
-const handleUserInvited = (userData) => {
+interface InvitedUserData {
+  email: string;
+}
+
+const handleUserInvited = (userData: InvitedUserData) => {
   // Show success message or update UI as needed
   console.log('User invited:', userData);
   showInviteUser.value = false;

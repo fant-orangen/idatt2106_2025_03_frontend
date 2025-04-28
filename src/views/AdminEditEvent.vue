@@ -28,7 +28,7 @@
             <ScrollArea class="rounded-md border w-[100%] h-[100%]" >
                 <div class="p-4">
                     <h4 class="mb-4 text-sm font-medium leading-none">{{ $t('add-event-info.titles.choose-event') }}:</h4>
-                    
+
                     <!--Remove, only for testing under dev -->
                     <div class="text-sm hover:underline cursor-pointer transition-colors" @click="selectEvent(1)">test1</div>
                     <Separator class="my-2" />
@@ -36,12 +36,12 @@
                     <Separator class="my-2" />
                     <div class="text-sm hover:underline cursor-pointer transition-colors">test3</div>
                     <Separator class="my-2" />
-                    
-                    <div v-for="event in events" :key="event.id" @click="selectEvent(event)"
+
+                    <div v-for="(event, index) in events" :key="index" @click="selectEvent(event)"
                     class="text-sm hover:underline cursor-pointer transition-colors"
                     :class="{
-                        'bg-muted': selectedEvent?.id === event.id,
-                        'hover:bg-muted/50': selectedEvent?.id !== event.id
+                        'bg-muted': false,
+                        'hover:bg-muted/50': true
                     }">
                         {{ event.title }} | {{ event.priority }} | {{ event.time }} | {{ event.date }}
                         <Separator class="my-2" />
@@ -74,7 +74,7 @@
                         <FormControl>
                             <Input class="w-[100px]" type="number" placeholder="latitude" v-bind="field" />
                         </FormControl>
-                        <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+                        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
                     </FormItem>
                 </FormField>
 
@@ -85,7 +85,7 @@
                         <FormControl>
                             <Input class="w-[100px]" type="number" placeholder="longitude" v-bind="field" />
                         </FormControl>
-                        <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+                        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
                     </FormItem>
                 </FormField>
 
@@ -96,7 +96,7 @@
                         <FormControl>
                             <Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
                         </FormControl>
-                        <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+                        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
                     </FormItem>
                 </FormField>
                 </div>
@@ -111,7 +111,7 @@
                             <Input type="number" placeholder="meters" v-bind="field" />
                         </FormControl>
                         <FormDescription>{{ $t('add-event-info.radius') }}</FormDescription>
-                        <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+                        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
                     </FormItem>
                 </FormField><br>
 
@@ -163,7 +163,7 @@
                             </Select>
                         </FormControl>
                         <FormDescription>{{ $t('add-event-info.priority') }}</FormDescription>
-                        <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+                        <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
                     </FormItem>
                 </FormField>
                 <br>
@@ -176,7 +176,7 @@
                         <Textarea placeholder="Description" v-bind="field"></Textarea>
                     </FormControl>
                     <FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
-                    <FormMessage v-if="meta.touched  || meta.submitFailed">{{ errorMessage }}</FormMessage>
+                    <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
                 </FormItem>
                 </FormField><br>
 
@@ -184,7 +184,7 @@
             </form>
 
             <!--The map-->
-            
+
         </div>
 
         <div class="map" v-if="selectedEvent">
@@ -213,7 +213,7 @@ import {
     BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbPage,
-    BreadcrumbSeparator, 
+    BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import {
     FormControl,
@@ -228,7 +228,6 @@ import {
     SelectContent,
     SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
@@ -251,7 +250,20 @@ const selectedEvent = ref<Event | null>(null);
 
 const router = useRouter();
 
-const selectEvent = (event: Event) => { 
+
+const selectEvent = (event: Event | number) => {
+    if (typeof event === 'number') {
+        // Handle the case where event is just an ID (for test data)
+        selectedEvent.value = {
+            id: event,
+            title: 'Test Event',
+            radius: 0,
+            priority: 'Low',
+            description: 'Test Description'
+        };
+        return;
+    }
+
     selectedEvent.value = event;
     console.log('Selected event: ', event);
     form.setValues({
@@ -259,7 +271,7 @@ const selectEvent = (event: Event) => {
         longitude: event.longitude || '',
         address: event.address || '',
         radius: event.radius || '',
-        priority: event.priority || '',
+        priority: event.priority || undefined,
         description: event.description || ''
     })
 }
@@ -314,22 +326,26 @@ const form = useForm({
         longitude: '',
         address: '',
         radius: '',
-        priority: '',
+        priority: undefined,
         description: ''
     }
 });
 
 const onSubmit = form.handleSubmit(async (values) => {
     try {
+        if (!selectedEvent.value) {
+            console.error('No event selected');
+            return;
+        }
         const response = await updateCurrentEvent(selectedEvent.value.id, values);
 
         console.log('Event updated successfully!', response.data);
 
-        router.push('/admin-panel'); //redirect user to the panel 
+        router.push('/admin-panel'); //redirect user to the panel
     } catch (error) {
         console.error('An error occured while updating the event: ', error);
     }
-		
+
 });
 
  function cancelUpdate() {
@@ -380,7 +396,7 @@ h1 {
     background-color: var(--color-muted);
     cursor: not-allowed;
 }
-.map { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder, 
+.map { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder,
 	kartet kan godt være litt større enn størrelsen jeg har satt på boksen*/
 	border-radius: 8px;
 	border: solid grey;

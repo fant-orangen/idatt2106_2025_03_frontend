@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // Import shadcn-vue components
 import { Input } from '@/components/ui/input'
@@ -35,9 +38,9 @@ async function handleLogin() {
   try {
     errorMessage.value = ''
     await userStore.verifyLogin(email.value, password.value)
-    alert($t('success.login-successful') as string)
+    alert(t('success.login-successful'))
   } catch (error) {
-    errorMessage.value = $t('errors.login-failed') as string
+    errorMessage.value = t('errors.login-failed')
     console.error('Login error:', error)
   }
 }
