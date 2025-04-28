@@ -30,7 +30,40 @@
     "make-new-event": "Add a new event",
     "make-new-POI": "Add a new point of interest",
     "make-new-activity": "Make a new activity",
-    "edit-event": "Edit a current event"
+    "edit-event": "Edit a current event",
+    "basic-info": "Basic Information",
+    "poi-title-placeholder": "Enter title for the point of interest",
+    "select-poi-type": "Select the type of point of interest this should be",
+    "description-placeholder": "Write some information describing the point of interest. Where is it located? What can be found there?",
+    "location-info": "Location",
+    "address-placeholder": "Example Street 2",
+    "hours-contact-info": "Opening Hours and Contact Information",
+    "contact-info-description": "Phone number for a responsible contact person.",
+    "form-invalid": "Please fill out all required fields.",
+    "submission-error": "Error saving point of interest. Please try again later.",
+    "cancel": "Cancel",
+    "submitting": "Saving...",
+    "submit": "Save",
+    "map-controls": "Map Controls",
+    "get-location": "Get Location",
+    "reset-map": "Reset Map",
+    "search-location": "Search for address",
+    "enter-address": "Enter address",
+    "search": "Search",
+    "selected-location": "Selected Location",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "clear-selection": "Clear Selected Location",
+    "map-instructions": "Click on the map to select the location for the new point of interest.",
+    "getting-location": "Getting location...",
+    "location-unavailable": "Location services are not available in your browser.",
+    "location-found": "Location found.",
+    "location-error": "Could not get location.",
+    "enter-valid-address": "Please enter a valid address.",
+    "searching": "Searching...",
+    "address-not-found": "Could not find the address.",
+    "search-error": "Error searching for address.",
+    "map-reset": "Map reset."
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
@@ -414,10 +447,10 @@
       "contact-info": "Contact information"
     },
     "POI-type": {
-      "defibrillator": "Defibrillator",
-      "shelter": "Shelter",
-      "water-source": "Water scource",
-      "food": "Food station"
-    }
+    "defibrillator": "Defibrillator",
+    "shelter": "Shelter",
+    "water-source": "Water Source",
+    "food": "Food Distribution"
+  }
   }
 }

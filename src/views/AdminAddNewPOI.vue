@@ -1,309 +1,509 @@
 <template>
-<div style="margin:20px">
-	<!--Breadcrumb at the top left-->
-	<Breadcrumb>
-		<BreadcrumbList>
-			<BreadcrumbItem>
-				<BreadcrumbLink href="/admin-panel">
-				{{ $t('navigation.admin-panel') }}
-				</BreadcrumbLink>
-			</BreadcrumbItem>
-			<BreadcrumbSeparator/>
-			<BreadcrumbItem>
-				<BreadcrumbPage href="/add-new-POI">{{ $t('navigation.new-POI') }}</BreadcrumbPage>
-			</BreadcrumbItem>
-		</BreadcrumbList>
-	</Breadcrumb>
-</div>
+  <div style="margin: 20px">
+    <!-- Breadcrumb at the top left -->
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/admin-panel">
+            {{ $t('navigation.admin-panel') }}
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage href="/add-new-POI">
+            {{ $t('navigation.new-POI') }}
+          </BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  </div>
 
-<!--Title-->
-<h1>{{ $t('admin.make-new-POI') }}:</h1>
+  <div class="admin-add-poi-page">
+    <!-- Page title -->
+    <h1>{{ $t('admin.make-new-POI') || 'Legg til et nytt interessepunkt' }}</h1>
 
-<div class="page">
-	<!--Input fields for the admin user-->
-	<div class="fields">
-		<form @submit="onSubmit">
+    <!-- Main content container -->
+    <div class="content-container">
+      <!-- Form section -->
+      <div class="form-section">
+        <form @submit.prevent="submitPOI">
+          <!-- Basic info section -->
+          <div class="form-section-header">
+            <h2>{{ $t('admin.basic-info') || 'Grunnleggende informasjon' }}</h2>
+          </div>
 
-			<!--Title of POI -->
-			<FormField v-slot="{ field, meta, errorMessage }" name="title">
-				<FormItem>
-					<FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
-					<FormControl>
-						<Input type="text" placeholder="Title" v-bind="field" />
-					</FormControl>
-					<FormDescription>{{ $t('add-POI-info.info.title') }}</FormDescription>
-					<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-				</FormItem>
-			</FormField><br>
+          <!-- Title -->
+          <div class="form-group">
+            <label for="title">{{ $t('add-event-info.titles.title') || 'Tittel' }}</label>
+            <input
+              id="title"
+              v-model="formData.title"
+              type="text"
+              :placeholder="
+                $t('admin.poi-title-placeholder') ||
+                'Skriv inn tittel på interessepunktet'
+              "
+              required
+            />
+            <div class="form-description">
+              {{ $t('add-POI-info.info.title') || 'Dette vil være tittelen på interessepunktet.' }}
+            </div>
+          </div>
 
-			<!--Placement of POI-->
-			<!--Latitude field-->
-			<div class="container">
-				<FormField v-slot="{ field, meta, errorMessage }" name="latitude">
-					<FormItem>
-						<FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
-						<FormControl>
-							<Input class="w-[100px]" type="number" placeholder="latitude" v-bind="field" />
-						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-					</FormItem>
-				</FormField>
+          <!-- Type -->
+          <div class="form-group">
+            <label for="type">{{ $t('add-POI-info.titles.type') || 'Type' }}</label>
+            <select id="type" v-model="formData.type" required>
+              <option value="" disabled selected>
+                {{
+                  $t('admin.select-poi-type') ||
+                  'Velg hvilken type interessepunkt dette skal være'
+                }}
+              </option>
+              <option value="defibrillator">
+                {{ $t('add-POI-info.POI-type.defibrillator') || 'Hjertestarter' }}
+              </option>
+              <option value="shelter">
+                {{ $t('add-POI-info.POI-type.shelter') || 'Tilfluktsrom' }}
+              </option>
+              <option value="water-source">
+                {{ $t('add-POI-info.POI-type.water-source') || 'Vannkilde' }}
+              </option>
+              <option value="food-station">
+                {{ $t('add-POI-info.POI-type.food') || 'Matutdeling' }}
+              </option>
+            </select>
+            <div class="form-description">
+              {{
+                $t('add-POI-info.info.type') ||
+                'Velg hvilken type interessepunkt dette skal være.'
+              }}
+            </div>
+          </div>
 
-				<!--Longitude field-->
-				<FormField v-slot="{ field, meta, errorMessage }" name="longitude">
-					<FormItem>
-						<FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
-						<FormControl>
-							<Input class="w-[100px]" type="number" placeholder="longitude" v-bind="field" />
-						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-					</FormItem>
-				</FormField>
+          <!-- Description -->
+          <div class="form-group">
+            <label for="description">
+              {{ $t('add-event-info.titles.description') || 'Informasjon' }}
+            </label>
+            <textarea
+              id="description"
+              v-model="formData.description"
+              :placeholder="
+                $t('admin.description-placeholder') ||
+                'Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'
+              "
+              rows="4"
+              required
+            ></textarea>
+            <div class="form-description">
+              {{
+                $t('add-POI-info.info.description') ||
+                'Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'
+              }}
+            </div>
+          </div>
 
-				<!--Address field-->
-				<FormField v-slot="{ field, meta, errorMessage }" name="address">
-					<FormItem>
-						<FormLabel>{{$t('add-event-info.titles.address')}}</FormLabel>
-						<FormControl>
-							<Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
-						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-					</FormItem>
-				</FormField>
-			</div>
-			<br>
+          <!-- Location section -->
+          <div class="form-section-header">
+            <h2>{{ $t('admin.location-info') || 'Plassering' }}</h2>
+          </div>
 
-			<!--Select type field-->
-			<FormField v-slot="{ field, meta, errorMessage }" name="type">
-				<FormItem>
-					<FormLabel>{{$t('add-POI-info.titles.type')}}</FormLabel>
-					<FormControl>
-						<Select v-bind="field">
-							<SelectTrigger style="cursor: pointer;">
-								<SelectValue placeholder="Choose a type"/>
-							</SelectTrigger>
-							<SelectContent>
-								<SelectGroup>
-									<SelectItem value="defibrillator">{{$t('add-POI-info.POI-type.defibrillator')}}</SelectItem>
-									<SelectItem value="shelter">{{$t('add-POI-info.POI-type.shelter')}}</SelectItem>
-									<SelectItem value="water-source">{{$t('add-POI-info.POI-type.water-source')}}</SelectItem>
-									<SelectItem value="food-station">{{$t('add-POI-info.POI-type.food')}}</SelectItem>
-								</SelectGroup>
-							</SelectContent>
-						</Select>
-					</FormControl>
-					<FormDescription>{{ $t('add-POI-info.info.type') }}</FormDescription>
-					<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-				</FormItem>
-			</FormField><br>
+          <!-- Address -->
+          <div class="form-group">
+            <label for="address">
+              {{ $t('add-event-info.titles.address') || 'Adresse' }}
+            </label>
+            <input
+              id="address"
+              v-model="formData.address"
+              type="text"
+              :placeholder="$t('admin.address-placeholder') || 'Eksempelveien 2'"
+            />
+          </div>
 
-			<div class="container">
+          <!-- Coordinates -->
+          <div class="coordinates-container">
+            <div class="form-group half-width">
+              <label for="latitude">
+                {{ $t('add-event-info.titles.latitude') || 'Breddegrad' }}
+              </label>
+              <input
+                id="latitude"
+                v-model="formData.latitude"
+                type="number"
+                step="0.000001"
+                required
+                readonly
+              />
+            </div>
+            <div class="form-group half-width">
+              <label for="longitude">
+                {{ $t('add-event-info.titles.longitude') || 'Lengdegrad' }}
+              </label>
+              <input
+                id="longitude"
+                v-model="formData.longitude"
+                type="number"
+                step="0.000001"
+                required
+                readonly
+              />
+            </div>
+          </div>
 
-				<!--Open from time-->
-				<FormField v-slot="{ field, meta, errorMessage }" name="openfrom">
-					<FormItem>
-						<FormLabel>{{$t('add-POI-info.titles.open-from')}}</FormLabel>
-						<FormControl>
-							<Input type="time" v-bind="field" />
-						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-					</FormItem>
-				</FormField>
+          <!-- Hours & Contact section -->
+          <div class="form-section-header">
+            <h2>
+              {{ $t('admin.hours-contact-info') || 'Åpningstider og kontaktinformasjon' }}
+            </h2>
+          </div>
 
-				<!--Open to time-->
-				<FormField v-slot="{ field, meta, errorMessage }" name="opento">
-					<FormItem>
-						<FormLabel>{{$t('add-POI-info.titles.open-to')}}</FormLabel>
-						<FormControl>
-							<Input type="time" v-bind="field" />
-						</FormControl>
-						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-					</FormItem>
-				</FormField>
-			</div><br>
+          <!-- Opening Hours -->
+          <div class="hours-container">
+            <div class="form-group half-width">
+              <label for="openfrom">
+                {{ $t('add-POI-info.titles.open-from') || 'Åpent fra' }}
+              </label>
+              <input id="openfrom" v-model="formData.openfrom" type="time" />
+            </div>
+            <div class="form-group half-width">
+              <label for="opento">
+                {{ $t('add-POI-info.titles.open-to') || 'Åpent til' }}
+              </label>
+              <input id="opento" v-model="formData.opento" type="time" />
+            </div>
+          </div>
 
-			<!--Contact information field-->
-			<FormField v-slot="{ field, meta, errorMessage }" name="contactinfo">
-				<FormItem>
-					<FormLabel>{{$t('add-POI-info.titles.contact-info')}}</FormLabel>
-					<FormControl>
-						<Input type="phone" placeholder="+47 123 45 678" v-bind="field" />
-					</FormControl>
-					<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-				</FormItem>
-			</FormField><br>
+          <!-- Contact Info -->
+          <div class="form-group">
+            <label for="contactinfo">
+              {{ $t('add-POI-info.titles.contact-info') || 'Kontaktinformasjon' }}
+            </label>
+            <input
+              id="contactinfo"
+              v-model="formData.contactinfo"
+              type="tel"
+              placeholder="+47 123 45 678"
+            />
+            <div class="form-description">
+              {{
+                $t('admin.contact-info-description') ||
+                'Telefonnummer til en ansvarlig kontaktperson.'
+              }}
+            </div>
+          </div>
 
-			<!--Description of POI-->
-			<FormField v-slot="{ field, meta, errorMessage }" name="description">
-			<FormItem>
-				<FormLabel>{{$t('add-event-info.titles.description')}}:</FormLabel>
-				<FormControl>
-					<Textarea placeholder="Description" v-bind="field"></Textarea>
-				</FormControl>
-				<FormDescription>{{ $t('add-POI-info.info.description') }}</FormDescription>
-				<FormMessage v-if="meta.touched  || meta.submitFailed">{{ errorMessage }}</FormMessage>
-			</FormItem>
-			</FormField><br>
+          <!-- Error message -->
+          <div v-if="formError" class="form-error">
+            {{ formError }}
+          </div>
 
-			<Button>{{$t('add-event-info.titles.submit')}}</Button>
-		</form>
-	</div>
+          <!-- Submit/Cancel buttons -->
+          <div class="form-actions">
+            <button type="button" class="cancel-button" @click="cancelForm">
+              {{ $t('admin.cancel') || 'Avbryt' }}
+            </button>
+            <button
+              type="submit"
+              class="submit-button"
+              :disabled="!isFormValid || isSubmitting"
+            >
+              <span v-if="isSubmitting">
+                {{ $t('admin.submitting') || 'Lagrer...' }}
+              </span>
+              <span v-else>{{ $t('admin.submit') || 'Lagre' }}</span>
+            </button>
+          </div>
+        </form>
+      </div>
 
-	<!--This is the map-->
-	<div class="box">
-		MAP
-	</div>
-</div>
+      <!-- Map section -->
+      <div class="map-section">
+        <!-- Map controls -->
+        <AdminMapController
+          :mapComponent="mapComponentInstance"
+          @location-selected="handleLocationSelected"
+          @location-cleared="handleLocationCleared"
+        />
 
+        <!-- Map container -->
+        <div class="map-container">
+          <MapComponent
+            ref="mapComponent"
+            :adminMode="true"
+            :centerLat="initialCenter.lat ?? 63.4305"
+            :centerLon="initialCenter.lng ?? 10.3951"
+            :initialZoom="6"
+            @map-clicked="handleMapClick"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script setup lang="ts">
-import router from '@/router'
+<script lang="ts">
+import { ref, computed, onMounted, watch, defineComponent } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { createPOI } from '@/services/api/AdminServices'
-import { useForm } from 'vee-validate'
-import { useI18n } from 'vue-i18n';
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { toTypedSchema } from '@vee-validate/zod'
-import { Textarea } from '@/components/ui/textarea'
-import * as z from 'zod'
+import MapComponent from '@/components/map/MapComponent.vue'
+import AdminMapController from '@/components/admin/AdminMapController.vue'
+import * as L from 'leaflet'
 import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import {
-		FormControl,
-		FormDescription,
-		FormField,
-		FormItem,
-		FormLabel,
-		FormMessage
-	} from '@/components/ui/form'
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select'
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb/index.js'
 
-const { t } = useI18n();
+// Define interfaces for the component
+interface Location {
+  lat: number | null
+  lng: number | null
+}
 
-/**
- * Validates the data from the user.
- */
-const formSchema = toTypedSchema(
-  z.object({
-    title: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
+interface FormData {
+  title: string
+  type: string
+  description: string
+  address: string
+  latitude: number | null
+  longitude: number | null
+  openfrom: string
+  opento: string
+  contactinfo: string
+}
 
-		latitude: z.preprocess((val) => Number(val), z.number()
-			.min(-90, t('add-event-info.errors.latitude'))
-  		.max(90, t('add-event-info.errors.latitude'))).optional(),
+interface MapClickEvent {
+  latlng: {
+    lat: number
+    lng: number
+  }
+}
 
-		longitude: z.preprocess((val) => Number(val), z.number()
-  		.min(-180, t('add-event-info.errors.longitude'))
-  		.max(180, t('add-event-info.errors.longitude'))).optional(),
+export default defineComponent({
+  name: 'AdminAddPOIPage',
+  components: {
+    BreadcrumbLink,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbPage,
+    Breadcrumb,
+    BreadcrumbSeparator,
+    MapComponent,
+    AdminMapController,
+  },
+  setup() {
+    const { t } = useI18n()
+    const router = useRouter()
 
-		address: z.string()
-			.max(100, 'add-event-info.errors.address').optional(),
+    // Component refs
+    const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null)
+    const tempMarker = ref<L.Marker | null>(null)
 
-		type: z.enum(["defibrillator", "shelter", "water-source", "food-station"]),
+    // Initial center (Norway)
+    const initialCenter: Location = { lat: 63.4305, lng: 10.3951 }
 
-		contactinfo: z.string()
-		.optional()
-		.refine((val) => {
-			if (!val) return true;
-			const phoneRegex = /^(\+?\d{1,3}[- ]?)?\d{8}$/; // +47 12345678 or 12345678
-			return phoneRegex.test(val);
-		}, {
-			message: t('add-event-info.errors.contact-info')
-		}),
+    // Form data
+    const formData = ref<FormData>({
+      title: '',
+      type: '',
+      description: '',
+      address: '',
+      latitude: null,
+      longitude: null,
+      openfrom: '',
+      opento: '',
+      contactinfo: '',
+    })
 
-		openfrom: z.string().optional(),
+    const isSubmitting = ref(false)
+    const formError = ref('')
 
-		opento: z.string().optional(),
+    const mapComponentInstance = computed(
+      () => mapComponent.value! as InstanceType<typeof MapComponent>,
+    )
 
-		description: z.string()
-			.min(10, t('add-event-info.errors.description'))
-			.max(500, t('add-event-info.errors.description')),
-  })
-	.refine((data) => {
-		/*If latitude and longitude is missing, the address field need to be set */
-		if ((data.latitude === undefined || isNaN(data.latitude)) || (data.longitude === undefined || isNaN(data.longitude))) {
-			return !!data.address && data.address.length > 0;
-		}
-		return true;
-	}, {
-		message : t('add-event-info.errors.position-missing'),
-		path: ['address'],
-	})
-);
+    const isFormValid = computed(() => {
+      return (
+        formData.value.title.length >= 2 &&
+        !!formData.value.type &&
+        formData.value.description.length >= 10 &&
+        formData.value.latitude !== null &&
+        formData.value.longitude !== null
+      )
+    })
 
-const form = useForm({
-	validationSchema: formSchema,
-	initialValues: {
-		title: '',
-		latitude: '',
-		longitude: '',
-		address: '',
-		type: 'defibrillator',
-		contactinfo: '',
-		openfrom: '',
-		opento: '',
-		description: ''
-	}
-});
+    function handleMapClick(event: MapClickEvent): void {
+      handleLocationSelected({ lat: event.latlng.lat, lng: event.latlng.lng })
+    }
 
-const onSubmit = form.handleSubmit(async (values) => {
-	try {
-		const response = await createPOI(values);
+    function handleLocationSelected(location: Location): void {
+      formData.value.latitude = location.lat
+      formData.value.longitude = location.lng
+      if (location.lat !== null && location.lng !== null) {
+        updateMapMarker(location.lat, location.lng)
+      }
+    }
 
-		console.log('POI created successfully!', response.data);
+    function handleLocationCleared(): void {
+      formData.value.latitude = null
+      formData.value.longitude = null
+      if (tempMarker.value && mapComponent.value?.removeMarker) {
+        mapComponent.value.removeMarker(tempMarker.value as any)
+        tempMarker.value = null
+      }
+    }
 
-		router.push('/admin-panel'); //redirect user to the panel
-	} catch (error) {
-		console.error('An error occured while submitting the event: ', error);
-	}
+    function updateMapMarker(lat: number, lng: number): void {
+      if (!mapComponent.value || !mapComponent.value.addMarker) {
+        console.error('Map component not ready')
+        return
+      }
+      if (tempMarker.value && mapComponent.value.removeMarker) {
+        mapComponent.value.removeMarker(tempMarker.value as any)
+      }
+      const title = formData.value.title || 'Nytt interessepunkt'
+      tempMarker.value = mapComponent.value.addMarker(lat, lng, title)
+    }
 
-});
+    async function submitPOI(): Promise<void> {
+      if (!isFormValid.value) {
+        formError.value = t('admin.form-invalid') || 'Vennligst fyll ut alle påkrevde felt.'
+        return
+      }
+      isSubmitting.value = true
+      formError.value = ''
 
+      try {
+        const poiData = {
+          title: formData.value.title,
+          latitude: formData.value.latitude!,
+          longitude: formData.value.longitude!,
+          address: formData.value.address || '',
+          type: formData.value.type,
+          openfrom: formData.value.openfrom || '',
+          opento: formData.value.opento || '',
+          contactinfo: formData.value.contactinfo || '',
+          description: formData.value.description,
+        }
+        await createPOI(poiData)
+        router.push('/admin-panel')
+      } catch (err) {
+        console.error(err)
+        formError.value =
+          t('admin.submission-error') || 'Feil ved lagring av interessepunkt. Prøv igjen senere.'
+      } finally {
+        isSubmitting.value = false
+      }
+    }
+
+    function cancelForm(): void {
+      router.push('/admin-panel')
+    }
+
+    watch(
+      () => formData.value.title,
+      (newTitle) => {
+        if (tempMarker.value && mapComponent.value) {
+          console.log('Update marker title to:', newTitle)
+        }
+      },
+    )
+
+    onMounted(() => {
+      console.log('AdminAddPOIPage mounted')
+    })
+
+    return {
+      mapComponent,
+      mapComponentInstance,
+      initialCenter,
+      formData,
+      isSubmitting,
+      formError,
+      isFormValid,
+      handleMapClick,
+      handleLocationSelected,
+      handleLocationCleared,
+      submitPOI,
+      cancelForm,
+    }
+  },
+})
 </script>
 
 <style scoped>
+.admin-add-poi-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 h1 {
-	font-size: 2em;
-	text-align: center;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.page {
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: space-evenly;
-	margin: 30px;
-	gap: 15px;
+.content-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
 }
 
-.container {
-	display: flex;
-	flex-flow: row nowrap;
-	gap: 10px;
+.map-container {
+  flex-grow: 1;
+  min-height: 500px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.fields {
-	max-width: 450px;
+/* Error message */
+.form-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
 }
 
-.box { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder,
-	kartet kan godt være litt større enn størrelsen jeg har satt på boksen*/
-	border-radius: 8px;
-	border: solid grey;
-	min-width: 300px;
-	max-height: 400px;
-	background-color: lightgreen;
+/* Responsive layout */
+@media (max-width: 992px) {
+  .content-container {
+    grid-template-columns: 1fr;
+  }
+  .map-section {
+    order: 1;
+  }
+  .form-section {
+    order: 2;
+  }
+  .map-container {
+    min-height: 400px;
+  }
+}
+
+@media (max-width: 576px) {
+  .coordinates-container,
+  .hours-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .half-width {
+    margin-bottom: 10px;
+  }
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+  .submit-button,
+  .cancel-button {
+    width: 100%;
+  }
 }
 </style>
