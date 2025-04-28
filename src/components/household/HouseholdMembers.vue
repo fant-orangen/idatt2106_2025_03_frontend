@@ -86,7 +86,7 @@ import { Button } from '@/components/ui/button';
 import AddEmptyUser from './AddEmptyUser.vue';
 import { UserIcon, XIcon } from 'lucide-vue-next';
 import AddUser from './AddUser.vue';
-import { getHouseholdMembers, getEmptyHouseholdMembers } from '@/services/HouseholdService.ts'
+import { getHouseholdMembers, getEmptyHouseholdMembers, addEmptyMember } from '@/services/HouseholdService.ts'
 import type { HouseholdMember } from '@/models/Household.ts'
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 useI18n();
@@ -119,11 +119,15 @@ const addEmptyUser = () => {
 };
 
 const handleSaveUser = async (userData: {
-  firstName: string;
-  lastName: string;
+  name: string;
+  type: string;
+  description: string;
 }) => {
   try {
-    // TODO: Implement adding regular user
+    await addEmptyMember(userData);
+    const members = await getHouseholdMembers();
+    const emptyMembers = await getEmptyHouseholdMembers();
+    householdStore.setMembers([...members, ...emptyMembers]);
     showAddUser.value = false;
   } catch (error) {
     console.error('Failed to save user:', error);

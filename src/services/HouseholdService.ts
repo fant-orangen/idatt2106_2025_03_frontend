@@ -115,15 +115,13 @@ export async function removeEmptyMemberFromHousehold(
 
 /**
  * Add an empty (placeholder) member to the household
- * @param householdId The household ID
  * @param memberData The member data
  * @returns The created member
  */
 export async function addEmptyMember(
-  householdId: number,
-  memberData: Omit<Member, 'id'>
-): Promise<Member> {
-  const response = await api.post(`/households/${householdId}/members/empty`, memberData);
+  memberData: Omit<EmptyHouseholdMember, 'id'>
+): Promise<EmptyHouseholdMember> {
+  const response = await api.post('/households/members/empty', memberData);
   return response.data;
 }
 
