@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
@@ -140,8 +139,8 @@ function goToPage(route: string) {
                 <Settings class="mr-2 h-4 w-4" />
                 <span>Settings (WIP)</span>
               </DropdownMenuItem>
-              <DropdownMenuSeparator v-if="userStore.isAdminUser" />
-              <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin-panel')">
+              <DropdownMenuSeparator v-if="userStore.loggedIn" />
+              <DropdownMenuItem v-if="userStore.loggedIn" @click="goToPage('/admin-panel')">
                 <ShieldUser class="mr-2 h-4 w-4" />
                 <span>Admin Panel (WIP)</span>
               </DropdownMenuItem>
