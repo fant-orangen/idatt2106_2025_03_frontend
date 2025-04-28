@@ -109,7 +109,7 @@ onMounted(async() => {
     const currentHouseholdId = householdStore.currentHousehold?.id;
     if (!currentHouseholdId) return;
     householdStore.setLoading(true);
-    const regularMembers = await getHouseholdMembers(currentHouseholdId);
+    const regularMembers = await getHouseholdMembers();
     const emptyMembers = await getEmptyHouseholdMembers(currentHouseholdId);
     householdStore.setMembers([...regularMembers, ...emptyMembers]);
   } catch (error) {
@@ -157,7 +157,7 @@ const handleSaveUser = async (userData: {
     showInviteUser.value = true;
   };
 
-  const handleUserInvited = (userData: any) => {
+  const handleUserInvited = (userData: { email: string }) => {
     console.log('User invited:', userData);
     showInviteUser.value = false;
   };

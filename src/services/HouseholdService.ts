@@ -83,12 +83,11 @@ export async function updateHousehold(
 }
 
 /**
- * Get all members of a household
- * @param householdId The household ID
+ * Get all members of the current household
  * @returns Array of household members
  */
-export async function getHouseholdMembers(householdId: number): Promise<HouseholdMember[]> {
-  const response = await api.get(`/households/${householdId}/members`);
+export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
+  const response = await api.get('/households/members');
   return response.data;
 }
 

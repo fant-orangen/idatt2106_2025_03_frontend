@@ -15,10 +15,11 @@ export interface Household {
  * Represents a member of a household
  */
 export interface HouseholdMember {
-  id: number;
+  id?: number;
   email: string;
   firstName: string;
   lastName: string;
+  isAdmin?: boolean;
 }
 
 /**
@@ -46,4 +47,13 @@ export interface InvitationToken {
 export interface EmailInvitation {
   email: string;
   message?: string;
+}
+
+export interface Member {
+  id: number;
+  firstName: string;
+  lastName: string;
+  type?: string;
+  description?: string;
+  isAdmin?: boolean;
 }
