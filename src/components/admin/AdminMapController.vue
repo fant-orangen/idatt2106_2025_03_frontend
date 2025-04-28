@@ -65,128 +65,146 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script>
 import { ref, defineEmits, defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
-
-const props = defineProps({
-  mapComponent: {
-    type: Object,
-    required: true
-  }
-});
-
-const emit = defineEmits(['location-selected', 'location-cleared']);
-
-const searchAddress = ref('');
-const statusMessage = ref('');
-const selectedLocation = ref({ lat: null, lng: null });
-
-// Get user's current location
-async function getUserLocation() {
-  statusMessage.value = t('admin.getting-location') || 'Henter posisjon...';
-
-  if (!navigator.geolocation) {
-    statusMessage.value = t('admin.location-unavailable') || 'Stedstjenester er ikke tilgjengelig i nettleseren din.';
-    return;
-  }
-
-  try {
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      });
-    });
-
-    const location = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude
-    };
-
-    // Center map on user location
-    props.mapComponent.centerMap(location.lat, location.lng, 15);
-
-    statusMessage.value = t('admin.location-found') || 'Posisjon funnet.';
-    setTimeout(() => {
-      statusMessage.value = '';
-    }, 3000);
-  } catch (error) {
-    statusMessage.value = t('admin.location-error') || 'Kunne ikke hente posisjon.';
-    console.error('Error getting location:', error);
-  }
-}
-
-// Search for a location by address
-async function searchLocation() {
-  if (!searchAddress.value) {
-    statusMessage.value = t('admin.enter-valid-address') || 'Vennligst skriv inn en gyldig adresse.';
-    return;
-  }
-
-  statusMessage.value = t('admin.searching') || 'Søker...';
-
-  try {
-    // This would be replaced with a real geocoding service
-    const location = await geocodeAddress(searchAddress.value);
-
-    if (location) {
-      props.mapComponent.centerMap(location.lat, location.lng, 15);
-
-      // Set the selected location
-      setSelectedLocation(location);
-      statusMessage.value = t('admin.location-found') || 'Posisjon funnet.';
-    } else {
-      statusMessage.value = t('admin.address-not-found') || 'Kunne ikke finne adressen.';
+export default {
+  name: 'AdminMapController',
+  props: {
+    mapComponent: {
+      type: Object,
+      required: true
     }
-  } catch (error) {
-    statusMessage.value = t('admin.search-error') || 'Feil ved søk etter adresse.';
-    console.error('Error searching for address:', error);
+  },
+  emits: ['location-selected', 'location-cleared'],
+  setup(props, { emit }) {
+    const { t } = useI18n();
+    const searchAddress = ref('');
+    const statusMessage = ref('');
+    const selectedLocation = ref({ lat: null, lng: null });
+
+    // Get user's current location
+    async function getUserLocation() {
+      statusMessage.value = t('admin.getting-location') || 'Henter posisjon...';
+
+      if (!navigator.geolocation) {
+        statusMessage.value = t('admin.location-unavailable') || 'Stedstjenester er ikke tilgjengelig i nettleseren din.';
+        return;
+      }
+
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+          });
+        });
+
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        // Center map on user location
+        if (props.mapComponent && props.mapComponent.centerMap) {
+          props.mapComponent.centerMap(location.lat, location.lng, 15);
+        } else {
+          console.error("Map component or centerMap method not available");
+        }
+
+        statusMessage.value = t('admin.location-found') || 'Posisjon funnet.';
+        setTimeout(() => {
+          statusMessage.value = '';
+        }, 3000);
+      } catch (error) {
+        statusMessage.value = t('admin.location-error') || 'Kunne ikke hente posisjon.';
+        console.error('Error getting location:', error);
+      }
+    }
+
+    // Search for a location by address
+    async function searchLocation() {
+      if (!searchAddress.value) {
+        statusMessage.value = t('admin.enter-valid-address') || 'Vennligst skriv inn en gyldig adresse.';
+        return;
+      }
+
+      statusMessage.value = t('admin.searching') || 'Søker...';
+
+      try {
+        // This would be replaced with a real geocoding service
+        const location = await geocodeAddress(searchAddress.value);
+
+        if (location) {
+          if (props.mapComponent && props.mapComponent.centerMap) {
+            props.mapComponent.centerMap(location.lat, location.lng, 15);
+          } else {
+            console.error("Map component or centerMap method not available");
+          }
+
+          // Set the selected location
+          setSelectedLocation(location);
+          statusMessage.value = t('admin.location-found') || 'Posisjon funnet.';
+        } else {
+          statusMessage.value = t('admin.address-not-found') || 'Kunne ikke finne adressen.';
+        }
+      } catch (error) {
+        statusMessage.value = t('admin.search-error') || 'Feil ved søk etter adresse.';
+        console.error('Error searching for address:', error);
+      }
+    }
+
+    // Placeholder geocoding function - would be replaced with a real geocoding service
+    async function geocodeAddress(address) {
+      // This is a dummy implementation - in a real app you would call a geocoding API
+      console.log(`Geocoding address: ${address}`);
+
+      // For demonstration, return a dummy location based on input length
+      return {
+        lat: 63.4305 + (address.length * 0.01),
+        lng: 10.3951 - (address.length * 0.01)
+      };
+    }
+
+    // Handle selection of a location
+    function setSelectedLocation(location) {
+      selectedLocation.value = location;
+      emit('location-selected', location);
+    }
+
+    // Clear the currently selected location
+    function clearSelectedLocation() {
+      selectedLocation.value = { lat: null, lng: null };
+      emit('location-cleared');
+    }
+
+    // Reset the map view
+    function resetMap() {
+      if (props.mapComponent && props.mapComponent.centerMap) {
+        props.mapComponent.centerMap(63.4305, 10.3951, 6);
+        statusMessage.value = t('admin.map-reset') || 'Kart tilbakestilt.';
+        setTimeout(() => {
+          statusMessage.value = '';
+        }, 3000);
+      } else {
+        console.error("Map component or centerMap method not available");
+      }
+    }
+
+    return {
+      searchAddress,
+      statusMessage,
+      selectedLocation,
+      getUserLocation,
+      searchLocation,
+      setSelectedLocation,
+      clearSelectedLocation,
+      resetMap
+    };
   }
-}
-
-// Placeholder geocoding function - would be replaced with a real geocoding service
-async function geocodeAddress(address: string) {
-  // This is a dummy implementation - in a real app you would call a geocoding API
-  console.log(`Geocoding address: ${address}`);
-
-  // For demonstration, return a dummy location based on input length
-  // In reality, you would call a geocoding service like Google Maps, OpenStreetMap Nominatim, etc.
-  return {
-    lat: 63.4305 + (address.length * 0.01),
-    lng: 10.3951 - (address.length * 0.01)
-  };
-}
-
-// Handle selection of a location
-function setSelectedLocation(location) {
-  selectedLocation.value = location;
-  emit('location-selected', location);
-}
-
-// Clear the currently selected location
-function clearSelectedLocation() {
-  selectedLocation.value = { lat: null, lng: null };
-  emit('location-cleared');
-}
-
-// Reset the map view
-function resetMap() {
-  props.mapComponent.centerMap(63.4305, 10.3951, 6);
-  statusMessage.value = t('admin.map-reset') || 'Kart tilbakestilt.';
-  setTimeout(() => {
-    statusMessage.value = '';
-  }, 3000);
-}
-
-// Expose functions to parent
-defineExpose({
-  setSelectedLocation,
-  clearSelectedLocation
-});
+};
 </script>
 
 <style scoped>
