@@ -27,7 +27,9 @@
     "make-new-event": "Add a new event",
     "make-new-POI": "Add a new point of interest",
     "make-new-activity": "Make a new activity",
-    "edit-event": "Edit a current event"
+    "edit-event": "Edit a current event",
+    "super-admin": "Super Admin",
+    "edit-admin": "Handle admin users"
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",

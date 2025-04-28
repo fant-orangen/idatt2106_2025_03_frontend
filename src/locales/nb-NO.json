@@ -28,7 +28,9 @@
     "make-new-event": "Legg til en ny hendelse",
     "make-new-POI": "Legg til et nytt interessepunkt",
     "make-new-activity": "Lag en ny aktivitet",
-    "edit-event": "Rediger en pågående hendelse"
+    "edit-event": "Rediger en pågående hendelse",
+    "super-admin": "Super Admin",
+    "edit-admin": "Håndter admin brukere"
   },
   "errors": {
     "wrong-username-or-password": "Feil brukernavn eller passord",
