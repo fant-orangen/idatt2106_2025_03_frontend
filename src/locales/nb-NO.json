@@ -370,7 +370,17 @@
         "description": "Slett kontoen din og alle tilknyttede data permanent. Denne handlingen er irreversibel og kan ikke angres.",
         "button": "Slett konto"
       }
-    },
+    }
+  },
+  "notifications": {
+    "title": "Varslingsinnstillinger",
+    "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
+    "email": {
+      "title": "E-postvarsler",
+      "description": "Motta oppdateringer og varsler via e-post.",
+      "system": "Systemvarsler",
+      "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
+   },
     "notifications": {
       "title": "Varslingsinnstillinger",
       "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
