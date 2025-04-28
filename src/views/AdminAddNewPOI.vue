@@ -70,7 +70,7 @@
 						<FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
 					</FormItem>
 				</FormField>
-			</div> 
+			</div>
 			<br>
 
 			<!--Select type field-->
@@ -173,7 +173,7 @@ import {
 	BreadcrumbLink,
 	BreadcrumbList,
 	BreadcrumbPage,
-	BreadcrumbSeparator, 
+	BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import {
 		FormControl,
@@ -188,7 +188,6 @@ import {
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
@@ -201,20 +200,20 @@ const { t } = useI18n();
 const formSchema = toTypedSchema(
   z.object({
     title: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
-    
+
 		latitude: z.preprocess((val) => Number(val), z.number()
 			.min(-90, t('add-event-info.errors.latitude'))
-  		.max(90, t('add-event-info.errors.latitude'))).optional(),    
-		
+  		.max(90, t('add-event-info.errors.latitude'))).optional(),
+
 		longitude: z.preprocess((val) => Number(val), z.number()
-  		.min(-90, t('add-event-info.errors.longitude'))
-  		.max(90, t('add-event-info.errors.longitude'))).optional(),
-		
+  		.min(-180, t('add-event-info.errors.longitude'))
+  		.max(180, t('add-event-info.errors.longitude'))).optional(),
+
 		address: z.string()
 			.max(100, 'add-event-info.errors.address').optional(),
-    
+
 		type: z.enum(["defibrillator", "shelter", "water-source", "food-station"]),
-    
+
 		contactinfo: z.string()
 		.optional()
 		.refine((val) => {
@@ -224,11 +223,11 @@ const formSchema = toTypedSchema(
 		}, {
 			message: t('add-event-info.errors.contact-info')
 		}),
-    
+
 		openfrom: z.string().optional(),
-    
+
 		opento: z.string().optional(),
-    
+
 		description: z.string()
 			.min(10, t('add-event-info.errors.description'))
 			.max(500, t('add-event-info.errors.description')),
@@ -241,18 +240,18 @@ const formSchema = toTypedSchema(
 		return true;
 	}, {
 		message : t('add-event-info.errors.position-missing'),
-		path: ['address'], 
+		path: ['address'],
 	})
 );
 
 const form = useForm({
 	validationSchema: formSchema,
 	initialValues: {
-		title: '', 
+		title: '',
 		latitude: '',
 		longitude: '',
 		address: '',
-		type: '',
+		type: 'defibrillator',
 		contactinfo: '',
 		openfrom: '',
 		opento: '',
@@ -266,11 +265,11 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 		console.log('POI created successfully!', response.data);
 
-		router.push('/admin-panel'); //redirect user to the panel 
+		router.push('/admin-panel'); //redirect user to the panel
 	} catch (error) {
 		console.error('An error occured while submitting the event: ', error);
 	}
-		
+
 });
 
 </script>
@@ -299,7 +298,7 @@ h1 {
 	max-width: 450px;
 }
 
-.box { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder, 
+.box { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder,
 	kartet kan godt være litt større enn størrelsen jeg har satt på boksen*/
 	border-radius: 8px;
 	border: solid grey;

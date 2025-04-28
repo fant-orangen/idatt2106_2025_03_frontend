@@ -67,9 +67,19 @@ const routes = [
     component: () => import('@/views/AdminAddNewPOI.vue'),
   },
   {
+    path: '/edit-event',
+    name: 'EditEvent',
+    component: () => import('@/views/AdminEditEvent.vue')
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),
+  },
+  {
+    path: '/medicine-inventory',
+    name: 'MedicineInventory',
+    component: () => import('@/views/MedicineInventory.vue'),
   },
 ]
 

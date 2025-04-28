@@ -44,7 +44,6 @@
               </span>
             </div>
           </Button>
-
         </div>
       </div>
 
@@ -153,19 +152,20 @@ const handleSaveUser = async (userData: {
   }
 };
 
-const inviteUser = () => {
-  showAddUser.value = false;
-  showInviteUser.value = true;
-};
+  const inviteUser = () => {
+    showAddUser.value = false;
+    showInviteUser.value = true;
+  };
 
-const handleUserInvited = (userData) => {
-  console.log('User invited:', userData);
-  showInviteUser.value = false;
-};
+  const handleUserInvited = (userData) => {
+    console.log('User invited:', userData);
+    showInviteUser.value = false;
+  };
 
-const toggleManageMode = () => {
-  manageMode.value = !manageMode.value;
-};
+  const toggleManageMode = () => {
+    manageMode.value = !manageMode.value;
+  };
+
 
 const removeMember = async (memberId: number) => {
   try {
