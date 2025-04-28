@@ -92,6 +92,43 @@ export async function getHouseholdMembers(householdId: number): Promise<Househol
 }
 
 /**
+ * Get all empty members of a household (placeholder users)
+ * @param householdId The household ID
+ * @returns Array of empty household members
+ */
+export async function getEmptyHouseholdMembers(householdId: number): Promise<Member[]> {
+  const response = await api.get(`/households/${householdId}/members/empty`);
+  return response.data;
+}
+
+/**
+ * Remove a member from the household
+ * @param householdId The household ID
+ * @param memberId The member ID to remove
+ * @returns Promise that resolves when the member is removed
+ */
+export async function removeEmptyMemberFromHousehold(
+  householdId: number,
+  memberId: number
+): Promise<void> {
+  await api.delete(`/households/${householdId}/members/${memberId}`);
+}
+
+/**
+ * Add an empty (placeholder) member to the household
+ * @param householdId The household ID
+ * @param memberData The member data
+ * @returns The created member
+ */
+export async function addEmptyMember(
+  householdId: number,
+  memberData: Omit<Member, 'id'>
+): Promise<Member> {
+  const response = await api.post(`/households/${householdId}/members/empty`, memberData);
+  return response.data;
+}
+
+/**
  * Send an invitation to join the household by email
  * @param invitationData The invitation data including email and optional message
  * @returns Promise that resolves when the invitation is sent

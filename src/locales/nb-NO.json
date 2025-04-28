@@ -116,14 +116,14 @@
     "your-storage": "Ditt beredskapslager"
   },
   "household": {
-    "my-household": "Min husholdning",
-    "no-members-found": "Ingen husholdningsmedlemmer funnet.",
+    "my-household": "Mitt hushold",
+    "no-members-found": "Ingen medlemmer funnet i husholdet.",
     "person": "person",
     "people": "personer",
-    "in-household": "i husholdningen",
+    "in-household": "i husholdet",
     "add-empty-user": "Legg til tom bruker",
-    "name": "Navn",
-    "enter-name": "Skriv inn navn",
+    "name": "Fornavn",
+    "enter-name": "Skriv inn fornavn",
     "last-name": "Etternavn",
     "enter-last-name": "Skriv inn etternavn",
     "type": "Type",
@@ -136,9 +136,70 @@
     "save": "Lagre",
     "cancel": "Avbryt",
     "beredskapslager": "Beredskapslager",
-    "no-expiring-items": "Ingen varer er i ferd med å utløpe.",
+    "no-expiring-items": "Ingen varer nær utløpsdato.",
     "days-left": "dager igjen",
-    "your-shelter-store": "Ditt beredskapslager"},
+    "your-shelter-store": "Ditt beredskapslager",
+    "invite-user": "Inviter bruker",
+    "email-address": "E-postadresse",
+    "enter-email": "Skriv inn e-postadresse",
+    "access-level": "Tilgangsnivå",
+    "select-access-level": "Velg tilgangsnivå",
+    "editor": "Redaktør",
+    "viewer": "Seer",
+    "personal-message": "Personlig melding",
+    "optional-message": "Valgfritt: Legg til en personlig melding",
+    "send-invitation": "Send invitasjon",
+    "invitation-sent": "Invitasjon sendt",
+    "invitation-failed": "Kunne ikke sende invitasjon",
+    "add-user-title": "Inviter bruker til hushold",
+    "create_new": "Opprett nytt hushold",
+    "create_description": "Opprett ditt eget hushold for å håndtere beredskap.",
+    "create_button": "Opprett nytt hushold",
+    "no-household": "Du har ikke et hushold ennå",
+    "no-household-description": "Opprett eller bli med i et hushold for å håndtere beredskap sammen med familie eller venner.",
+    "manage-household": "Administrer hushold",
+    "leave-household": "Forlat hushold",
+    "leave-confirm": "Er du sikker på at du vil forlate dette husholdet?",
+    "leave-success": "Du har forlatt husholdet",
+    "generate-invitation": "Generer invitasjonskode",
+    "copy-invitation": "Kopier invitasjonskode",
+    "copied-to-clipboard": "Kopiert til utklippstavlen!",
+    "share-invitation": "Del denne koden med noen du vil invitere til husholdet ditt.",
+    "users": "Brukere",
+    "no-users": "Ingen brukere i dette husholdet ennå",
+    "done": "ferdig",
+    "manage-members": "administrer medlemmer",
+
+    "create": {
+      "title": "Opprett nytt hushold",
+      "subtitle": "Sett opp ditt hushold for beredskap",
+      "nameLabel": "Husholdsnavn",
+      "namePlaceholder": "Skriv inn husholdsnavn",
+      "locationLabel": "Sted",
+      "locationPlaceholder": "Skriv inn adresse (valgfritt)",
+      "descriptionLabel": "Beskrivelse",
+      "descriptionPlaceholder": "Skriv inn beskrivelse av husholdet (valgfritt)",
+      "submitButton": "Opprett hushold",
+      "errors": {
+        "nameRequired": "Husholdsnavn er påkrevd",
+        "generic": "Kunne ikke opprette hushold"
+      }
+    },
+
+    "join": {
+      "title": "Bli med i hushold",
+      "subtitle": "Bli med i et eksisterende hushold med en invitasjonskode",
+      "tokenLabel": "Invitasjonskode",
+      "tokenPlaceholder": "Skriv inn invitasjonskode",
+      "submitButton": "Bli med i hushold",
+      "success": "Vellykket blitt med i hushold",
+      "errors": {
+        "tokenRequired": "Invitasjonskode er påkrevd",
+        "invalidToken": "Ugyldig invitasjonskode",
+        "generic": "Kunne ikke bli med i hushold"
+      }
+    }
+  },
   "sidebar": {
     "title": "Temaer",
     "themes": {
@@ -247,63 +308,105 @@
     "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalitet etter en krise.",
     "learnMoreTopic": "Klikk for å lære mer om dette temaet."
   },
-  "add-event-info": {
-    "title": "Dette vil være tittelen på hendelsen din.",
-    "coordinates": "Sett inn koordinatene eller adressen til hendelsen din. Du kan også klikke på kartet for å få koordinatene automatisk!",
-    "radius": "Sett inn radiusen til hendelsen din i meter. Omtrent hvor stort område vil hendelsen påvirke?",
-    "priority": "Prioritetsnivået er viktig, og vil vises som lav (grønn), middels (oransje) og høy (rød) for brukere på kartet.",
-    "description": "For eksempel: Hendelsen skjedde på (dato og sted) ... og vil mest sannsynlig vare i (tid)... Det kan bli mangel på (ressurs)...",
-    "time": "Tidspunkt for når hendelsen først inntraff.",
-    "date": "Dato for når hendelsen først inntraff.",
-    "errors": {
-      "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
-      "latitude": "Breddegraden må være mellom -90 og 90.",
-      "longitude": "Lengdegraden må være mellom -180 og 180.",
-      "radius": "Radiusen må være minst 1 meter og kan ikke overstige 10 000 meter.",
-      "priority": "Du må velge en prioritet.",
-      "type": "Du må velge hvilket type interessepunkt det er.",
-      "description": "Beskrivelsen må være minst 10 tegn og kan ikke overstige 500 tegn.",
-      "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
-      "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
-      "contact-info": "Skriv inn et gyldig telefonnummer."
+  "settings": {
+    "title": "Innstillinger",
+    "tabs": {
+      "account": "Konto",
+      "notifications": "Varslinger"
     },
-    "titles": {
-      "address":"Adresse",
-      "title": "Tittel",
-      "longitude": "Lengdegrad",
-      "latitude": "Breddegrad",
-      "radius":"Radius",
-      "priority": "Krisenivå",
-      "description": "Informasjon",
-      "submit":"Lagre",
-      "time": "Tidspunkt",
-      "date": "Dato",
-      "choose-event": "Velg en hendelse"
+    "account": {
+      "title": "Kontoinnstillinger",
+      "subtitle": "Konto",
+      "description": "Gjør endringer i kontoen din her. Klikk lagre når du er ferdig.",
+      "fullName": "Fullt navn",
+      "email": "E-post",
+      "saveChanges": "Lagre endringer",
+      "password": {
+        "title": "Passord",
+        "description": "Endre passordet ditt her. Etter lagring blir du logget ut.",
+        "current": "Nåværende passord",
+        "new": "Nytt passord"
+      },
+      "security": {
+        "title": "Kontosikkerhet",
+        "description": "Forbedre sikkerheten til kontoen din med totrinnsverifisering, som krever en kode sendt til e-posten din i tillegg til passordet ditt for innlogging.",
+        "twoStep": "Slå på totrinnsverifisering"
+      },
+      "delete": {
+        "title": "Slett konto",
+        "description": "Slett kontoen din og alle tilknyttede data permanent. Denne handlingen er irreversibel og kan ikke angres.",
+        "button": "Slett konto"
+      }
     },
-    "crisis-level": {
-      "low": "Lav",
-      "medium": "Middels",
-      "high": "Høy"
-    }
-  }, 
-  "add-POI-info": {
-    "info": {
-      "title": "Dette vil være tittelen på interessepunktet.",
-      "coordinates": "Sett inn koordinatene eller adressen til punktet. Du kan også klikke på kartet for å få koordinatene automatisk!",
-      "type": "Velg hvilket type interessepunkt dette skal være.",
-      "description": "Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?"
+    "notifications": {
+      "title": "Varslingsinnstillinger",
+      "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
+      "email": {
+        "title": "E-postvarsler",
+        "description": "Motta oppdateringer og varsler via e-post.",
+        "system": "Systemvarsler",
+        "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
+      },
+      "saveChanges": "Lagre endringer"
     },
-    "titles": {
-      "type": "Type",
-      "open-from": "Åpent fra",
-      "open-to": "Åpent til",
-      "contact-info": "Kontaktinformasjon"
+    "add-event-info": {
+      "title": "Dette vil være tittelen på hendelsen din.",
+      "coordinates": "Sett inn koordinatene eller adressen til hendelsen din. Du kan også klikke på kartet for å få koordinatene automatisk!",
+      "radius": "Sett inn radiusen til hendelsen din i meter. Omtrent hvor stort område vil hendelsen påvirke?",
+      "priority": "Prioritetsnivået er viktig, og vil vises som lav (grønn), middels (oransje) og høy (rød) for brukere på kartet.",
+      "description": "For eksempel: Hendelsen skjedde på (dato og sted) ... og vil mest sannsynlig vare i (tid)... Det kan bli mangel på (ressurs)...",
+      "time": "Tidspunkt for når hendelsen først inntraff.",
+      "date": "Dato for når hendelsen først inntraff.",
+      "errors": {
+        "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
+        "latitude": "Breddegraden må være mellom -90 og 90.",
+        "longitude": "Lengdegraden må være mellom -180 og 180.",
+        "radius": "Radiusen må være minst 1 meter og kan ikke overstige 10 000 meter.",
+        "priority": "Du må velge en prioritet.",
+        "type": "Du må velge hvilket type interessepunkt det er.",
+        "description": "Beskrivelsen må være minst 10 tegn og kan ikke overstige 500 tegn.",
+        "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
+        "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
+        "contact-info": "Skriv inn et gyldig telefonnummer."
+      },
+      "titles": {
+        "address": "Adresse",
+        "title": "Tittel",
+        "longitude": "Lengdegrad",
+        "latitude": "Breddegrad",
+        "radius": "Radius",
+        "priority": "Krisenivå",
+        "description": "Informasjon",
+        "submit": "Lagre",
+        "time": "Tidspunkt",
+        "date": "Dato",
+        "choose-event": "Velg en hendelse"
+      },
+      "crisis-level": {
+        "low": "Lav",
+        "medium": "Middels",
+        "high": "Høy"
+      }
     },
-    "POI-type": {
-      "defibrillator": "Hjertestarter",
-      "shelter": "Tilfluktsrom",
-      "water-source": "Kilde til vann",
-      "food": "Matstasjon"
+    "add-POI-info": {
+      "info": {
+        "title": "Dette vil være tittelen på interessepunktet.",
+        "coordinates": "Sett inn koordinatene eller adressen til punktet. Du kan også klikke på kartet for å få koordinatene automatisk!",
+        "type": "Velg hvilket type interessepunkt dette skal være.",
+        "description": "Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?"
+      },
+      "titles": {
+        "type": "Type",
+        "open-from": "Åpent fra",
+        "open-to": "Åpent til",
+        "contact-info": "Kontaktinformasjon"
+      },
+      "POI-type": {
+        "defibrillator": "Hjertestarter",
+        "shelter": "Tilfluktsrom",
+        "water-source": "Kilde til vann",
+        "food": "Matstasjon"
+      }
     }
   }
 }

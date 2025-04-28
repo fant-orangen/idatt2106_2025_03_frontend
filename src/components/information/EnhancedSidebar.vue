@@ -7,12 +7,15 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { ChevronRight, ChevronDown } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import { useI18n } from 'vue-i18n'
 import type { SidebarNode } from '@/views/information/EnhancedInformationView.vue'
 
-const props = defineProps<{
+const { t } = useI18n()
+
+defineProps<{
   sections: SidebarNode[]
   selectedTheme: string | null
   showSidebarMobile: boolean
@@ -62,7 +65,7 @@ function getTextClass(level: number): string {
   }
 }
 
-function getIndentClass(level: number): object {
+function getIndentClass(level: number): { paddingLeft: string } {
   return { paddingLeft: `${level * 1.5}rem` }
 }
 
@@ -96,7 +99,7 @@ function toggleMobileSidebar(): void {
   <div>
     <!-- Mobile header with menu toggle -->
     <div class="md:hidden bg-primary text-primary-foreground p-4 flex items-center justify-between sticky top-0 z-10">
-      <h1 class="text-xl font-bold">{{ $t('sidebar.title') }}</h1>
+      <h1 class="text-xl font-bold">{{ t('sidebar.title') }}</h1>
       <Button variant="ghost" size="icon" @click="toggleMobileSidebar">
         <ChevronRight v-if="!showSidebarMobile" class="h-6 w-6" />
         <ChevronDown v-else class="h-6 w-6" />
@@ -112,7 +115,7 @@ function toggleMobileSidebar(): void {
       }"
     >
       <div class="p-4 border-b border-border hidden md:block">
-        <h2 class="text-xl font-bold">{{ $t('sidebar.title') }}</h2>
+        <h2 class="text-xl font-bold">{{ t('sidebar.title') }}</h2>
       </div>
 
       <nav class="p-2">
@@ -129,7 +132,7 @@ function toggleMobileSidebar(): void {
                 :style="getIndentClass(0)"
                 @click="toggleSection(section.key)"
               >
-                <span :class="getTextClass(0)">{{ $t(section.titleKey) }}</span>
+                <span :class="getTextClass(0)">{{ t(section.titleKey) }}</span>
                 <ChevronDown v-if="expandedSections[section.key]" class="h-5 w-5 text-primary" />
                 <ChevronRight v-else class="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
               </div>
@@ -147,7 +150,7 @@ function toggleMobileSidebar(): void {
                       :style="getIndentClass(1)"
                       @click="toggleSection(child.key)"
                     >
-                      <span :class="getTextClass(1)">{{ $t(child.titleKey) }}</span>
+                      <span :class="getTextClass(1)">{{ t(child.titleKey) }}</span>
                       <ChevronDown v-if="expandedSections[child.key]" class="h-4 w-4 text-primary" />
                       <ChevronRight v-else class="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
                     </div>
@@ -166,7 +169,7 @@ function toggleMobileSidebar(): void {
                           <div class="flex items-center gap-2">
                             <span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
                             <span class="text-lg">{{ getThemeIcon(subChild.key) }}</span>
-                            <span :class="getTextClass(2)">{{ $t(subChild.titleKey) }}</span>
+                            <span :class="getTextClass(2)">{{ t(subChild.titleKey) }}</span>
                           </div>
                         </button>
                       </li>
@@ -187,7 +190,7 @@ function toggleMobileSidebar(): void {
                       <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
                         <span class="text-lg">{{ getThemeIcon(child.key) }}</span>
-                        <span :class="getTextClass(1)">{{ $t(child.titleKey) }}</span>
+                        <span :class="getTextClass(1)">{{ t(child.titleKey) }}</span>
                       </div>
                     </button>
                   </li>
@@ -208,7 +211,7 @@ function toggleMobileSidebar(): void {
               >
                 <div class="flex items-center gap-2">
                   <span class="text-lg">{{ getThemeIcon(section.key) }}</span>
-                  <span :class="getTextClass(0)">{{ $t(section.titleKey) }}</span>
+                  <span :class="getTextClass(0)">{{ t(section.titleKey) }}</span>
                 </div>
               </button>
             </li>

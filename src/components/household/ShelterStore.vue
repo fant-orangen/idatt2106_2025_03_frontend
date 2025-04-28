@@ -25,7 +25,7 @@
       </div>
 
       <!-- Button to view beredskapslager -->
-      <Button variant="primary" class="w-full" @click="viewBeredskapslager">
+      <Button variant="default" class="w-full" @click="viewBeredskapslager">
         {{ $t('household.your-shelter-store') }}
       </Button>
     </CardContent>
