@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
-import { getNotifications} from '@/services/NotificationService.ts'
+import { getNotifications } from '@/services/NotificationService.ts'
 import type { NotificationMessage } from '@/models/NotificationMessage.ts'
 
 import {
@@ -21,7 +21,6 @@ import { Button } from '@/components/ui/button'
 import { useUserStore } from '@/stores/UserStore'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import NotificationPopover from '@/components/NotificationPopover.vue'
-
 
 const { locale } = useI18n()
 const router = useRouter()
@@ -46,12 +45,11 @@ const topNotifications = ref<NotificationMessage[]>([])
 
 onMounted(async () => {
   try {
-    topNotifications.value = await getNotifications();
+    topNotifications.value = await getNotifications()
   } catch (error) {
-    console.error('Failed to fetch notifications:', error);
+    console.error('Failed to fetch notifications:', error)
   }
 })
-
 
 window.onscroll = function (): void {
   const currentScrollPos: number = window.pageYOffset
@@ -173,14 +171,13 @@ function goToPage(route: string) {
         <Popover>
           <PopoverTrigger as="button" class="no-border">
             <Button
-          variant="ghost"
-          size="icon"
-          class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-          @click="goToPage('/')"
-        >
-          <Bell class="h-5 w-5" />
-        </Button>
-      </PopoverTrigger>
+              variant="ghost"
+              size="icon"
+              class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            >
+              <Bell class="h-5 w-5" />
+            </Button>
+          </PopoverTrigger>
           <PopoverContent>
             <NotificationPopover :notifications="topNotifications" />
           </PopoverContent>
