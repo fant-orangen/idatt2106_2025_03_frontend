@@ -24,7 +24,9 @@
     "confirm-password": "Bekreft passord",
     "reset-password-description": "Skriv inn e-postadressen din nedenfor for å tilbakestille passordet ditt.",
     "enter-email": "Skriv inn e-post",
-    "reset-password": "Tilbakestill passord"
+    "reset-password": "Tilbakestill passord",
+    "2fa-login-title": "To-trinnsverifisering",
+    "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn."
   },
   "admin": {
     "administrate": "Administrer",
@@ -393,7 +395,7 @@
       "description": "Motta oppdateringer og varsler via e-post.",
       "system": "Systemvarsler",
       "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
-   },
+    },
     "notifications": {
       "title": "Varslingsinnstillinger",
       "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
@@ -459,10 +461,10 @@
       "contact-info": "Kontaktinformasjon"
     },
     "POI-type": {
-    "defibrillator": "Hjertestarter",
-    "shelter": "Tilfluktsrom",
-    "water-source": "Vannkilde",
-    "food": "Matutdeling"
+      "defibrillator": "Hjertestarter",
+      "shelter": "Tilfluktsrom",
+      "water-source": "Vannkilde",
+      "food": "Matutdeling"
     }
   }
 }
