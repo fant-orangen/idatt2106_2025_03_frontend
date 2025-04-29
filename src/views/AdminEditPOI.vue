@@ -9,7 +9,7 @@
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbPage>{{ $t('navigation.edit-POI') }}</BreadcrumbPage>
+        <BreadcrumbPage>{{ $t('admin.edit-POI') }}</BreadcrumbPage>
       </BreadcrumbItem>
     </BreadcrumbList>
   </div>
