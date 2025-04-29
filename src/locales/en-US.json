@@ -40,6 +40,8 @@
     "revoke-rights": "Revoke admin rights",
     "send-pw-link": "Send new password link",
     "new-admin": "Add new admin user",
+    "are-you-sure": "Are you sure you want to continue?",
+    "if-continue": "If you continue you will give admin rights to the account with this email address",
     "basic-info": "Basic Information",
     "poi-title-placeholder": "Enter title for the point of interest",
     "select-poi-type": "Select the type of point of interest this should be",

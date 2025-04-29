@@ -117,8 +117,21 @@ export async function addNewAdmin(adminEmail: string) {
  * Sends a put request to the '/super-admin/revoke/{id}' endpoint with the admin user ID. 
  * @returns 
  */
-export async function revokeAdminRights(adminID: any) {
+export async function revokeAdminRights(adminID: number) {
   return await api.put('/super-admin/revoke/' + adminID, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
+ * Removes the admin role, changes it to normal user role, in backend API. 
+ * Sends a put request to the '/super-admin/revoke/{id}' endpoint with the admin user ID. 
+ * @returns 
+ */
+export async function sendNewPasswordLink(email: string) {
+  return await api.post('/super-admin/link/' + email, {
     headers: {
       'Content-Type': 'application/json'
     }

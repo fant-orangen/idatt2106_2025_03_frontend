@@ -28,7 +28,7 @@
                 <DialogTitle>{{ $t('admin.new-admin') }}:</DialogTitle>
             </DialogHeader>
 
-            <form @submit.prevent="onSubmit" class="grid gap-4">
+            <form @submit.prevent="confirmNewAdmin" class="grid gap-4">
                 <!-- FormField for email -->
                 <FormField v-slot="{ field, meta, errorMessage }" name="email">
                     <FormItem>
@@ -50,32 +50,27 @@
                         <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
                     </FormItem>
                 </FormField>
-                
-                <Button type="submit">{{ $t('household.save') }}</Button>
+
+                <Button type="submit" variant="outline">
+                    {{ $t('household.save') }}
+                </Button>
             </form>
         </DialogContent>
     </Dialog>
-
-    <AlertDialog>
-    <AlertDialogTrigger as-child>
-      <Button variant="outline">
-        Are you sure?
-      </Button>
-    </AlertDialogTrigger>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-        <AlertDialogDescription>
-          This action cannot be undone. This will permanently delete your
-          account and remove your data from our servers.
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction>Continue</AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
+    <AlertDialog v-model:open="showConfirmationDialog">
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>{{ $t('admin.are-you-sure') }}</AlertDialogTitle>
+                <AlertDialogDescription>
+                {{ $t('admin.if-continue') }}: {{ form.values.confirmEmail }}
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>{{ $t('admin.cancel') }}</AlertDialogCancel>
+                <AlertDialogAction @click="onSubmit">{{ $t('admin.submit') }}</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
 
     <!--List of all current admin users -->
     <div class="listOfAdmins" v-for="admin in admins" :key="admin.id">
@@ -95,7 +90,7 @@
             <form class="grid items-start gap-4 px-4">
                 <!--email field-->
                 <div class="grid gap-2">
-                    <Label html-for="email">{{$t('login.email')}}</Label>
+                    <Label for="email">{{$t('login.email')}}</Label>
                     <Input id="email" type="email" :value="selectedAdmin?.email" readonly disabled  />
                 </div>
             
@@ -104,8 +99,8 @@
                     {{ $t('admin.revoke-rights') }}
                 </Button>
 
-                <Button>
-                    <MailOpen class="w-4 h-4 mr-2" @click="sendNewLink(selectedAdmin!.id)"/> {{ $t('admin.send-pw-link') }}
+                <Button @click="sendNewLink(selectedAdmin!.email)">
+                    <MailOpen class="w-4 h-4 mr-2"/> {{ $t('admin.send-pw-link') }}
                 </Button>
             </form>
         </DialogContent>
@@ -113,41 +108,43 @@
     <!--For mobile experience there is a Drawer option-->
     <Drawer v-else v-model:open="isOpen">
         <DrawerContent>
-        <DrawerHeader class="text-left">
-            <DrawerTitle>{{ $t('admin.edit-profile') }}</DrawerTitle>
-        </DrawerHeader>
+            <DrawerHeader class="text-left">
+                <DrawerTitle>{{ $t('admin.edit-profile') }}</DrawerTitle>
+            </DrawerHeader>
         
-        <form class="grid items-start gap-4 px-4">
-            <!--email field-->
-            <div class="grid gap-2">
-                <Label html-for="email">{{$t('login.email')}}</Label>
-                <Input id="email" style="cursor: not-allowed;" type="email" :value="selectedAdmin?.email" readonly disabled  />
-            </div>
-            <!--Action buttons-->
-            <Button variant="destructive" @click="revokeRights(selectedAdmin!.id)">
-                {{ $t('admin.revoke-rights') }}
-            </Button>
+            <form class="grid items-start gap-4 px-4">
+                <!--email field-->
+                <div class="grid gap-2">
+                    <Label html-for="email">{{$t('login.email')}}</Label>
+                    <Input id="email" style="cursor: not-allowed;" type="email" :value="selectedAdmin?.email" readonly disabled  />
+                </div>
 
-            <Button @click="sendNewLink(selectedAdmin!.id)">
-                <MailOpen class="w-4 h-4 mr-2" /> {{ $t('admin.send-pw-link') }}
-            </Button>
-        </form>
-
-        <DrawerFooter class="pt-2">
-            <DrawerClose as-child>
-                <Button variant="secondary">
-                    {{ $t('household.cancel') }}
+                <!--Action buttons-->
+                <Button variant="destructive" @click="revokeRights(selectedAdmin!.id)">
+                    {{ $t('admin.revoke-rights') }}
                 </Button>
-            </DrawerClose>
-        </DrawerFooter>
+
+                <Button @click="sendNewLink(selectedAdmin!.email)">
+                    <MailOpen class="w-4 h-4 mr-2" /> {{ $t('admin.send-pw-link') }}
+                </Button>
+            </form>
+
+            <DrawerFooter class="pt-2">
+                <DrawerClose as-child>
+                    <Button variant="secondary">
+                        {{ $t('household.cancel') }}
+                    </Button>
+                </DrawerClose>
+            </DrawerFooter>
         </DrawerContent>
     </Drawer>
 </div>
 </template>
 
 <script setup lang="ts">
-import { getAdminUsers, addNewAdmin, revokeAdminRights } from '@/services/api/AdminServices'
+import { getAdminUsers, addNewAdmin, revokeAdminRights, sendNewPasswordLink } from '@/services/api/AdminServices'
 import { Button } from '@/components/ui/button'
+import { toast } from 'vue-sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useMediaQuery } from '@vueuse/core'
@@ -198,23 +195,21 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 
+//TODO: etter man trykker lagre når man lager ny admin, må dialog gå bort
+// og toasten skal komme opp, det gjør ingen av dem... må fikses
+
 interface Admin {
   id: number;
   email: string;
 }
 
-/**
- * List of admin users loaded from backend API
- */
- const admins = ref<Admin[]>([]);
-/**
- * Checking if the window size is at desktop width or not, 
- * thereby changing the visual effect of the drawer.
- */
+const admins = ref<Admin[]>([]);
 const isDesktop = useMediaQuery('(min-width: 768px)');
 const isNewAdminDialogOpen = ref(false);
 const isOpen = ref(false);
 const selectedAdmin = ref<Admin | null>(null);
+const showConfirmationDialog = ref(false);
+const stagedEmail = ref('');
 
 onMounted(() => {
     getAllAdmins();
@@ -236,28 +231,27 @@ const form = useForm({
     }
 });
 
+const { values, resetForm } = form;
+
 const onSubmit = form.handleSubmit(async (values) => {
     try {
         if(!values.email) {
             return;
         }
-       
         console.log(' NEW ADMIN NEW EMAIL: ', values.email)
-        await addNewAdmin(values.email);
+        await addNewAdmin(stagedEmail.value);
 
         console.log('New admin created!');
+        callToast('Created new admin user!');
 
         isNewAdminDialogOpen.value = false; //close dialog
-        form.resetForm();
-
+        showConfirmationDialog.value = false;
+        resetForm();
         await getAllAdmins(); // refresh
-        
-        
     } catch (error) {
         console.error('Failed to create a new admin user...', error);
     }
 });
-
 
 function openNewAdminDialog() {
   isNewAdminDialogOpen.value = true;
@@ -282,21 +276,36 @@ async function revokeRights(adminId: number) {
     try {
         await revokeAdminRights(adminId);
         console.log('Admin rights revoked!');
+        callToast('Admin rights revoked.')
         await getAllAdmins(); // update the list of admins 
     } catch (error) {
         console.error('Failed to revoke admin rights', error);
     }
 }
 
-async function sendNewLink(adminId: number) {
+async function sendNewLink(adminEmail: string) {
     try {
-        await revokeAdminRights(adminId);
-        console.log('Revoked admin rights!');
-        await getAllAdmins(); // update the list of admins
+        await sendNewPasswordLink(adminEmail);
+        console.log('Sent new link!');
+
+        callToast('New password link has been sent!')
     } catch (error) {
         console.error('Failed to send link', error);
     }
 }
+
+const callToast = ((message: string) => { 
+    toast ({
+        description: message
+    })
+});
+
+const confirmNewAdmin = form.handleSubmit(() => {
+    if (values.confirmEmail !== undefined) {
+        stagedEmail.value = values.confirmEmail;
+        showConfirmationDialog.value = true;
+    }
+});
 
 </script>
 

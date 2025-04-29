@@ -41,6 +41,8 @@
     "revoke-rights": "Ta bort admin rettigheter",
     "send-pw-link": "Send ny passord lenke",
     "new-admin": "Lag ny adminbruker",
+    "are-you-sure": "Er du sikker på at du vil fortsette?",
+    "if-continue": "Hvis du fortsetter vil du gi admin rettigheter til kontoen med denne eposten",
     "basic-info": "Grunnleggende informasjon",
     "poi-title-placeholder": "Skriv inn tittel på interessepunktet",
     "select-poi-type": "Velg hvilken type interessepunkt dette skal være",
