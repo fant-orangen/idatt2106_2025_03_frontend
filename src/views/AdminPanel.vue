@@ -32,6 +32,10 @@
 					{{ $t('admin.edit-event') }}
 					<font-awesome-icon icon="fa-solid fa-arrow-right" />
 				</Button>
+        <Button @click="router.push('/edit-POI')">
+          {{ $t('admin.edit-POI') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
 			</div>
 		</div>
 
