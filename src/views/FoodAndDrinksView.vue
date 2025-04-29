@@ -63,9 +63,18 @@
           </div>
 
           <!-- Add new batch -->
-          <button @click="addBatch(index)" class="text-sm text-accent hover:underline mt-2">
-            + {{ $t("Legg til") }}
-          </button>
+          <div class="flex justify-between items-center mt-2">
+            <button @click="addBatch(index)" class="text-sm text-accent hover:underline">
+              + {{ $t("Legg til") }}
+            </button>
+            <button
+              v-if="item.edit"
+              @click="deleteProductType(index)"
+              class="text-sm text-destructive hover:underline"
+            >
+              {{ $t("Slett produkttype") }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -410,6 +419,40 @@ const updateTotalUnits = async (productId) => {
 const getTotalAmount = (item) => {
   if (item.totalUnits === undefined) return "-";
   return `${item.totalUnits}${item.unit}`;
+};
+
+/**
+ * Delete a product type and all its associated batches
+ * @param {number} index - Index of the product type to delete
+ */
+const deleteProductType = async (index) => {
+  const item = items.value[index];
+
+  // Show confirmation dialog TODO: make the dialog language independent
+  const confirmDelete = confirm(`Er du sikker på at du vil slette produkttypen ${item.name}?`);
+  if (!confirmDelete) return;
+
+  try {
+    // Delete the product type from the backend
+    await inventoryService.deleteProductType(item.id);
+
+    // Remove the product type from the local state
+    items.value.splice(index, 1);
+
+    // Clear any stored batch IDs for this product
+    const productId = productStore.getProductId(item.name);
+    if (productId) {
+      const batchMap = productStore.$state.batchMap;
+      for (const key of batchMap.keys()) {
+        if (key.startsWith(`${productId}-`)) {
+          batchMap.delete(key);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error deleting product type:', error);
+    // TODO: Show error message to user
+  }
 };
 
 </script>

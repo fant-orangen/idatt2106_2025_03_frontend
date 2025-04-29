@@ -117,6 +117,19 @@ class InventoryService {
       throw error;
     }
   }
+
+  /**
+   * Delete a product type and all its associated batches
+   * @param productTypeId The ID of the product type to delete
+   */
+  async deleteProductType(productTypeId: number): Promise<void> {
+    try {
+      await api.delete(`/inventory/product-types/${productTypeId}`);
+    } catch (error) {
+      console.error('Error deleting product type:', error);
+      throw error;
+    }
+  }
 }
 
 export const inventoryService = new InventoryService();
