@@ -464,5 +464,10 @@
     "water-source": "Vannkilde",
     "food": "Matutdeling"
     }
+  },
+  "footer": {
+    "title": "Krisefikser.no",
+    "description": "En platform for kriseberedskap og informasjonsdeling.",
+    "contact-us": "Kontakt oss på: "
   }
 }

@@ -462,5 +462,10 @@
     "water-source": "Water Source",
     "food": "Food Distribution"
   }
+  },
+  "footer": {
+    "title": "Krisefikser.no",
+    "description": "A platform for crisis preparedness and information sharing.",
+    "contact-us": "Contact us on: "
   }
 }
