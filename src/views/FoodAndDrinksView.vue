@@ -22,7 +22,7 @@
             <span v-if="item?.name?.toLowerCase() === 'vann'">💧</span> {{ item?.name }}
           </div>
           <div class="text-center">{{ getTotalAmount(item) }}</div>
-          <div class="text-center">{{ item?.unit }} – {{ item?.caloriesPerUnit }} kcal</div>
+          <div class="text-center">{{ item?.caloriesPerUnit }} kcal per {{ item?.unit }}</div>
           <div class="text-right">
             <button @click="toggleEdit(index)" class="text-sm text-primary underline">
               {{ item?.edit ? $t("Lagre") : $t("Rediger") }}
