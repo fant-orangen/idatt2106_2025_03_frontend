@@ -267,6 +267,26 @@ const addBatch = (productIndex) => {
 };
 
 /**
+ * Validate and format a date string
+ * @param {string} dateStr - The date string to validate
+ * @returns {string|false} - The formatted date string or false if invalid
+ */
+const validateAndFormatDate = (dateStr) => {
+  // Check if the date matches either YYYY-MM-DD or YYYY-MM format
+  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?$/;
+  if (!dateRegex.test(dateStr)) {
+    return false;
+  }
+
+  // If the date is in YYYY-MM format, append -01
+  if (dateStr.length === 7) {
+    return `${dateStr}-01`;
+  }
+
+  return dateStr;
+};
+
+/**
  * Save a new batch to the backend
  * @param {number} productIndex - Index of the product
  * @param {number} batchIndex - Index of the batch within the product
@@ -284,6 +304,16 @@ const saveBatch = async (productIndex, batchIndex) => {
   if (!batch.amount || isNaN(Number(batch.amount))) {
     console.error('Invalid amount');
     return;
+  }
+
+  // Validate and format the date
+  if (batch.expires) {
+    const formattedDate = validateAndFormatDate(batch.expires);
+    if (formattedDate === false) {
+      alert('Ugyldig dato. Forventet format: YYYY-MM-DD eller YYYY-MM.');
+      return;
+    }
+    batch.expires = formattedDate;
   }
 
   try {
