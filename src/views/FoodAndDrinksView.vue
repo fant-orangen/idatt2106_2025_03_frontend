@@ -164,7 +164,18 @@ const fetchProductTypes = async () => {
       unit: product.unit,
       caloriesPerUnit: product.caloriesPerUnit?.toString() || '0',
       edit: false,
-      batches: [] // Initialize with empty batches
+      batches: [], // Initialize with empty batches
+      totalUnits: 0 // Initialize total units
+    }));
+
+    // Fetch total units for each product
+    await Promise.all(items.value.map(async (item) => {
+      try {
+        item.totalUnits = await inventoryService.getTotalUnitsForProductType(item.id);
+      } catch (error) {
+        console.error(`Error fetching total units for ${item.name}:`, error);
+        item.totalUnits = 0;
+      }
     }));
   } catch (err) {
     error.value = err;
@@ -252,7 +263,7 @@ const saveBatch = async (productIndex, batchIndex) => {
 
   try {
     // Create the batch in the backend
-    const newBatch = await inventoryService.createProductBatch(
+    await inventoryService.createProductBatch(
       productId,
       Number(batch.amount),
       batch.expires || undefined
@@ -260,6 +271,9 @@ const saveBatch = async (productIndex, batchIndex) => {
 
     // Update the batch to remove the isNew flag
     batch.isNew = false;
+
+    // Update total units
+    await updateTotalUnits(product.id);
   } catch (error) {
     console.error('Error creating batch:', error);
     // You might want to show an error message to the user here
@@ -337,7 +351,8 @@ const addProduct = async () => {
       unit: newProduct.unit,
       caloriesPerUnit: (newProduct.caloriesPerUnit ?? 0).toString(),
       edit: true,
-      batches: []
+      batches: [],
+      totalUnits: 0
     });
 
     // Clear the input fields
@@ -351,19 +366,28 @@ const addProduct = async () => {
 };
 
 /**
- * Get total quantity string for a product (sum of all batch amounts).
+ * Update total units for a product
+ * @param productId The ID of the product
+ */
+const updateTotalUnits = async (productId) => {
+  try {
+    const item = items.value.find(item => item.id === productId);
+    if (item) {
+      item.totalUnits = await inventoryService.getTotalUnitsForProductType(productId);
+    }
+  } catch (error) {
+    console.error('Error updating total units:', error);
+  }
+};
+
+/**
+ * Get total quantity string for a product.
  * @param {object} item - product item.
  * @returns {string} - formatted total amount.
  */
 const getTotalAmount = (item) => {
-  if (!item.batches || item.batches.length === 0) return "-";
-
-  const total = item.batches.reduce((sum, batch) => {
-    const amount = parseFloat(batch.amount) || 0;
-    return sum + amount;
-  }, 0);
-
-  return `${total}${item.unit}`;
+  if (item.totalUnits === undefined) return "-";
+  return `${item.totalUnits}${item.unit}`;
 };
 
 </script>

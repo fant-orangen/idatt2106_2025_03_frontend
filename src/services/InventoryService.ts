@@ -89,6 +89,21 @@ class InventoryService {
       throw error;
     }
   }
+
+  /**
+   * Get the total number of units for a product type
+   * @param productTypeId The ID of the product type
+   * @returns Promise containing the total number of units
+   */
+  async getTotalUnitsForProductType(productTypeId: number): Promise<number> {
+    try {
+      const response = await api.get(`/inventory/product-types/${productTypeId}/sum`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching total units:', error);
+      throw error;
+    }
+  }
 }
 
 export const inventoryService = new InventoryService();
