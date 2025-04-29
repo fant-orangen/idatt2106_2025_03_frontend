@@ -5,6 +5,7 @@ export const useProductStore = defineStore('product', {
   state: () => ({
     productIds: new Set<number>(),
     productMap: new Map<string, number>(), // Map of product names to IDs
+    batchMap: new Map<string, number>(), // Map of batch keys to IDs
   }),
 
   actions: {
@@ -20,6 +21,36 @@ export const useProductStore = defineStore('product', {
     },
 
     /**
+     * Add batch IDs for a product
+     * @param productName Product name
+     * @param batches Array of batches with IDs
+     */
+    addBatchIds(productName: string, batches: { id: number; amount: string; expires: string }[]) {
+      const productId = this.getProductId(productName);
+      if (!productId) return;
+
+      batches.forEach(batch => {
+        const batchKey = `${productId}-${batch.amount}-${batch.expires}`;
+        this.batchMap.set(batchKey, batch.id);
+      });
+    },
+
+    /**
+     * Get batch ID by product and batch details
+     * @param productName Product name
+     * @param amount Batch amount
+     * @param expires Batch expiration date
+     * @returns Batch ID or undefined if not found
+     */
+    getBatchId(productName: string, amount: string, expires: string): number | undefined {
+      const productId = this.getProductId(productName);
+      if (!productId) return undefined;
+
+      const batchKey = `${productId}-${amount}-${expires}`;
+      return this.batchMap.get(batchKey);
+    },
+
+    /**
      * Get product ID by name
      * @param name Product name
      * @returns Product ID or undefined if not found
@@ -29,11 +60,12 @@ export const useProductStore = defineStore('product', {
     },
 
     /**
-     * Clear all stored product IDs
+     * Clear all stored product IDs and batch IDs
      */
     clearProductIds() {
       this.productIds.clear();
       this.productMap.clear();
+      this.batchMap.clear();
     }
   }
 });

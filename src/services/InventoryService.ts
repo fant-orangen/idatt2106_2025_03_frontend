@@ -104,6 +104,19 @@ class InventoryService {
       throw error;
     }
   }
+
+  /**
+   * Delete a product batch
+   * @param batchId The ID of the batch to delete
+   */
+  async deleteProductBatch(batchId: number): Promise<void> {
+    try {
+      await api.delete(`/inventory/product-batches/${batchId}`);
+    } catch (error) {
+      console.error('Error deleting product batch:', error);
+      throw error;
+    }
+  }
 }
 
 export const inventoryService = new InventoryService();

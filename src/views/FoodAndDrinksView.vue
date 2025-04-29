@@ -203,13 +203,29 @@ const toggleEdit = async (index) => {
       if (response && response.content) {
         // Transform batches to match our frontend structure
         item.batches = response.content.map(batch => ({
+          id: batch.id,
           amount: batch.number.toString(),
           expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : ''
         }));
+
+        // Store batch IDs in the product store
+        productStore.addBatchIds(item.name, item.batches);
       }
     } catch (err) {
       console.error('Error fetching batches:', err);
       item.batches = [];
+    }
+  } else {
+    // Clear batch IDs for this product when closing edit mode
+    const productId = productStore.getProductId(item.name);
+    if (productId) {
+      // Remove all batch entries for this product from the batchMap
+      const batchMap = productStore.$state.batchMap;
+      for (const key of batchMap.keys()) {
+        if (key.startsWith(`${productId}-`)) {
+          batchMap.delete(key);
+        }
+      }
     }
   }
 };
@@ -295,16 +311,22 @@ const removeBatch = async (productIndex, batchIndex) => {
     return;
   }
 
-  const productId = productStore.getProductId(product.name);
-
-  if (!productId) {
-    console.error('Product ID not found in store');
-    return;
-  }
-
   try {
-    // TODO: Add delete batch API call when available
+    // Get the batch ID from the store
+    const batchId = productStore.getBatchId(product.name, batch.amount, batch.expires);
+    if (!batchId) {
+      console.error('Batch ID not found in store');
+      return;
+    }
+
+    // Delete the batch from the backend
+    await inventoryService.deleteProductBatch(batchId);
+
+    // Remove the batch from the UI
     product.batches.splice(batchIndex, 1);
+
+    // Update total units
+    await updateTotalUnits(product.id);
   } catch (error) {
     console.error('Error removing batch:', error);
     // You might want to show an error message to the user here
