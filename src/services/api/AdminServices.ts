@@ -1,10 +1,11 @@
 import api from '@/services/api/AxiosInstance';
 
+
 /**
 * Creates a new event by sending event data to the backend API.
-* Makes a POST request to the '/crisis-events' endpoint with the provided event info. 
-* Automatically includes the authentication token if available. 
-* 
+* Makes a POST request to the '/crisis-events' endpoint with the provided event info.
+* Automatically includes the authentication token if available.
+*
 * @param {Object} eventData - Contains the event details to be created, such as:
 * @param {string} eventData.title - The title of the event
 * @param {number} eventData.latitude - The latitude coordinate of the event
@@ -26,9 +27,9 @@ export async function createEvent(eventData: any) {
 
 /**
 * Creates a new POI by sending data to the backend API.
-* Makes a POST request to the '/POI' endpoint with the provided info. 
-* Automatically includes the authentication token if available. 
-* 
+* Makes a POST request to the '/POI' endpoint with the provided info.
+* Automatically includes the authentication token if available.
+*
 * @param {Object} poiData - Contains the event details to be created, such as:
 * @param {string} poiData.title - The title of the POI
 * @param {number} poiData.latitude - The latitude coordinate of the POI
@@ -50,12 +51,23 @@ export async function createPOI(poiData: any) {
   });
 }
 
+/**
+ * Sends a PUT-request to edit an existing POI.
+ *
+ * @param poiID - the ID of the POI to edit.
+ * @param updatedData - the updated fields for the POI (title, coordinates, type etc.)
+ * @returns Promise - axios promise resolving the server response.
+ */
+export function editPOI(poiID:number, updatedData:object) {
+  return api.put(`/admin/poi/${poiID}`, updatedData);
+}
+
 
 /**
  * Fetches all current crisis events from the backend API.
  * Makes a GET request to the '/crisis-events/all' endpoint.
  * Automatically includes the authentication token if available.
- * @returns {Promise<AxiosResponse<any, any>>} Server response with a list of events. 
+ * @returns {Promise<AxiosResponse<any, any>>} Server response with a list of events.
  */
 export async function getCurrentEvents() {
   return await api.get('/crisis-events/all', {
