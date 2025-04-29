@@ -68,6 +68,27 @@ class InventoryService {
       throw error;
     }
   }
+
+  /**
+   * Create a new product batch
+   * @param productTypeId The ID of the product type
+   * @param number The number of units in the batch
+   * @param expirationTime The expiration time of the batch (optional)
+   * @returns Promise containing the created product batch
+   */
+  async createProductBatch(productTypeId: number, number: number, expirationTime?: string): Promise<ProductBatch> {
+    try {
+      const response = await api.post('/inventory/product-batches', {
+        productTypeId,
+        number,
+        expirationTime: expirationTime ? new Date(expirationTime).toISOString() : null
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating product batch:', error);
+      throw error;
+    }
+  }
 }
 
 export const inventoryService = new InventoryService();

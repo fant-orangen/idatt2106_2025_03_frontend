@@ -35,7 +35,7 @@
           <div
             v-for="(batch, bIndex) in item.batches"
             :key="bIndex"
-            class="grid grid-cols-4 gap-3 items-center"
+            class="grid grid-cols-5 gap-3 items-center"
           >
             <input
               v-model="batch.amount"
@@ -48,9 +48,16 @@
               v-model="batch.expires"
               class="bg-input text-foreground py-2 px-3 text-center rounded-md"
               placeholder="Utløp"
-              :readonly="item.name.toLowerCase() === 'Vann'"
+              :readonly="item.name.toLowerCase() === 'vann'"
             />
-            <button @click="removeBatch(index, bIndex)" class="text-destructive text-sm underline">
+            <button
+              v-if="batch.isNew"
+              @click="saveBatch(index, bIndex)"
+              class="text-sm text-primary underline"
+            >
+              {{ $t("Lagre") }}
+            </button>
+            <button @click="removeBatch(index, bIndex)" class="text-sm text-destructive underline">
               {{ $t("Slett") }}
             </button>
           </div>
@@ -211,13 +218,51 @@ const addBatch = (productIndex) => {
 
     product.batches.push({
       amount: "",
-      expires: formattedDate
+      expires: formattedDate,
+      isNew: true // Flag to indicate this is a new batch that needs to be saved
     });
   } else {
     product.batches.push({
       amount: "",
-      expires: ""
+      expires: "",
+      isNew: true // Flag to indicate this is a new batch that needs to be saved
     });
+  }
+};
+
+/**
+ * Save a new batch to the backend
+ * @param {number} productIndex - Index of the product
+ * @param {number} batchIndex - Index of the batch within the product
+ */
+const saveBatch = async (productIndex, batchIndex) => {
+  const product = items.value[productIndex];
+  const batch = product.batches[batchIndex];
+  const productId = productStore.getProductId(product.name);
+
+  if (!productId) {
+    console.error('Product ID not found in store');
+    return;
+  }
+
+  if (!batch.amount || isNaN(Number(batch.amount))) {
+    console.error('Invalid amount');
+    return;
+  }
+
+  try {
+    // Create the batch in the backend
+    const newBatch = await inventoryService.createProductBatch(
+      productId,
+      Number(batch.amount),
+      batch.expires || undefined
+    );
+
+    // Update the batch to remove the isNew flag
+    batch.isNew = false;
+  } catch (error) {
+    console.error('Error creating batch:', error);
+    // You might want to show an error message to the user here
   }
 };
 
@@ -226,8 +271,30 @@ const addBatch = (productIndex) => {
  * @param {number} productIndex - product index.
  * @param {number} batchIndex - batch index inside the product.
  */
-const removeBatch = (productIndex, batchIndex) => {
-  items.value[productIndex].batches.splice(batchIndex, 1);
+const removeBatch = async (productIndex, batchIndex) => {
+  const product = items.value[productIndex];
+  const batch = product.batches[batchIndex];
+
+  // If it's a new batch that hasn't been saved yet, just remove it from the UI
+  if (batch.isNew) {
+    product.batches.splice(batchIndex, 1);
+    return;
+  }
+
+  const productId = productStore.getProductId(product.name);
+
+  if (!productId) {
+    console.error('Product ID not found in store');
+    return;
+  }
+
+  try {
+    // TODO: Add delete batch API call when available
+    product.batches.splice(batchIndex, 1);
+  } catch (error) {
+    console.error('Error removing batch:', error);
+    // You might want to show an error message to the user here
+  }
 };
 
 /**
