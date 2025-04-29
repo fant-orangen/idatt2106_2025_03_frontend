@@ -13,3 +13,12 @@ export interface ProductBatch {
   expirationTime: string;
   number: number;
 }
+
+export type ProductUnit = 'kg' | 'l' | 'stk' | 'gram' | 'dl';
+
+export interface CreateProductTypeRequest {
+  name: string;
+  unit: ProductUnit;
+  caloriesPerUnit: number;
+  isWater: boolean;
+}

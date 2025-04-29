@@ -11,7 +11,7 @@
         :key="index"
         :class="[
           'border rounded-lg p-4 space-y-4',
-          item.name.toLowerCase() === 'vann'
+          item?.name?.toLowerCase() === 'vann'
             ? 'border-primary bg-muted'
             : 'border-border bg-card'
         ]"
@@ -19,13 +19,13 @@
         <!-- Product overview -->
         <div class="grid grid-cols-4 items-center">
           <div class="font-medium">
-            <span v-if="item.name.toLowerCase() === 'vann'">💧</span> {{ item.name }}
+            <span v-if="item?.name?.toLowerCase() === 'vann'">💧</span> {{ item?.name }}
           </div>
           <div class="text-center">{{ getTotalAmount(item) }}</div>
-          <div class="text-center">{{ item.unit }} – {{ item.caloriesPerUnit }} kcal</div>
+          <div class="text-center">{{ item?.unit }} – {{ item?.caloriesPerUnit }} kcal</div>
           <div class="text-right">
             <button @click="toggleEdit(index)" class="text-sm text-primary underline">
-              {{ item.edit ? $t("Lagre") : $t("Rediger") }}
+              {{ item?.edit ? $t("Lagre") : $t("Rediger") }}
             </button>
           </div>
         </div>
@@ -74,9 +74,10 @@
           <select v-model="newProductUnit" class="bg-input text-foreground py-2 px-3 rounded-md">
             <option disabled value="">Velg enhet</option>
             <option value="kg">kg</option>
-            <option value="L">L</option>
+            <option value="l">L</option>
             <option value="stk">stk</option>
-            <option value="poser">poser</option>
+            <option value="gram">gram</option>
+            <option value="dl">dl</option>
           </select>
           <input
             v-model="newProductCalories"
@@ -233,12 +234,12 @@ const removeBatch = (productIndex, batchIndex) => {
  * Add a new product to the inventory.
  * Prevent adding duplicates.
  */
-const addProduct = () => {
+const addProduct = async () => {
   const name = newProductName.value.trim();
   if (!name || !newProductUnit.value || !newProductCalories.value) return;
 
   const exists = items.value.some(
-    (item) => item.name.toLowerCase() === name.toLowerCase()
+    (item) => item?.name?.toLowerCase() === name.toLowerCase()
   );
 
   if (exists) {
@@ -246,17 +247,40 @@ const addProduct = () => {
     return;
   }
 
-  items.value.push({
-    name,
-    unit: newProductUnit.value,
-    caloriesPerUnit: newProductCalories.value,
-    edit: true,
-    batches: []
-  });
+  try {
+    // Convert unit to lowercase for consistency
+    const unit = newProductUnit.value.toLowerCase();
+    const validUnits = ['kg', 'l', 'stk', 'gram', 'dl'];
+    if (!validUnits.includes(unit)) {
+      throw new Error('Invalid unit type. Valid units are: kg, l, stk, gram, dl');
+    }
 
-  newProductName.value = "";
-  newProductUnit.value = "";
-  newProductCalories.value = "";
+    // Create the product in the backend
+    const newProduct = await inventoryService.createProductType({
+      name,
+      unit,
+      caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
+      isWater: name.toLowerCase() === 'vann'
+    });
+
+    // Add the new product to the local state
+    items.value.push({
+      id: newProduct.id,
+      name: newProduct.name,
+      unit: newProduct.unit,
+      caloriesPerUnit: (newProduct.caloriesPerUnit ?? 0).toString(),
+      edit: true,
+      batches: []
+    });
+
+    // Clear the input fields
+    newProductName.value = "";
+    newProductUnit.value = "";
+    newProductCalories.value = "";
+  } catch (error) {
+    console.error('Error creating product:', error);
+    // You might want to show an error message to the user here
+  }
 };
 
 /**

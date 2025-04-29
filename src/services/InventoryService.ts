@@ -1,7 +1,7 @@
 import type { Page } from '../types/Page';
 import api from './api/AxiosInstance';
 import { useProductStore } from '@/stores/ProductStore';
-import type { ProductType, ProductBatch } from '@/models/Product';
+import type { ProductType, ProductBatch, CreateProductTypeRequest } from '@/models/Product';
 
 class InventoryService {
   private productStore = useProductStore();
@@ -28,6 +28,21 @@ class InventoryService {
       return response.data;
     } catch (error) {
       console.error('Error fetching product types:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new product type
+   * @param productData The product data to create
+   * @returns Promise containing the created product
+   */
+  async createProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
+    try {
+      const response = await api.post('/inventory/product-types', productData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating product type:', error);
       throw error;
     }
   }
