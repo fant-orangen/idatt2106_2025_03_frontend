@@ -81,7 +81,8 @@ export async function updateCurrentEvent(id: number, eventData: any) {
 }
 
 /**
- * 
+ * Fetches all the admin users from the backend API. 
+ * Sends a GET request to the '/super-admin/all' endpoint. 
  * @returns 
  */
 export async function getAdminUsers() {
@@ -105,7 +106,8 @@ export async function addNewAdmin(adminEmail: string) {
 }
 
 /**
- * 
+ * Removes the admin role, changes it to normal user role, in backend API. 
+ * Sends a put request to the '/super-admin/revoke/{id}' endpoint with the admin user ID. 
  * @returns 
  */
 export async function revokeAdminRights(adminID: any) {
