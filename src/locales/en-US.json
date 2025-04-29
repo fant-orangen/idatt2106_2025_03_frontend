@@ -21,6 +21,7 @@
     "phone": "Phone",
     "password": "Password",
     "confirm-password": "Confirm Password",
+    "confirm-email": "Confirm email",
     "username": "Username",
     "reset-password-description": "Enter your email address below to reset your password.",
     "enter-email": "Enter your email",

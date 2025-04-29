@@ -13,11 +13,11 @@
 
 	<div class="page">
 		<div>
-			<h1 v-if="superAdminUser">{{ $t('admin.super-admin') }}: {{ $t('admin.administrate') }}</h1>
+			<h1 v-if="userStore.isSuperAdminUser">{{ $t('admin.super-admin') }}: {{ $t('admin.administrate') }}</h1>
 			<h1 v-else>{{ $t('admin.administrate') }}</h1>
 			<!--Menu buttons for admin actions-->
 			<div class="menu">
-				<Button v-if="superAdminUser" @click="router.push('/handle-admins')">
+				<Button v-if="userStore.isSuperAdminUser" @click="router.push('/handle-admins')">
 					{{ $t('admin.edit-admin') }}
 					<font-awesome-icon icon="fa-solid fa-arrow-right" />
 				</Button>
@@ -50,7 +50,6 @@
 <script setup lang="ts">
 import router from '@/router'
 import { useUserStore } from '@/stores/UserStore'
-import { computed } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
 	Breadcrumb,
@@ -63,8 +62,6 @@ import {
 import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
 
 const userStore = useUserStore();
-const superAdminUser = computed(() => userStore.role === 'SUPER_ADMIN');
-const adminUser = computed (() => userStore.role === 'ADMIN' || userStore.role === 'SUPER_ADMIN');
 
 </script>
 
@@ -97,8 +94,6 @@ Button {
 	font-size: 1em;
 }
 Button:hover {
-  background-color: var(--color-muted);
-  color: var(--muted);
   cursor: pointer;
 }
 

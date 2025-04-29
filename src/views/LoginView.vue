@@ -46,6 +46,7 @@ async function handleLogin() {
     await userStore.verifyLogin(email.value, password.value)
     // alert(t('success.login-successful'))
     router.push('/')
+    console.log('User role is: ',userStore.role)
   } catch (error) {
     errorMessage.value = t('errors.login-failed')
     console.error('Login error:', error)

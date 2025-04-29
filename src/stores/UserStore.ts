@@ -130,9 +130,9 @@ export const useUserStore = defineStore("user", () => {
 
   const loggedIn = computed(() => isAuthenticated.value);
 
-  const isSuperAdminUser = computed(() => role.value === 'SUPER_ADMIN');
+  const isSuperAdminUser = computed(() => role.value === 'SUPERADMIN');
 
-  const isAdminUser = computed (() => role.value === 'ADMIN' || role.value === 'SUPER_ADMIN');
+  const isAdminUser = computed (() => role.value === 'ADMIN' || role.value === 'SUPERADMIN');
 
   return {
     token,
@@ -146,6 +146,8 @@ export const useUserStore = defineStore("user", () => {
     registerUser,
     logout,
     loggedIn,
-    initializeFromStorage
+    initializeFromStorage,
+    isAdminUser,
+    isSuperAdminUser
   };
 });

@@ -22,6 +22,7 @@
     "phone": "Telefonummer",
     "password": "Passord",
     "confirm-password": "Bekreft passord",
+    "confirm-email": "Bekreft epostadresse",
     "username": "Brukernavn",
     "reset-password-description": "Skriv inn e-postadressen din nedenfor for å tilbakestille passordet ditt.",
     "enter-email": "Skriv inn e-post",

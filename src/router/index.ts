@@ -93,7 +93,7 @@ const routes = [
     path: '/handle-admins',
     name: 'HandleAdmins',
     component: () => import('@/views/SuperAdminAdministrate.vue'),
-    meta: { requiresSuperAdmin: false }, //TODO: endre denne når superadmin siden er ferdig 
+    meta: { requiresSuperAdmin: true }, //TODO: endre denne når superadmin siden er ferdig 
   },
   {
     path: '/:pathMatch(.*)*',
