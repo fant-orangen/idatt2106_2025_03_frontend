@@ -368,28 +368,20 @@ const addProduct = async () => {
     }
 
     // Create the product in the backend
-    const newProduct = await inventoryService.createProductType({
+    await inventoryService.createProductType({
       name,
       unit,
       caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
       isWater: name.toLowerCase() === 'vann'
     });
 
-    // Add the new product to the local state
-    items.value.push({
-      id: newProduct.id,
-      name: newProduct.name,
-      unit: newProduct.unit,
-      caloriesPerUnit: (newProduct.caloriesPerUnit ?? 0).toString(),
-      edit: true,
-      batches: [],
-      totalUnits: 0
-    });
-
     // Clear the input fields
     newProductName.value = "";
     newProductUnit.value = "";
     newProductCalories.value = "";
+
+    // Refresh the product types list
+    await fetchProductTypes();
   } catch (error) {
     console.error('Error creating product:', error);
     // You might want to show an error message to the user here
