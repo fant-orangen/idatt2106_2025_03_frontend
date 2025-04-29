@@ -356,9 +356,14 @@ const addProduct = async () => {
  * @returns {string} - formatted total amount.
  */
 const getTotalAmount = (item) => {
-  return item.batches
-    .map((b) => `${b.amount}${item.unit}`)
-    .join(" + ") || "-";
+  if (!item.batches || item.batches.length === 0) return "-";
+
+  const total = item.batches.reduce((sum, batch) => {
+    const amount = parseFloat(batch.amount) || 0;
+    return sum + amount;
+  }, 0);
+
+  return `${total}${item.unit}`;
 };
 
 </script>
