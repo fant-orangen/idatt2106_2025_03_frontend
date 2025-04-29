@@ -414,6 +414,8 @@
     "description": "For eksempel: Hendelsen skjedde på (dato og sted) ... og vil mest sannsynlig vare i (tid)... Det kan bli mangel på (ressurs)...",
     "time": "Tidspunkt for når hendelsen først inntraff.",
     "date": "Dato for når hendelsen først inntraff.",
+    "successfully": "Hendelsen ble opprettet",
+    "success-message": "Hendelsen din er lagt til i systemet.",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
       "latitude": "Breddegraden må være mellom -90 og 90.",
