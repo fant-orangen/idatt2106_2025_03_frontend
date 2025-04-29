@@ -169,7 +169,10 @@ function goToPage(route: string) {
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button
+
+        <Popover>
+          <PopoverTrigger as="button" class="no-border">
+            <Button
           variant="ghost"
           size="icon"
           class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
@@ -177,10 +180,7 @@ function goToPage(route: string) {
         >
           <Bell class="h-5 w-5" />
         </Button>
-        <Popover>
-          <PopoverTrigger as="button" class="no-border">
-            <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
-          </PopoverTrigger>
+      </PopoverTrigger>
           <PopoverContent>
             <NotificationPopover :notifications="topNotifications" />
           </PopoverContent>
