@@ -102,6 +102,7 @@ const routes = [
     path: '/edit-POI',
     name: 'AdminEditPOI',
     component: () => import('@/views/AdminEditPOI.vue'),
+    meta: { requiresAdmin: true},
   },
 ];
 
