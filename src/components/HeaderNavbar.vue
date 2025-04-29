@@ -92,29 +92,32 @@ function goToPage(route: string) {
     class="navbar shadow-md bg-secondary text-secondary-foreground flex justify-between items-center px-5 py-3 transition-all duration-300"
   >
     <div class="navbar-right flex gap-4">
-      <RouterLink to="/" class="hover:text-primary"> {{ $t('navigation.home') }}</RouterLink>
-      <div class="dropdown relative">
-        <button
-          class="dropbtn flex items-center gap-2 text-secondary-foreground hover:text-primary"
-          @click="toggleDropdown"
-        >
-          <Globe class="h-5 w-5" />
-          {{ selectedLanguage }}
-        </button>
-        <div
-          v-if="showDropdown"
-          class="dropdown-content absolute bg-card text-card-foreground shadow-lg mt-2 rounded-md w-[200px] z-50"
-        >
-          <div
-            v-for="language in languages"
-            :key="language.code"
-            @click="selectLanguage(language)"
-            class="dropdown-item px-4 py-2 hover:bg-muted hover:text-foreground cursor-pointer"
+      <RouterLink to="/" class="hover:text-primary">
+        <img src="../assets/krisefikser.svg" alt="Logo" class="h-8 w-auto" />
+      </RouterLink>
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button
+            variant="ghost"
+            class="flex items-center gap-2 text-secondary-foreground hover:text-primary"
           >
-            {{ language.label }}
-          </div>
-        </div>
-      </div>
+            <Globe class="h-5 w-5" />
+            {{ selectedLanguage }}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-[200px]">
+          <DropdownMenuGroup>
+            <DropdownMenuItem
+              v-for="language in languages"
+              :key="language.code"
+              @click="selectLanguage(language)"
+              class="cursor-poi nter"
+            >
+              {{ language.label }}
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
     <div class="navbar-left flex items-center gap-4">
       <RouterLink
