@@ -198,22 +198,24 @@ async function handleComplete() {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>
-                    {{ $t('2fa-login-title') }}
+                    {{ $t('login.2fa-login-title') }}
                   </DialogTitle>
                   <DialogDescription>
-                    {{ $t('2fa-login-description') }}
+                    {{ $t('login.2fa-login-description') }}
                   </DialogDescription>
                 </DialogHeader>
                 <PinInput
                   id="pin-input"
                   v-model="pinValue"
                   placeholder="○"
+                  class="flex justify-center items-center gap-2"
                   @complete="handleComplete"
                 >
                   <PinInputGroup>
                     <PinInputInput v-for="(id, index) in 6" :key="id" :index="index" />
                   </PinInputGroup>
                 </PinInput>
+                <DialogFooter> </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
