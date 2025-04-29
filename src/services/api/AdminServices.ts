@@ -89,8 +89,8 @@ export async function updateCurrentEvent(id: number, eventData: any): Promise<Ax
 
 /**
  * Fetches all the admin users from the backend API. 
- * Sends a GET request to the '/super-admin/all' endpoint. 
- * @returns 
+ * Sends a GET request to the '/super-admin/all' endpoint to retrieve a list of all admin users. 
+ * @returns {Promise<AxiosResponse<any>>} Server response with a list of admin users.
  */
 export async function getAdminUsers() {
   return await api.get('/super-admin/all', {
@@ -101,8 +101,9 @@ export async function getAdminUsers() {
 }
 
 /**
- * 
- * @returns 
+ * Creates a new admin user. 
+ * Sends a POST request to the '/super-admin' endpoint with the new adnmin user email. 
+ * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the post operation.
  */
 export async function addNewAdmin(adminEmail: string) {
   return await api.post('/super-admin', adminEmail, {
@@ -115,7 +116,7 @@ export async function addNewAdmin(adminEmail: string) {
 /**
  * Removes the admin role, changes it to normal user role, in backend API. 
  * Sends a put request to the '/super-admin/revoke/{id}' endpoint with the admin user ID. 
- * @returns 
+ * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
  */
 export async function revokeAdminRights(adminID: number) {
   return await api.put('/super-admin/revoke/' + adminID, {
@@ -128,6 +129,9 @@ export async function revokeAdminRights(adminID: number) {
 /**
  * Removes the admin role, changes it to normal user role, in backend API. 
  * Sends a put request to the '/super-admin/revoke/{id}' endpoint with the admin user ID. 
+ * 
+ * Still not created in backend!!!!
+ * 
  * @returns 
  */
 export async function sendNewPasswordLink(email: string) {
