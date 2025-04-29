@@ -184,9 +184,9 @@
     >
 
       <DialogHeader>
-        <DialogTitle>{{ $t('add-event-info.successfully') }}Event Created Successfully</DialogTitle>
+        <DialogTitle>{{ $t('add-event-info.successfully') }}</DialogTitle>
         <DialogDescription>
-          {{ $t('add-event-info.success-message') }} Your event has been added to the system.
+          {{ $t('add-event-info.success-message') }}
         </DialogDescription>
       </DialogHeader>
 
@@ -198,7 +198,7 @@
             </svg>
           </div>
           <p class="text-lg">
-            <strong>{{ createdEventName }}</strong> has been created successfully.
+            <strong>{{ createdEventName }}</strong> {{ $t('add-event-info.success-added') }}
           </p>
         </div>
       </div>

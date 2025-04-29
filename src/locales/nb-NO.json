@@ -416,6 +416,7 @@
     "date": "Dato for når hendelsen først inntraff.",
     "successfully": "Hendelsen ble opprettet",
     "success-message": "Hendelsen din er lagt til i systemet.",
+    "success-added":"har blitt lagt til.",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
       "latitude": "Breddegraden må være mellom -90 og 90.",
