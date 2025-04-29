@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { ref, onMounted } from 'vue'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'vue-router'
@@ -7,7 +8,28 @@ import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
 
 const router = useRouter()
 const { t } = useI18n()
-const currentStatus = 'crisis.no-crisis'
+const currentStatus = ref('crisis.no-crisis')
+
+const fetchCrisisLevel = "not-implemented" // Placeholder for future implementation
+// This function will be used to fetch the crisis level from the backend
+
+const crisisComponents = ref<Record<string, any>>({})
+
+// Function to load components dynamically
+const loadCrisisComponents = async () => {
+  crisisComponents.value = {
+    'crisis.no-crisis': (await import('@/components/homeview/NoCrisisButtons.vue')).default,
+    'crisis.during': (await import('@/components/homeview/DuringCrisisButtons.vue')).default,
+  }
+}
+
+onMounted(async () => {
+  await loadCrisisComponents()
+  // Simulate fetching the current crisis level
+  console.log('Crisis Components:', crisisComponents.value)
+  currentStatus.value = 'crisis.no-crisis' // Replace with actual API call
+})
+
 </script>
 
 <template>
@@ -26,16 +48,9 @@ const currentStatus = 'crisis.no-crisis'
       </Card>
     </div>
     <div class="container flex flex-row gap-40 w-full max-w-7xl">
-      <div class="before-during-after flex flex-col gap-20">
-        <Button class="h-30 w-80" @click="router.push('before-crisis')">
-          {{ t('time.before') }}
-        </Button>
-        <Button class="h-30 w-80" @click="router.push('during-crisis')">
-          {{ t('time.during') }}
-        </Button>
-        <Button class="h-30 w-80" @click="router.push('after-crisis')">
-          {{ t('time.after') }}
-        </Button>
+      <!-- Dynamic Buttons -->
+      <div class="crisis-components flex flex-col gap-20">
+        <component :is="crisisComponents[currentStatus]" />
       </div>
       <div class="map flex-grow">
         <MapOverviewComponent />
@@ -45,7 +60,6 @@ const currentStatus = 'crisis.no-crisis'
 </template>
 
 <style scoped>
-/* Add any additional styles if needed */
 .container {
   width: 100%;
 }

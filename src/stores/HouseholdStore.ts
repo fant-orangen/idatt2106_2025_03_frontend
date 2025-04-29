@@ -1,57 +1,78 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import { getCurrentHousehold, getHouseholdMembers, joinWithToken } from '@/services/HouseholdService';
+import { getCurrentHousehold, getHouseholdMembers, getEmptyHouseholdMembers, joinWithToken } from '@/services/HouseholdService';
 import type { Household, Member } from '@/models/Household';
 
 export const useHouseholdStore = defineStore('household', () => {
   const userStore = useUserStore();
 
-  // State
   const currentHousehold = ref<Household | null>(null);
   const members = ref<Member[]>([]);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  // Computed
   const isMemberOfHousehold = computed(() => !!currentHousehold.value);
 
-  // Actions
+  function setCurrentHousehold(household: Household | null): void {
+    currentHousehold.value = household;
+  }
+
+  function setMembers(newMembers: Member[]): void {
+    members.value = newMembers;
+  }
+
+  function addMember(member: Member): void {
+    members.value.push(member);
+  }
+
+  function removeMember(memberId: number): void {
+    members.value = members.value.filter(member => member.id !== memberId);
+  }
+
+  function setLoading(loading: boolean): void {
+    isLoading.value = loading;
+  }
+
+  function setError(errorMessage: string | null): void {
+    error.value = errorMessage;
+  }
+
   async function fetchCurrentHousehold(): Promise<void> {
     if (!userStore.loggedIn) return;
 
-    isLoading.value = true;
-    error.value = null;
+    setLoading(true);
+    setError(null);
 
     try {
-      currentHousehold.value = await getCurrentHousehold();
-
-      // If user has a household, fetch its members
-      if (currentHousehold.value) {
-        await fetchHouseholdMembers();
-      }
+      const household = await getCurrentHousehold();
+      setCurrentHousehold(household);
     } catch (err: Error | unknown) {
       console.error('Error fetching household:', err);
-      error.value = err instanceof Error ? err.message : 'Failed to fetch household';
+      setError(err instanceof Error ? err.message : 'Failed to fetch household');
     } finally {
-      isLoading.value = false;
+      setLoading(false);
     }
   }
 
   async function fetchHouseholdMembers(): Promise<void> {
     if (!currentHousehold.value) return;
 
-    isLoading.value = true;
+    setLoading(true);
+    setError(null);
 
     try {
-      members.value = await getHouseholdMembers(currentHousehold.value.id);
+      const regularMembers = await getHouseholdMembers();
+      const emptyMembers = await getEmptyHouseholdMembers();
+      setMembers([...regularMembers, ...emptyMembers]);
     } catch (err: Error | unknown) {
       console.error('Error fetching household members:', err);
-      error.value = err instanceof Error ? err.message : 'Failed to fetch household members';
+      setError(err instanceof Error ? err.message : 'Failed to fetch household members');
     } finally {
-      isLoading.value = false;
+      setLoading(false);
     }
   }
+
   /**
    * Join a household using an invitation token
    * @param token The invitation token
@@ -62,19 +83,18 @@ export const useHouseholdStore = defineStore('household', () => {
       throw new Error('Token is required');
     }
 
-    isLoading.value = true;
-    error.value = null;
+    setLoading(true);
+    setError(null);
 
     try {
       const household = await joinWithToken(token);
-      currentHousehold.value = household;
-      await fetchHouseholdMembers();
+      setCurrentHousehold(household);
     } catch (err: Error | unknown) {
       console.error('Error joining household with token:', err);
-      error.value = err instanceof Error ? err.message : 'Failed to join household';
+      setError(err instanceof Error ? err.message : 'Failed to join household');
       throw err;
     } finally {
-      isLoading.value = false;
+      setLoading(false);
     }
   }
 
@@ -83,10 +103,10 @@ export const useHouseholdStore = defineStore('household', () => {
    * Useful when logging out or cleaning up state
    */
   function cleanHousehold(): void {
-    currentHousehold.value = null;
-    members.value = [];
-    error.value = null;
-    isLoading.value = false;
+    setCurrentHousehold(null);
+    setMembers([]);
+    setError(null);
+    setLoading(false);
   }
 
   return {
@@ -95,6 +115,12 @@ export const useHouseholdStore = defineStore('household', () => {
     isLoading,
     error,
     isMemberOfHousehold,
+    setCurrentHousehold,
+    setMembers,
+    addMember,
+    removeMember,
+    setLoading,
+    setError,
     fetchCurrentHousehold,
     fetchHouseholdMembers,
     joinHouseholdWithToken,

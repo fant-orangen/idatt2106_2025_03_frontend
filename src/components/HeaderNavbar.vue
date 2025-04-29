@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Icon } from '@iconify/vue'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
-import { Globe, User, Bell, Settings } from 'lucide-vue-next'
+import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
+import { getNotifications} from '@/services/NotificationService.ts'
+import type { NotificationMessage } from '@/models/NotificationMessage.ts'
 
 import {
   DropdownMenu,
@@ -17,9 +18,15 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { Button } from '@/components/ui/button'
+import { useUserStore } from '@/stores/UserStore'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import NotificationPopover from '@/components/NotificationPopover.vue'
+
 
 const { locale } = useI18n()
 const router = useRouter()
+const userStore = useUserStore()
+const isDropdownOpen = ref(false)
 
 let prevScrollpos: number = window.pageYOffset
 const showDropdown = ref(false)
@@ -34,6 +41,18 @@ const selectedLanguage = ref(languages[0].label)
 // Dark mode toggle
 const colorMode = useColorMode()
 
+// Get the top 3 notifications
+const topNotifications = ref<NotificationMessage[]>([])
+
+onMounted(async () => {
+  try {
+    topNotifications.value = await getNotifications();
+  } catch (error) {
+    console.error('Failed to fetch notifications:', error);
+  }
+})
+
+
 window.onscroll = function (): void {
   const currentScrollPos: number = window.pageYOffset
   const navbar = document.getElementById('navbar')
@@ -47,6 +66,11 @@ window.onscroll = function (): void {
   }
 
   prevScrollpos = currentScrollPos
+}
+
+function logOut(): void {
+  userStore.logout()
+  router.push('/')
 }
 
 function toggleDropdown(): void {
@@ -96,51 +120,80 @@ function goToPage(route: string) {
     </div>
     <div class="navbar-left flex items-center gap-4">
       <RouterLink
+        v-if="!userStore.loggedIn"
         to="/login"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('login.login') }}</RouterLink
       >
       <RouterLink
+        v-if="!userStore.loggedIn"
         to="/register"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
         {{ $t('login.signup') }}</RouterLink
       >
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button variant="outline" size="icon" class="cursor-pointer p-0">
-            <User class="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              <User class="mr-2 h-4 w-4" />
-              <span @click="goToPage('/profile')">Profile (WIP)</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="goToPage('/settings')">
-              <Settings class="mr-2 h-4 w-4" />
-              <span>Settings (WIP)</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <RouterLink to="/" class="no-border">
-        <Bell class="h-5 w-5" />
-      </RouterLink>
-      <button
-        variant="outline"
-        class="dark-mode-toggle flex items-center justify-center p-0 text-secondary-foreground hover:text-primary cursor-pointer"
-        @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
-      >
-        <Icon
-          :icon="colorMode === 'dark' ? 'radix-icons:sun' : 'radix-icons:moon'"
-          class="h-[1.2rem] w-[1.2rem] transition-all"
-        />
-      </button>
+      <div class="flex gap-2">
+        <DropdownMenu v-if="userStore.loggedIn">
+          <DropdownMenuTrigger as-child>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            >
+              <User class="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <User class="mr-2 h-4 w-4" />
+                <span @click="goToPage('/profile')">Profile (WIP)</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="goToPage('/settings')">
+                <Settings class="mr-2 h-4 w-4" />
+                <span>Settings (WIP)</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator v-if="userStore.loggedIn" />
+              <DropdownMenuItem v-if="userStore.loggedIn" @click="goToPage('/admin-panel')">
+                <ShieldUser class="mr-2 h-4 w-4" />
+                <span>Admin Panel (WIP)</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator v-if="userStore.loggedIn" />
+              <DropdownMenuItem @click="logOut()">
+                <LogOut class="mr-2 h-4 w-4" />
+                <span>Log out </span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          @click="goToPage('/')"
+        >
+          <Bell class="h-5 w-5" />
+        </Button>
+        <Popover>
+          <PopoverTrigger as="button" class="no-border">
+            <font-awesome-icon :icon="['fas', 'bell']" size="lg" />
+          </PopoverTrigger>
+          <PopoverContent>
+            <NotificationPopover :notifications="topNotifications" />
+          </PopoverContent>
+        </Popover>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+        >
+          <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   </div>
 </template>
