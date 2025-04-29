@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import { getCurrentHousehold, getHouseholdMembers, joinWithToken } from '@/services/HouseholdService';
+import { getCurrentHousehold, getHouseholdMembers, getEmptyHouseholdMembers, joinWithToken } from '@/services/HouseholdService';
 import type { Household, Member } from '@/models/Household';
 
 export const useHouseholdStore = defineStore('household', () => {
@@ -59,10 +59,12 @@ export const useHouseholdStore = defineStore('household', () => {
     if (!currentHousehold.value) return;
 
     setLoading(true);
+    setError(null);
 
     try {
-      const fetchedMembers = await getHouseholdMembers(currentHousehold.value.id);
-      setMembers(fetchedMembers);
+      const regularMembers = await getHouseholdMembers();
+      const emptyMembers = await getEmptyHouseholdMembers();
+      setMembers([...regularMembers, ...emptyMembers]);
     } catch (err: Error | unknown) {
       console.error('Error fetching household members:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch household members');

@@ -1,12 +1,12 @@
 import { ref, watch } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import type { NotificationMessage } from '@/models/Notification';
+import type { NotificationMessage } from '@/models/NotificationMessage.ts';
 import SockJS from 'sockjs-client';
 import { Client, over } from 'stompjs';
 
 /**
  * Composable for managing WebSocket connections and notifications.
- *
+ * TODO: get rid of all the console logging
  * @returns Object containing connection state and methods
  */
 export function useWebSocket() {

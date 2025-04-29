@@ -5,13 +5,7 @@
         <!-- Name field -->
         <div>
           <Label for="name">{{ $t('household.name') }}</Label>
-          <Input id="name" v-model="newUser.firstName" :placeholder="$t('household.enter-name')" required />
-        </div>
-
-        <!-- Last name field -->
-        <div>
-          <Label for="lastName">{{ $t('household.last-name') }}</Label>
-          <Input id="lastName" v-model="newUser.lastName" :placeholder="$t('household.enter-last-name')" required />
+          <Input id="name" v-model="newUser.name" :placeholder="$t('household.enter-name')" required />
         </div>
 
         <!-- Type selection -->
@@ -63,8 +57,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 useI18n();
 
 interface NewUser {
-  firstName: string;
-  lastName: string;
+  name: string;
   type: string;
   description: string;
 }
@@ -72,8 +65,7 @@ interface NewUser {
 const emit = defineEmits(['save', 'cancel']);
 
 const newUser = ref<NewUser>({
-  firstName: '',
-  lastName: '',
+  name: '',
   type: 'adult', // Default value
   description: ''
 });
@@ -90,8 +82,7 @@ const cancel = () => {
 
 const resetForm = () => {
   newUser.value = {
-    firstName: '',
-    lastName: '',
+    name: '',
     type: 'adult',
     description: ''
   };

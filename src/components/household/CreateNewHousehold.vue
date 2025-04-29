@@ -11,7 +11,7 @@
           <Label for="householdName">{{ $t('household.create.nameLabel') }}</Label>
           <Input
             id="householdName"
-            v-model="householdName"
+            v-model="householdData.name"
             type="text"
             :placeholder="$t('household.create.namePlaceholder')"
             required
@@ -22,19 +22,9 @@
           <Label for="householdLocation">{{ $t('household.create.locationLabel') }}</Label>
           <Input
             id="householdLocation"
-            v-model="householdLocation"
+            v-model="householdData.address"
             type="text"
             :placeholder="$t('household.create.locationPlaceholder')"
-          />
-        </div>
-
-        <div class="space-y-1">
-          <Label for="householdDescription">{{ $t('household.create.descriptionLabel') }}</Label>
-          <Textarea
-            id="householdDescription"
-            v-model="householdDescription"
-            :placeholder="$t('household.create.descriptionPlaceholder')"
-            rows="3"
           />
         </div>
 
@@ -62,24 +52,26 @@ import { useI18n } from 'vue-i18n';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { createHousehold } from '@/services/HouseholdService';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import type { CreateHousehold } from '@/models/Household';
 
 const { t } = useI18n();
 const router = useRouter();
 
-// Form fields
-const householdName = ref('');
-const householdLocation = ref('');
-const householdDescription = ref('');
+// Form data using the CreateHousehold interface
+const householdData = ref<CreateHousehold>({
+  name: '',
+  address: '',
+  populationCount: 1
+});
 
 // State
 const error = ref('');
 const isLoading = ref(false);
 
 async function createNewHousehold() {
-  if (!householdName.value.trim()) {
+  if (!householdData.value.name.trim()) {
     error.value = t('household.create.errors.nameRequired');
     return;
   }
@@ -89,9 +81,9 @@ async function createNewHousehold() {
 
   try {
     await createHousehold({
-      name: householdName.value.trim(),
-      address: householdLocation.value.trim() ? { street: householdLocation.value.trim() } : undefined,
-      description: householdDescription.value.trim() || undefined
+      name: householdData.value.name.trim(),
+      address: householdData.value.address.trim(),
+      populationCount: householdData.value.populationCount
     });
 
     // Redirect to household page after successful creation

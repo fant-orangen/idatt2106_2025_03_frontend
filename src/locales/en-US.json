@@ -2,7 +2,7 @@
   "actions": {
     "to-reflect": "to reflect",
     "read-more": "Read more",
-    "add-empty-account-to-household": "Add an empty user to the household",
+    "add-empty-account-to-household": "Add a household member",
     "add": "Add",
     "switch-household": "Switch household"
   },
@@ -20,21 +20,67 @@
     "email": "Email",
     "phone": "Phone",
     "password": "Password",
-    "confirm-password": "Confirm Password"
+    "confirm-password": "Confirm Password",
+    "reset-password-description": "Enter your email address below to reset your password.",
+    "enter-email": "Enter your email",
+    "reset-password": "Reset Password"
   },
   "admin": {
     "administrate": "Administrate",
     "make-new-event": "Add a new event",
     "make-new-POI": "Add a new point of interest",
     "make-new-activity": "Make a new activity",
-    "edit-event": "Edit a current event"
+    "edit-event": "Edit a current event",
+    "basic-info": "Basic Information",
+    "poi-title-placeholder": "Enter title for the point of interest",
+    "select-poi-type": "Select the type of point of interest this should be",
+    "description-placeholder": "Write some information describing the point of interest. Where is it located? What can be found there?",
+    "location-info": "Location",
+    "address-placeholder": "Example Street 2",
+    "hours-contact-info": "Opening Hours and Contact Information",
+    "contact-info-description": "Phone number for a responsible contact person.",
+    "form-invalid": "Please fill out all required fields.",
+    "submission-error": "Error saving point of interest. Please try again later.",
+    "cancel": "Cancel",
+    "submitting": "Saving...",
+    "submit": "Save",
+    "map-controls": "Map Controls",
+    "get-location": "Get Location",
+    "reset-map": "Reset Map",
+    "search-location": "Search for address",
+    "enter-address": "Enter address",
+    "search": "Search",
+    "selected-location": "Selected Location",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "clear-selection": "Clear Selected Location",
+    "map-instructions": "Click on the map to select the location for the new point of interest.",
+    "getting-location": "Getting location...",
+    "location-unavailable": "Location services are not available in your browser.",
+    "location-found": "Location found.",
+    "location-error": "Could not get location.",
+    "enter-valid-address": "Please enter a valid address.",
+    "searching": "Searching...",
+    "address-not-found": "Could not find the address.",
+    "search-error": "Error searching for address.",
+    "map-reset": "Map reset."
+  },
+  "notifications": {
+    "notification": "Notification",
+    "notifications": "Notifications",
+    "new-notification": "New Notification",
+    "no-notifications": "No notifications available",
+    "no-new-notifications": "No new notifications",
+    "all-notifications": "See all notifications",
+    "untitled": "Untitled"
   },
   "errors": {
     "wrong-username-or-password": "Incorrect username or password",
     "user-exists": "An account with this email already exists. Please log in or reset your password if you've forgotten it.",
     "login-failed": "Login failed. Please check your credentials.",
     "passwords-do-not-match": "Passwords do not match.",
-    "registration-failed": "Registration failed. Please try again."
+    "registration-failed": "Registration failed. Please try again.",
+    "no-news-available": "No news available"
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",
@@ -66,7 +112,9 @@
     "notifications": "Notifications",
     "nr-of-people-in-household": "Number of people in household",
     "info-about-storage": "Read more about emergency storages",
-    "current-situation": "Current situation"
+    "current-situation": "Current situation",
+    "read-info-preparations": "Read more about how you can prepare for a crisis",
+    "info-current-crisis": "Read more about the current crisis"
   },
   "reflect": {
     "reflection": "Reflect after crisis",
@@ -120,11 +168,9 @@
     "person": "person",
     "people": "people",
     "in-household": "in household",
-    "add-empty-user": "Add Empty User",
+    "add-empty-user": "Add household member",
     "name": "Name",
     "enter-name": "Enter name",
-    "last-name": "Last Name",
-    "enter-last-name": "Enter last name",
     "type": "Type",
     "select-type": "Select type",
     "adult": "Adult",
@@ -356,65 +402,65 @@
         "systemDescription": "Receive notifications about critical crisis events to stay informed and prepared."
       },
       "saveChanges": "Save Changes"
-    },
-    "add-event-info": {
-      "title": "This will be the title of your event.",
-      "coordinates": "Insert the coordinates or the address of your event. You can also click on the map to get the coordinates automatically!",
-      "radius": "Insert the radius of your event in meters. Approximately how large is the area affected by the event?",
-      "priority": "The priority level is important, and will show up as low (green), medium (orange), and high (red) to users on the map.",
-      "description": "For example: The event occurred on (date and location) ... and will most likely last for (time)... There might be a shortage of (resource)...",
-      "time": "Time when the event first occurred.",
-      "date": "Date when the event first occurred.",
-      "errors": {
-        "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
-        "latitude": "The latitude must be between -90 and 90.",
-        "longitude": "The longitude must be between -180 and 180.",
-        "radius": "The radius must be at least 1 meter and cannot exceed 10,000 meters.",
-        "priority": "You must select a priority.",
-        "type": "You need to choose the type of POI.",
-        "description": "The description must be at least 10 characters long and cannot exceed 500 characters.",
-        "position-missing": "Choose to enter either the coordinates of the event, or the address.",
-        "address": "The address needs to have at least 2 characters and cannot exceed 100 characters.",
-        "contact-info": "Make sure to write a valid phone number."
-      },
-      "titles": {
-        "address": "Address",
-        "title": "Title",
-        "longitude": "Longitude",
-        "latitude": "Latitude",
-        "radius": "Radius",
-        "priority": "Crisis level",
-        "description": "Information",
-        "submit": "Submit",
-        "time": "Time",
-        "date": "Date",
-        "choose-event": "Choose an event"
-      },
-      "crisis-level": {
-        "low": "Low",
-        "medium": "Medium",
-        "high": "High"
-      }
-    },
-    "add-POI-info": {
-      "info": {
-        "title": "This will be the title of your point of interest (POI).",
-        "coordinates": "Insert the coordinates or the address of your POI. You can also click on the map to get the coordinates automatically!",
-        "type": "Choose what type of POI this is.",
-        "description": "Write some information describing the POI. Where is it? What is its purpose?"
-      },
-      "titles": {
-        "type": "Type",
-        "open-from": "Open from",
-        "open-to": "Open until",
-        "contact-info": "Contact information"
-      },
-      "POI-type": {
-        "defibrillator": "Defibrillator",
-        "shelter": "Shelter",
-        "water-source": "Water scource",
-        "food": "Food station"
-      }
     }
+  },
+  "add-event-info": {
+    "title": "This will be the title of your event.",
+    "coordinates": "Insert the coordinates or the address of your event. You can also click on the map to get the coordinates automatically!",
+    "radius": "Insert the radius of your event in meters. Approximately how large is the area affected by the event?",
+    "priority": "The priority level is important, and will show up as low (green), medium (orange), and high (red) to users on the map.",
+    "description": "For example: The event occurred on (date and location) ... and will most likely last for (time)... There might be a shortage of (resource)...",
+    "time": "Time when the event first occurred.",
+    "date": "Date when the event first occurred.",
+    "errors": {
+      "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
+      "latitude": "The latitude must be between -90 and 90.",
+      "longitude": "The longitude must be between -180 and 180.",
+      "radius": "The radius must be at least 1 meter and cannot exceed 10,000 meters.",
+      "priority": "You must select a priority.",
+      "type": "You need to choose the type of POI.",
+      "description": "The description must be at least 10 characters long and cannot exceed 500 characters.",
+      "position-missing": "Choose to enter either the coordinates of the event, or the address.",
+      "address": "The address needs to have at least 2 characters and cannot exceed 100 characters.",
+      "contact-info": "Make sure to write a valid phone number."
+    },
+    "titles": {
+      "address": "Address",
+      "title": "Title",
+      "longitude": "Longitude",
+      "latitude": "Latitude",
+      "radius": "Radius",
+      "priority": "Crisis level",
+      "description": "Information",
+      "submit": "Submit",
+      "time": "Time",
+      "date": "Date",
+      "choose-event": "Choose an event"
+    },
+    "crisis-level": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    }
+  },
+  "add-POI-info": {
+    "info": {
+      "title": "This will be the title of your point of interest (POI).",
+      "coordinates": "Insert the coordinates or the address of your POI. You can also click on the map to get the coordinates automatically!",
+      "type": "Choose what type of POI this is.",
+      "description": "Write some information describing the POI. Where is it? What is its purpose?"
+    },
+    "titles": {
+      "type": "Type",
+      "open-from": "Open from",
+      "open-to": "Open until",
+      "contact-info": "Contact information"
+    },
+    "POI-type": {
+    "defibrillator": "Defibrillator",
+    "shelter": "Shelter",
+    "water-source": "Water Source",
+    "food": "Food Distribution"
+  }
   }
 }

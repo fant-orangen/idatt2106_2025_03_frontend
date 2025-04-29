@@ -98,20 +98,20 @@
   </Card>
 
   <div class="map-wrapper relative z-0 h-[50em]">
-    <div v-if="isLoadingPois" class="overlay">{{ t('map.loading') }}</div>
+    <div v-if="isLoadingPois || isLoadingCrisisEvents" class="overlay">{{ t('map.loading') }}</div>
     <div v-else-if="poiError" class="overlay text-red-600">
       {{ poiError }}
     </div>
     <MapComponent
       v-else
-      :pois="pointsOfInterest"
+      :pois="convertedPois"
       :userLocation="userLocation"
-      :crisisEvents="dummyCrises"
+      :crisisEvents="crisisEvents"
     />
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, nextTick } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import MapComponent from '@/components/map/MapComponent.vue';
 import {
@@ -120,7 +120,10 @@ import {
   fetchPoisNearby,
   fetchNearestPoiByType
 } from '@/services/api/PoiService';
+import { fetchActiveCrisisEvents } from '@/services/api/CrisisEventService';
 import type { PoiData } from '@/models/PoiData';
+import type { POI, UserLocation, CrisisEvent } from '@/types/map';
+import { convertPoiData } from '@/types/map';
 import {
   Card,
   CardContent,
@@ -137,7 +140,6 @@ import {
   SelectValue
 } from '@/components/ui/select';
 
-type CrisisEvent = { latitude: number; longitude: number; level: 1 | 2 | 3 };
 const { t } = useI18n();
 
 // Reactive state
@@ -145,17 +147,24 @@ const allPois = ref<PoiData[]>([]);
 const pointsOfInterest = ref<PoiData[]>([]);
 const isLoadingPois = ref(false);
 const poiError = ref<string | null>(null);
-const dummyCrises = ref<CrisisEvent[]>([]);
+const crisisEvents = ref<CrisisEvent[]>([]);
+const isLoadingCrisisEvents = ref(false);
 
 // Filter state
-const userLocation = ref<{ latitude: number; longitude: number } | null>(null);
+const userLocation = ref<UserLocation | null>(null);
 const selectedPoiType = ref<number | null>(null);
 const distanceInMeters = ref(1000);
 const isFilterMenuVisible = ref(false);
 const locationStatus = ref<string | null>(null);
 
+// Convert PoiData to POI objects for the MapComponent
+const convertedPois = computed<POI[]>(() => {
+  return pointsOfInterest.value.map(poi => convertPoiData(poi));
+});
+
 // Helper for ensuring numerical coordinates
 function ensureNumericCoordinates(poi: PoiData): PoiData {
+  // Create a copy to avoid modifying the original
   return {
     ...poi,
     latitude: typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude,
@@ -166,13 +175,59 @@ function ensureNumericCoordinates(poi: PoiData): PoiData {
 // Derive POI types
 const poiTypes = computed(() => {
   const types = new Map<number, string>();
-  allPois.value.forEach((poi) => {
-    if (!types.has(poi.poiTypeId)) {
+  allPois.value.forEach((poi: PoiData) => {
+    if (poi.poiTypeId && !types.has(poi.poiTypeId)) {
       types.set(poi.poiTypeId, poi.poiTypeName);
     }
   });
-  return Array.from(types.entries()).map(([id, name]) => ({ id, name }));
+  return Array.from(types.entries()).map(([id, name]: [number, string]) => ({ id, name }));
 });
+
+/**
+ * Fetches crisis events and processes them for display on the map
+ */
+async function loadCrisisEvents() {
+  isLoadingCrisisEvents.value = true;
+  try {
+    // Fetch active crisis events
+    const events = await fetchActiveCrisisEvents();
+
+    // Debug log for events
+    console.log('Crisis events loaded from service:', events);
+
+    // Ensure each event has proper coordinates
+    const validEvents = events.filter(event => {
+      const hasCoords = event.latitude !== undefined &&
+        event.longitude !== undefined &&
+        event.level !== undefined;
+      if (!hasCoords) {
+        console.warn('Invalid crisis event missing coordinates or level:', event);
+      }
+      return hasCoords;
+    });
+
+    // Ensure numeric coordinates (convert strings if needed)
+    const processedEvents = validEvents.map(event => ({
+      ...event,
+      latitude: typeof event.latitude === 'string' ? parseFloat(event.latitude) : event.latitude,
+      longitude: typeof event.longitude === 'string' ? parseFloat(event.longitude) : event.longitude,
+      level: typeof event.level === 'string' ? parseInt(event.level) : event.level
+    }));
+
+    crisisEvents.value = processedEvents;
+    console.log(`Loaded ${processedEvents.length} valid crisis events:`, processedEvents);
+
+    // Debug check for MapComponent prop
+    setTimeout(() => {
+      console.log('Current crisis events in component state:', crisisEvents.value);
+    }, 500);
+  } catch (error) {
+    console.error('Error loading crisis events:', error);
+    crisisEvents.value = [];
+  } finally {
+    isLoadingCrisisEvents.value = false;
+  }
+}
 
 // Geolocation helper
 async function getUserLocation() {
@@ -194,8 +249,12 @@ async function getUserLocation() {
       longitude: pos.coords.longitude
     };
     locationStatus.value = t('map.location-success');
+
+    // Reload crisis events when location changes
+    loadCrisisEvents();
+
     return true;
-  } catch {
+  } catch (error: unknown) {
     locationStatus.value = t('map.location-error');
     return false;
   }
@@ -233,29 +292,32 @@ async function applyFilters() {
 
   isLoadingPois.value = true;
   try {
-    let results = [];
+    // Initialize with empty array
+    let fetchedResults: PoiData[] = [];
 
     // 1) LOCATION-ONLY
-    if (hasLocation && !hasType) {
-      results = await fetchPoisNearby(
+    if (hasLocation && !hasType && userLocation.value) {
+      fetchedResults = await fetchPoisNearby(
         userLocation.value.latitude,
         userLocation.value.longitude,
         distanceInMeters.value
       );
     }
     // 2) LOCATION + TYPE
-    else if (hasLocation && hasType) {
-      results = await fetchPoisNearby(
+    else if (hasLocation && hasType && userLocation.value) {
+      // We already know selectedPoiType.value !== null from hasType
+      fetchedResults = await fetchPoisNearby(
         userLocation.value.latitude,
         userLocation.value.longitude,
         distanceInMeters.value,
-        selectedPoiType.value
+        selectedPoiType.value!
       );
     }
     // 3) TYPE-ONLY
     else if (!hasLocation && hasType) {
-      results = await fetchPoisByType(
-        selectedPoiType.value
+      // We already know selectedPoiType.value !== null from hasType
+      fetchedResults = await fetchPoisByType(
+        selectedPoiType.value!
       );
     }
 
@@ -264,16 +326,16 @@ async function applyFilters() {
 
     // Force reactivity by briefly setting to empty then to results
     setTimeout(() => {
-      pointsOfInterest.value = Array.isArray(results) ? [...results] : [];
+      pointsOfInterest.value = Array.isArray(fetchedResults) ? [...fetchedResults] : [];
 
-      if (results.length === 0) {
+      if (fetchedResults.length === 0) {
         console.log("No POIs found matching the criteria");
       } else {
-        console.log(`Found ${results.length} POIs matching the criteria`);
+        console.log(`Found ${fetchedResults.length} POIs matching the criteria`);
       }
     }, 10);
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error applying filters:', error);
     poiError.value = t('map.filter-error');
     pointsOfInterest.value = [];
@@ -326,7 +388,7 @@ async function findNearestShelter() {
         poiError.value = t('map.find-error');
       }
     }, 10);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error finding nearest shelter:', error);
     poiError.value = t('map.find-error');
     pointsOfInterest.value = [];
@@ -338,7 +400,7 @@ async function findNearestShelter() {
 // Find nearest POI of selected type
 async function findNearestPoi() {
   console.log("Finding nearest POI");
-  if (!userLocation.value || !selectedPoiType.value) return;
+  if (!userLocation.value || selectedPoiType.value === null) return;
 
   isLoadingPois.value = true;
   poiError.value = null;
@@ -363,7 +425,7 @@ async function findNearestPoi() {
         poiError.value = t('map.find-error');
       }
     }, 10);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error finding nearest POI:', error);
     poiError.value = t('map.find-error');
     pointsOfInterest.value = [];
@@ -372,7 +434,7 @@ async function findNearestPoi() {
   }
 }
 
-watch(distanceInMeters, (val) => {
+watch(distanceInMeters, (val: number) => {
   if (val < 100) distanceInMeters.value = 100;
   else if (val > 5000000) distanceInMeters.value = 5000000;
 });
@@ -384,6 +446,7 @@ onMounted(async () => {
   poiError.value = null;
 
   try {
+    // Load POIs
     const pois = await fetchPublicPois();
 
     // First set allPois
@@ -397,7 +460,11 @@ onMounted(async () => {
       pointsOfInterest.value = [...pois];
       console.log("Initial POIs loaded:", pointsOfInterest.value.length);
     }, 10);
-  } catch (error) {
+
+    // Load crisis events
+    await loadCrisisEvents();
+
+  } catch (error: unknown) {
     console.error('Error loading POIs:', error);
     poiError.value = t('map.load-error');
     allPois.value = [];
