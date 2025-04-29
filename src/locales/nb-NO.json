@@ -113,7 +113,9 @@
     "notifications": "Varslinger",
     "nr-of-people-in-household": "Antall personer i husholdningen",
     "info-about-storage": "Les mer om beredskapslageret",
-    "current-situation": "Nåværende hendelser"
+    "current-situation": "Nåværende hendelser",
+    "read-info-preparations": "Les mer om hvordan du kan forberede deg til en krise",
+    "info-current-crisis": "Les mer om den nåværende krisetype"
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",
