@@ -205,6 +205,46 @@
       </div>
     </div>
   </div>
+
+  <!-- Success Dialog -->
+  <Dialog :open="isSuccessDialogOpen" @update:open="isSuccessDialogOpen = $event">
+    <!-- modal -->
+    <DialogContent
+      class="
+      fixed top-1/2 left-1/2
+      transform -translate-x-1/2 -translate-y-1/2
+      w-full max-w-md
+      max-h-[80vh] overflow-auto
+      bg-white rounded-lg p-6
+      z-[1001]
+    "
+    >
+
+      <DialogHeader>
+        <DialogTitle>{{ $t('add-event-info.successfully') }}</DialogTitle>
+        <DialogDescription>
+          {{ $t('add-event-info.success-message') }}
+        </DialogDescription>
+      </DialogHeader>
+
+      <div class="py-4">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600">
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+          </div>
+          <p class="text-lg">
+            <strong>{{ createdPOIName }}</strong> {{ $t('add-event-info.success-added') }}
+          </p>
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button @click="navigateToAdminPanel">{{ $t('add-event-info.go-to-admin') }}</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script lang="ts">
@@ -216,6 +256,15 @@ import { createPOI } from '@/services/api/AdminServices' // <-- Make sure path i
 import MapComponent from '@/components/map/MapComponent.vue'
 import AdminMapController from '@/components/admin/AdminMapController.vue'
 import * as L from 'leaflet'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -261,6 +310,13 @@ export default defineComponent({
     BreadcrumbSeparator,
     MapComponent,
     AdminMapController,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
   },
   setup() {
     const { t } = useI18n()
@@ -269,6 +325,8 @@ export default defineComponent({
     // Component references
     const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null)
     const tempMarker = ref<L.Marker | null>(null)
+    const isSuccessDialogOpen = ref(false)
+    const createdPOIName = ref('')
 
     // Initial center coordinates (Norway)
     const initialCenter: Location = {
@@ -448,10 +506,9 @@ export default defineComponent({
         const response = await createPOI(poiData)
         console.log('POI created:', response.data)
 
-        // Consider adding a success notification (e.g., using a toast library)
-        // toast.success('POI created successfully!')
-
-        router.push('/admin-panel')
+        // Show success dialog instead of immediate redirect
+        createdPOIName.value = formData.value.title
+        isSuccessDialogOpen.value = true
       } catch (error: any) {
         console.error('Error creating POI:', error)
         // Display more specific error from backend if possible
@@ -467,6 +524,12 @@ export default defineComponent({
     // Cancel and return to admin panel
     function cancelForm(): void {
       // Keep existing logic
+      router.push('/admin-panel')
+    }
+
+    // Navigate to admin panel after successful POI creation
+    function navigateToAdminPanel(): void {
+      isSuccessDialogOpen.value = false
       router.push('/admin-panel')
     }
 
@@ -506,11 +569,14 @@ export default defineComponent({
       isSubmitting,
       formError,
       isFormValid,
+      isSuccessDialogOpen,
+      createdPOIName,
       handleMapClick,
       handleLocationSelected,
       handleLocationCleared,
       submitPOI,
       cancelForm,
+      navigateToAdminPanel,
     }
   },
 })
