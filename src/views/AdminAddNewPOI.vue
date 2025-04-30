@@ -219,9 +219,9 @@
     >
 
       <DialogHeader>
-        <DialogTitle>{{ $t('add-event-info.successfully') }}</DialogTitle>
+        <DialogTitle>{{ $t('add-POI-info.info.successfully') }}</DialogTitle>
         <DialogDescription>
-          {{ $t('add-event-info.success-message') }}
+          {{ $t('add-POI-info.info.success-message') }}
         </DialogDescription>
       </DialogHeader>
 
@@ -233,13 +233,13 @@
             </svg>
           </div>
           <p class="text-lg">
-            <strong>{{ createdPOIName }}</strong> {{ $t('add-event-info.success-added') }}
+            <strong>{{ createdPOIName }}</strong> {{ $t('add-POI-info.info.success-added') }}
           </p>
         </div>
       </div>
 
       <DialogFooter>
-        <Button @click="navigateToAdminPanel">{{ $t('add-event-info.go-to-admin') }}</Button>
+        <Button @click="navigateToAdminPanel">{{ $t('add-POI-info.info.go-to-admin') }}</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>
