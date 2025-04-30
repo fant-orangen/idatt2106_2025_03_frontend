@@ -457,7 +457,8 @@
       "successfully": "POI Created Successfully",
       "success-message": "Your POI has been added to the system.",
       "success-added":"had been added.",
-      "go-to-admin": "Go to Admin Panel"
+      "go-to-admin": "Go to Admin Panel",
+      "description-placeholder": "Description"
     },
     "titles": {
       "type": "Type",

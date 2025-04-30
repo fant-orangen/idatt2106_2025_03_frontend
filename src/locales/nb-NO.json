@@ -455,11 +455,12 @@
       "title": "Dette vil være tittelen på interessepunktet.",
       "coordinates": "Sett inn koordinatene eller adressen til punktet. Du kan også klikke på kartet for å få koordinatene automatisk!",
       "type": "Velg hvilket type interessepunkt dette skal være.",
-      "description": "Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?",
+      "description": "Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?",
       "successfully": "Interessepunktet er opprettet",
       "success-message": "Interessepunktet ditt er lagt til i systemet.",
       "success-added":"har blitt lagt til.",
-      "go-to-admin": "Gå til Admin-panelet"
+      "go-to-admin": "Gå til Admin-panelet",
+      "description-placeholder": "Beskrivelse"
     },
     "titles": {
       "type": "Type",
