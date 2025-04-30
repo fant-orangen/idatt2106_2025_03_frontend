@@ -206,9 +206,7 @@
     </div>
   </div>
 
-  <!-- Success Dialog -->
   <Dialog :open="isSuccessDialogOpen" @update:open="isSuccessDialogOpen = $event">
-    <!-- modal -->
     <DialogContent
       class="
       fixed top-1/2 left-1/2
@@ -274,12 +272,38 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb/index.js'
 
+/**
+ * @fileoverview This file defines the AdminAddNewPOI Vue component.
+ * It provides an administrative interface for adding new Points of Interest (POIs)
+ * to the system. It includes a form for POI details and an interactive map for
+ * location selection.
+ */
+
 // Define interfaces for the component
+/**
+ * Represents geographical coordinates.
+ * @interface Location
+ * @property {number | null} lat - Latitude.
+ * @property {number | null} lng - Longitude.
+ */
 interface Location {
   lat: number | null;
   lng: number | null;
 }
 
+/**
+ * Represents the structure of the form data for adding a POI.
+ * @interface FormData
+ * @property {string} title - The title/name of the POI.
+ * @property {string} type - The selected type of the POI (e.g., 'shelter', 'defibrillator').
+ * @property {string} description - A description of the POI.
+ * @property {string} address - The address of the POI.
+ * @property {number | null} latitude - The latitude coordinate.
+ * @property {number | null} longitude - The longitude coordinate.
+ * @property {string} openfrom - The opening time (HH:MM format).
+ * @property {string} opento - The closing time (HH:MM format).
+ * @property {string} contactinfo - Contact phone number.
+ */
 interface FormData {
   title: string;
   type: string; // Keep as string from select input
@@ -292,6 +316,13 @@ interface FormData {
   contactinfo: string;
 }
 
+/**
+ * Represents the event object emitted when the map is clicked.
+ * @interface MapClickEvent
+ * @property {object} latlng - Contains latitude and longitude.
+ * @property {number} latlng.lat - Latitude of the click event.
+ * @property {number} latlng.lng - Longitude of the click event.
+ */
 interface MapClickEvent {
   latlng: {
     lat: number;
@@ -318,47 +349,56 @@ export default defineComponent({
     DialogHeader,
     DialogTitle,
   },
+  /**
+   * Setup function for the component using Vue 3 Composition API.
+   * Initializes reactive state, computed properties, methods, and lifecycle hooks.
+   */
   setup() {
-    const { t } = useI18n()
-    const router = useRouter()
+    const { t } = useI18n() // For internationalization
+    const router = useRouter() // For navigation
 
     // Component references
     const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null)
-    const tempMarker = ref<L.Marker | null>(null)
-    const isSuccessDialogOpen = ref(false)
-    const createdPOIName = ref('')
+    const tempMarker = ref<L.Marker | null>(null) // Temporary marker on the map
+    const isSuccessDialogOpen = ref(false) // Controls the success dialog visibility
+    const createdPOIName = ref('') // Stores the name of the created POI for the dialog
 
-    // Initial center coordinates (Norway)
+    // Initial center coordinates (Norway) for the map
     const initialCenter: Location = {
       lat: 63.4305,
       lng: 10.3951,
     }
 
-    // Form data
+    // Reactive form data object
     const formData = ref<FormData>({
       title: '',
-      type: '', // Keep as string from select input
+      type: '', // Mapped to poiTypeId (integer) before API call
       description: '',
       address: '',
       latitude: null,
       longitude: null,
-      openfrom: '',
-      opento: '',
+      openfrom: '', // Combined into openingHours string before API call
+      opento: '',   // Combined into openingHours string before API call
       contactinfo: '',
     })
 
-    const isSubmitting = ref(false)
-    const formError = ref('')
+    const isSubmitting = ref(false) // Tracks form submission status
+    const formError = ref('') // Stores form or submission error messages
 
-    // Computed property to get map component instance
+    /**
+     * Computed property to safely access the MapComponent instance.
+     * @returns {InstanceType<typeof MapComponent> | null} The map component instance or null.
+     */
     const mapComponentInstance = computed(() => {
-      // Ensure mapComponent.value is defined before accessing its properties
       return mapComponent.value ? (mapComponent.value as InstanceType<typeof MapComponent>) : null;
     });
 
-    // Computed property to check if form is valid
+    /**
+     * Computed property to determine if the form is valid for submission.
+     * Checks required fields and basic validation rules.
+     * @returns {boolean} True if the form is valid, false otherwise.
+     */
     const isFormValid = computed(() => {
-      // Keep existing validation logic
       return (
         formData.value.title &&
         formData.value.title.length >= 2 &&
@@ -370,9 +410,12 @@ export default defineComponent({
       )
     })
 
-    // Handle map click to select location
+    /**
+     * Handles the 'map-clicked' event from the MapComponent.
+     * Extracts coordinates and updates the form and marker.
+     * @param {MapClickEvent} event - The map click event object.
+     */
     function handleMapClick(event: MapClickEvent): void {
-      // Keep existing logic
       console.log('Map clicked at:', event.latlng)
       const location: Location = {
         lat: event.latlng.lat,
@@ -381,169 +424,178 @@ export default defineComponent({
       handleLocationSelected(location)
     }
 
-    // Handle location selected from the map controller
+    /**
+     * Handles the 'location-selected' event from AdminMapController or map click.
+     * Updates form data (latitude, longitude) and the map marker.
+     * @param {Location} location - The selected location coordinates.
+     */
     function handleLocationSelected(location: Location): void {
-      // Keep existing logic
       console.log('Location selected:', location)
       formData.value.latitude = location.lat
       formData.value.longitude = location.lng
       if (location.lat !== null && location.lng !== null) {
         updateMapMarker(location.lat, location.lng)
-        // Optional: Attempt reverse geocoding here if needed
-        // tryReverseGeocode(location.lat, location.lng);
+        // Optional: Add reverse geocoding here if needed
       }
       console.log('Selected location:', location)
     }
 
-    // Handle location cleared
+    /**
+     * Handles the 'location-cleared' event from AdminMapController.
+     * Resets form coordinates and removes the temporary marker.
+     */
     function handleLocationCleared(): void {
-      // Keep existing logic
       console.log('Location cleared')
       formData.value.latitude = null
       formData.value.longitude = null
-      if (tempMarker.value && mapComponent.value && mapComponent.value.removeMarker) {
-        mapComponent.value.removeMarker(tempMarker.value as any)
+      if (tempMarker.value && mapComponent.value?.removeMarker) {
+        mapComponent.value.removeMarker(tempMarker.value as any) // Type assertion might be needed depending on MapComponent implementation
         tempMarker.value = null
       }
     }
 
-    // Update or create marker on the map
+    /**
+     * Updates or creates the temporary marker on the map at the given coordinates.
+     * Also updates the marker's popup/tooltip content.
+     * @param {number} lat - Latitude for the marker.
+     * @param {number} lng - Longitude for the marker.
+     */
     function updateMapMarker(lat: number, lng: number): void {
-      // Keep existing logic
-      if (!mapComponent.value || !mapComponent.value.addMarker) {
+      if (!mapComponent.value?.addMarker) {
         console.error('Map component or addMarker method not available')
         return
       }
+      // Remove existing temporary marker if it exists
       if (tempMarker.value && mapComponent.value.removeMarker) {
         mapComponent.value.removeMarker(tempMarker.value as any)
       }
+      // Determine marker title, fallback to default/translated string
       const title = formData.value.title || t('navigation.new-POI') || 'Nytt interessepunkt'
-      // Add marker using MapComponent's method
+      // Add new marker using MapComponent's method
       tempMarker.value = mapComponent.value.addMarker(lat, lng, title)
 
-      // --- ADDED: Update marker popup/tooltip if possible ---
+      // Update marker popup/tooltip content if the marker supports it
       if (tempMarker.value) {
+        const popupContent = `<b>${title}</b><br>${formData.value.description || ''}`;
         if (typeof tempMarker.value.bindPopup === 'function') {
-          tempMarker.value.bindPopup(`<b>${title}</b><br>${formData.value.description || ''}`).openPopup();
+          tempMarker.value.bindPopup(popupContent).openPopup();
         } else if (typeof tempMarker.value.bindTooltip === 'function') {
           tempMarker.value.bindTooltip(title).openTooltip();
         }
       }
-      // --- END ADDED ---
     }
 
-    // *** MODIFIED: submitPOI function ***
+    /**
+     * Handles the form submission.
+     * Validates the form, maps frontend data to the backend DTO format,
+     * calls the createPOI API service, and handles success or error states.
+     * @returns {Promise<void>}
+     */
     async function submitPOI(): Promise<void> {
+      // Validate form before proceeding
       if (!isFormValid.value) {
         formError.value = t('admin.form-invalid') || 'Vennligst fyll ut alle påkrevde felt.'
         return
       }
 
-      isSubmitting.value = true
-      formError.value = ''
+      isSubmitting.value = true // Indicate submission start
+      formError.value = '' // Clear previous errors
 
-      // --- ADDED: Map frontend type string to backend poiTypeId integer ---
-      // Based on data.sql and frontend options
-      // Adjust IDs as needed based on your actual database setup or add new types.
+      // Map frontend type string to backend poiTypeId integer
+      // Adjust IDs based on backend `data.sql` or database schema
       let poiTypeId: number | null = null;
       switch (formData.value.type) {
-        case 'shelter':
-          poiTypeId = 4; // Matches 'Shelter' in data.sql
-          break;
-        case 'water-source':
-          poiTypeId = 6; // Matches 'Water Distribution Point'
-          break;
-        case 'food-station':
-          poiTypeId = 5; // Matches 'Grocery Store' (assuming this is the intent for food distribution)
-          break;
+        case 'shelter': poiTypeId = 4; break; // Matches 'Shelter' in data.sql
+        case 'water-source': poiTypeId = 6; break; // Matches 'Water Distribution Point'
+        case 'food-station': poiTypeId = 5; break; // Matches 'Grocery Store' (adjust if needed)
         case 'defibrillator':
-          // Assuming Defibrillator might relate to Hospital or needs a new type ID
-          // Use a placeholder or add a specific type ID in your backend/DB
+          // Map to a relevant type ID (e.g., Hospital or create a specific type)
           poiTypeId = 1; // Example: Using 'Hospital' ID as placeholder
           console.warn("Mapping 'defibrillator' to POI Type ID 1 (Hospital). Adjust if needed.");
           break;
         default:
+          // Handle invalid type selection
           formError.value = t('add-event-info.errors.type') || 'Ugyldig interessepunkttype valgt.';
           isSubmitting.value = false;
           return;
       }
-      // --- END ADDED ---
 
-      // --- ADDED: Combine opening hours ---
+      // Combine opening hours into a single string format
       let openingHours = '';
       if (formData.value.openfrom && formData.value.opento) {
         openingHours = `${formData.value.openfrom} - ${formData.value.opento}`;
       } else if (formData.value.openfrom) {
-        openingHours = `Fra ${formData.value.openfrom}`; // Adjusted translation
+        openingHours = `Fra ${formData.value.openfrom}`; // Example format, adjust as needed
       } else if (formData.value.opento) {
-        openingHours = `Til ${formData.value.opento}`; // Adjusted translation
+        openingHours = `Til ${formData.value.opento}`; // Example format, adjust as needed
       }
-      // --- END ADDED ---
-
 
       try {
-        // --- MODIFIED: Format data for API according to CreatePoiDto ---
-        // Backend expects 'name', 'latitude', 'longitude', 'poiTypeId' as mandatory
-        // Other fields like address, description, openingHours, contactInfo are optional
+        // Prepare data matching the backend CreatePoiDto structure
         const poiData = {
-          // Map 'title' to 'name' as expected by backend DTO
-          name: formData.value.title,
-          latitude: formData.value.latitude!, // Use non-null assertion as isFormValid checks this
-          longitude: formData.value.longitude!, // Use non-null assertion
+          name: formData.value.title, // Map frontend 'title' to backend 'name'
+          latitude: formData.value.latitude!, // Non-null assertion due to isFormValid check
+          longitude: formData.value.longitude!, // Non-null assertion
           address: formData.value.address || null, // Send null if empty
-          // Use the mapped poiTypeId
-          poiTypeId: poiTypeId,
-          description: formData.value.description || null,
-          // Use combined openingHours
-          openingHours: openingHours || null,
+          poiTypeId: poiTypeId, // Use the mapped integer ID
+          description: formData.value.description || null, // Send null if empty
+          openingHours: openingHours || null, // Send combined string or null
           contactInfo: formData.value.contactinfo || null, // Send null if empty
         }
-        // --- END MODIFIED ---
 
         console.log('Submitting POI data:', poiData)
 
-        // Call API to create the POI - Service endpoint URL should be corrected in AdminServices.ts
+        // Call the API service function to create the POI
         const response = await createPOI(poiData)
-        console.log('POI created:', response.data)
+        console.log('POI created:', response.data) // Log success response
 
-        // Show success dialog instead of immediate redirect
+        // Show success dialog on successful creation
         createdPOIName.value = formData.value.title
         isSuccessDialogOpen.value = true
+
       } catch (error: any) {
+        // Handle API errors
         console.error('Error creating POI:', error)
-        // Display more specific error from backend if possible
+        // Extract and display a user-friendly error message
         const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
         formError.value = `${t('admin.submission-error') || 'Feil ved lagring.'} ${errorMsg}`;
       } finally {
+        // Reset submission state regardless of success or failure
         isSubmitting.value = false
       }
     }
-    // *** END MODIFIED: submitPOI function ***
 
-
-    // Cancel and return to admin panel
+    /**
+     * Handles the cancel button click, navigating back to the admin panel.
+     */
     function cancelForm(): void {
-      // Keep existing logic
       router.push('/admin-panel')
     }
 
-    // Navigate to admin panel after successful POI creation
+    /**
+     * Handles the confirmation button click in the success dialog,
+     * closing the dialog and navigating back to the admin panel.
+     */
     function navigateToAdminPanel(): void {
       isSuccessDialogOpen.value = false
       router.push('/admin-panel')
     }
 
-    // *** MODIFIED: Watcher for title changes ***
-    // Update marker tooltip/popup when title changes
+    /**
+     * Watcher that observes changes in the form's title field.
+     * Updates the temporary map marker's popup/tooltip content dynamically.
+     */
     watch(
-      () => formData.value.title,
-      (newTitle: string) => {
+      () => formData.value.title, // Source to watch
+      (newTitle: string) => { // Callback function
         if (tempMarker.value && mapComponent.value) {
           const markerTitle = newTitle || t('navigation.new-POI') || 'Nytt interessepunkt';
-          // Update popup or tooltip content if the marker exists and methods are available
+          const popupContent = `<b>${markerTitle}</b><br>${formData.value.description || ''}`;
+          // Update popup content if method exists
           if (typeof tempMarker.value.setPopupContent === 'function') {
-            tempMarker.value.setPopupContent(`<b>${markerTitle}</b><br>${formData.value.description || ''}`);
+            tempMarker.value.setPopupContent(popupContent);
           }
+          // Update tooltip content if method exists
           if (typeof tempMarker.value.setTooltipContent === 'function') {
             tempMarker.value.setTooltipContent(markerTitle);
           }
@@ -551,17 +603,19 @@ export default defineComponent({
         }
       },
     )
-    // *** END MODIFIED ***
 
-    // Initialize
+    /**
+     * Lifecycle hook called when the component is mounted.
+     * Logs a message. Can be used for initial data fetching (e.g., POI types).
+     */
     onMounted((): void => {
       console.log('AdminAddPOIPage mounted')
-      // Optional: Fetch POI Types from backend if needed for dynamic select options
+      // Optional: Fetch POI Types dynamically if needed
       // fetchPoiTypes();
     })
 
+    // Return all reactive state, computed properties, and methods to be used in the template
     return {
-      // Keep existing return values
       mapComponent,
       mapComponentInstance,
       initialCenter,
@@ -583,104 +637,120 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Keep existing styles */
+/* Scoped styles for the AdminAddPOIPage component */
+
+/* Main page container */
 .admin-add-poi-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 1200px; /* Limit maximum width */
+  margin: 0 auto; /* Center the page horizontally */
+  padding: 20px; /* Add padding around the content */
 }
 
+/* Page heading */
 h1 {
-  text-align: center;
-  margin-bottom: 30px;
+  text-align: center; /* Center the heading text */
+  margin-bottom: 30px; /* Add space below the heading */
 }
 
+/* Grid container for form and map */
 .content-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 30px; /* Space between columns */
 }
 
+/* Form section styling */
 .form-section {
   padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff; /* White background */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
+/* Header within form sections */
 .form-section-header {
-  margin-bottom: 15px;
-  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 15px; /* Space below header */
+  border-bottom: 1px solid #dee2e6; /* Bottom border */
 }
 
+/* Form section header text */
 .form-section-header h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
+  font-size: 1.2rem; /* Font size */
+  font-weight: 600; /* Boldness */
   margin: 0;
-  padding-bottom: 10px;
+  padding-bottom: 10px; /* Padding below text */
 }
 
+/* Individual form group styling */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* Space between form groups */
 }
 
+/* Label styling */
 label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
+  display: block; /* Make label take full width */
+  margin-bottom: 5px; /* Space below label */
+  font-weight: 500; /* Medium boldness */
 }
 
+/* General styling for input, select, textarea */
 input,
 select,
 textarea {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 14px;
+  width: 100%; /* Full width */
+  padding: 8px 12px; /* Padding inside */
+  border: 1px solid #ced4da; /* Border */
+  border-radius: 4px; /* Rounded corners */
+  font-family: inherit; /* Use parent font */
+  font-size: 14px; /* Font size */
 }
 
+/* Remove spinners from number inputs */
 input[type='number'] {
-  -moz-appearance: textfield;
+  -moz-appearance: textfield; /* Firefox */
 }
-
 input[type='number']::-webkit-outer-spin-button,
 input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+  -webkit-appearance: none; /* Chrome, Safari, Edge */
   margin: 0;
 }
 
+/* Styling for read-only inputs */
 input:read-only {
-  background-color: #e9ecef;
-  cursor: not-allowed;
+  background-color: #e9ecef; /* Light gray background */
+  cursor: not-allowed; /* Indicate non-editable */
 }
 
+/* Styling for form descriptions */
 .form-description {
-  font-size: 12px;
-  color: #6c757d;
-  margin-top: 4px;
+  font-size: 12px; /* Smaller font size */
+  color: #6c757d; /* Gray text color */
+  margin-top: 4px; /* Space above description */
 }
 
+/* Container for coordinates and hours (flex layout) */
 .coordinates-container,
 .hours-container {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 15px; /* Space between items */
+  margin-bottom: 20px; /* Space below container */
 }
 
+/* Styling for half-width elements within flex containers */
 .half-width {
-  flex: 1;
-  margin-bottom: 0;
+  flex: 1; /* Allow items to grow equally */
+  margin-bottom: 0; /* Remove default bottom margin */
 }
 
+/* Container for form action buttons (flex layout) */
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 30px;
+  justify-content: flex-end; /* Align buttons to the right */
+  gap: 10px; /* Space between buttons */
+  margin-top: 30px; /* Space above buttons */
 }
 
+/* Base styling for submit and cancel buttons */
 .submit-button,
 .cancel-button {
   padding: 10px 20px;
@@ -688,93 +758,91 @@ input:read-only {
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s; /* Smooth background transition */
 }
 
+/* Submit button specific styles */
 .submit-button {
-  background-color: #4a89dc;
+  background-color: #4a89dc; /* Blue background */
   color: white;
 }
-
 .submit-button:hover:not(:disabled) {
-  background-color: #3a79cc;
+  background-color: #3a79cc; /* Darker blue on hover */
 }
-
 .submit-button:disabled {
-  background-color: #a8c6f0;
-  cursor: not-allowed;
+  background-color: #a8c6f0; /* Lighter blue when disabled */
+  cursor: not-allowed; /* Indicate disabled */
 }
 
+/* Cancel button specific styles */
 .cancel-button {
-  background-color: #f8f9fa;
-  border: 1px solid #ced4da;
-  color: #212529;
+  background-color: #f8f9fa; /* Light gray background */
+  border: 1px solid #ced4da; /* Gray border */
+  color: #212529; /* Dark text */
 }
-
 .cancel-button:hover {
-  background-color: #e9ecef;
+  background-color: #e9ecef; /* Slightly darker gray on hover */
 }
 
+/* Map section styling (flex column layout) */
 .map-section {
   display: flex;
   flex-direction: column;
 }
 
+/* Map container styling */
 .map-container {
-  flex-grow: 1;
-  min-height: 500px;
+  flex-grow: 1; /* Allow map to take available space */
+  min-height: 500px; /* Minimum height */
   border-radius: 8px;
-  overflow: hidden;
+  overflow: hidden; /* Hide anything overflowing */
   border: 1px solid #dee2e6;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Error message */
+/* Error message styling */
 .form-error {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #f8d7da; /* Light red background */
+  color: #721c24; /* Dark red text */
   padding: 10px;
   border-radius: 4px;
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* Space below error message */
 }
 
-/* Responsive layout */
+/* Responsive layout adjustments */
 @media (max-width: 992px) {
+  /* Stack form and map vertically on medium screens */
   .content-container {
     grid-template-columns: 1fr;
   }
-
   .map-section {
-    order: 1;
+    order: 1; /* Map comes first */
   }
-
   .form-section {
-    order: 2;
+    order: 2; /* Form comes second */
   }
-
   .map-container {
-    min-height: 400px;
+    min-height: 400px; /* Reduce map height */
   }
 }
 
 @media (max-width: 576px) {
+  /* Stack coordinate and hour inputs vertically on small screens */
   .coordinates-container,
   .hours-container {
     flex-direction: column;
     gap: 10px;
   }
-
   .half-width {
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Add margin back for stacked items */
   }
-
+  /* Stack form action buttons vertically on small screens */
   .form-actions {
-    flex-direction: column-reverse;
+    flex-direction: column-reverse; /* Submit button appears below cancel */
   }
-
   .submit-button,
   .cancel-button {
-    width: 100%;
+    width: 100%; /* Make buttons full width */
   }
 }
 </style>
