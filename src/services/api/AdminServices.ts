@@ -9,9 +9,26 @@ import type { AxiosResponse } from 'axios';
  * @param {object} updatedData - the updated fields for the POI (title, coordinates, type, contact info, etc.)
  * @returns {Promise} - axios Promise resolving the server response.
  */
-  export function editPOI(poiId: number, updatedData: object) {
-    return api.put(`/admin/poi/${poiId}`, updatedData);
+  export function editPOI(id: number, updatedData: object) {
+    return api.put(`/api/poi/${id}`, updatedData);
 }
+
+/**
+ * Get a POI by ID.
+ * @param id the ID of the POI to get.
+ */
+export function getPOIById(id: number) {
+  return api.get(`/api/poi/${id}`);
+}
+
+/**
+ * Delete a POI by ID.
+ * @param id the ID of the POI that is to be deleted.
+ */
+export function deletePOI(id: number) {
+  return api.delete(`/api/poi/${id}`);
+}
+
 
 
     /**
