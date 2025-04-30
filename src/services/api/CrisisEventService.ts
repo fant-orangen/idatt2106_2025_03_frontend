@@ -1,6 +1,6 @@
 import api from '@/services/api/AxiosInstance';
 import type { CrisisEvent } from '@/types/map';
-import type {CrisisEventDto} from '@/models/CrisisEventDto.ts'
+import type {CrisisEventDto} from '@/models/CrisisEvent.ts'
 
 // Define an interface representing the Page structure from Spring Boot
 interface Page<T> {
@@ -34,39 +34,50 @@ function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
     level: level,
     startTime: backendEvent.start_time,
     isActive: backendEvent.active,
-    createdBy: `User ${backendEvent.created_by_Id}`,
+    createdBy: `User ${backendEvent.created_by_user_id}`,
     createdAt: backendEvent.updated_at,
     updatedAt: backendEvent.updated_at
   };
 }
 
 /**
- * Fetches all crisis events from the backend API, returned as a Page object.
+ * Fetches all crisis events from the backend API.
  * Makes a GET request to the '/crisis-events/all' endpoint.
- * Note: This might include inactive events depending on the backend implementation.
+ * Maps backend field names to frontend expected properties.
+ * Note: This includes both active and inactive events.
  *
- * @returns {Promise<Page<CrisisEvent>>} A Page of crisis events.
+ * @returns {Promise<CrisisEventDto[]>} Array of all crisis events.
  */
-export async function fetchAllCrisisEvents(): Promise<Page<CrisisEvent>> {
+export async function fetchAllCrisisEvents(): Promise<CrisisEventDto[]> {
   try {
-    // Expect a Page<BackendCrisisEvent> structure from the backend
-    const response = await api.get<Page<CrisisEventDto>>('/crisis-events/all', {
+    console.log('Attempting to fetch crisis events from API...');
+    const response = await api.get<{ content: CrisisEventDto[] }>('/crisis-events/all', {
+      params: { size: 100 },
       headers: {
         'Content-Type': 'application/json'
       }
     });
 
-    // Map backend events to frontend format
-    const mappedContent = response.data.content.map(mapBackendToFrontendEvent);
-
-    // Return a new Page object with mapped content
-    return {
-      ...response.data,
-      content: mappedContent
-    };
-  } catch (error) {
-    console.error('Error fetching all crisis events:', error);
-    throw error;
+    const events = response.data?.content;
+    if (Array.isArray(events) && events.length > 0) {
+      console.log(`Loaded ${events.length} crisis events from API`);
+      return events;
+    } else {
+      console.warn('API returned empty or invalid data:', response.data);
+      return [];
+    }
+  } catch (apiError: any) {
+    console.error('Could not fetch crisis events from API:', apiError);
+    if (apiError.response) {
+      console.error('Error response data:', apiError.response.data);
+      console.error('Error response status:', apiError.response.status);
+      console.error('Error response headers:', apiError.response.headers);
+    } else if (apiError.request) {
+      console.error('No response received from server. Check if backend is running.');
+    } else {
+      console.error('Error setting up request:', apiError.message);
+    }
+    return [];
   }
 }
 

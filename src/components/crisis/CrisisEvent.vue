@@ -1,40 +1,25 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n';
-import type { CrisisEventDto } from '@/models/CrisisEventDto.ts';
+import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StaticMapWithCircle from '@/components/map/StaticMapWithCircle.vue';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { fetchAllCrisisEvents } from '@/services/api/CrisisEventService.ts'
 
 // Mock data for now - would come from API in real implementation
-const crisisEvents = ref<CrisisEventDto[]>([
-  {
-    id: 1,
-    name: 'Flood Warning',
-    description: 'Flooding expected in downtown area',
-    severity: 'yellow',
-    epicenter_latitude: 60.3913,
-    epicenter_longitude: 5.3221, // Bergen coordinates
-    radius: 1000000,
-    start_time: '2023-10-15T14:30:00',
-    updated_at: '2023-10-15T16:45:00',
-    active: true
-  },
-  {
-    id: 2,
-    name: 'Fire Hazard',
-    description: 'Forest fire in northern region',
-    severity: 'red',
-    epicenter_latitude: 60.4200,
-    epicenter_longitude: 5.3700,
-    radius: 2500,
-    start_time: '2023-10-16T08:15:00',
-    updated_at: '2023-10-16T10:20:00',
-    active: true
+const crisisEvents = ref<CrisisEventDto[]>([])
+
+onMounted(async () => {
+  try {
+    const events = await fetchAllCrisisEvents()
+    crisisEvents.value = events
+  } catch (error) {
+    console.error('Failed to fetch crisis events:', error)
   }
-]);
+})
 
 const { t } = useI18n();
 const selectedCrisis = ref<CrisisEventDto | null>(null);

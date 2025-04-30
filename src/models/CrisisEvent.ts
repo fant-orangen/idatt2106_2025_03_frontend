@@ -1,5 +1,4 @@
 
-
 export interface CrisisEventDto {
   id: number;
   name: string;
@@ -10,7 +9,7 @@ export interface CrisisEventDto {
   radius: number | null;
   start_time: string;
   updated_at: string;
-  created_by_Id: number;
+  created_by_user_id: number;
   active: boolean;
 }
 

@@ -209,7 +209,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { CrisisEventDto, CrisisEventChange } from '@/models/CrisisEventDto.ts';
+import type { CrisisEventDto, CrisisEventChange } from '@/models/CrisisEvent.ts';
 import type { News } from '@/models/News';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StaticMapWithCircle from '@/components/map/StaticMapWithCircle.vue';
