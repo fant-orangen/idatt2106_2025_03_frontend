@@ -7,10 +7,10 @@ export interface News {
   id: number;
   title: string;
   content: string;
-  published_at: string | Date;
-  created_by_user_id: number;
-  created_at: string | Date;
-  updated_at: string | Date;
+  publishedAt: string | Date;
+  createdByUserId: number;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
 
 /**
@@ -21,6 +21,6 @@ export interface News {
 export interface CreateNewsDto {
   title: string;
   content: string;
-  created_by_user_id: number;
+  createdByUserId: number;
 }
 
