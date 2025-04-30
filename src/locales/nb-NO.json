@@ -26,7 +26,9 @@
     "username": "Brukernavn",
     "reset-password-description": "Skriv inn e-postadressen din nedenfor for å tilbakestille passordet ditt.",
     "enter-email": "Skriv inn e-post",
-    "reset-password": "Tilbakestill passord"
+    "reset-password": "Tilbakestill passord",
+    "2fa-login-title": "To-trinnsverifisering",
+    "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn."
   },
   "admin": {
     "administrate": "Administrer",
@@ -390,7 +392,8 @@
       "security": {
         "title": "Kontosikkerhet",
         "description": "Forbedre sikkerheten til kontoen din med totrinnsverifisering, som krever en kode sendt til e-posten din i tillegg til passordet ditt for innlogging.",
-        "twoStep": "Slå på totrinnsverifisering"
+        "enableTwoStep": "Slå på totrinnsverifisering",
+        "disableTwoStep": "Slå av totrinnsverifisering"
       },
       "delete": {
         "title": "Slett konto",
@@ -420,7 +423,7 @@
     "date": "Dato for når hendelsen først inntraff.",
     "successfully": "Hendelsen ble opprettet",
     "success-message": "Hendelsen din er lagt til i systemet.",
-    "success-added":"har blitt lagt til.",
+    "success-added": "har blitt lagt til.",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
       "latitude": "Breddegraden må være mellom -90 og 90.",
@@ -466,10 +469,14 @@
       "contact-info": "Kontaktinformasjon"
     },
     "POI-type": {
-    "defibrillator": "Hjertestarter",
-    "shelter": "Tilfluktsrom",
-    "water-source": "Vannkilde",
-    "food": "Matutdeling"
+      "defibrillator": "Hjertestarter",
+      "shelter": "Tilfluktsrom",
+      "water-source": "Vannkilde",
+      "food": "Matutdeling"
     }
+  },
+  "language": {
+    "title": "Språk",
+    "select-language": "Velg språk"
   }
 }
