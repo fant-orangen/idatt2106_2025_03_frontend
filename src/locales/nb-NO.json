@@ -24,7 +24,9 @@
     "confirm-password": "Bekreft passord",
     "reset-password-description": "Skriv inn e-postadressen din nedenfor for å tilbakestille passordet ditt.",
     "enter-email": "Skriv inn e-post",
-    "reset-password": "Tilbakestill passord"
+    "reset-password": "Tilbakestill passord",
+    "2fa-login-title": "To-trinnsverifisering",
+    "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn."
   },
   "admin": {
     "administrate": "Administrer",
