@@ -384,7 +384,8 @@
       "security": {
         "title": "Account Security",
         "description": "Enhance your account's security with two-step verification, requiring a code sent to your email in addition to your password for login.",
-        "twoStep": "Turn on 2 step verification"
+        "enableTwoStep": "Turn on 2 step verification",
+        "disableTwoStep": "Turn off 2 step verification"
       },
       "delete": {
         "title": "Delete Account",
