@@ -156,7 +156,7 @@
 
         <Button type="submit" :disabled="isSubmitting">
           <span v-if="isSubmitting">{{ $t('admin.submitting') || 'Lagrer...' }}</span>
-          <span v-else>{{ $t('admin.save') || 'Lagre' }}</span>
+          <span v-else>{{ $t('admin.submit') || 'Lagre' }}</span>
         </Button>
       </form>
     </div>
@@ -185,7 +185,16 @@
 
   <!-- Success Dialog -->
   <Dialog :open="isSuccessDialogOpen" @update:open="isSuccessDialogOpen = $event">
-    <DialogContent>
+    <DialogContent
+      class="
+      fixed top-1/2 left-1/2
+      transform -translate-x-1/2 -translate-y-1/2
+      w-full max-w-md
+      max-h-[80vh] overflow-auto
+      bg-white rounded-lg p-6
+      z-[1001]
+    "
+    >
       <DialogHeader>
         <DialogTitle>{{ $t('add-POI-info.info.successfully') }}</DialogTitle>
         <DialogDescription>
@@ -615,7 +624,7 @@ h1 {
 
 .form-section {
   padding: 20px;
-  background-color: #fff;
+  background-color: hsl(var(--background));
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;

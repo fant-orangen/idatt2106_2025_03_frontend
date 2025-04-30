@@ -580,7 +580,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 .form-section {
   padding: 20px;
-  background-color: #fff; /* Optional: White background for form */
+  background-color: hsl(var(--background));
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   /* Ensure form section takes available height */
