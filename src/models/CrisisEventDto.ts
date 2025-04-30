@@ -1,15 +1,16 @@
 
 
-export interface CrisisEvent {
+export interface CrisisEventDto {
   id: number;
   name: string;
-  description: string | null;
+  description?: string;
   severity: 'green' | 'yellow' | 'red';
   epicenter_latitude: number;
   epicenter_longitude: number;
   radius: number | null;
   start_time: string;
   updated_at: string;
+  created_by_Id: number;
   active: boolean;
 }
 

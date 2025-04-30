@@ -1,5 +1,6 @@
 import api from '@/services/api/AxiosInstance';
 import type { CrisisEvent } from '@/types/map';
+import type {CrisisEventDto} from '@/models/CrisisEventDto.ts'
 
 // Define an interface representing the Page structure from Spring Boot
 interface Page<T> {
@@ -11,21 +12,6 @@ interface Page<T> {
   // Add other Page properties if needed (first, last, empty, etc.)
 }
 
-// Define an interface for the backend crisis event model
-interface BackendCrisisEvent {
-  id: number;
-  name: string;
-  description?: string;
-  severity: string; // 'green', 'yellow', 'red'
-  epicenterLatitude: number;
-  epicenterLongitude: number;
-  radius?: number;
-  startTime: string;
-  updatedAt: string;
-  createdByUserId: number;
-  active: boolean;
-}
-
 /**
  * Converts a backend crisis event to the frontend CrisisEvent format.
  * Maps field names and converts severity to numeric level.
@@ -33,7 +19,7 @@ interface BackendCrisisEvent {
  * @param backendEvent The crisis event data from the backend
  * @returns A properly formatted CrisisEvent for the frontend
  */
-function mapBackendToFrontendEvent(backendEvent: BackendCrisisEvent): CrisisEvent {
+function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
   // Convert severity string to numeric level
   let level = 1; // default level (green)
   if (backendEvent.severity === 'yellow') level = 2;
@@ -43,14 +29,14 @@ function mapBackendToFrontendEvent(backendEvent: BackendCrisisEvent): CrisisEven
     id: backendEvent.id,
     name: backendEvent.name,
     description: backendEvent.description,
-    latitude: backendEvent.epicenterLatitude,
-    longitude: backendEvent.epicenterLongitude,
+    latitude: backendEvent.epicenter_latitude,
+    longitude: backendEvent.epicenter_longitude,
     level: level,
-    startTime: backendEvent.startTime,
+    startTime: backendEvent.start_time,
     isActive: backendEvent.active,
-    createdBy: `User ${backendEvent.createdByUserId}`,
-    createdAt: backendEvent.updatedAt,
-    updatedAt: backendEvent.updatedAt
+    createdBy: `User ${backendEvent.created_by_Id}`,
+    createdAt: backendEvent.updated_at,
+    updatedAt: backendEvent.updated_at
   };
 }
 
@@ -64,7 +50,7 @@ function mapBackendToFrontendEvent(backendEvent: BackendCrisisEvent): CrisisEven
 export async function fetchAllCrisisEvents(): Promise<Page<CrisisEvent>> {
   try {
     // Expect a Page<BackendCrisisEvent> structure from the backend
-    const response = await api.get<Page<BackendCrisisEvent>>('/crisis-events/all', {
+    const response = await api.get<Page<CrisisEventDto>>('/crisis-events/all', {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -94,7 +80,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
   try {
     // Try to fetch from API first
     try {
-      const response = await api.get<Page<BackendCrisisEvent>>('/crisis-events/all', {
+      const response = await api.get<Page<CrisisEventDto>>('/crisis-events/all', {
         params: {
           size: 100 // Request a large page size to get most/all events
         },
@@ -185,7 +171,7 @@ export async function fetchCrisisEventsNearby(
   try {
     // Try API first
     try {
-      const response = await api.get<BackendCrisisEvent[]>('/crisis-events/nearby', {
+      const response = await api.get<CrisisEventDto[]>('/crisis-events/nearby', {
         params: {
           latitude,
           longitude,
