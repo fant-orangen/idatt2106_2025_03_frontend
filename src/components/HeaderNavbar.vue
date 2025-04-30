@@ -25,10 +25,8 @@ import NotificationPopover from '@/components/NotificationPopover.vue'
 const { locale } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
-const isDropdownOpen = ref(false)
 
 let prevScrollpos: number = window.pageYOffset
-const showDropdown = ref(false)
 const languages = [
   { label: 'Norsk bokmål', code: 'nb-NO' },
   { label: 'English', code: 'en-US' },
@@ -71,13 +69,8 @@ function logOut(): void {
   router.push('/')
 }
 
-function toggleDropdown(): void {
-  showDropdown.value = !showDropdown.value
-}
-
 function selectLanguage(language: { label: string; code: string }): void {
   selectedLanguage.value = language.label
-  showDropdown.value = false
   locale.value = language.code
 }
 
@@ -105,8 +98,10 @@ function goToPage(route: string) {
             {{ selectedLanguage }}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-[200px]">
+        <DropdownMenuContent align="start">
           <DropdownMenuGroup>
+            <DropdownMenuLabel>{{ $t('language.select-language') }}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               v-for="language in languages"
               :key="language.code"

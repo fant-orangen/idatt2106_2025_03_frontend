@@ -414,7 +414,7 @@
     "date": "Date when the event first occurred.",
     "successfully": "Event Created Successfully",
     "success-message": "Your event has been added to the system.",
-    "success-added":"had been added.",
+    "success-added": "had been added.",
     "errors": {
       "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
       "latitude": "The latitude must be between -90 and 90.",
@@ -460,10 +460,14 @@
       "contact-info": "Contact information"
     },
     "POI-type": {
-    "defibrillator": "Defibrillator",
-    "shelter": "Shelter",
-    "water-source": "Water Source",
-    "food": "Food Distribution"
-  }
+      "defibrillator": "Defibrillator",
+      "shelter": "Shelter",
+      "water-source": "Water Source",
+      "food": "Food Distribution"
+    }
+  },
+  "language": {
+    "title": "Language",
+    "select-language": "Select Language"
   }
 }
