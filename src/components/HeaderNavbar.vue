@@ -92,7 +92,9 @@ function goToPage(route: string) {
     class="navbar shadow-md bg-secondary text-secondary-foreground flex justify-between items-center px-5 py-3 transition-all duration-300"
   >
     <div class="navbar-right flex gap-4">
-      <RouterLink to="/" class="hover:text-primary"> {{ $t('navigation.home') }}</RouterLink>
+      <RouterLink to="/" class="hover:text-primary">
+        <img src="../assets/krisefikser.svg" alt="Logo" class="h-8 w-auto" />
+      </RouterLink>
       <div class="dropdown relative">
         <button
           class="dropbtn flex items-center gap-2 text-secondary-foreground hover:text-primary"

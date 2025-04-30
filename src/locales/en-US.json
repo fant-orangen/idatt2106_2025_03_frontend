@@ -23,7 +23,9 @@
     "confirm-password": "Confirm Password",
     "reset-password-description": "Enter your email address below to reset your password.",
     "enter-email": "Enter your email",
-    "reset-password": "Reset Password"
+    "reset-password": "Reset Password",
+    "2fa-login-title": "Two-Step Verification",
+    "2fa-login-description": "Enter the verification code sent to your email to complete the login process."
   },
   "admin": {
     "administrate": "Administrate",
@@ -460,10 +462,10 @@
       "contact-info": "Contact information"
     },
     "POI-type": {
-    "defibrillator": "Defibrillator",
-    "shelter": "Shelter",
-    "water-source": "Water Source",
-    "food": "Food Distribution"
-  }
+      "defibrillator": "Defibrillator",
+      "shelter": "Shelter",
+      "water-source": "Water Source",
+      "food": "Food Distribution"
+    }
   }
 }
