@@ -59,40 +59,43 @@
     </Dialog>
     
     <AlertDialog v-model:open="showConfirmationDialog">
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>{{ $t('admin.are-you-sure') }}</AlertDialogTitle>
-                <AlertDialogDescription>
-                {{ $t('admin.if-continue') }}: {{ form.values.confirmEmail }}
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel>{{ $t('admin.cancel') }}</AlertDialogCancel>
-                <AlertDialogAction @click="onSubmit">{{ $t('admin.submit') }}</AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>{{ $t('admin.are-you-sure') }}</AlertDialogTitle>
+                    <AlertDialogDescription>
+                    {{ $t('admin.if-continue') }}: {{ form.values.confirmEmail }}
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>{{ $t('admin.cancel') }}</AlertDialogCancel>
+                    <AlertDialogAction @click="handleAdminSubmit">{{ $t('admin.submit') }}</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
 
     <!--List of all current admin users -->
-    <div class="listOfAdmins" v-for="admin in admins" :key="admin.id">
-        <Button variant="outline" @click="openDrawer(admin)">
-            {{ admin.email }}
-        </Button>
+    
+    <div class="listOfAdmins">
+        <Label> {{ $t('admin.current-admins') }}:</Label>
+        <div v-for="admin in admins" :key="admin.id">
+            <Button variant="outline" @click="openDrawer(admin)">
+                {{ admin.email }}
+            </Button>
+        </div>
     </div>
-
     <!--Dialog / drawer for editing existing admins-->
     <Dialog v-if="isDesktop" v-model:open="isOpen">
         <DialogContent class="sm:max-w-[425px]">
             <DialogHeader>
                 <!--Inni drawer-->
-                <DialogTitle>{{ $t('admin.edit-profile') }}</DialogTitle>
+                <DialogTitle>{{ $t('admin.administrate-profile') }}</DialogTitle>
             </DialogHeader>
 
             <form class="grid items-start gap-4 px-4">
                 <!--email field-->
                 <div class="grid gap-2">
                     <Label for="email">{{$t('login.email')}}</Label>
-                    <Input id="email" type="email" :value="selectedAdmin?.email" readonly disabled  />
+                    <Input id="email" style="cursor: not-allowed;" type="email" :model-value=selectedAdmin?.email readonly disabled  />
                 </div>
             
                 <!--Action buttons-->
@@ -110,14 +113,14 @@
     <Drawer v-else v-model:open="isOpen">
         <DrawerContent>
             <DrawerHeader class="text-left">
-                <DrawerTitle>{{ $t('admin.edit-profile') }}</DrawerTitle>
+                <DrawerTitle>{{ $t('admin.administrate-profile') }}</DrawerTitle>
             </DrawerHeader>
         
             <form class="grid items-start gap-4 px-4">
                 <!--email field-->
                 <div class="grid gap-2">
                     <Label html-for="email">{{$t('login.email')}}</Label>
-                    <Input id="email" style="cursor: not-allowed;" type="email" :value="selectedAdmin?.email" readonly disabled  />
+                    <Input id="email" type="email" :model-value="selectedAdmin?.email" readonly disabled  />
                 </div>
 
                 <!--Action buttons-->
@@ -143,8 +146,9 @@
 </template>
 
 <script setup lang="ts">
-import { getAdminUsers, addNewAdmin, revokeAdminRights, sendNewPasswordLink } from '@/services/api/AdminServices'
+import { getAdminUsers, getUserId, addNewAdmin, revokeAdminRights, sendNewPasswordLink } from '@/services/api/AdminServices'
 import { Button } from '@/components/ui/button'
+import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -198,7 +202,7 @@ import {
 
 //TODO: etter man trykker lagre når man lager ny admin, må dialog gå bort
 // og toasten skal komme opp, det gjør ingen av dem... må fikses
-
+const {t} = useI18n();
 interface Admin {
   id: number;
   email: string;
@@ -206,11 +210,13 @@ interface Admin {
 
 const admins = ref<Admin[]>([]);
 const isDesktop = useMediaQuery('(min-width: 768px)');
-const isNewAdminDialogOpen = ref(false);
 const isOpen = ref(false);
-const selectedAdmin = ref<Admin | null>(null);
+const isNewAdminDialogOpen = ref(false);
 const showConfirmationDialog = ref(false);
+const selectedAdmin = ref<Admin | null>(null);
 const stagedEmail = ref('');
+const userId = ref(<number | null>(null));
+
 
 onMounted(() => {
     getAllAdmins();
@@ -239,20 +245,40 @@ const onSubmit = form.handleSubmit(async (values) => {
         if(!values.email) {
             return;
         }
-        console.log(' NEW ADMIN NEW EMAIL: ', values.email)
-        await addNewAdmin(stagedEmail.value);
 
-        console.log('New admin created!');
-        callToast('Created new admin user!');
+        const response = await getUserId(values.email);
+        console.log('Retrieved user id from API:', response.data);
+        userId.value = response.data; // set userId
 
-        isNewAdminDialogOpen.value = false; //close dialog
-        showConfirmationDialog.value = false;
-        resetForm();
-        await getAllAdmins(); // refresh
+        // find user with that email
+        if (!userId.value) {
+            callToast(t('admin.user-notfound'));
+            console.log("User doesn't exist!");
+        } else {
+            console.log('NEW ADMIN NEW EMAIL: ', values.email)
+            await addNewAdmin(userId.value, stagedEmail.value);
+
+            console.log('New admin created!');
+            callToast('Created new admin user!');
+            userId.value = null;
+            stagedEmail.value = '';
+            
+            resetForm();
+            // legg til funksjon for å  lukke panelet om det ikke skjer auto
+            await getAllAdmins(); // refresh
+        }
     } catch (error) {
         console.error('Failed to create a new admin user...', error);
+    } finally {
+        resetForm();
+        isNewAdminDialogOpen = false;
+        showConfirmationDialog = false;
     }
 });
+
+const handleAdminSubmit = () => {
+    onSubmit();
+}
 
 function openNewAdminDialog() {
   isNewAdminDialogOpen.value = true;
@@ -296,7 +322,7 @@ async function sendNewLink(adminEmail: string) {
 }
 
 const callToast = ((message: string) => { 
-    toast ({
+    toast.success (t('admin.created'), {
         description: message
     })
 });
@@ -323,21 +349,26 @@ h1 {
     gap: 10px;
 }
 
+.listOfAdmins > div > Button {
+    min-width: 300px;
+    margin: 5px;
+}
+
 .grid {
     padding: 10px;
 }
 
-.page > div {
-    max-width: fit-content;
-}
-
 .listOfAdmins {
     margin: auto;
-    min-width: 400px;
-}
-
-Button {
-    width: 100%;
+    border-radius: 8px;
+    max-height: 450px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    padding: 10px;
 }
 
 </style>

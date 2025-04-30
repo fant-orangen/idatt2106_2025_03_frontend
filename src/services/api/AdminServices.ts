@@ -63,7 +63,6 @@ export async function createPOI(poiData: any): Promise<AxiosResponse> {
  * @returns {Promise<AxiosResponse<any>>} Server response with a list of events.
  */
 export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
-  // Assuming this function remains as is
   return await api.get('/crisis-events/all', { // Backend endpoint might need adjustment if pagination is used
     headers: {
       'Content-Type': 'application/json'
@@ -105,8 +104,8 @@ export async function getAdminUsers() {
  * Sends a POST request to the '/super-admin' endpoint with the new adnmin user email. 
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the post operation.
  */
-export async function addNewAdmin(adminEmail: string) {
-  return await api.post('/super-admin', adminEmail, {
+export async function addNewAdmin(userID: number, adminEmail: string) {
+  return await api.post('/super-admin/add/' + userID, adminEmail, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -136,6 +135,14 @@ export async function revokeAdminRights(adminID: number) {
  */
 export async function sendNewPasswordLink(email: string) {
   return await api.post('/super-admin/link/' + email, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+export async function getUserId(email: string) {
+  return await api.get('/super-admin/change this when u know' + email, {
     headers: {
       'Content-Type': 'application/json'
     }
