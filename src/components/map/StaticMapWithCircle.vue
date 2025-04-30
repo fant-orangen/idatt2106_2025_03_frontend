@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -70,6 +70,33 @@ onMounted(() => {
     weight: 2
   }).addTo(map.value)
 })
+
+watch(
+  [() => props.lat, () => props.lng, () => props.radius, () => props.color],
+  ([newLat, newLng, newRadius, newColor]) => {
+    if (!map.value) return;
+
+    // Update map center and zoom
+    map.value.setView([newLat, newLng], calculateZoomLevel.value);
+
+    // Remove old layers (circles)
+    map.value.eachLayer((layer) => {
+      if (layer instanceof L.Circle) {
+        map.value.removeLayer(layer);
+      }
+    });
+
+    // Add new circle
+    L.circle([newLat, newLng], {
+      radius: newRadius,
+      color: newColor,
+      fillColor: newColor,
+      fillOpacity: 0.2,
+      weight: 2
+    }).addTo(map.value);
+  },
+  { deep: true }
+);
 </script>
 
 <style scoped>
