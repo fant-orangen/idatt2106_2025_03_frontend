@@ -204,7 +204,7 @@
       </div>
 
       <DialogFooter>
-        <Button @click="navigateToAdminPanel">Go to Admin Panel</Button>
+        <Button @click="navigateToAdminPanel">{{ $t('add-event-info.go-to-admin') }}</Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>
