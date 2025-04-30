@@ -30,14 +30,14 @@
             </CardContent>
         </Card>
 
-            <Card class=" admin-list-card">
+            <Card class="admin-list-card">
             <CardHeader>
                 <CardTitle>{{ $t('admin.current-admins') }}:</CardTitle>
             </CardHeader>
             <CardContent>
                 <!--List of all current admin users -->
                 <div class="admin-list">
-                    <div v-for="admin in admins" :key="admin.id">
+                    <div v-for="admin in admins" :key="admin.userId">
                         <Button variant="outline" @click="openDrawer(admin)">
                             {{ admin.email }}
                         </Button>
@@ -114,7 +114,7 @@
                     </div>
                 
                     <!--Revoke rights button-->
-                    <Button variant="destructive" @click="revokeRights(selectedAdmin!.id)">
+                    <Button variant="destructive" @click="revokeRights(selectedAdmin!.userId)">
                         {{ $t('admin.revoke-rights') }}
                     </Button>
                 </form>
@@ -135,7 +135,7 @@
                     </div>
 
                     <!--Action buttons-->
-                    <Button variant="destructive" @click="revokeRights(selectedAdmin!.id)">
+                    <Button variant="destructive" @click="revokeRights(selectedAdmin!.userId)">
                         {{ $t('admin.revoke-rights') }}
                     </Button>
                 </form>
@@ -215,10 +215,11 @@ import {
 } from '@/components/ui/card'
 
 //TODO: hardkode alle toast meldingene t('osvosv')
+// TODO: revoke refresher siden for some reason, should not happen
 
 const {t} = useI18n();
 interface Admin {
-  id: number;
+  userId: number;
   email: string;
 }
 
@@ -299,7 +300,11 @@ function openNewAdminDialog() {
 }
 
 function openDrawer(admin: Admin) {
-    selectedAdmin.value = admin;
+    console.log("selecting admin...");
+    selectedAdmin.value = {
+        email: admin.email,
+        userId: admin.userId
+    }
     isOpen.value = true;
 }
 
@@ -319,7 +324,7 @@ async function createNewAdmin(userID: number) {
         console.log('Created new admin user!');
         
         callToast('Created new admin!');
-        await getAllAdmins();// update list
+        console.log('Ferdig med create new admin!!!!!!!!!!!!')
     } catch (error) {
         console.error('Failed to create new admin', error);
     }
@@ -327,6 +332,7 @@ async function createNewAdmin(userID: number) {
 
 async function revokeRights(adminId: number) {
     try {
+        console.log('Admin id is: ', adminId);
         await revokeAdminRights(adminId);
         console.log('Admin rights revoked!');
 
@@ -406,6 +412,10 @@ h1 {
     flex-direction: column;
     gap: 10px;
     padding-top: 10px;
+}
+
+.admin-list-card {
+    min-width: 100%;
 }
 
 </style>

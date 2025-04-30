@@ -118,7 +118,9 @@ export async function addNewAdmin(userID: number) {
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
  */
 export async function revokeAdminRights(adminID: number) {
-  return await api.put('/super-admin/revoke/' + adminID, {
+  const id = adminID.toString();
+  console.log('Admin id from AdminServices: ', id);
+  return await api.put('/super-admin/revoke/' + id, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -126,7 +128,7 @@ export async function revokeAdminRights(adminID: number) {
 }
 
 export async function getUserId(email: string) {
-  return await api.get('/super-admin/getId/' + email, {
+  return await api.get('/super-admin/user-info/' + email, {
     headers: {
       'Content-Type': 'application/json'
     }
