@@ -1,3 +1,5 @@
+<!-- Admin-page for editing POI's -->
+
 <template>
   <div style="margin:20px">
     <!-- Breadcrumb -->
@@ -87,7 +89,7 @@
           </FormItem>
         </FormField><br>
 
-        <!-- Opening Times -->
+        <!-- Opening times -->
         <div class="container">
           <FormField v-slot="{ field }" name="openfrom">
             <FormItem>
@@ -108,7 +110,7 @@
           </FormField>
         </div><br>
 
-        <!-- Contact Info -->
+        <!-- Contact info -->
         <FormField v-slot="{ field, meta, errorMessage }" name="contactinfo">
           <FormItem>
             <FormLabel>{{ $t('add-POI-info.titles.contact-info') }}</FormLabel>
@@ -137,6 +139,32 @@
     <!-- Map preview -->
     <div class="box">MAP</div>
   </div>
+
+  <!-- Delete Button -->
+  <div class="mt-6 text-right">
+    <button
+      @click="showDeleteConfirm = true"
+      class="text-sm text-red-500 underline"
+    >
+      {{ $t('delete') }}
+</button>
+</div>
+
+<!-- Confirm delete modal -->
+<div
+  v-if="showDeleteConfirm"
+  class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground p-6 border border-destructive rounded-lg shadow-xl z-50"
+>
+<p class="mb-4">{{ $t("Are you sure you want to delete this POI?") }}</p>
+<div class="flex justify-end space-x-4">
+  <button @click="showDeleteConfirm = false" class="text-muted-foreground underline">
+    {{ $t("Cancel") }}
+  </button>
+  <button @click="confirmDelete" class="text-destructive underline">
+    {{ $t("Delete permanently") }}
+  </button>
+</div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -156,6 +184,10 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 
 const { t } = useI18n();
 
+/**
+ * Define the validation schema for the edit POI form.
+ */
+
 const formSchema = toTypedSchema(
   z.object({
     title: z.string().min(2).max(50),
@@ -170,6 +202,9 @@ const formSchema = toTypedSchema(
   })
 )
 
+/**
+ * Initialize the form using the validation schema and setting default values.
+ */
 const form = useForm({
   validationSchema: formSchema,
   initialValues: {
@@ -185,9 +220,16 @@ const form = useForm({
   }
 });
 
+/**
+ * Handle form submission.
+ */
+
 const onSubmit = form.handleSubmit(async (values) => {
   try {
-    const [response] = await Promise.all([editPOI(values)]);
+    let response: unknown extends (object & {
+      then(onfulfilled: infer F, ...args: infer _): any
+    }) ? (F extends ((value: infer V, ...args: infer _) => any) ? Awaited<V> : never) : unknown;
+    [response] = await Promise.all([editPOI(values)]);
     console.log('POI edited successfully!', response.data);
     router.push('/admin-panel');
   } catch (error) {
