@@ -63,7 +63,8 @@
     "searching": "Searching...",
     "address-not-found": "Could not find the address.",
     "search-error": "Error searching for address.",
-    "map-reset": "Map reset."
+    "map-reset": "Map reset.",
+    "poi-details": "POI details"
   },
   "notifications": {
     "notification": "Notification",

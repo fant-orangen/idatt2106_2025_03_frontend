@@ -64,7 +64,8 @@
     "searching": "Søker...",
     "address-not-found": "Kunne ikke finne adressen.",
     "search-error": "Feil ved søk etter adresse.",
-    "map-reset": "Kart tilbakestilt."
+    "map-reset": "Kart tilbakestilt.",
+    "poi-details": "Interessepunkt-detaljer"
   },
   "notifications": {
     "notification": "Varsling",
