@@ -27,9 +27,7 @@ const router = useRouter()
 const userStore = useUserStore()
 const isMenuOpen = ref(false)
 
-type MenuLink = { label: string; route: string; action?: () => void };
-
-// Removed duplicate logOut function
+type MenuLink = { label: string; route?: string; action?: (() => void) | undefined };
 
 const menuLinks = computed<MenuLink[]>(() => {
   if (!userStore.loggedIn) {
@@ -44,10 +42,10 @@ const menuLinks = computed<MenuLink[]>(() => {
       { label: 'Profile', route: '/profile' },
       { label: 'Settings', route: '/settings' },
     ]
-    if (userStore.isAdmin) {
+    if (userStore.loggedIn) {
       links.push({ label: 'Admin Panel', route: '/admin-panel' })
     }
-    links.push({ label: 'Log out', route: '/logout', action: logOut })
+    links.push({ label: 'Log out', action: logOut })
     return links
   }
 })
@@ -187,7 +185,7 @@ function goToPage(route: string) {
             v-for="link in menuLinks"
             :key="link.route"
             class="text-lg hover:text-primary cursor-pointer"
-            @click="link.action ? link.action() : navigateTo(link.route)"
+            @click="link.action ? link.action() : navigateTo(link.route ?? '/')"
           >
             {{ link.label }}
           </li>
