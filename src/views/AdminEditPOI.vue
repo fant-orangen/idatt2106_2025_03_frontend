@@ -2,6 +2,7 @@
 
 <template>
   <div style="margin:20px">
+
     <!-- Breadcrumb -->
     <BreadcrumbList>
       <BreadcrumbItem>
@@ -19,9 +20,11 @@
   <h1 class="text-center">{{ $t('admin.edit-POI') }}</h1>
 
   <div class="page">
+
     <!-- Form -->
     <div class="fields">
       <form @submit="onSubmit">
+
         <!-- Title -->
         <FormField v-slot="{ field, meta, errorMessage}" name="title">
           <FormItem>
@@ -168,31 +171,31 @@
 </template>
 
 <script setup lang="ts">
-import router from '@/router'
-import { editPOI } from '@/services/api/AdminServices'
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { useI18n } from 'vue-i18n'
-
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import { useI18n } from 'vue-i18n';
+import * as z from 'zod';
+import { getPOIById, editPOI, deletePOI } from '@/services/api/AdminServices';
 
 const { t } = useI18n();
+const route = useRoute();
+const router = useRouter();
+
+const poiId = Number(route.params.id);
+const isLoading = ref(true);
+const showDeleteConfirm = ref(false);
 
 /**
- * Define the validation schema for the edit POI form.
+ * Form schema
  */
 
 const formSchema = toTypedSchema(
   z.object({
     title: z.string().min(2).max(50),
-    latitude: z.preprocess((val) => Number(val), z.number().min(-90).max(90)).optional(),
-    longitude: z.preprocess((val) => Number(val), z.number().min(-180).max(180)).optional(),
+    latitude: z.number().min(-90).max(90).optional(),
+    longitude: z.number().min(-180).max(180).optional(),
     address: z.string().max(100).optional(),
     type: z.enum(["defibrillator", "shelter", "water-source", "food-station"]),
     openfrom: z.string().optional(),
@@ -200,17 +203,18 @@ const formSchema = toTypedSchema(
     contactinfo: z.string().optional(),
     description: z.string().min(10).max(500),
   })
-)
+);
 
 /**
- * Initialize the form using the validation schema and setting default values.
+ * Form configuration.
  */
+
 const form = useForm({
   validationSchema: formSchema,
   initialValues: {
     title: '',
-    latitude: '',
-    longitude: '',
+    latitude: undefined,
+    longitude: undefined,
     address: '',
     type: 'defibrillator',
     openfrom: '',
@@ -221,21 +225,45 @@ const form = useForm({
 });
 
 /**
- * Handle form submission.
+ * Fetch existing POI data.
+ */
+
+onMounted(async () => {
+  try {
+    const response = await getPOIById(poiId);
+    form.setValues(response.data);
+  } catch (error) {
+    console.error('Error loading POI:', error);
+  } finally {
+    isLoading.value = false;
+  }
+});
+
+/**
+ * Submit handler.
  */
 
 const onSubmit = form.handleSubmit(async (values) => {
   try {
-    let response: unknown extends (object & {
-      then(onfulfilled: infer F, ...args: infer _): any
-    }) ? (F extends ((value: infer V, ...args: infer _) => any) ? Awaited<V> : never) : unknown;
-    [response] = await Promise.all([editPOI(values)]);
-    console.log('POI edited successfully!', response.data);
+    await editPOI(poiId, values);
     router.push('/admin-panel');
   } catch (error) {
-    console.error('Error editing POI:', error);
+    console.error('Failed to update POI:', error);
   }
 });
+
+/**
+ * Confirm deleting a POI.
+ */
+
+const confirmDelete = async () => {
+  try {
+    await deletePOI(poiId);
+    router.push('/admin-panel');
+  } catch (error) {
+    console.error('Failed to delete POI:', error);
+  }
+};
 </script>
 
 <style scoped>
