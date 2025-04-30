@@ -30,7 +30,7 @@
             </CardContent>
         </Card>
 
-            <Card class="admin-list-card">
+        <Card class="admin-list-card">
             <CardHeader>
                 <CardTitle>{{ $t('admin.current-admins') }}:</CardTitle>
             </CardHeader>
@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </CardContent>
-            </Card>
+        </Card>
 
         <!--Dialog for adding a new Admin-->
         <Dialog v-model:open="isNewAdminDialogOpen">
@@ -114,7 +114,7 @@
                     </div>
                 
                     <!--Revoke rights button-->
-                    <Button variant="destructive" @click="revokeRights(selectedAdmin!.userId)">
+                    <Button type="button" variant="destructive" @click="revokeRights(selectedAdmin!.userId)">
                         {{ $t('admin.revoke-rights') }}
                     </Button>
                 </form>
@@ -130,12 +130,12 @@
                 <form class="grid items-start gap-4 px-4">
                     <!--email field-->
                     <div class="grid gap-2">
-                        <Label html-for="email">{{$t('login.email')}}</Label>
+                        <Label for="email">{{$t('login.email')}}</Label>
                         <Input id="email" type="email" :model-value="selectedAdmin?.email" readonly disabled  />
                     </div>
 
                     <!--Action buttons-->
-                    <Button variant="destructive" @click="revokeRights(selectedAdmin!.userId)">
+                    <Button type="button" variant="destructive" @click="revokeRights(selectedAdmin!.userId)">
                         {{ $t('admin.revoke-rights') }}
                     </Button>
                 </form>
@@ -161,7 +161,7 @@ import { toast } from 'vue-sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useMediaQuery } from '@vueuse/core'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, markRaw } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -209,13 +209,11 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
 
 //TODO: hardkode alle toast meldingene t('osvosv')
-// TODO: revoke refresher siden for some reason, should not happen
 
 const {t} = useI18n();
 interface Admin {
@@ -267,10 +265,7 @@ const onSubmit = form.handleSubmit(async (values) => {
         console.log('Retrieved user id from API:', response.data);
         userId.value = response.data.userId; // set userId
 
-        if (!userId.value) {
-            callToast(t('admin.user-notfound'));
-            console.log("User doesn't exist!");
-        } else {
+        if (userId.value !== null) {
             console.log('NEW ADMIN EMAIL: ', values.email)
             createNewAdmin(userId.value);
 
@@ -278,13 +273,11 @@ const onSubmit = form.handleSubmit(async (values) => {
             
             userId.value = null;
             stagedEmail.value = '';
-            
-            resetForm();
-            // legg til funksjon for å  lukke panelet om det ikke skjer auto
-            await getAllAdmins(); // refresh
-        }
+            resetForm(); 
+        } 
     } catch (error) {
         console.error('Failed to create a new admin user...', error);
+        callToast(t('admin.user-notfound'));
     } finally {
         resetForm();
         isNewAdminDialogOpen.value = false;
@@ -324,6 +317,7 @@ async function createNewAdmin(userID: number) {
         await addNewAdmin(userID);
         console.log('Created new admin user!');
         callToast('Created new admin!');
+        await getAllAdmins();
     } catch (error) {
         console.error('Failed to create new admin', error);
     }
@@ -337,17 +331,16 @@ async function revokeRights(adminId: number) {
 
         callToast('Admin rights revoked.')
         await getAllAdmins(); // update the list of admins 
+        isOpen.value = false;
     } catch (error) {
         console.error('Failed to revoke admin rights', error);
     }
 }
 
-const callToast = ((message: string) => { 
+function callToast (message: string) { 
     console.log('Called toast for message: ', message);
-    toast ({
-        description: message
-    })
-});
+    toast(message);
+}
 
 const confirmNewAdmin = form.handleSubmit(() => {
     if (values.confirmEmail !== undefined) {
@@ -401,7 +394,7 @@ h1 {
 .listOfAdmins {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: var(--color-muted);
+    background-color: var(--color-muted); /*Fix this in darkmode, doesn't look like there is a gap between the buttons */
     display: flex;
     flex-direction: column;
     gap: 5px;
