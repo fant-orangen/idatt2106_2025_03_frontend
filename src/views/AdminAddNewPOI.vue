@@ -173,14 +173,14 @@
           </div>
 
           <div class="form-actions">
-            <button type="button" class="cancel-button" @click="cancelForm">
+            <Button type="button" class="cancel-button" @click="cancelForm">
               {{ $t('admin.cancel') || 'Avbryt' }}
-            </button>
+            </Button>
 
-            <button type="submit" class="submit-button" :disabled="!isFormValid || isSubmitting">
+            <Button type="submit" class="submit-button" :disabled="!isFormValid || isSubmitting">
               <span v-if="isSubmitting">{{ $t('admin.submitting') || 'Lagrer...' }}</span>
               <span v-else>{{ $t('admin.submit') || 'Lagre' }}</span>
-            </button>
+            </Button>
           </div>
         </form>
       </div>
