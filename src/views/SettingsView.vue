@@ -12,10 +12,55 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Lock, User } from 'lucide-vue-next'
+import { Lock, Unlock, User } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
+import { updateUserPreference, getUserPreferences } from '@/services/UserService'
+import type { UserPreferencesDto } from '@/models/User'
+import { useUserStore } from '@/stores/UserStore'
+import { ref } from 'vue'
+import { onMounted } from 'vue'
 
 const { t } = useI18n()
+const userStore = useUserStore()
+const twoFactorAuthenticationEnabled = ref(false)
+const locationSharingEnabled = ref(false)
+
+function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boolean) {
+  // Optimistically update the state
+  if (preference === 'twoFactorAuthenticationEnabled') {
+    twoFactorAuthenticationEnabled.value = value
+  }
+
+  updateUserPreference(Number(userStore.userId), preference, value)
+    .then(() => {
+      console.log('Preference updated successfully')
+    })
+    .catch((error) => {
+      console.error('Error updating preference:', error)
+      // Revert the state if the request fails
+      if (preference === 'twoFactorAuthenticationEnabled') {
+        twoFactorAuthenticationEnabled.value = !value
+      }
+    })
+}
+
+function getPreferences() {
+  getUserPreferences()
+    .then((preferences) => {
+      console.log('Fetched preferences:', preferences)
+
+      twoFactorAuthenticationEnabled.value = preferences.twoFactorAuthenticationEnabled
+      locationSharingEnabled.value = preferences.locationSharingEnabled
+    })
+    .catch((error) => {
+      console.error('Error fetching preferences:', error)
+      console.log(userStore.token)
+    })
+}
+
+onMounted(() => {
+  getPreferences()
+})
 </script>
 
 <template>
@@ -85,8 +130,24 @@ const { t } = useI18n()
             </CardHeader>
             <CardContent class="security-settings space-y-2">
               <div class="space-y-1">
-                <Button variant="outline">
-                  <Lock class="w-4 h-4 mr-2" /> {{ t('settings.account.security.twoStep') }}
+                <Button
+                  :variant="twoFactorAuthenticationEnabled ? 'destructive' : 'outline'"
+                  @click="
+                    handlePreferenceUpdate(
+                      'twoFactorAuthenticationEnabled',
+                      !twoFactorAuthenticationEnabled,
+                    )
+                  "
+                >
+                  <component
+                    :is="twoFactorAuthenticationEnabled ? Unlock : Lock"
+                    class="w-4 h-4 mr-2"
+                  />
+                  {{
+                    twoFactorAuthenticationEnabled
+                      ? t('settings.account.security.disableTwoStep')
+                      : t('settings.account.security.enableTwoStep')
+                  }}
                 </Button>
               </div>
             </CardContent>
