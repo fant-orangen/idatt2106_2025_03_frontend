@@ -1,122 +1,88 @@
-<script setup lang="ts">
-import { ref, onMounted, defineProps, withDefaults } from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { NotificationMessage } from '@/models/NotificationMessage.ts';
-
-const props = withDefaults(defineProps<{
-  title?: string;
-  showBreadcrumbs?: boolean;
-  maxItems?: number;
-  loading?: boolean;
-  news?: NotificationMessage[];
-  useTimeline?: boolean;
-}>(), {
-  title: '',
-  showBreadcrumbs: false,
-  maxItems: 0, // 0 means no limit
-  loading: false,
-  news: () => [],
-  useTimeline: true
-});
-
-const { t } = useI18n();
-const localNews = ref<NotificationMessage[]>([]);
-
-// If news aren't passed as props, we'll need to fetch them
-onMounted(async () => {
-  // Only fetch news if none were provided
-  if (props.news.length === 0 && !props.loading) {
-    try {
-      // Import dynamically to avoid circular dependencies
-      const { getNotifications } = await import('@/services/NotificationService');
-      localNews.value = await getNotifications();
-    } catch (error) {
-      console.error('Failed to load notifications:', error);
-    }
-  }
-});
-
-// Combine props news and local news, with props taking precedence
-const displayNews = computed(() => {
-  const newsToDisplay = props.news.length > 0 ? props.news : localNews.value;
-  if (props.maxItems > 0) {
-    return newsToDisplay.slice(0, props.maxItems);
-  }
-  return newsToDisplay;
-});
-</script>
-
 <template>
-  <div class="news-overview w-full">
-    <!-- Optional Breadcrumb -->
-    <div v-if="showBreadcrumbs" class="breadcrumb">
-      <span>{{ t('navigation.home') }}</span> &gt; <span class="current">{{ title || t('info.news') }}</span>
-    </div>
-
-    <!-- Page Title - only show if title is provided -->
-    <h2 v-if="title" class="text-2xl font-bold mb-4">{{ title }}</h2>
-
-    <!-- Loading State -->
-    <div v-if="loading" class="flex justify-center items-center py-6">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>
-
-    <!-- Empty State -->
-    <div v-else-if="displayNews.length === 0" class="text-center py-4 text-muted-foreground">
-      <p>{{ t('errors.no-news-available') }}</p>
-    </div>
-
-    <!-- Timeline Display -->
-    <ul v-else-if="useTimeline" class="timeline">
-      <li v-for="item in displayNews" :key="item.id">
-        <div class="dot"></div>
-        <div class="timeline-content">
-          <div class="flex justify-between items-baseline">
-            <strong class="text-sm text-muted-foreground">{{ item.createdAt }}</strong>
-            <span v-if="item.category" class="text-xs px-2 py-0.5 rounded-full bg-muted">
-              {{ item.category }}
-            </span>
-          </div>
-          <h3 class="font-medium mt-1">{{ item.title || t('notifications.untitled') }}</h3>
-          <p class="text-sm mt-1">{{ item.description }}</p>
-        </div>
-      </li>
-    </ul>
-
-    <!-- List Display (alternative to timeline) -->
-    <div v-else class="space-y-4">
-      <div
-        v-for="item in displayNews"
-        :key="item.id"
-        class="p-4 border border-border rounded-md"
-      >
-        <div class="flex justify-between items-baseline">
-          <strong class="text-sm text-muted-foreground">{{ item.createdAt }}</strong>
-          <span v-if="item.category" class="text-xs px-2 py-0.5 rounded-full bg-muted">
-            {{ item.category }}
-          </span>
-        </div>
-        <h3 class="font-medium mt-1">{{ item.title || t('notifications.untitled') }}</h3>
-        <p class="text-sm mt-1">{{ item.description }}</p>
+  <Card>
+    <CardHeader class="pb-2">
+      <CardTitle>{{ title }}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div v-if="loading" class="flex justify-center items-center py-6">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    </div>
-  </div>
+
+      <div v-else-if="error" class="text-center py-4 text-red-500">
+        {{ error }}
+      </div>
+
+      <div v-else-if="news.length === 0" class="text-center py-4 text-muted-foreground">
+        {{ emptyMessage }}
+      </div>
+
+      <ScrollArea v-else className="h-[300px]">
+        <ul class="timeline">
+          <li v-for="item in news" :key="item.id">
+            <div class="dot"></div>
+            <div class="timeline-content">
+              <div class="flex justify-between items-baseline">
+                <strong class="text-sm text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
+              </div>
+              <h3 class="font-medium mt-1">{{ item.title }}</h3>
+              <p class="text-sm mt-1">{{ item.content }}</p>
+            </div>
+          </li>
+        </ul>
+      </ScrollArea>
+    </CardContent>
+  </Card>
 </template>
 
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { News } from '@/models/News';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { formatDateFull } from '@/utils/dateUtils.ts';
+
+const props = defineProps<{
+  crisisId: number | null;
+  fetchNewsFn: (id: number) => Promise<News[]>;
+  title?: string;
+  emptyMessage?: string;
+  errorMessage?: string;
+}>();
+
+const { t } = useI18n();
+
+const news = ref<News[]>([]);
+const loading = ref(false);
+const error = ref<string | null>(null);
+
+const title = props.title ?? t('crisis.related_news', 'Related News');
+const emptyMessage = props.emptyMessage ?? t('crisis.no_related_news', 'No related news found for this event');
+const errorMessage = props.errorMessage ?? t('crisis.error_loading_news', 'Failed to load related news');
+
+const fetchNews = async (crisisId: number) => {
+  if (!crisisId) return;
+  loading.value = true;
+  error.value = null;
+  try {
+    news.value = await props.fetchNewsFn(crisisId);
+  } catch (error) {
+    error.value = errorMessage;
+  } finally {
+    loading.value = false;
+  }
+};
+
+watch(() => props.crisisId, (newId) => {
+  if (newId) {
+    fetchNews(newId);
+  } else {
+    news.value = [];
+  }
+}, { immediate: true });
+</script>
+
 <style scoped>
-/* Breadcrumb styling */
-.breadcrumb {
-  font-size: 0.875rem;
-  color: var(--color-muted-foreground);
-  margin-bottom: 1rem;
-}
-
-.breadcrumb .current {
-  color: var(--color-foreground);
-  font-weight: 500;
-}
-
-/* Timeline styling */
 .timeline {
   position: relative;
   margin: 1.5rem 0;

@@ -56,6 +56,8 @@ import { useI18n } from 'vue-i18n';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {formatDateFull} from '@/utils/dateUtils.ts';
+import { getSeverityClass } from '@/utils/severityUtils';
 
 const props = defineProps<{
   crisis: CrisisEventDto | null;
@@ -71,46 +73,13 @@ const isValidCoordinate = (coord: unknown): boolean => {
   return isFinite(coord);
 };
 
-const formatDate = (dateString: string | Date): string => {
-  if (!dateString) return 'N/A';
-
-  try {
-    const date = dateString instanceof Date ? dateString : new Date(dateString);
-
-    if (isNaN(date.getTime())) {
-      console.warn('Invalid date:', dateString);
-      return 'N/A';
-    }
-
-    return date.toLocaleString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch (error) {
-    console.error('Error formatting date:', error);
-    return 'N/A';
-  }
-};
-
-const getSeverityClass = (severity: string): string => {
-  switch (severity.toLowerCase()) {
-    case 'green': return 'bg-green-500 text-white';
-    case 'yellow': return 'bg-yellow-500 text-black';
-    case 'red': return 'bg-red-500 text-white';
-    default: return 'bg-green-500 text-white';
-  }
-};
-
 const crisisDetails = computed(() => {
   if (!props.crisis) return null;
 
   return {
     ...props.crisis,
-    formattedStartTime: formatDate(props.crisis.startTime),
-    formattedUpdateTime: formatDate(props.crisis.updatedAt),
+    formattedStartTime: formatDateFull(props.crisis.startTime),
+    formattedUpdateTime: formatDateFull(props.crisis.updatedAt),
     severityClass: getSeverityClass(props.crisis.severity),
   };
 });
