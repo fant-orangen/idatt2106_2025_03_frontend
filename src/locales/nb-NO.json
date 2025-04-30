@@ -44,6 +44,7 @@
     "send-pw-link": "Send ny passordlenke",
     "new-admin": "Lag ny adminbruker",
     "are-you-sure": "Er du sikker på at du vil fortsette?",
+    "give-rights": "Gi en eksisterende bruker admin rettigheter.",
     "if-continue": "Hvis du fortsetter vil du gi admin rettigheter til kontoen med denne eposten",
     "basic-info": "Grunnleggende informasjon",
     "poi-title-placeholder": "Skriv inn tittel på interessepunktet",

@@ -104,8 +104,8 @@ export async function getAdminUsers() {
  * Sends a POST request to the '/super-admin' endpoint with the new adnmin user email. 
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the post operation.
  */
-export async function addNewAdmin(userID: number, adminEmail: string) {
-  return await api.post('/super-admin/add/' + userID, adminEmail, {
+export async function addNewAdmin(userID: number) {
+  return await api.post('/super-admin/add/' + userID, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -125,24 +125,8 @@ export async function revokeAdminRights(adminID: number) {
   });
 }
 
-/**
- * Removes the admin role, changes it to normal user role, in backend API. 
- * Sends a put request to the '/super-admin/revoke/{id}' endpoint with the admin user ID. 
- * 
- * Still not created in backend!!!!
- * 
- * @returns 
- */
-export async function sendNewPasswordLink(email: string) {
-  return await api.post('/super-admin/link/' + email, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
 export async function getUserId(email: string) {
-  return await api.get('/super-admin/change this when u know' + email, {
+  return await api.get('/super-admin/getId/' + email, {
     headers: {
       'Content-Type': 'application/json'
     }
