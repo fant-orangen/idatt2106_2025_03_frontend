@@ -19,12 +19,12 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <h1 class="text-4xl font-bold text-foreground w-full max-w-4xl px-4 mb-6 mt-10 ml-20">
+  <h1 class="text-4xl font-bold text-foreground flex justify-center mb-6 mt-10">
     {{ t('settings.title') }}
   </h1>
   <div class="page-content flex flex-col items-center mt-10 mb-20 w-full">
     <!-- Tabs -->
-    <Tabs default-value="account" class="w-full max-w-4xl">
+    <Tabs default-value="account" class="w-full max-w-2/3">
       <!-- Tabs List -->
       <TabsList class="grid grid-cols-2 w-1/2 mx-auto mb-4">
         <TabsTrigger value="account">{{ t('settings.tabs.account') }}</TabsTrigger>

@@ -25,10 +25,8 @@ import NotificationPopover from '@/components/NotificationPopover.vue'
 const { locale } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
-const isDropdownOpen = ref(false)
 
 let prevScrollpos: number = window.pageYOffset
-const showDropdown = ref(false)
 const languages = [
   { label: 'Norsk bokmål', code: 'nb-NO' },
   { label: 'English', code: 'en-US' },
@@ -71,13 +69,8 @@ function logOut(): void {
   router.push('/')
 }
 
-function toggleDropdown(): void {
-  showDropdown.value = !showDropdown.value
-}
-
 function selectLanguage(language: { label: string; code: string }): void {
   selectedLanguage.value = language.label
-  showDropdown.value = false
   locale.value = language.code
 }
 
@@ -95,28 +88,31 @@ function goToPage(route: string) {
       <RouterLink to="/" class="hover:text-primary">
         <img src="../assets/krisefikser.svg" alt="Logo" class="h-8 w-auto" />
       </RouterLink>
-      <div class="dropdown relative">
-        <button
-          class="dropbtn flex items-center gap-2 text-secondary-foreground hover:text-primary"
-          @click="toggleDropdown"
-        >
-          <Globe class="h-5 w-5" />
-          {{ selectedLanguage }}
-        </button>
-        <div
-          v-if="showDropdown"
-          class="dropdown-content absolute bg-card text-card-foreground shadow-lg mt-2 rounded-md w-[200px] z-50"
-        >
-          <div
-            v-for="language in languages"
-            :key="language.code"
-            @click="selectLanguage(language)"
-            class="dropdown-item px-4 py-2 hover:bg-muted hover:text-foreground cursor-pointer"
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button
+            variant="ghost"
+            class="flex items-center gap-2 text-secondary-foreground hover:text-primary"
           >
-            {{ language.label }}
-          </div>
-        </div>
-      </div>
+            <Globe class="h-5 w-5" />
+            {{ selectedLanguage }}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>{{ $t('language.select-language') }}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              v-for="language in languages"
+              :key="language.code"
+              @click="selectLanguage(language)"
+              class="cursor-poi nter"
+            >
+              {{ language.label }}
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
     <div class="navbar-left flex items-center gap-4">
       <RouterLink
