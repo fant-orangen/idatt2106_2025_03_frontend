@@ -1,6 +1,6 @@
 import api from '@/services/api/AxiosInstance';
 import type { CrisisEvent } from '@/types/map';
-import type {CrisisEventDto} from '@/models/CrisisEvent.ts'
+import type { CrisisEventChange, CrisisEventDto } from '@/models/CrisisEvent.ts'
 
 // Define an interface representing the Page structure from Spring Boot
 interface Page<T> {
@@ -29,14 +29,14 @@ function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
     id: backendEvent.id,
     name: backendEvent.name,
     description: backendEvent.description,
-    latitude: backendEvent.epicenter_latitude,
-    longitude: backendEvent.epicenter_longitude,
+    latitude: backendEvent.epicenterLatitude,
+    longitude: backendEvent.epicenterLongitude,
     level: level,
-    startTime: backendEvent.start_time,
+    startTime: backendEvent.startTime,
     isActive: backendEvent.active,
-    createdBy: `User ${backendEvent.created_by_user_id}`,
-    createdAt: backendEvent.updated_at,
-    updatedAt: backendEvent.updated_at
+    createdBy: `User ${backendEvent.createdByUserId}`,
+    createdAt: backendEvent.updatedAt,
+    updatedAt: backendEvent.updatedAt
   };
 }
 
@@ -51,33 +51,58 @@ function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
 export async function fetchAllCrisisEvents(): Promise<CrisisEventDto[]> {
   try {
     console.log('Attempting to fetch crisis events from API...');
-    const response = await api.get<{ content: CrisisEventDto[] }>('/crisis-events/all', {
+    const response = await api.get<Page<CrisisEventDto>>('/crisis-events/all', {
       params: { size: 100 },
       headers: {
         'Content-Type': 'application/json'
       }
     });
+    return response.data.content;
 
-    const events = response.data?.content;
-    if (Array.isArray(events) && events.length > 0) {
-      console.log(`Loaded ${events.length} crisis events from API`);
-      return events;
-    } else {
-      console.warn('API returned empty or invalid data:', response.data);
-      return [];
-    }
-  } catch (apiError: any) {
-    console.error('Could not fetch crisis events from API:', apiError);
-    if (apiError.response) {
-      console.error('Error response data:', apiError.response.data);
-      console.error('Error response status:', apiError.response.status);
-      console.error('Error response headers:', apiError.response.headers);
-    } else if (apiError.request) {
-      console.error('No response received from server. Check if backend is running.');
-    } else {
-      console.error('Error setting up request:', apiError.message);
-    }
-    return [];
+  } catch (error) {
+    console.error(`Failed to fetch all crisis`, error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches a single crisis event by ID.
+ * Makes a GET request to the '/crisis-events/{id}' endpoint.
+ *
+ * @param {number} id - The ID of the crisis event to fetch
+ * @returns {Promise<CrisisEventDto | null>} The crisis event or null if not found
+ */
+export async function fetchCrisisEventById(id: number): Promise<CrisisEventDto | null> {
+  try {
+    const response = await api.get<CrisisEventDto>(`/crisis-events/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch crisis event ID ${id}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches changes for a specific crisis event.
+ * Makes a GET request to the '/crisis-events/{id}/changes' endpoint.
+ *
+ * @param {number} crisisEventId - The ID of the crisis event
+ * @returns {Promise<CrisisEventChange[]>} Array of changes for the crisis event
+ */
+export async function fetchCrisisEventChanges(
+  crisisEventId: number,
+  page: number,
+  size = 20
+): Promise<Page<CrisisEventChange>> {
+  try {
+    const response = await api.get<Page<CrisisEventChange>>(
+      `/crisis-events/${crisisEventId}/changes`,
+      { params: { page, size } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch changes for crisis ${crisisEventId}`, error);
+    throw error;
   }
 }
 
@@ -238,10 +263,10 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   // Haversine formula
   const dLat = lat2Rad - lat1Rad;
   const dLon = lon2Rad - lon1Rad;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1Rad) * Math.cos(lat2Rad) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return EARTH_RADIUS * c;
 }
