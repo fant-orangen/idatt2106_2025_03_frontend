@@ -144,12 +144,12 @@
   </div>
 
   <!-- Delete Button -->
-  <div class="mt-6 text-right">
+  <div class="mt-6 ml-6">
     <button
       @click="showDeleteConfirm = true"
       class="text-sm text-red-500 underline"
     >
-      {{ $t('delete') }}
+      {{ $t('Delete') }}
 </button>
 </div>
 
@@ -178,6 +178,34 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { useI18n } from 'vue-i18n';
 import * as z from 'zod';
 import { getPOIById, editPOI, deletePOI } from '@/services/api/AdminServices';
+// UI Components
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+
 
 const { t } = useI18n();
 const route = useRoute();
