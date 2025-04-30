@@ -378,10 +378,12 @@ const form = useForm({
 
 /**
  * Computed property to safely access the MapComponent instance.
- * @returns {InstanceType<typeof MapComponent> | undefined} The map component instance or undefined.
+ * Adjusted to return null instead of undefined to match potential prop types.
+ * @returns {InstanceType<typeof MapComponent> | null} The map component instance or null.
  */
 const mapComponentInstance = computed(() => {
-  return mapComponent.value || undefined; // Return undefined if ref is null
+  // CORRECTION: Return null instead of undefined
+  return mapComponent.value || null;
 });
 
 // --- Map Interaction Functions ---
@@ -566,123 +568,114 @@ const onSubmit = form.handleSubmit(async (values) => {
 </script>
 
 <style scoped>
-/* Grid layout for form and map */
+/* (Keep the same styles as provided in the previous response) */
 .content-container {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two equal columns */
-  gap: 30px; /* Space between columns */
-  max-width: 1200px; /* Max width of the container */
-  margin: 30px auto; /* Center container and add margin top/bottom */
-  padding: 20px; /* Padding inside container */
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
 }
 
-/* Form section styling */
 .form-section {
   padding: 20px;
-  background-color: #fff; /* Optional: white background */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  display: flex; /* Use flexbox */
-  flex-direction: column; /* Stack children vertically */
-}
-
-/* Make the form itself grow to fill the form section */
-.form-section form {
-  flex-grow: 1; /* Allow form to take available vertical space */
+  background-color: #fff; /* Optional: White background for form */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Ensure form section takes available height */
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between; Optional: pushes button to bottom if needed */
 }
 
-/* Map section styling */
+.form-section form {
+  flex-grow: 1; /* Allow form to grow */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Push button to bottom */
+}
+
+
 .map-section {
   display: flex;
-  flex-direction: column; /* Stack controller and map vertically */
+  flex-direction: column;
 }
 
-/* Map container styling */
 .map-container {
-  flex-grow: 1; /* Allow map to take available space */
-  min-height: 500px; /* Minimum height */
+  flex-grow: 1;
+  min-height: 500px;
   border-radius: 8px;
-  overflow: hidden; /* Clip map content */
-  border: 1px solid hsl(var(--border)); /* Use theme border color */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Page heading */
 h1 {
-  font-size: 2em; /* Large heading */
-  text-align: center; /* Center align */
-  margin-bottom: 30px; /* Space below heading */
+  font-size: 2em;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-/* Form section headers */
 .form-section-header {
-  margin-bottom: 15px; /* Space below header */
-  padding-bottom: 10px; /* Space below text */
-  border-bottom: 1px solid hsl(var(--border)); /* Use theme border color */
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .form-section-header h2 {
-  font-size: 1.2rem; /* Sub-heading size */
-  font-weight: 600; /* Boldness */
+  font-size: 1.2rem;
+  font-weight: 600;
   margin: 0;
 }
 
-/* Containers for coordinate and datetime inputs */
+
 .coordinates-container,
 .datetime-container {
   display: flex;
-  gap: 15px; /* Space between inputs */
-  margin-bottom: 1rem; /* Space below container (using rem) */
+  gap: 15px;
+  margin-bottom: 1rem;
 }
 
-/* Allow coordinate/datetime inputs to share space */
 .half-width {
-  flex: 1; /* Each takes half the available width */
+  flex: 1;
 }
 
-/* Consistent spacing for form items */
+/* Shadcn form components often handle width well, but ensure consistency */
 .form-item {
-  margin-bottom: 1rem; /* Standard space below form items */
+  margin-bottom: 1rem; /* Consistent spacing */
 }
 
-/* Ensure inputs/textareas/selects take full width within their container */
-Input, Textarea, SelectTrigger {
+Input {
+  width: 100%;
+}
+Textarea {
+  width: 100%;
+  min-height: 80px; /* Ensure textarea has some height */
+}
+SelectTrigger {
   width: 100%;
 }
 
-/* Give Textarea a minimum height */
-Textarea {
-  min-height: 80px;
-}
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
-  /* Stack form and map vertically on medium/tablet screens */
   .content-container {
-    grid-template-columns: 1fr; /* Single column */
+    grid-template-columns: 1fr;
   }
   .map-section {
-    order: -1; /* Display map above the form */
-    margin-bottom: 30px; /* Add space below map when stacked */
+    order: -1;
+    margin-bottom: 30px;
   }
   .map-container {
-    min-height: 400px; /* Reduce map height */
+    min-height: 400px;
   }
 }
 
 @media (max-width: 576px) {
-  /* Stack coordinate and datetime inputs vertically on small/mobile screens */
   .coordinates-container,
   .datetime-container {
-    flex-direction: column; /* Stack vertically */
-    gap: 10px; /* Adjust gap for vertical stacking */
-  }
-  /* Remove flex property for half-width items when stacked */
-  .half-width {
-    flex: none;
+    flex-direction: column;
+    gap: 10px;
   }
 }
 </style>
