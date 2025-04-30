@@ -66,7 +66,7 @@ window.onscroll = function (): void {
 
 function logOut(): void {
   userStore.logout()
-  router.push('/')
+  router.push('/login')
 }
 
 function selectLanguage(language: { label: string; code: string }): void {
