@@ -23,16 +23,17 @@
     <div class="form-section">
       <form @submit="onSubmit">
         <!--Title of POI -->
-        <FormField v-slot="{ field, meta, errorMessage }" name="title">
+        <FormField v-slot="{ componentField, meta, errorMessage }" name="title">
           <FormItem>
             <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
             <FormControl>
-              <Input type="text" placeholder="Title" v-bind="field" />
+              <Input type="text" :placeholder="$t('add-event-info.titles.title')" v-bind="componentField" />
             </FormControl>
             <FormDescription>{{ $t('add-POI-info.info.title') }}</FormDescription>
-            <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
           </FormItem>
-        </FormField><br>
+        </FormField>
+        <br>
 
         <div class="form-section-header">
           <h2>{{ $t('admin.location-info') || 'Plassering' }}</h2>
@@ -46,7 +47,7 @@
               <FormControl>
                 <Input type="number" step="0.000001" placeholder="latitude" v-bind="componentField" readonly />
               </FormControl>
-              <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+              <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
             </FormItem>
           </FormField>
 
@@ -56,7 +57,7 @@
               <FormControl>
                 <Input type="number" step="0.000001" placeholder="longitude" v-bind="componentField" readonly />
               </FormControl>
-              <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+              <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
             </FormItem>
           </FormField>
         </div>
@@ -68,7 +69,7 @@
               <Input type="text" :placeholder="$t('admin.address-placeholder') || 'Eksempelveien 2'" v-bind="componentField" />
             </FormControl>
             <FormDescription>{{ $t('add-event-info.coordinates') }}</FormDescription>
-            <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
           </FormItem>
         </FormField>
         <br>
@@ -97,7 +98,7 @@
               </SelectContent>
             </Select>
             <FormDescription>{{ $t('add-POI-info.info.type') }}</FormDescription>
-            <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
           </FormItem>
         </FormField>
         <br>
@@ -110,8 +111,7 @@
               <FormControl>
                 <Input type="time" v-bind="componentField" />
               </FormControl>
-              <FormDescription>{{ $t('add-POI-info.titles.open-from') }}</FormDescription>
-              <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+              <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
             </FormItem>
           </FormField>
 
@@ -122,8 +122,7 @@
               <FormControl>
                 <Input type="time" v-bind="componentField" />
               </FormControl>
-              <FormDescription>{{ $t('add-POI-info.titles.open-to') }}</FormDescription>
-              <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+              <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
             </FormItem>
           </FormField>
         </div>
@@ -137,7 +136,7 @@
               <Input type="tel" placeholder="+47 123 45 678" v-bind="componentField" />
             </FormControl>
             <FormDescription>{{ $t('add-POI-info.titles.contact-info') }}</FormDescription>
-            <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
           </FormItem>
         </FormField>
         <br>
@@ -150,7 +149,7 @@
               <Textarea :placeholder="$t('add-POI-info.info.description-placeholder') || 'Description'" v-bind="componentField"></Textarea>
             </FormControl>
             <FormDescription>{{ $t('add-POI-info.info.description') }}</FormDescription>
-            <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
           </FormItem>
         </FormField>
         <br>
@@ -175,8 +174,8 @@
         <MapComponent
           ref="mapComponent"
           :adminMode="true"
-          :centerLat="initialCenter.lat"
-          :centerLon="initialCenter.lng"
+          :centerLat="mapCenterLat"
+          :centerLon="mapCenterLng"
           :initialZoom="6"
           @map-clicked="handleMapClick"
         />
@@ -186,16 +185,7 @@
 
   <!-- Success Dialog -->
   <Dialog :open="isSuccessDialogOpen" @update:open="isSuccessDialogOpen = $event">
-    <DialogContent
-      class="
-      fixed top-1/2 left-1/2
-      transform -translate-x-1/2 -translate-y-1/2
-      w-full max-w-md
-      max-h-[80vh] overflow-auto
-      bg-white rounded-lg p-6
-      z-[1001]
-    "
-    >
+    <DialogContent>
       <DialogHeader>
         <DialogTitle>{{ $t('add-POI-info.info.successfully') }}</DialogTitle>
         <DialogDescription>
@@ -313,11 +303,15 @@ const isSuccessDialogOpen = ref(false);
 const createdPOIName = ref('');
 const isSubmitting = ref(false);
 
-// Initial center coordinates for Norway
-const initialCenter: Location = {
+// Initial center coordinates for Norway (fixed as number for MapComponent requirements)
+const initialCenter = ref<Location>({
   lat: 63.4305,
   lng: 10.3951,
-};
+});
+
+// Computed properties to safely map initialCenter to required number types
+const mapCenterLat = computed(() => initialCenter.value.lat ?? 63.4305);
+const mapCenterLng = computed(() => initialCenter.value.lng ?? 10.3951);
 
 // Form validation schema
 const formSchema = toTypedSchema(
