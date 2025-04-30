@@ -18,9 +18,9 @@
     </div>
     <div class="page">
         <!--Add new admin user button-->
-        <Card>
+        <Card class="new-admin-card">
             <CardHeader>
-            <CardTitle>{{ $t('admin.new-admin') }}:</CardTitle>
+                <CardTitle>{{ $t('admin.new-admin') }}:</CardTitle>
             </CardHeader>
             <CardContent>
                 <Button @click="openNewAdminDialog()">
@@ -36,7 +36,7 @@
             </CardHeader>
             <CardContent>
                 <!--List of all current admin users -->
-                <div class="admin-list">
+                <div class="listOfAdmins">
                     <div v-for="admin in admins" :key="admin.userId">
                         <Button variant="outline" @click="openDrawer(admin)">
                             {{ admin.email }}
@@ -260,17 +260,18 @@ const onSubmit = form.handleSubmit(async (values) => {
         if(!values.email) {
             return;
         }
-
+        
+        // find user with that email
+        // expecting the response to be {email, userId}
         const response = await getUserId(values.email);
         console.log('Retrieved user id from API:', response.data);
-        userId.value = response.data; // set userId
+        userId.value = response.data.userId; // set userId
 
-        // find user with that email
         if (!userId.value) {
             callToast(t('admin.user-notfound'));
             console.log("User doesn't exist!");
         } else {
-            console.log('NEW ADMIN NEW EMAIL: ', values.email)
+            console.log('NEW ADMIN EMAIL: ', values.email)
             createNewAdmin(userId.value);
 
             console.log('New admin created!');
@@ -322,9 +323,7 @@ async function createNewAdmin(userID: number) {
     try {
         await addNewAdmin(userID);
         console.log('Created new admin user!');
-        
         callToast('Created new admin!');
-        console.log('Ferdig med create new admin!!!!!!!!!!!!')
     } catch (error) {
         console.error('Failed to create new admin', error);
     }
@@ -378,15 +377,21 @@ h1 {
 
 .page {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: column;
     gap: 10px;
     padding: 10px;
     justify-content: center;
+    font-size: 1em;
+}
+
+.listOfAdmins > div {
+    width: 100%;
+    min-width: fit-content;
+    padding: 5px;
 }
 
 .listOfAdmins > div > Button {
-    min-width: 300px;
-    margin: 5px;
+    min-width: 100%;
 }
 
 .grid {
@@ -394,17 +399,15 @@ h1 {
 }
 
 .listOfAdmins {
-    margin: auto;
     border-radius: 8px;
-    max-height: 450px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: var(--color-muted);
-    overflow: auto;
     display: flex;
     flex-direction: column;
     gap: 5px;
     align-items: center;
-    padding: 10px;
+    max-height: 450px;
+    overflow: auto;
 }
 
 .admin-list {
@@ -412,10 +415,18 @@ h1 {
     flex-direction: column;
     gap: 10px;
     padding-top: 10px;
+    justify-content: center;
 }
 
 .admin-list-card {
+    padding: 20px;
     min-width: 100%;
+    max-height: 450px;
+    overflow: auto;
+}
+
+.new-admin-card {
+    padding: 20px;
 }
 
 </style>

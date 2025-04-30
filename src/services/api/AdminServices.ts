@@ -101,11 +101,12 @@ export async function getAdminUsers() {
 
 /**
  * Creates a new admin user. 
- * Sends a POST request to the '/super-admin' endpoint with the new adnmin user email. 
+ * Sends a PUT request to the '/super-admin' endpoint with the new adnmin user email. 
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the post operation.
  */
 export async function addNewAdmin(userID: number) {
-  return await api.post('/super-admin/add/' + userID, {
+  console.log('user id er: ', userID);
+  return await api.put('/super-admin/add/' + userID, {
     headers: {
       'Content-Type': 'application/json'
     }
