@@ -1,26 +1,26 @@
 /**
- * An interface collection for news items.
+ * An interface representing a news article.
  *
  * @interface News
  */
 export interface News {
   id: number;
   title: string;
-  time: string;
-  message: string;
-  position: string;
-  read: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  content: string;
+  published_at: string | Date;
+  created_by_user_id: number;
+  created_at: string | Date;
+  updated_at: string | Date;
 }
 
 /**
- * Data transfer object for creating a news item.
+ * Data transfer object for creating a news article.
  *
  * @interface CreateNewsDto
  */
 export interface CreateNewsDto {
   title: string;
-  message: string;
-  position: string;
+  content: string;
+  created_by_user_id: number;
 }
+
