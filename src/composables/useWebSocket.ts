@@ -6,7 +6,7 @@ import { Client, over } from 'stompjs';
 
 /**
  * Composable for managing WebSocket connections and notifications.
- *
+ * TODO: get rid of all the console logging
  * @returns Object containing connection state and methods
  */
 export function useWebSocket() {
