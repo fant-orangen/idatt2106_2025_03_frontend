@@ -150,21 +150,21 @@
 </button>
 </div>
 
-<!-- Confirm delete modal -->
-<div
-  v-if="showDeleteConfirm"
-  class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground p-6 border border-destructive rounded-lg shadow-xl z-50"
->
-<p class="mb-4">{{ $t("Are you sure you want to delete this POI?") }}</p>
-<div class="flex justify-end space-x-4">
-  <button @click="showDeleteConfirm = false" class="text-muted-foreground underline">
-    {{ $t("Cancel") }}
-  </button>
-  <button @click="confirmDelete" class="text-destructive underline">
-    {{ $t("Delete permanently") }}
-  </button>
-</div>
-</div>
+  <!-- Confirm delete modal -->
+  <div
+    v-if="showDeleteConfirm"
+    class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground p-6 border border-destructive rounded-lg shadow-xl z-50"
+  >
+    <p class="mb-4">{{ $t("Are you sure you want to delete this POI?") }}</p>
+    <div class="flex justify-end space-x-4">
+      <button @click="showDeleteConfirm = false" class="text-muted-foreground underline">
+        {{ $t("Cancel") }}
+      </button>
+      <button @click="confirmDelete" class="text-destructive underline">
+        {{ $t("Delete permanently") }}
+      </button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
