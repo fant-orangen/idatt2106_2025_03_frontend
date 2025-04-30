@@ -50,3 +50,33 @@ export async function register(userData: RegistrationData) {
   console.log('User data:' + userData)
   return await api.post('/auth/register', userData)
 }
+
+/**
+ * Sends a 2FA code to the user's email address.
+ *
+ * This function makes a POST request to the backend API to send a 2FA code
+ * to the specified email address. It is typically used during the login process
+ * to enhance security by requiring a second factor of authentication.
+ *
+ * @param userEmail - The email address to which the 2FA code will be sent
+ * @returns {Promise<import('axios').AxiosResponse>} - A promise that resolves to the server response
+ */
+export async function send2FACode(userEmail: string) {
+  console.log('Sending 2FA code to email:', userEmail)
+  return await api.post('/auth/send-2fa', { email: userEmail })
+}
+
+/**
+ * Verifies the provided 2FA code.
+ *
+ * This function makes a POST request to the backend API to verify the
+ * 2FA code entered by the user. It is typically used after the user
+ * receives the code via email and enters it into the application.
+ *
+ * @param code - The 2FA code to verify
+ * @returns {Promise<import('axios').AxiosResponse>} - A promise that resolves to the server response
+ */
+export async function verify2FACode(userEmail: string, code: number) {
+  console.log('Verifying 2FA code:', code)
+  return await api.post('/auth/verify-2fa', { email: userEmail, code: code })
+}
