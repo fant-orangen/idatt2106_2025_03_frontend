@@ -22,7 +22,7 @@ import { useUserStore } from '@/stores/UserStore'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import NotificationPopover from '@/components/NotificationPopover.vue'
 
-const { locale } = useI18n()
+const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const isMenuOpen = ref(false)
@@ -36,22 +36,23 @@ type MenuLink = {
 const menuLinks = computed<MenuLink[]>(() => {
   if (!userStore.loggedIn) {
     return [
-      { label: 'Home', route: '/' },
-      { label: 'Login', route: '/login' },
-      { label: 'Register', route: '/register' },
+      { label: t('navigation.home'), route: '/' },
+      { label: t('login.login'), route: '/login' },
+      { label: t('login.signup'), route: '/register' },
     ];
   } else {
     const links: MenuLink[] = [
-      { label: 'Home', route: '/' },
-      { label: 'Profile', route: '/profile' },
-      { label: 'Settings', route: '/settings' },
+      { label: t('navigation.home'), route: '/' },
+      { label: t('navigation.profile'), route: '/profile' },
+      { label: t('settings.settings'), route: '/settings' },
+      { label: t('notifications.notifications'), route: '/notifications'}
     ];
 
     if (userStore.isAdminUser) {
-      links.push({ label: 'Admin Panel', route: '/admin-panel' });
+      links.push({ label: t('navigation.admin-panel'), route: '/admin-panel' });
     }
 
-    links.push({ label: 'Log out', action: logOut });
+    links.push({ label: t('login.logout'), action: logOut });
 
     return links;
   }
@@ -112,7 +113,7 @@ function logOut(): void {
 
 function selectLanguage(language: { label: string; code: string }): void {
   selectedLanguage.value = language.label
-  locale.value = language.code
+  t.value = language.code
 }
 
 function goToPage(route: string) {
@@ -183,6 +184,14 @@ function goToPage(route: string) {
         >
           ✖
         </button>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+        >
+          <component :is="colorMode === 'dark' ? Sun : Moon" class="h-6 w-6" />
+        </Button>
 
         <!-- Mobile Menu Links -->
         <ul class="menu-links space-y-4 mt-12">
@@ -195,7 +204,12 @@ function goToPage(route: string) {
             {{ link.label }}
           </li>
         </ul>
+
+      <!-- Dark Mode Toggle -->
+      <div class="mt-8 flex items-center justify-center">
+
       </div>
+    </div>
     </div>
 
     <!-- Right Section: Desktop Navbar -->
