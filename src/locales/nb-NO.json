@@ -358,6 +358,7 @@
   },
   "settings": {
     "title": "Innstillinger",
+    "cancel": "Avbryt endringer",
     "tabs": {
       "account": "Konto",
       "notifications": "Varslinger"
@@ -367,13 +368,17 @@
       "subtitle": "Konto",
       "description": "Gjør endringer i kontoen din her. Klikk lagre når du er ferdig.",
       "fullName": "Fullt navn",
-      "email": "E-post",
-      "saveChanges": "Lagre endringer",
+      "save-changes": "Lagre endringer",
       "password": {
         "title": "Passord",
         "description": "Endre passordet ditt her. Etter lagring blir du logget ut.",
         "current": "Nåværende passord",
         "new": "Nytt passord"
+      },
+      "email": {
+        "email": "E-post",
+        "subtitle": "E-postinnstillinger",
+        "description": "Oppdater e-postadressen din her. Etter lagring vil du bli logget ut."
       },
       "security": {
         "title": "Kontosikkerhet",
@@ -396,7 +401,7 @@
         "system": "Systemvarsler",
         "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
       },
-      "saveChanges": "Lagre endringer"
+      "save-changes": "Lagre endringer"
     }
   },
   "add-event-info": {
