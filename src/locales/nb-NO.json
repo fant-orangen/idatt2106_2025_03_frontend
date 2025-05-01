@@ -455,7 +455,7 @@
       "time": "Tidspunkt",
       "date": "Dato",
       "choose-event": "Velg en hendelse",
-      "active": "Aktiv hendelse?"
+      "deactivate": "Deaktiver hendelse"
     },
     "crisis-level": {
       "low": "Lav",

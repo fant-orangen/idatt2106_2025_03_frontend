@@ -463,7 +463,7 @@
       "time": "Time",
       "date": "Date",
       "choose-event": "Choose an event",
-      "active": "Active event?"
+      "deactivate": "Deactivate event"
     },
     "crisis-level": {
       "low": "Low",
