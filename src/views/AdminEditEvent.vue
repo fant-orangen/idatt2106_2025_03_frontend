@@ -29,14 +29,6 @@
                 <div class="p-4">
                     <h4 class="mb-4 text-sm font-medium leading-none">{{ $t('add-event-info.titles.choose-event') }}:</h4>
 
-                    <!--Remove, only for testing under dev -->
-                    <div class="text-sm hover:underline cursor-pointer transition-colors" @click="selectEvent(1)">test1</div>
-                    <Separator class="my-2" />
-                    <div class="text-sm hover:underline cursor-pointer transition-colors">test2</div>
-                    <Separator class="my-2" />
-                    <div class="text-sm hover:underline cursor-pointer transition-colors">test3</div>
-                    <Separator class="my-2" />
-
                     <div v-for="(event, index) in events" :key="index" @click="selectEvent(event)"
                     class="text-sm hover:underline cursor-pointer transition-colors"
                     :class="{
@@ -45,7 +37,6 @@
                     }">
                         {{ event.title }} | {{ event.priority }} | {{ event.time }} | {{ event.date }}
                         <Separator class="my-2" />
-
                     </div>
                 </div>
             </ScrollArea>

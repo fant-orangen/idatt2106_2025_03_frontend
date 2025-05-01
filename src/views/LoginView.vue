@@ -99,6 +99,7 @@ async function handleComplete() {
     }
 
     router.push('/')
+    console.log('User role is: ',userStore.role)
   } catch (error) {
     errorMessage.value = t('errors.login-failed')
     console.log('Login error', error)
