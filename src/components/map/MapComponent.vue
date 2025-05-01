@@ -237,6 +237,20 @@ export default defineComponent({
     const forceMapRefresh = (): void => {
       if (map.value) {
         map.value.invalidateSize({ animate: false });
+
+        // Update user marker position if it exists
+        if (userMarker.value && props.userLocation) {
+          const latLng = L.latLng(props.userLocation.latitude, props.userLocation.longitude);
+          userMarker.value.setLatLng(latLng);
+        }
+
+        // Update route end marker position if it exists
+        if (activeRouteMarker.value && routingControl.value) {
+          const waypoints = routingControl.value.getWaypoints();
+          if (waypoints && waypoints.length >= 2 && waypoints[1].latLng) {
+            activeRouteMarker.value.setLatLng(waypoints[1].latLng);
+          }
+        }
       }
     };
 
@@ -395,6 +409,12 @@ export default defineComponent({
         }),
         zIndexOffset: 1000 // Ensure it's on top
       }).addTo(map.value as L.Map);
+
+      // Store the destination coordinates for later use
+      if (activeRouteMarker.value) {
+        (activeRouteMarker.value as any).destinationLat = lat;
+        (activeRouteMarker.value as any).destinationLng = lng;
+      }
     }
 
     // Clear routing - original functionality
