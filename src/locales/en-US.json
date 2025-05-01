@@ -106,7 +106,12 @@
   "crisis": {
     "crisis-status": "Crisis Status",
     "more-crisis-info": "Read more about your current crisis situation",
-    "no-crisis": "No ongoing crisis"
+    "no-crisis": "No ongoing crisis",
+    "color": {
+      "green": "green",
+      "yellow": "yellow",
+      "red": "red"
+    }
   },
   "navigation": {
     "home": "Home",
@@ -457,12 +462,17 @@
       "submit": "Submit",
       "time": "Time",
       "date": "Date",
-      "choose-event": "Choose an event"
+      "choose-event": "Choose an event",
+      "active": "Active event?"
     },
     "crisis-level": {
       "low": "Low",
       "medium": "Medium",
       "high": "High"
+    },
+    "active": {
+      "true": "active",
+      "false": "not active"
     }
   },
   "add-POI-info": {

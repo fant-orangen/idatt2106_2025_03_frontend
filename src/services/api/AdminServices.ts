@@ -1,5 +1,6 @@
 import api from '@/services/api/AxiosInstance';
 import type { AxiosResponse } from 'axios'; // Import AxiosResponse type
+import { type CrisisEventDto } from '@/models/CrisisEvent'
 
 /**
  * Creates a new event by sending event data to the backend API.
@@ -77,7 +78,7 @@ export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
  * @param {object} eventData  - An object containing the updated event fields (matching UpdateCrisisEventDto).
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
  */
-export async function updateCurrentEvent(id: number, eventData: any): Promise<AxiosResponse<any>> {
+export async function updateCurrentEvent(id: number, eventData: CrisisEventDto): Promise<AxiosResponse<any>> {
   // Assuming this function remains as is, ensure eventData matches UpdateCrisisEventDto
   return await api.put('/crisis-events/'+ id, eventData, {
     headers: {

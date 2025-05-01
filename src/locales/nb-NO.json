@@ -107,7 +107,12 @@
   "crisis": {
     "crisis-status": "Krisestatus",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
-    "no-crisis": "Ingen pågående krise"
+    "no-crisis": "Ingen pågående krise",
+    "color": {
+      "green": "grønn",
+      "yellow": "gul",
+      "red": "rød"
+    }
   },
   "navigation": {
     "home": "Hjem",
@@ -449,12 +454,17 @@
       "submit": "Lagre",
       "time": "Tidspunkt",
       "date": "Dato",
-      "choose-event": "Velg en hendelse"
+      "choose-event": "Velg en hendelse",
+      "active": "Aktiv hendelse?"
     },
     "crisis-level": {
       "low": "Lav",
       "medium": "Middels",
       "high": "Høy"
+    },
+    "active": {
+      "true": "aktiv",
+      "false": "ikke aktiv"
     }
   },
   "add-POI-info": {
