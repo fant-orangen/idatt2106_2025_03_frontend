@@ -11,6 +11,7 @@ export interface CrisisEventDto {
   updatedAt: string;
   createdByUserId: number;
   active: boolean;
+  scenarioThemeId: number;
 }
 
 export interface CrisisEventChange {
@@ -22,6 +23,11 @@ export interface CrisisEventChange {
   createdByUserId: number;
   createdAt: string;
   updatedAt: string;
-  // Optional joined data
-  userName?: string;
+}
+
+export interface CrisisEventPreviewDto {
+  id: number;
+  name: string;
+  severity: 'green' | 'yellow' | 'red'; // Assuming these are the values in CrisisEvent.Severity enum
+  startTime: string; // ISO string format for LocalDateTime
 }
