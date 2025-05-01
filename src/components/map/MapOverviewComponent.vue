@@ -241,17 +241,42 @@ async function loadCrisisEvents() {
 
 // Fetch user location using the composable
 async function fetchUserLocation() {
-  // Check preference before fetching (optional, composable also checks)
+  // Check preference before fetching (composable also checks, but we want to provide feedback)
   if (!userStore.profile?.locationSharingEnabled) {
-    alert(t('map.location-error') + ' (Sharing Disabled)'); // Inform user
+    // Instead of immediately showing an alert, let's try to get location anyway
+    // The composable will check browser permissions which might override the user preference
+    console.log('User preference has location sharing disabled, but checking browser permissions...');
+  }
+
+  // Call composable method which now checks browser permissions
+  const fetchedLocation = await getCurrentLocation();
+
+
+  if (!fetchedLocation) {
+    // If location fetch failed, provide a more helpful error message based on the status
+    if (locationStatus.value === 'Permission Denied') {
+      alert(t('map.location-error') + ' (' + t('map.permission-denied') + ')');
+      console.log('Browser has denied permission for geolocation');
+    } else if (locationStatus.value === 'Disabled by User') {
+      alert(t('map.location-error') + ' (' + t('map.sharing-disabled') + ')');
+      console.log('Location sharing is disabled in user preferences');
+    } else {
+      // Generic error message for other cases
+      alert(t('map.location-error') + (locationStatus.value ? ` (${locationStatus.value})` : ''));
+      console.log('Location fetch failed with status:', locationStatus.value);
+    }
     return false;
   }
-  const fetchedLocation = await getCurrentLocation(); // Call composable method
-  if (fetchedLocation) {
-    // Reload crisis events if location fetch was successful (optional)
-    // loadCrisisEvents();
-  }
-  return !!fetchedLocation;
+
+  // Location fetch was successful
+  console.log('Location fetch successful:', fetchedLocation);
+
+  // Start watching for location updates now that we have permission
+  // This ensures live updates while moving
+  startWatching();
+  console.log('Started watching for location updates');
+
+  return true;
 }
 
 // Reset filters
@@ -440,15 +465,11 @@ onMounted(async () => {
     await userStore.fetchUserProfile();
   }
 
-  // *** START LIVE WATCHING (if enabled) ***
-  if (profile.value?.locationSharingEnabled) {
-    console.log("Location sharing is enabled, starting watch.");
-    startWatching(); // Call the function from the composable
-  } else {
-    console.log("Location sharing is disabled, not starting watch.");
-    // Optionally, get a one-time location if desired even if watch is off
-    // await getCurrentLocation();
-  }
+  // We don't automatically start watching location on page load
+  // to avoid unwanted permission prompts in browsers like Safari.
+  // Instead, we'll only request location when the user explicitly interacts
+  // with location-based features (via buttons that call fetchUserLocation).
+  console.log("Location watching will start only after user interaction.");
   // *************************************
 
   // --- Load initial map data ---
