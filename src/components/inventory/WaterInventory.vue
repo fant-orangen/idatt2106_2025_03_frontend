@@ -326,7 +326,7 @@ const updateTotalUnits = async (productId) => {
 
 const getTotalAmount = (item) => {
   if (item.totalUnits === undefined) return "-";
-  return `${item.totalUnits}${item.unit === 'l' ? 'liter' : item.unit}`;
+  return `${item.totalUnits} ${item.unit === 'l' ? 'liter' : item.unit}`;
 };
 
 const deleteProductType = async (index) => {
