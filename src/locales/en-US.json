@@ -36,7 +36,13 @@
     "confirm-new-password": "Confirm Password",
     "update-button": "Update Password",
     "password-updated": "Password Updated",
-    "password-update-failed": "Failed to Update Password"
+    "password-update-failed": "Failed to Update Password",
+    "token-required": "Verification code is required",
+    "password-req-length": "Password must be at least 8 characters long",
+    "password-req-uppercase": "Password must contain at least one uppercase letter",
+    "password-req-number": "Password must contain at least one number",
+    "password-req-special": "Password must contain at least one special character",
+    "password-req-match": "Passwords must match"
   },
   "admin": {
     "administrate": "Administrate",
