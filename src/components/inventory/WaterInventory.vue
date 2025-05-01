@@ -1,6 +1,9 @@
 <template>
   <div>
     <h1 class="text-3xl font-bold mb-6">Vann</h1>
+    <div class="mb-4 text-lg font-medium text-primary">
+      Totalt vann i husholdningen: {{ totalWater }} liter
+    </div>
     <!-- Product list -->
     <div
       v-for="(item, index) in items"
@@ -128,6 +131,15 @@ const newProductName = ref("");
 const newProductUnit = ref("");
 const showExistsModal = ref(false);
 const isLoading = ref(true);
+const totalWater = ref('-');
+
+const fetchTotalWater = async () => {
+  try {
+    totalWater.value = await inventoryService.getTotalWater();
+  } catch {
+    totalWater.value = '-';
+  }
+};
 
 const fetchProductTypes = async () => {
   try {
@@ -156,7 +168,10 @@ const fetchProductTypes = async () => {
   }
 };
 
-onMounted(fetchProductTypes);
+onMounted(() => {
+  fetchProductTypes();
+  fetchTotalWater();
+});
 
 let searchTimeout;
 watch(() => props.searchText, async (val) => {
@@ -276,6 +291,7 @@ const saveBatch = async (productIndex, batchIndex) => {
   }
   batch.isNew = false;
   await updateTotalUnits(product.id);
+  await fetchTotalWater();
 };
 
 const removeBatch = async (productIndex, batchIndex) => {
@@ -290,6 +306,7 @@ const removeBatch = async (productIndex, batchIndex) => {
   await inventoryService.deleteProductBatch(batchId);
   product.batches.splice(batchIndex, 1);
   await updateTotalUnits(product.id);
+  await fetchTotalWater();
 };
 
 const addProduct = async () => {

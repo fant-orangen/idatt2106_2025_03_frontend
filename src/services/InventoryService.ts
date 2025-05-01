@@ -83,7 +83,7 @@ class InventoryService {
    */
   async getTotalWater(): Promise<number> {
     try {
-      const response = await api.get('/inventory/product-types/water/sum');
+      const response = await api.get('/inventory/water/sum');
       return response.data;
     } catch (error) {
       console.error('Error fetching total water:', error);
