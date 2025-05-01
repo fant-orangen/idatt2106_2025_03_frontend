@@ -1,33 +1,36 @@
 import api from '@/services/api/AxiosInstance';
 import type { AxiosResponse } from 'axios';
 
+/**
+ * Edit existing POIS:
+ * @param id of the POI to edit.
+ * @param updateData the data to update.
+ */
+
+export async function editPoi(id: number, updateData: any): Promise<AxiosResponse> {
+  return await api.put(`/poi/${id}`, updateData, {
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
+}
 
 /**
- * Sends a PUT request to edit an existing POI.
+ * Deletes an existing point of interest (POI) by its ID.
+ * Makes a DELETE request to the backend API at /poi/{id}.
  *
- * @param {number} poiId - the ID of the POI to edit.
- * @param {object} updatedData - the updated fields for the POI (title, coordinates, type, contact info, etc.)
- * @returns {Promise} - axios Promise resolving the server response.
+ * @param {number} id - the ID of the POI to delete.
+ * @returns {Promise<void>} a promise resolving when deletion is complete.
+ * @throws {Error} if the deletion fails.
  */
-  export function editPOI(id: number, updatedData: object) {
-    return api.put(`/api/poi/${id}`, updatedData);
+export async function deletePoi(id: number): Promise<void> {
+  await api.delete(`/poi/${id}`, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
 }
 
-/**
- * Get a POI by ID.
- * @param id the ID of the POI to get.
- */
-export function getPOIById(id: number) {
-  return api.get(`/api/poi/${id}`);
-}
-
-/**
- * Delete a POI by ID.
- * @param id the ID of the POI that is to be deleted.
- */
-export function deletePOI(id: number) {
-  return api.delete(`/api/poi/${id}`);
-}
 
 
 
