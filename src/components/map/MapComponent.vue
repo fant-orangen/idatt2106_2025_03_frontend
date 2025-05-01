@@ -789,6 +789,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
+#mapContainer {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
 /* Make sure the map container fills its parent */
 
 :deep(.admin-marker-icon) {

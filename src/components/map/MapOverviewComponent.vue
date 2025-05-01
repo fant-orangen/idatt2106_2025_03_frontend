@@ -1,5 +1,5 @@
 <template>
-  <div class="filter-toggle flex justify-end gap-4 mb-4 relative z-20">
+  <div class="filter-toggle flex justify-end gap-4 mb-4">
     <Button @click="findNearestShelter" variant="destructive">
       <font-awesome-icon :icon="['fas', 'house-chimney']" class="mr-2" />
       {{ t('map.nearest-shelter') }}
