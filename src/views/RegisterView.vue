@@ -53,19 +53,24 @@ async function handleRegister() {
     errorMessage.value = ''
     // Execute reCAPTCHA challenge
     console.log('Executing reCAPTCHA...')
-    let token = ''
     // Generate the reCAPTCHA token
 
-    await grecaptcha.enterprise.ready(async () => {
-      console.log('reCAPTCHA ready')
-      token = await grecaptcha.enterprise.execute('6LcTxCorAAAAAF8Ae6Q__20X_Bqgh05-CATxVZRD', {
-        action: 'LOGIN',
+    const token = await new Promise<string>((resolve, reject) => {
+      grecaptcha.ready(() => {
+        grecaptcha
+          .execute('6LcTxCorAAAAAF8Ae6Q__20X_Bqgh05-CATxVZRD', {
+            action: 'LOGIN',
+          })
+          .then((token) => {
+            console.log('reCAPTCHA Token:', token)
+            if (!token) {
+              reject(new Error('Failed to generate reCAPTCHA token'))
+            } else {
+              resolve(token)
+            }
+          })
+          .catch(reject)
       })
-      console.log('reCAPTCHA Token:', token)
-
-      if (!token) {
-        throw new Error('Failed to generate reCAPTCHA token')
-      }
     })
 
     // Check if passwords match
