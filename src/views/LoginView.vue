@@ -35,8 +35,6 @@ const errorMessage = ref('')
 const resetEmail = ref('')
 const isTwoFactorAuthDialogOpen = ref(false)
 const pinValue = ref<string[]>([])
-// const token = ref('')
-
 /* global grecaptcha */
 
 async function testRecaptcha() {
