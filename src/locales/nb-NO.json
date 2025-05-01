@@ -455,16 +455,21 @@
       "time": "Tidspunkt",
       "date": "Dato",
       "choose-event": "Velg en hendelse",
-      "deactivate": "Deaktiver hendelse"
+      "deactivate": "Deaktiver hendelse",
+      "active": "Aktiv status"
     },
     "crisis-level": {
       "low": "Lav",
       "medium": "Middels",
-      "high": "Høy"
+      "high": "Høy",
+      "green": "Lav",
+      "yellow": "Middels",
+      "red": "Høy"
     },
     "active": {
       "true": "aktiv",
-      "false": "ikke aktiv"
+      "false": "inaktiv",
+      "description": "For å endre statusen på hendelsen må du deaktivere den!"
     }
   },
   "add-POI-info": {

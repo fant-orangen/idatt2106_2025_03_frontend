@@ -46,20 +46,16 @@
                             
                         </CardContent>
                     </Card>
-                    
                 </div>
             </ScrollArea>
         </div>
 
         <!--if user selected an event from the list: this form will show up-->
         <div class="edit">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Edit</CardTitle>
-                </CardHeader>
+            <Card v-if="selectedEvent">
                 <CardContent>
                 <!--Title of the event-->
-                <form @submit="onSubmit" v-if="selectedEvent">
+                <form @submit="onSubmit" >
                     <div class="read-only">
                         <FormField name="title">
                             <FormItem>
@@ -70,29 +66,17 @@
                                 <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
                             </FormItem>
                         </FormField>
+                        <br>
+                        <FormField name="active">
+                            <FormItem>
+                                <FormLabel>{{$t('add-event-info.titles.active')}}</FormLabel>
+                                <FormControl>
+                                    <Input type="text" :model-value=" $t('add-event-info.active.' + selectedEvent?.active)" readonly disabled />
+                                </FormControl>
+                                <FormDescription>{{ $t('add-event-info.active.description') }}</FormDescription>
+                            </FormItem>
+                        </FormField>
                     </div>
-                    <br>
-                    <!--Active event field-->
-                    <FormField v-slot="{ field, meta, errorMessage }" name="active">
-                        <FormItem>
-                            <FormLabel>{{$t('add-event-info.titles.active')}}</FormLabel>
-                            <FormControl>
-                                <Select v-bind="field">
-                                    <SelectTrigger style="cursor: pointer;">
-                                        <SelectValue 
-                                        :placeholder="selectedEvent.active !== undefined ? (selectedEvent.active ? $t('add-event-info.active.true') : $t('add-event-info.active.false')) : '--'"/>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectItem value="true">{{ $t('add-event-info.active.true') }}</SelectItem>
-                                            <SelectItem value="false">{{ $t('add-event-info.active.false') }}</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
-                        </FormItem>
-                    </FormField>
                     
                     <br>
 
@@ -165,7 +149,7 @@
                             <FormControl>
                                 <Select v-bind="field">
                                     <SelectTrigger style="cursor: pointer;">
-                                        <SelectValue placeholder="Velg et krisenivå"/>
+                                        <SelectValue :placeholder="t('add-event-info.crisis-level.' +  selectedEvent.severity)"/>
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
@@ -187,22 +171,21 @@
                     <FormItem>
                         <FormLabel>{{$t('add-event-info.titles.description')}}:</FormLabel>
                         <FormControl>
-                            <Textarea type="text" placeholder="Description" v-bind="field"></Textarea>
+                            <Textarea type="text" :placeholder="selectedEvent.description" v-bind="field"></Textarea>
                         </FormControl>
                         <FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
                         <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
                     </FormItem>
                     </FormField><br>
-
-                    <Button>{{$t('add-event-info.titles.submit')}}</Button>
-                </form>
+                    <div class="buttons">
+                        <Button>{{$t('add-event-info.titles.submit')}}</Button>
+                        <Button type="button" variant="destructive" @click="deactivateEvent(selectedEvent.id)">{{$t('add-event-info.titles.deactivate')}}</Button>
+                    </div>
+                   </form>
                 </CardContent>
             </Card>
-
-            <!--The map-->
-
         </div>
-
+        <!--The map-->
         <div class="map" v-if="selectedEvent">
             Burde være et map inne i redigeringsdelen
         </div>
@@ -211,8 +194,8 @@
 </template>
 
 <script setup lang="ts">
-import { updateCurrentEvent } from '@/services/api/AdminServices'
-import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
+import { updateCurrentEvent, deactivateCurrentEvent } from '@/services/api/AdminServices'
+import type { CrisisEventDto, UpdateCrisisEventDto } from '@/models/CrisisEvent.ts';
 import { fetchAllCrisisEvents, fetchCrisisEventById } from '@/services/api/CrisisEventService'
 import { ref, onMounted, computed } from 'vue'
 import { toast } from 'vue-sonner'
@@ -257,11 +240,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { add } from 'date-fns';
 
 const { t } = useI18n();
 const events = ref<CrisisEventDto[]>([]);
 const selectedEvent = ref<CrisisEventDto | null>(null);
-const updatedEvent = ref<CrisisEventDto | null> (null);
+const updatedEvent = ref<UpdateCrisisEventDto | null> (null);
 
 const router = useRouter();
 
@@ -300,22 +284,24 @@ onMounted(async () => {
 
 const formSchema = toTypedSchema(
     z.object({
-    epicenterLatitude: z.preprocess((val) => Number(val), z.number()
+    epicenterLatitude: 
+        z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
         .min(-90, t('add-event-info.errors.latitude'))
         .max(90, t('add-event-info.errors.latitude')))
         .optional(),
-    epicenterLongitude: z.preprocess((val) => Number(val), z.number()
+    epicenterLongitude: 
+        z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
         .min(-180, t('add-event-info.errors.longitude'))
         .max(180, t('add-event-info.errors.longitude')))
         .optional(),
     address: z.string()
         .max(100, t('add-event-info.errors.address'))
         .optional(),
-    radius: z.preprocess((val) => Number(val), z.number()
+    radius: 
+        z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
         .min(1, t('add-event-info.errors.radius'))
         .max(10000, t('add-event-info.errors.radius'))),
     severity: z.enum(["green", "yellow", "red"]),
-    active: z.preprocess((val) => val ==='true', z.boolean()),
     description: z.string()
         .max(500, t('add-event-info.errors.description')),
   }).refine((data) => {
@@ -336,8 +322,6 @@ const initialValues = computed(() => ({
     radius: selectedEvent.value?.radius ?? '',
     severity: selectedEvent.value?.severity ?? undefined,
     description: selectedEvent.value?.description ?? '',
-    active: selectedEvent.value?.active !== undefined ? String(selectedEvent.value.active) : undefined
-
 }));
 
 const form = useForm({
@@ -352,34 +336,46 @@ const onSubmit = form.handleSubmit(async (values) => {
             console.error('No event selected');
             return;
         }
-        const now = new Date();
-
-        // find updated fields:
-        //only the updated fields should be added to updatedEvent, if a field is not updated the old value from selectedEvent should stay
-
+        //only the updated fields should be added to updatedEvent, non updated fields should stay
         updatedEvent.value = {
-            ...selectedEvent.value, // only change the edited fields
-            epicenterLatitude: values.epicenterLatitude ?? selectedEvent.value.epicenterLatitude,
-            epicenterLongitude: values.epicenterLongitude ?? selectedEvent.value.epicenterLongitude,
+            ...selectedEvent.value,
+            name: selectedEvent.value.name, // only change the edited fields
+            latitude: values.epicenterLatitude ?? selectedEvent.value.epicenterLatitude,
+            longitude: values.epicenterLongitude ?? selectedEvent.value.epicenterLongitude,
             description: values.description ?? selectedEvent.value.description,
             severity: values.severity ?? selectedEvent.value.severity,
             radius: values.radius ?? selectedEvent.value.radius,
-            updatedAt: now.toISOString(),
-            active: values.active ?? selectedEvent.value.active
         };
         const response = await updateCurrentEvent(selectedEvent.value.id, updatedEvent.value);
 
         console.log('Event updated successfully!', response.data);
         callToast('Updated the event with your new values!');
-        router.push('/admin-panel'); //redirect user to the panel
+        
+        selectedEvent.value = null; // redirects user back to the list of events
+        updatedEvent.value = null;
+
+        await fetchAllCrisisEvents(); // update the list of crisis events
     } catch (error) {
         console.error('An error occured while updating the event: ', error);
     }
-
 });
 
  function cancelUpdate() {
     selectedEvent.value = null;
+    updatedEvent.value = null;
+ }
+
+ async function deactivateEvent(id: number) {
+    try {
+        await deactivateCurrentEvent(id);
+        callToast('Hendelsen er nå satt som inaktiv!');
+        
+        selectedEvent.value = null; // redirects user back to the list of events
+        updatedEvent.value = null;
+        await fetchAllCrisisEvents(); // update the list of crisis events
+    } catch (error) {
+        console.error('Something happened when trying to deactivate: ', error);
+    }
  }
 
  function callToast (message: string) { 
@@ -393,6 +389,10 @@ const onSubmit = form.handleSubmit(async (values) => {
 h1 {
     font-size: 2em;
     margin: 20px
+}
+
+.buttons > Button {
+    margin: 5px;
 }
 
 .page {
@@ -447,13 +447,16 @@ h1 {
 }
 
 .green {
-    background-color: greenyellow; /*change to tailwind later */
+    width: fit-content;
+    background-color: var(--color-chart-2); /* should be green but is off*/
 }
 .yellow {
-    background-color: yellow;
+    width: fit-content;
+    background-color: var(--color-chart-4); /*should be yellow on dark mode... */
 }
 .red {
-    background-color: red;
+    width: fit-content;
+    background-color: var(--color-chart-1); /*should be red but is blue  */
 }
 
 .map { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder,

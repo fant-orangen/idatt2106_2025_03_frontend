@@ -463,16 +463,21 @@
       "time": "Time",
       "date": "Date",
       "choose-event": "Choose an event",
-      "deactivate": "Deactivate event"
+      "deactivate": "Deactivate event",
+      "active": "Active status"
     },
     "crisis-level": {
       "low": "Low",
       "medium": "Medium",
-      "high": "High"
+      "high": "High",
+      "green": "Low",
+      "yellow": "Medium",
+      "red": "High"
     },
     "active": {
       "true": "active",
-      "false": "not active"
+      "false": "inactive",
+      "description": "Deactivate the event to change the status to inactive!"
     }
   },
   "add-POI-info": {

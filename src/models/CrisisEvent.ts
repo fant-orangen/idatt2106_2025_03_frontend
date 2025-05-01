@@ -17,8 +17,8 @@ export interface UpdateCrisisEventDto {
   name: string;
   description?: string;
   severity: 'green' | 'yellow' | 'red';
-  epicenterLatitude: number;
-  epicenterLongitude: number;
+  latitude: number;
+  longitude: number;
   radius: number | null;
 }
 
