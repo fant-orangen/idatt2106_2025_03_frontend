@@ -48,11 +48,12 @@ async function handleLogin() {
   try {
     errorMessage.value = ''
     const response = await userStore.verifyLogin(email.value, password.value)
-
+    console.log('Login response status:', response.status)
     // Check HTTP status code
+    // 200 indicates success, 202 indicates 2FA required
     if (response.status === 200) {
-      userStore.login(response.status, response.data.token, email.value)
       router.push('/')
+      userStore.login(response.status, response.data.token, email.value)
     } else if (response.status === 202) {
       // If the response status is 202, it indicates that 2FA is required
       userStore.send2FACodeToEmail(email.value)
@@ -97,7 +98,6 @@ async function handleComplete() {
     } else {
       errorMessage.value = t('errors.invalid-2fa-code')
     }
-
     router.push('/')
   } catch (error) {
     errorMessage.value = t('errors.login-failed')
