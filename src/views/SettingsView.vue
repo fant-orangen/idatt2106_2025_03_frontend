@@ -12,18 +12,32 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Lock, Unlock, User } from 'lucide-vue-next'
+import { Lock, Unlock, User, Eye, EyeOff } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { updateUserPreference, getUserPreferences } from '@/services/UserService'
 import type { UserPreferencesDto } from '@/models/User'
 import { useUserStore } from '@/stores/UserStore'
 import { ref } from 'vue'
 import { onMounted } from 'vue'
+import { toast } from 'vue-sonner'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
 const userStore = useUserStore()
+const router = useRouter()
+
 const twoFactorAuthenticationEnabled = ref(false)
 const locationSharingEnabled = ref(false)
+
+const newEmail = ref('')
+const changeEmailPassword = ref('')
+
+const currentPassword = ref('')
+const newPassword = ref('')
+
+const isViewChangePasswordEmail = ref(false)
+const isViewCurrentPassword = ref(false)
+const isViewNewPassword = ref(false)
 
 function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boolean) {
   // Optimistically update the state
@@ -58,6 +72,62 @@ function getPreferences() {
     })
 }
 
+function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string) {
+  userStore
+    .updatePassword(oldPasswordInput, newPasswordInput)
+    .then(() => {
+      toast(t('settings.account.password.success'), {
+        type: 'success',
+        description: t('settings.account.password.successDescription'),
+      })
+      // Reset the password fields
+      currentPassword.value = ''
+      newPassword.value = ''
+      userStore.logout()
+      router.push('/login')
+    })
+    .catch((error) => {
+      console.error('Error updating password:', error)
+      toast(t('settings.account.password.error'), {
+        type: 'error',
+        description: t('settings.account.password.errorDescription'),
+      })
+    })
+}
+
+function handleUpdateEmail(newEmailInput: string, passwordInput: string) {
+  userStore
+    .updateEmail(newEmailInput, passwordInput)
+    .then(() => {
+      toast(t('settings.account.email.success'), {
+        type: 'success',
+        description: t('settings.account.email.successDescription'),
+      })
+      // Reset the email fields
+      newEmail.value = ''
+      changeEmailPassword.value = ''
+      userStore.logout()
+      router.push('/login')
+    })
+    .catch((error) => {
+      console.error('Error updating email:', error)
+      toast(t('settings.account.email.error'), {
+        type: 'error',
+        description: t('settings.account.email.errorDescription'),
+      })
+    })
+}
+
+function handleCancelEmailChange() {
+  newEmail.value = ''
+  changeEmailPassword.value = ''
+}
+
+function handleCancelPasswordChange() {
+  currentPassword.value = ''
+  newPassword.value = ''
+}
+
 onMounted(() => {
   getPreferences()
 })
@@ -82,27 +152,55 @@ onMounted(() => {
           <Card>
             <CardHeader>
               <CardTitle class="test text-3xl">{{ t('settings.account.title') }}</CardTitle>
-              <CardDescription></CardDescription>
-            </CardHeader>
-            <CardHeader>
-              <CardTitle>{{ t('settings.account.subtitle') }}</CardTitle>
               <CardDescription>
                 {{ t('settings.account.description') }}
               </CardDescription>
             </CardHeader>
+            <!-- Change Email Setting -->
+            <CardHeader>
+              <CardTitle>{{ t('settings.account.email.subtitle') }}</CardTitle>
+              <CardDescription>
+                {{ t('settings.account.email.description') }}
+              </CardDescription>
+            </CardHeader>
             <CardContent class="account-settings space-y-2">
               <div class="space-y-1">
-                <Label for="name">{{ t('settings.account.fullName') }}</Label>
-                <Input id="name" default-value="Kari Nordmann" />
+                <Label for="email">{{ t('settings.account.email.email') }}</Label>
+                <Input id="email" :placeholder="t('login.email')" v-model="newEmail" />
               </div>
-              <div class="space-y-1">
-                <Label for="email">{{ t('settings.account.email') }}</Label>
-                <Input id="email" default-value="alice@example.com" />
+              <div class="space-y-1 relative">
+                <Label for="password">{{ t('login.password') }}</Label>
+                <div class="relative">
+                  <Input
+                    :type="isViewChangePasswordEmail ? 'text' : 'password'"
+                    id="password"
+                    v-model="changeEmailPassword"
+                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    :placeholder="t('login.password')"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
+                    @click="isViewChangePasswordEmail = !isViewChangePasswordEmail"
+                  >
+                    <component :is="isViewChangePasswordEmail ? EyeOff : Eye" class="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
             <CardFooter>
-              <Button>{{ t('settings.account.saveChanges') }}</Button>
+              <div class="flex flex-col gap-4 md:flex-row">
+                <Button @click="handleUpdateEmail(newEmail, changeEmailPassword)">{{
+                  t('settings.account.save-changes')
+                }}</Button>
+                <Button variant="outline" @click="handleCancelEmailChange">
+                  {{ t('settings.cancel') }}
+                </Button>
+              </div>
             </CardFooter>
+            <!-- Change Password Setting -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.password.title') }}</CardTitle>
               <CardDescription>
@@ -112,16 +210,58 @@ onMounted(() => {
             <CardContent class="password-settings space-y-2">
               <div class="space-y-1">
                 <Label for="current">{{ t('settings.account.password.current') }}</Label>
-                <Input id="current" type="password" />
+                <div class="relative">
+                  <Input
+                    :type="isViewCurrentPassword ? 'text' : 'password'"
+                    id="password"
+                    v-model="currentPassword"
+                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    :placeholder="t('login.password')"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
+                    @click="isViewCurrentPassword = !isViewCurrentPassword"
+                  >
+                    <component :is="isViewCurrentPassword ? EyeOff : Eye" class="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
               <div class="space-y-1">
                 <Label for="new">{{ t('settings.account.password.new') }}</Label>
-                <Input id="new" type="password" />
+                <div class="relative">
+                  <Input
+                    :type="isViewNewPassword ? 'text' : 'password'"
+                    id="password"
+                    v-model="newPassword"
+                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    :placeholder="t('login.password')"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
+                    @click="isViewNewPassword = !isViewNewPassword"
+                  >
+                    <component :is="isViewNewPassword ? EyeOff : Eye" class="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
             <CardFooter>
-              <Button>{{ t('settings.account.saveChanges') }}</Button>
+              <div class="flex flex-col gap-4 md:flex-row">
+                <Button @click="handleUpdatePassword(currentPassword, newPassword)">{{
+                  t('settings.account.save-changes')
+                }}</Button>
+                <Button variant="outline" @click="handleCancelPasswordChange">
+                  {{ t('settings.cancel') }}
+                </Button>
+              </div>
             </CardFooter>
+            <!-- Security Settings -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.security.title') }}</CardTitle>
               <CardDescription>
@@ -151,6 +291,7 @@ onMounted(() => {
                 </Button>
               </div>
             </CardContent>
+            <!-- Delete Account -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.delete.title') }}</CardTitle>
               <CardDescription>
@@ -172,7 +313,7 @@ onMounted(() => {
         <div class="flex flex-col gap-10">
           <Card>
             <CardHeader>
-              <CardTitle class="text-2xl font-bold text-primary">
+              <CardTitle class="test text-3xl">
                 {{ t('settings.notifications.title') }}
               </CardTitle>
               <CardDescription class="text-muted-foreground">
@@ -208,7 +349,7 @@ onMounted(() => {
             </CardContent>
             <CardFooter class="flex justify-end">
               <Button class="bg-primary text-primary-foreground hover:bg-primary/90">
-                {{ t('settings.notifications.saveChanges') }}
+                {{ t('settings.notifications.save-changes') }}
               </Button>
             </CardFooter>
           </Card>
