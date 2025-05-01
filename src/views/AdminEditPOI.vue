@@ -1,300 +1,331 @@
-<!-- Admin-page for editing POI's -->
+<!-- Page for editing an existing point of interest -->
 
 <template>
-  <div style="margin:20px">
+  <div style="margin: 20px;">
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/admin-panel">
+            {{ t('navigation.admin-panel') }}
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>{{ t('admin.edit-POI') }}</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
 
-    <!-- Breadcrumb -->
-    <BreadcrumbList>
-      <BreadcrumbItem>
-        <BreadcrumbLink href="/admin-panel">
-          {{ $t('navigation.admin-panel') }}
-        </BreadcrumbLink>
-      </BreadcrumbItem>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
-        <BreadcrumbPage>{{ $t('admin.edit-POI') }}</BreadcrumbPage>
-      </BreadcrumbItem>
-    </BreadcrumbList>
-  </div>
+    <!-- Page title -->
 
-  <h1 class="text-center">{{ $t('admin.edit-POI') }}</h1>
+    <h1>{{ t('admin.edit-POI') }}</h1>
 
-  <div class="page">
-
-    <!-- Form -->
-    <div class="fields">
-      <form @submit="onSubmit">
-
-        <!-- Title -->
-        <FormField v-slot="{ field, meta, errorMessage}" name="title">
-          <FormItem>
-            <FormLabel>{{ $t('add-event-info.titles.title')}}</FormLabel>
-            <FormControl>
-              <Input type="text" placeholder="Title" v-bind="field" />
-            </FormControl>
-            <FormMessage v-if="meta.touched || meta.submitFailed">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField><br>
-
-        <!-- Placement -->
-        <div class="container">
-          <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
-            <FormItem>
-              <FormLabel>{{ $t('add-event-info.titles.latitude') }}</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="Latitude" v-bind="field" class="w-[100px]" />
-              </FormControl>
-              <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
-            </FormItem>
-          </FormField>
-
-          <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
-            <FormItem>
-              <FormLabel>{{ $t('add-event-info.titles.longitude') }}</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="Longitude" v-bind="field" class="w-[100px]" />
-              </FormControl>
-              <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
-            </FormItem>
-          </FormField>
-
-          <FormField v-slot="{ field, meta, errorMessage }" name="address">
-            <FormItem>
-              <FormLabel>{{ $t('add-event-info.titles.address') }}</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="Eksempelveien 21" v-bind="field" />
-              </FormControl>
-              <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
-            </FormItem>
-          </FormField>
-        </div><br>
-
-        <!-- Type -->
-        <FormField v-slot="{ field, meta, errorMessage }" name="type">
-          <FormItem>
-            <FormLabel>{{ $t('add-POI-info.titles.type') }}</FormLabel>
-            <FormControl>
-              <Select v-model="field.value">
-                <SelectTrigger>
-                  <SelectValue placeholder="Velg type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="defibrillator">{{ $t('add-POI-info.POI-type.defibrillator') }}</SelectItem>
-                    <SelectItem value="shelter">{{ $t('add-POI-info.POI-type.shelter') }}</SelectItem>
-                    <SelectItem value="water-source">{{ $t('add-POI-info.POI-type.water-source') }}</SelectItem>
-                    <SelectItem value="food-station">{{ $t('add-POI-info.POI-type.food-station') }}</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </FormControl>
-            <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField><br>
-
-        <!-- Opening times -->
-        <div class="container">
-          <FormField v-slot="{ field }" name="openfrom">
-            <FormItem>
-              <FormLabel>{{ $t('add-POI-info.titles.open-from') }}</FormLabel>
-              <FormControl>
-                <Input type="time" v-bind="field" />
-              </FormControl>
-            </FormItem>
-          </FormField>
-
-          <FormField v-slot="{ field }" name="opento">
-            <FormItem>
-              <FormLabel>{{ $t('add-POI-info.titles.open-to') }}</FormLabel>
-              <FormControl>
-                <Input type="time" v-bind="field" />
-              </FormControl>
-            </FormItem>
-          </FormField>
-        </div><br>
-
-        <!-- Contact info -->
-        <FormField v-slot="{ field, meta, errorMessage }" name="contactinfo">
-          <FormItem>
-            <FormLabel>{{ $t('add-POI-info.titles.contact-info') }}</FormLabel>
-            <FormControl>
-              <Input type="phone" placeholder="+47 123 45 678" v-bind="field" />
-            </FormControl>
-            <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField><br>
-
-        <!-- Description -->
-        <FormField v-slot="{ field, meta, errorMessage }" name="description">
-          <FormItem>
-            <FormLabel>{{ $t('add-event-info.titles.description') }}</FormLabel>
-            <FormControl>
-              <Textarea placeholder="Description" v-bind="field" />
-            </FormControl>
-            <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField><br>
-
-        <Button type="submit">{{ $t('add-event-info.titles.submit') }}</Button>
-      </form>
+    <!-- Cancel button for editing a POI -->
+    <div v-if="selectedPoi">
+      <Button @click="cancelUpdate">{{ t('navigation.go-back') }}</Button>
     </div>
 
-    <!-- Map preview -->
-    <div class="box">MAP</div>
-  </div>
+    <div class="page">
+      <div class="events" v-if="!selectedPoi">
+        <ScrollArea class="rounded-md border w-[100%] h-[100%]">
+          <div class="p-4">
+            <h4 class="mb-4 text-sm font-medium leading-none">
+              {{ t('add-event-info.titles.choose-event') }}
+            </h4>
+            <div v-for="(poi, index) in pois" :key="index" @click="selectPoi(poi)"
+                 class="text-sm hover:underline cursor-pointer transition-colors"
+                 :class="{ 'bg-muted': false, 'hover:bg-muted/50': true }">
+              {{ poi.name }} | {{ poi.description }}
+              <Separator class="my-2" />
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
 
-  <!-- Delete Button -->
-  <div class="mt-6 ml-6">
-    <button
-      @click="showDeleteConfirm = true"
-      class="text-sm text-red-500 underline"
-    >
-      {{ $t('Delete') }}
-</button>
-</div>
+      <!-- POI edit form -->
 
-  <!-- Confirm delete modal -->
-  <div
-    v-if="showDeleteConfirm"
-    class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground p-6 border border-destructive rounded-lg shadow-xl z-50"
-  >
-    <p class="mb-4">{{ $t("Are you sure you want to delete this POI?") }}</p>
-    <div class="flex justify-end space-x-4">
-      <button @click="showDeleteConfirm = false" class="text-muted-foreground underline">
-        {{ $t("Cancel") }}
-      </button>
-      <button @click="confirmDelete" class="text-destructive underline">
-        {{ $t("Delete permanently") }}
-      </button>
+      <div class="edit" v-if="selectedPoi">
+        <form @submit="onSubmit">
+          <FormField name="name" v-slot="{ field }">
+            <FormItem class="mt-4">
+              <FormLabel>{{ t('add-poi.name') }}</FormLabel>
+              <FormControl>
+                <Input v-model="field.value" />
+              </FormControl>
+            </FormItem>
+          </FormField>
+
+          <!-- Latitude and longitude -->
+          <div class="container">
+            <FormField name="latitude" v-slot="{ field }">
+              <FormItem class="mt-4">
+                <FormLabel>{{ t('add-poi.latitude') }}</FormLabel>
+                <FormControl>
+                  <Input type="number" v-model="field.value" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+
+            <FormField name="longitude" v-slot="{ field }">
+              <FormItem class="mt-4">
+                <FormLabel>{{ t('add-poi.longitude') }}</FormLabel>
+                <FormControl>
+                  <Input type="number" v-model="field.value" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+          </div>
+
+          <!-- Description -->
+          <FormField name="description" v-slot="{ field }">
+            <FormItem class="mt-4">
+              <FormLabel>{{ t('add-poi.description') }}</FormLabel>
+              <FormControl>
+                <Textarea v-model="field.value" />
+              </FormControl>
+            </FormItem>
+          </FormField>
+
+          <!-- Opening hours -->
+          <FormField name="openingFrom" v-slot="{ field }">
+            <FormItem class="mt-4">
+              <FormLabel>{{ t('add-POI-info.titles.open-from') }}</FormLabel>
+              <FormControl>
+                <Input type="time" v-model="field.value" />
+              </FormControl>
+            </FormItem>
+          </FormField>
+
+          <FormField name="openingTo" v-slot="{ field }">
+            <FormItem class="mt-4">
+              <FormLabel>{{ t('add-POI-info.titles.open-to') }}</FormLabel>
+              <FormControl>
+                <Input type="time" v-model="field.value" />
+              </FormControl>
+            </FormItem>
+          </FormField>
+
+          <!-- Contact information -->
+          <FormField name="contactInfo" v-slot="{ field }">
+            <FormItem class="mt-4">
+              <FormLabel>{{ t('add-poi.contact') }}</FormLabel>
+              <FormControl>
+                <Input v-model="field.value" />
+              </FormControl>
+            </FormItem>
+          </FormField>
+
+          <!-- POI type -->
+          <FormField name="poiTypeId" v-slot="{ field }">
+            <FormItem class="mt-4">
+              <FormLabel>{{ t('add-poi.type') }}</FormLabel>
+              <FormControl>
+                <Select v-model="field.value">
+                  <SelectTrigger>
+                    <SelectValue :placeholder="t('admin.select-poi-type')" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem v-for="type in poiTypes" :value="type.id" :key="type.id">
+                        {{ type.name }}
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+            </FormItem>
+          </FormField>
+
+          <!-- Submit and delete buttons -->
+          <div class="form-actions mt-6">
+            <Button type="submit">{{ t('add-poi.submit') }}</Button>
+            <Button class="bg-red-600 ml-2" @click.prevent="deleteSelectedPoi">
+              {{ t('add-poi.delete') }}
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Placeholder for map -->
+
+      <div class="map" v-if="selectedPoi">
+        <p>(Kart vises her senere)</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useForm } from 'vee-validate';
-import { toTypedSchema } from '@vee-validate/zod';
-import { useI18n } from 'vue-i18n';
-import * as z from 'zod';
-import { getPOIById, editPOI, deletePOI } from '@/services/api/AdminServices';
-// UI Components
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+/**
+ * Imports: UI components, select dropdown,form components and breadcrumb.
+ */
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { useForm } from 'vee-validate'
+import * as z from 'zod'
+import { toTypedSchema } from '@vee-validate/zod'
+import { fetchPublicPois } from '@/services/api/PoiService'
+import { editPoi, deletePoi } from '@/services/api/AdminServices'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+
 import {
-  FormControl,
-  FormDescription,
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem
+} from '@/components/ui/select'
+
+import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+  FormControl,
+  FormMessage
+} from '@/components/ui/form'
+
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  BreadcrumbList,
+  Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
+  BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+  BreadcrumbSeparator
+} from '@/components/ui/breadcrumb'
 
+const { t } = useI18n()
+const router = useRouter()
 
-const { t } = useI18n();
-const route = useRoute();
-const router = useRouter();
-
-const poiId = Number(route.params.id);
-const isLoading = ref(true);
-const showDeleteConfirm = ref(false);
+const pois = ref<any[]>([])
 
 /**
- * Form schema
+ * Available POI types (translated for dropdown).
  */
 
-const formSchema = toTypedSchema(
-  z.object({
-    title: z.string().min(2).max(50),
-    latitude: z.number().min(-90).max(90).optional(),
-    longitude: z.number().min(-180).max(180).optional(),
-    address: z.string().max(100).optional(),
-    type: z.enum(["defibrillator", "shelter", "water-source", "food-station"]),
-    openfrom: z.string().optional(),
-    opento: z.string().optional(),
-    contactinfo: z.string().optional(),
-    description: z.string().min(10).max(500),
-  })
-);
+const poiTypes = ref([
+  { id: 1, name: t('map.shelter') },
+  { id: 2, name: t('map.defibrillator') }
+])
 
 /**
- * Form configuration.
+ * The currently selected POI.
+ */
+
+const selectedPoi = ref<any | null>(null)
+
+/**
+ * Fetch POI's on load.
+ */
+
+onMounted(async () => {
+  const response = await fetchPublicPois()
+  pois.value = response
+})
+
+/**
+ * Form validation schema.
+ */
+
+const formSchema = toTypedSchema(z.object({
+  name: z.string().min(2),
+  description: z.string().optional(),
+  latitude: z.preprocess(val => val ? Number(val) : undefined, z.number().optional()),
+  longitude: z.preprocess(val => val ? Number(val) : undefined, z.number().optional()),
+  contactInfo: z.string().optional(),
+  openingFrom: z.string().optional(),
+  openingTo: z.string().optional(),
+  poiTypeId: z.preprocess(val => val ? Number(val) : undefined, z.number().optional())
+}))
+
+/**
+ * Initialize the form.
  */
 
 const form = useForm({
   validationSchema: formSchema,
   initialValues: {
-    title: '',
-    latitude: undefined,
-    longitude: undefined,
-    address: '',
-    type: 'defibrillator',
-    openfrom: '',
-    opento: '',
-    contactinfo: '',
-    description: ''
+    name: '',
+    description: '',
+    latitude: '',
+    longitude: '',
+    contactInfo: '',
+    openingFrom: '',
+    openingTo: '',
+    poiTypeId: undefined
   }
-});
+})
 
 /**
- * Fetch existing POI data.
+ * Populate form with POI data.
+ * @param poi the selected POI-object.
  */
 
-onMounted(async () => {
-  try {
-    const response = await getPOIById(poiId);
-    form.setValues(response.data);
-  } catch (error) {
-    console.error('Error loading POI:', error);
-  } finally {
-    isLoading.value = false;
-  }
-});
+function selectPoi(poi: any) {
+  selectedPoi.value = poi
+
+  const [openFrom, openTo] = poi.openingHours?.split('-').map((s: string) => s.trim()) || ['', '']
+
+  form.setValues({
+    name: poi.name || '',
+    description: poi.description || '',
+    latitude: poi.latitude?.toString() || '',
+    longitude: poi.longitude?.toString() || '',
+    contactInfo: poi.contactInfo || '',
+    openingFrom: openFrom,
+    openingTo: openTo,
+    poiTypeId: poi.poiTypeId?.toString() || ''
+  })
+}
 
 /**
- * Submit handler.
+ * Handle form submit to update POI.
+ * @param values form values.
  */
+async function onSubmit(values: any) {
+  if (!selectedPoi.value) return
 
-const onSubmit = form.handleSubmit(async (values) => {
-  try {
-    await editPOI(poiId, values);
-    router.push('/admin-panel');
-  } catch (error) {
-    console.error('Failed to update POI:', error);
+  const updateData = {
+    ...values,
+    openingHours: values.openingFrom && values.openingTo
+      ? `${values.openingFrom} - ${values.openingTo}`
+      : null
   }
-});
+
+  await editPoi(selectedPoi.value.id, updateData)
+  router.push('/admin-panel')
+}
 
 /**
- * Confirm deleting a POI.
+ * Cancel update of current POI.
  */
+function cancelUpdate() {
+  selectedPoi.value = null
+}
 
-const confirmDelete = async () => {
-  try {
-    await deletePOI(poiId);
-    router.push('/admin-panel');
-  } catch (error) {
-    console.error('Failed to delete POI:', error);
-  }
-};
+/**
+ * Delete current POI (after conformation).
+ */
+async function deleteSelectedPoi() {
+  if (!selectedPoi.value) return
+  const confirmed = confirm(t('add-poi.confirm-delete') || 'Are you sure you want to delete this point of interest?')
+  if (!confirmed) return
+  await deletePoi(selectedPoi.value.id)
+  router.push('/admin-panel')
+}
 </script>
 
 <style scoped>
+h1 {
+  font-size: 2em;
+  margin: 20px;
+}
 .page {
   display: flex;
   flex-flow: row wrap;
@@ -302,19 +333,17 @@ const confirmDelete = async () => {
   margin: 30px;
   gap: 15px;
 }
-
 .container {
   display: flex;
+  flex-flow: row nowrap;
   gap: 10px;
 }
-
-.fields {
-  max-width: 450px;
+.edit form > * + * {
+  margin-top: 1rem;
 }
-
-.box {
-  border: 1px solid gray;
+.map {
   border-radius: 8px;
+  border: solid grey;
   min-width: 300px;
   min-height: 400px;
   background-color: lightgreen;
