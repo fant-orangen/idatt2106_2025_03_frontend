@@ -242,6 +242,10 @@ import {
 } from '@/components/ui/card'
 import { add } from 'date-fns';
 
+/*
+ * TODO: fix bug where old value of field is updated to 0, when field is not actually updated
+ */
+
 const { t } = useI18n();
 const events = ref<CrisisEventDto[]>([]);
 const selectedEvent = ref<CrisisEventDto | null>(null);
@@ -249,6 +253,10 @@ const updatedEvent = ref<UpdateCrisisEventDto | null> (null);
 
 const router = useRouter();
 
+/**
+ * Saves the event the admin user chose to edit to the 'selectedEvent' variable. 
+ * @param index - index of event in the 'events' array. 
+ */
 async function selectEvent(index: number) {
     if (!events.value[index]) {
         console.log('Event doesnt exist in array from backend');
@@ -270,7 +278,7 @@ async function selectEvent(index: number) {
 
 /**
  * When the component is loaded, the events saved will be displayed automatically.
- * Awaits response from getCurrentEvents() from backend server.
+ * Awaits response from fetchAllCrisisEvents() from backend API.
  */
 onMounted(async () => {
     try {
@@ -282,6 +290,9 @@ onMounted(async () => {
     }
 });
 
+/**
+ * Validation of form fields that can be updated. 
+ */
 const formSchema = toTypedSchema(
     z.object({
     epicenterLatitude: 
@@ -302,8 +313,12 @@ const formSchema = toTypedSchema(
         .min(1, t('add-event-info.errors.radius'))
         .max(10000, t('add-event-info.errors.radius'))),
     severity: z.enum(["green", "yellow", "red"]),
-    description: z.string()
-        .max(500, t('add-event-info.errors.description')),
+    description: z.preprocess(
+        (val) => (val === '' ? undefined : val),
+        z.string()
+        .max(500, t('add-event-info.errors.description'))
+        .optional()
+    ),  
   }).refine((data) => {
     if ((data.epicenterLatitude === undefined || isNaN(data.epicenterLatitude)) || (data.epicenterLongitude === undefined || isNaN(data.epicenterLongitude))) {
         return !!data.address && data.address.length > 0;
@@ -315,6 +330,9 @@ const formSchema = toTypedSchema(
   })
 );
 
+/** 
+ * Sets the initial values in the form fields to the values fetched from the backend API. 
+ */
 const initialValues = computed(() => ({
     epicenterLatitude: selectedEvent.value?.epicenterLatitude ?? '',
     epicenterLongitude: selectedEvent.value?.epicenterLongitude ?? '',
@@ -326,10 +344,16 @@ const initialValues = computed(() => ({
 
 const form = useForm({
     validationSchema: formSchema,
-    initialValues,
+    initialValues, //idk why this is red but it works
     enableReinitialize: true
 });
 
+/**
+ * Handles submitting the updates to the backend API. 
+ * Checks if the selected event is not null. If not, then the updated fields should be 
+ * saved with the new changes, and the fields unchanged should stay as they were when first fetched 
+ * from the backend API. 
+ */
 const onSubmit = form.handleSubmit(async (values) => {
     try {
         if (!selectedEvent.value) {
@@ -360,11 +384,20 @@ const onSubmit = form.handleSubmit(async (values) => {
     }
 });
 
+/**
+ * Cancels the potential changes of variables. 
+ * Being used in 'Go back' button.
+ */
  function cancelUpdate() {
     selectedEvent.value = null;
     updatedEvent.value = null;
  }
 
+ /**
+  * Deactivates the event by setting the 'active' attribute in backend API to 'false'. 
+  * Shows up in the form as 'inactive' if false, or 'active' if true. 
+  * @param id 
+  */
  async function deactivateEvent(id: number) {
     try {
         await deactivateCurrentEvent(id);
@@ -378,6 +411,11 @@ const onSubmit = form.handleSubmit(async (values) => {
     }
  }
 
+ /**
+  * Pop-up functionality. 
+  * Takes in a message to show the user that some action has happened. 
+  * @param message 
+  */
  function callToast (message: string) { 
     console.log('Called toast for message: ', message);
     toast(message);
