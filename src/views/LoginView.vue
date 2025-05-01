@@ -35,6 +35,36 @@ const errorMessage = ref('')
 const resetEmail = ref('')
 const isTwoFactorAuthDialogOpen = ref(false)
 const pinValue = ref<string[]>([])
+// const token = ref('')
+
+/* global grecaptcha */
+
+async function testRecaptcha() {
+  try {
+    console.log('Testing reCAPTCHA...')
+    // Ensure the reCAPTCHA library is ready
+    await grecaptcha.enterprise.ready(async () => {
+      console.log('reCAPTCHA is ready...')
+      // Execute reCAPTCHA and get the token
+      const token = await grecaptcha.enterprise.execute(
+        '6LcTxCorAAAAAF8Ae6Q__20X_Bqgh05-CATxVZRD',
+        {
+          action: 'TEST',
+        },
+      )
+      console.log('reCAPTCHA Token:', token)
+
+      if (!token) {
+        throw new Error('Failed to generate reCAPTCHA token')
+      }
+
+      // Optionally, send the token to your backend for validation
+      console.log('Token is ready for backend validation.')
+    })
+  } catch (error) {
+    console.error('reCAPTCHA Error:', error)
+  }
+}
 
 /**
  * Handles the login process by verifying the user's credentials.
@@ -47,12 +77,38 @@ const pinValue = ref<string[]>([])
 async function handleLogin() {
   try {
     errorMessage.value = ''
-    const response = await userStore.verifyLogin(email.value, password.value)
+    console.log('Executing reCAPTCHA...')
 
-    // Check HTTP status code
+    // Generate the reCAPTCHA token
+    const recaptchaToken = await new Promise<string>((resolve, reject) => {
+      grecaptcha.enterprise.ready(async () => {
+        try {
+          console.log('reCAPTCHA ready')
+          const token = await grecaptcha.enterprise.execute(
+            '6LcTxCorAAAAAF8Ae6Q__20X_Bqgh05-CATxVZRD',
+            { action: 'LOGIN' },
+          )
+          console.log('reCAPTCHA Token:', token)
+
+          if (!token) {
+            throw new Error('Failed to generate reCAPTCHA token')
+          }
+          resolve(token)
+        } catch (error) {
+          reject(error)
+        }
+      })
+    })
+
+    console.log('This is the token being sent:', recaptchaToken)
+
+    // Verify the login credentials
+    const response = await userStore.verifyLogin(email.value, password.value, recaptchaToken)
+
+    // Handle the response
     if (response.status === 200) {
-      userStore.login(response.status, response.data.token, email.value)
       router.push('/')
+      userStore.login(response.status, response.data.token, email.value)
     } else if (response.status === 202) {
       // If the response status is 202, it indicates that 2FA is required
       userStore.send2FACodeToEmail(email.value)
@@ -99,7 +155,7 @@ async function handleComplete() {
     }
 
     router.push('/')
-    console.log('User role is: ',userStore.role)
+    console.log('User role is: ', userStore.role)
   } catch (error) {
     errorMessage.value = t('errors.login-failed')
     console.log('Login error', error)
@@ -225,6 +281,7 @@ async function handleComplete() {
             {{ $t('login.login') }}
           </Button>
           <p v-if="errorMessage" class="error text-red text-center mt-2">{{ errorMessage }}</p>
+          <Button @click="testRecaptcha">Test reCAPTCHA</Button>
         </form>
       </CardContent>
     </Card>
