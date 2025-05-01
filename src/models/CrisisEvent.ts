@@ -13,6 +13,15 @@ export interface CrisisEventDto {
   active: boolean;
 }
 
+export interface UpdateCrisisEventDto {
+  name: string;
+  description?: string;
+  severity: 'green' | 'yellow' | 'red';
+  epicenterLatitude: number;
+  epicenterLongitude: number;
+  radius: number | null;
+}
+
 export interface CrisisEventChange {
   id: number;
   crisisEventId: number;
