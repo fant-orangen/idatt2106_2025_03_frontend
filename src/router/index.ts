@@ -1,6 +1,6 @@
+import { useUserStore } from '@/stores/UserStore'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getCurrentHousehold } from '@/services/HouseholdService'
-import { useUserStore } from '@/stores/UserStore';
 import { type AxiosError } from 'axios';
 
 const routes = [
@@ -22,16 +22,19 @@ const routes = [
   {
     path: '/notifications',
     name: 'Notifications',
-    component: () => import('@/views/NotificationView.vue') },
-
+    component: () => import('@/views/NotificationView.vue'), 
+    meta: { requiresAuth: true },
+  },
   {
     path: '/news',
     name: 'News',
-    component: () => import('@/views/NewsView.vue') },
+    component: () => import('@/views/NewsView.vue') 
+  },
   {
     path: '/settings',
     name: 'Settings',
     component: () => import('@/views/SettingsView.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/register',
@@ -52,6 +55,7 @@ const routes = [
     path: '/household',
     name: 'Household',
     component: () => import('@/views/HouseholdView.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/household/create',
@@ -62,6 +66,7 @@ const routes = [
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
     component: () => import('@/views/FoodAndDrinksView.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/shelter-frontpage',
@@ -69,24 +74,40 @@ const routes = [
     component: () => import('@/components/shelter/CategoryPage.vue')
   },
   {
+    path: '/medicine-inventory',
+    name: 'MedicineInventory',
+    component: () => import('@/views/MedicineInventory.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/admin-panel',
     name: 'AdminPanel',
     component: () => import('@/views/AdminPanel.vue'),
+    meta: { requiresAdmin: true }, 
   },
   {
     path: '/add-new-event',
     name: 'AddNewEvent',
     component: () => import('@/views/AdminAddNewEvent.vue'),
+    meta: { requiresAdmin: true }, 
   },
   {
     path: '/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
+    meta: { requiresAdmin: true }, 
   },
   {
     path: '/edit-event',
     name: 'EditEvent',
-    component: () => import('@/views/AdminEditEvent.vue')
+    component: () => import('@/views/AdminEditEvent.vue'),
+    meta: { requiresAdmin: true }, 
+  },
+  {
+    path: '/handle-admins',
+    name: 'HandleAdmins',
+    component: () => import('@/views/SuperAdminAdministrate.vue'),
+    meta: { requiresSuperAdmin: true }, 
   },
   {
     path: '/:pathMatch(.*)*',
@@ -98,12 +119,21 @@ const routes = [
     name: 'MedicineInventory',
     component: () => import('@/views/MedicineInventory.vue'),
   },
+  {
+    path: '/edit-POI',
+    name: 'AdminEditPOI',
+    component: () => import('@/views/AdminEditPOI.vue'),
+    meta: { requiresAdmin: true},
+  },
 ]
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: routes,
 })
+
 /**
  * Global Vue Router navigation guard.
  *
@@ -136,6 +166,7 @@ router.beforeEach(async (to, from, next) => {
   if (!userStore.isAuthenticated) { //
     console.log('Store not authenticated, attempting initialization...');
     await userStore.initializeFromStorage(); // Attempt to load user session
+
     // After attempting initialization, re-check authentication status.
     // If still not authenticated and the route is not public, redirect to Login.
     if (!userStore.isAuthenticated && !publicRoutes.includes(to.name as string)) {
@@ -145,48 +176,56 @@ router.beforeEach(async (to, from, next) => {
     }
     console.log('Store initialized, role:', userStore.role);
   }
-
-  // Check if the authenticated user has an administrative role.
-  // Admins bypass the household check required for regular users.
-  if (userStore.role === 'ADMIN' || userStore.role === 'SUPERADMIN') {
-    console.log('Admin user detected, bypassing household check.');
-    return next(); // Proceed to the requested route for admin users
+  
+  // requires super admin - not allowed
+  if (to.meta.requiresSuperAdmin && !userStore.isSuperAdminUser) { 
+    return next({ name: 'NotFound' });
+  }
+  // requires admin - not allowed
+  if (to.meta.requiresAdmin && !userStore.isAdminUser) { 
+    return next({ name: 'NotFound' });
+  }
+  // requires authentication - not allowed
+  if (to.meta.requiresAuth && !userStore.isAuthenticated) {
+    return next( { name: 'Login' });
   }
 
   // For authenticated, non-admin users, check for household association.
-  try {
-    // Attempt to fetch the user's current household information from the backend.
-    const household = await getCurrentHousehold(); // Calls the service which uses Axios
+  if (!userStore.isAdminUser && !userStore.isSuperAdminUser) {
+    try {
+        // Attempt to fetch the user's current household information from the backend.
+        const household = await getCurrentHousehold(); 
 
-    // If the user has no household (API returns null or 404), redirect them.
-    if (household === null) { //
-      // Prevent an infinite redirect loop if already on the CreateHousehold page.
-      if (to.name === 'CreateHousehold') { //
-        return next(false); // Block navigation
+        // If the user has no household (API returns null or 404), redirect them.
+        if (!household) { 
+          // Prevent an infinite redirect loop if already on the CreateHousehold page.
+          if (to.name === 'CreateHousehold') { 
+            return next(false); // Block navigation
+          }
+          console.log('User has no household, redirecting to CreateHousehold.');
+          // Redirect user to create or join a household.
+          return next({ name: 'CreateHousehold' });
+        }
+
+    } catch (error) {
+      // Catch errors during the household check (e.g., network, API errors)
+      console.error('Error checking household:', error); // Log the error for debugging
+
+      // Check if the error is an Axios error with a 401 (Unauthorized) status.
+      // This indicates the user's token might be invalid or expired.
+      const axiosError = error as AxiosError; // Assert error type
+      if (axiosError.response?.status === 401) {
+        console.log('Unauthorized check for household, redirecting to login.');
+        userStore.logout(); // Log out the user and clear auth state
+        return next({ name: 'Login' }); // Redirect to login
       }
-      console.log('User has no household, redirecting to CreateHousehold.');
-      // Redirect user to create or join a household.
-      return next({ name: 'CreateHousehold' });
+
+      // For other errors during the household check, allow navigation to prevent
+      return next(); // Proceed, potentially to a route that might show an error state
     }
-
-    // User is authenticated, not an admin, and has a household. Allow navigation.
-    return next(); // Proceed to the requested route
-  } catch (error) { // Catch errors during the household check (e.g., network, API errors)
-    console.error('Error checking household:', error); // Log the error for debugging
-
-    // Check if the error is an Axios error with a 401 (Unauthorized) status.
-    // This indicates the user's token might be invalid or expired.
-    const axiosError = error as AxiosError; // Assert error type
-    if (axiosError.response?.status === 401) {
-      console.log('Unauthorized check for household, redirecting to login.');
-      userStore.logout(); // Log out the user and clear auth state
-      return next({ name: 'Login' }); // Redirect to login
-    }
-
-    // For other errors during the household check, allow navigation to prevent
-    // completely blocking the user. Consider redirecting to a specific error page
-    // in a production environment for a better user experience.
-    return next(); // Proceed, potentially to a route that might show an error state
   }
+  // User is authenticated, not an admin, and has a household. Allow navigation.
+  return next(); // Proceed to the requested route
 });
+
 export default router

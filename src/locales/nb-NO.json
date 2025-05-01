@@ -22,6 +22,8 @@
     "phone": "Telefonummer",
     "password": "Passord",
     "confirm-password": "Bekreft passord",
+    "confirm-email": "Bekreft epostadresse",
+    "username": "Brukernavn",
     "reset-password-description": "Skriv inn e-postadressen din nedenfor for å tilbakestille passordet ditt.",
     "enter-email": "Skriv inn e-post",
     "reset-password": "Tilbakestill passord",
@@ -34,6 +36,18 @@
     "make-new-POI": "Legg til et nytt interessepunkt",
     "make-new-activity": "Lag en ny aktivitet",
     "edit-event": "Rediger en pågående hendelse",
+    "super-admin": "Super Admin",
+    "current-admins": "Nåværende adminbrukere",
+    "edit-admin": "Håndter adminbrukere",
+    "user-notfound": "Denne brukeren finnes ikke!",
+    "administrate-profile": "Administrer profil",
+    "delete-user": "Slett bruker",
+    "revoke-rights": "Ta bort admin rettigheter",
+    "send-pw-link": "Send ny passordlenke",
+    "new-admin": "Lag ny adminbruker",
+    "are-you-sure": "Er du sikker på at du vil fortsette?",
+    "give-rights": "Gi en eksisterende bruker admin rettigheter.",
+    "if-continue": "Hvis du fortsetter vil du gi admin rettigheter til kontoen med denne eposten",
     "basic-info": "Grunnleggende informasjon",
     "poi-title-placeholder": "Skriv inn tittel på interessepunktet",
     "select-poi-type": "Velg hvilken type interessepunkt dette skal være",
@@ -66,7 +80,9 @@
     "searching": "Søker...",
     "address-not-found": "Kunne ikke finne adressen.",
     "search-error": "Feil ved søk etter adresse.",
-    "map-reset": "Kart tilbakestilt."
+    "map-reset": "Kart tilbakestilt.",
+    "edit-POI": "Rediger interessepunkt",
+    "poi-details": "Interessepunkt-detaljer"
   },
   "notifications": {
     "notification": "Varsling",
@@ -412,9 +428,10 @@
     "description": "For eksempel: Hendelsen skjedde på (dato og sted) ... og vil mest sannsynlig vare i (tid)... Det kan bli mangel på (ressurs)...",
     "time": "Tidspunkt for når hendelsen først inntraff.",
     "date": "Dato for når hendelsen først inntraff.",
-    "successfully": "Hendelsen ble opprettet",
+    "successfully": "Hendelsen er opprettet",
     "success-message": "Hendelsen din er lagt til i systemet.",
-    "success-added": "har blitt lagt til.",
+    "success-added":"har blitt lagt til.",
+    "go-to-admin": "Gå til Admin-panelet",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
       "latitude": "Breddegraden må være mellom -90 og 90.",
@@ -451,7 +468,12 @@
       "title": "Dette vil være tittelen på interessepunktet.",
       "coordinates": "Sett inn koordinatene eller adressen til punktet. Du kan også klikke på kartet for å få koordinatene automatisk!",
       "type": "Velg hvilket type interessepunkt dette skal være.",
-      "description": "Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?"
+      "description": "Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?",
+      "successfully": "Interessepunktet er opprettet",
+      "success-message": "Interessepunktet ditt er lagt til i systemet.",
+      "success-added":"har blitt lagt til.",
+      "go-to-admin": "Gå til Admin-panelet",
+      "description-placeholder": "Beskrivelse"
     },
     "titles": {
       "type": "Type",
@@ -466,8 +488,22 @@
       "food": "Matutdeling"
     }
   },
+  "add-poi": {
+    "name": "Navn",
+    "description": "Beskrivelse",
+    "latitude": "Breddegrad",
+    "longitude": "Lengdegrad",
+    "opening-hours": "Åpningstider",
+    "contact": "Kontaktinformasjon",
+    "type": "Type",
+    "submit": "Lagre",
+    "delete": "Slett",
+    "confirm-delete": "Er du sikker på at du vil slette dette interessepunktet?"
+  },
   "language": {
     "title": "Språk",
     "select-language": "Velg språk"
+
   }
+
 }

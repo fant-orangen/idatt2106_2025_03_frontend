@@ -99,6 +99,7 @@ async function handleComplete() {
       errorMessage.value = t('errors.invalid-2fa-code')
     }
     router.push('/')
+    console.log('User role is: ',userStore.role)
   } catch (error) {
     errorMessage.value = t('errors.login-failed')
     console.log('Login error', error)
