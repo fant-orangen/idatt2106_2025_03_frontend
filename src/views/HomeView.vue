@@ -1,3 +1,30 @@
+<template>
+  <div class="content flex justify-center items-center w-full pt-5 flex-col gap-0 md:pt-20 md:gap-15">
+    <div class="crisis-status w-full px-2 md:w-auto">
+      <Card class="crisis-status-card w-full bg-secondary md:w-120">
+        <CardHeader class="items-center">
+          <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-xl md:text-2xl">
+            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="lg" class="md:size-2xl" />
+            {{ t('crisis.crisis-status') }}
+          </CardTitle>
+        </CardHeader>
+        <CardContent class="flex justify-center items-center text-sm md:text-base">
+          {{ t(currentStatus) }}
+        </CardContent>
+      </Card>
+    </div>
+    <div class="container flex flex-col gap-10 w-full max-w-7xl md:flex-row md:gap-40">
+      <!-- Dynamic Buttons -->
+      <div class="crisis-components flex flex-col px-4 md:gap-20 md:px-0">
+        <component :is="crisisComponents[currentStatus]" />
+      </div>
+      <div class="map flex-grow px-4 md:px-0">
+        <MapOverviewComponent />
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { ref, onMounted } from 'vue'
@@ -29,35 +56,7 @@ onMounted(async () => {
   console.log('Crisis Components:', crisisComponents.value)
   currentStatus.value = 'crisis.no-crisis' // Replace with actual API call
 })
-
 </script>
-
-<template>
-  <div class="content flex justify-center items-center pt-20 flex-col gap-20">
-    <div class="crisis-status">
-      <Card class="crisis-status-card w-120 bg-secondary">
-        <CardHeader class="items-center">
-          <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
-            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />
-            {{ t('crisis.crisis-status') }}
-          </CardTitle>
-        </CardHeader>
-        <CardContent class="flex justify-center items-center">
-          {{ t(currentStatus) }}
-        </CardContent>
-      </Card>
-    </div>
-    <div class="container flex flex-row gap-40 w-full max-w-7xl">
-      <!-- Dynamic Buttons -->
-      <div class="crisis-components flex flex-col gap-20">
-        <component :is="crisisComponents[currentStatus]" />
-      </div>
-      <div class="map flex-grow">
-        <MapOverviewComponent />
-      </div>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 .container {
@@ -65,6 +64,9 @@ onMounted(async () => {
 }
 .map {
   /* Ensure map area expands */
-  min-height: 300px;
+  min-height: 200px;
+  @media (min-width: 768px) {
+    min-height: 300px;
+  }
 }
 </style>

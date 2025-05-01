@@ -1,103 +1,105 @@
 <template>
-  <div style="margin: 20px">
-    <Breadcrumb>
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbPage href="/admin-panel">
-            {{ t('navigation.admin-panel') }}
-          </BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
-
-    <div class="page">
-      <div class="menu-section">
-        <h1>{{ t('admin.administrate') }}</h1>
-        <div class="menu">
-          <Button @click="router.push('/add-new-event')">
-            {{ t('admin.make-new-event') }}
+	<div class="flex flex-col min-h-screen">
+	  <!-- Breadcrumb -->
+	  <div class="p-5">
+		<Breadcrumb>
+		  <BreadcrumbList>
+			<BreadcrumbItem>
+			  <BreadcrumbLink href="/admin-panel">
+				{{ $t('navigation.admin-panel') }}
+			  </BreadcrumbLink>
+			</BreadcrumbItem>
+		  </BreadcrumbList>
+		</Breadcrumb>
+	  </div>
+  
+	  <!-- Main Content -->
+	  <div class="flex-grow p-5">
+		<div class="page flex flex-col lg:flex-row gap-8">
+		  <!-- Menu Buttons for Admin Actions -->
+		  <div class="menu flex flex-col gap-4 w-full lg:w-1/3">
+			<h1 class="text-2xl font-bold text-primary">
+			  <span v-if="userStore.isSuperAdminUser">
+				{{ $t('admin.super-admin') }}: {{ $t('admin.administrate') }}
+			  </span>
+			  <span v-else>
+				{{ $t('admin.administrate') }}
+			  </span>
+			</h1>
+  
+			<Button
+			  v-if="userStore.isSuperAdminUser"
+			  @click="router.push('/handle-admins')"
+			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+			  {{ $t('admin.edit-admin') }}
+			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
+			<Button
+			  @click="router.push('/add-new-event')"
+			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+			  {{ $t('admin.make-new-event') }}
+			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
+			<Button
+			  @click="router.push('/add-new-POI')"
+			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+			  {{ $t('admin.make-new-POI') }}
+			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
+			<Button
+			  @click="router.push('/add-new-activity')"
+			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+			  {{ $t('admin.make-new-activity') }}
+			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
+			<Button
+			  @click="router.push('/edit-event')"
+			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+			  {{ $t('admin.edit-event') }}
+			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
+			<Button @click="router.push('/edit-poi')"
+			class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+            {{ $t('admin.edit-POI') }}
             <font-awesome-icon icon="fa-solid fa-arrow-right" />
           </Button>
-          <Button @click="router.push('/add-new-POI')">
-            {{ t('admin.make-new-POI') }}
-            <font-awesome-icon icon="fa-solid fa-arrow-right" />
-          </Button>
-          <Button @click="router.push('/add-new-activity')">
-            {{ t('admin.make-new-activity') }}
-            <font-awesome-icon icon="fa-solid fa-arrow-right" />
-          </Button>
-          <Button @click="router.push('/edit-event')">
-            {{ t('admin.edit-event') }}
-            <font-awesome-icon icon="fa-solid fa-arrow-right" />
-          </Button>
-          <Button @click="router.push('/edit-poi')">
-            {{ t('admin.edit-POI') }}
-            <font-awesome-icon icon="fa-solid fa-arrow-right" />
-          </Button>
-        </div>
-      </div>
-
-      <div class="map">
-        <h1>{{ t('info.current-situation') }}</h1>
-        <MapOverviewComponent />
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { useUserStore } from '@/stores/UserStore.ts'
-import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
-import { Button } from '@/components/ui/button'
-import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
-
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbPage,
-  BreadcrumbList
-} from '@/components/ui/breadcrumb'
-
-const { t } = useI18n()
-const router = useRouter()
-const userStore = useUserStore();
-
-</script>
-
-<style scoped>
-.page {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-evenly;
-  margin: 40px;
-  padding: 10px;
-  gap: 40px;
-}
-
-.menu-section {
-  min-width: 300px;
-  flex: 1;
-}
-
-.menu {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.map {
-  flex: 2;
-  min-width: 350px;
-}
-
-h1 {
-  font-size: 2em;
-  margin-bottom: 20px;
-}
-
-Button {
-  width: 100%;
-  justify-content: space-between;
-}
-</style>
+		  </div>
+  
+		  <!-- Map Section -->
+		  <div class="map flex-grow">
+			<h1 class="text-2xl font-bold text-primary mb-4">
+			  {{ $t('info.current-situation') }}
+			</h1>
+			<div class="w-full h-96 bg-gray-100 rounded-md shadow-md">
+			  <MapOverviewComponent />
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </template>
+  
+  <script setup lang="ts">
+  import router from '@/router'
+  import { useUserStore } from '@/stores/UserStore'
+  import { Button } from '@/components/ui/button'
+  import {
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	BreadcrumbList,
+  } from '@/components/ui/breadcrumb'
+  import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
+  
+  const userStore = useUserStore()
+  </script>
+  
+  <style scoped>
+  /* No additional styles needed as Tailwind CSS handles the layout and responsiveness */
+  </style>

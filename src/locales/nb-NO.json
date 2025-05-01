@@ -483,6 +483,11 @@
       "food": "Matutdeling"
     }
   },
+  "footer": {
+    "title": "Krisefikser.no",
+    "description": "En platform for kriseberedskap og informasjonsdeling.",
+    "contact-us": "Kontakt oss på: "
+  },
   "add-poi": {
     "name": "Navn",
     "description": "Beskrivelse",
@@ -500,5 +505,4 @@
     "select-language": "Velg språk"
 
   }
-
 }
