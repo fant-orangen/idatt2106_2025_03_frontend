@@ -1,6 +1,6 @@
-import { useUserStore } from '@/stores/UserStore'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getCurrentHousehold } from '@/services/HouseholdService'
+import { useUserStore } from '@/stores/UserStore';
 import { type AxiosError } from 'axios';
 
 const routes = [
@@ -24,6 +24,11 @@ const routes = [
     name: 'Notifications',
     component: () => import('@/views/NotificationView.vue'),
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/crisis-event',
+    name: 'CrisisEvent',
+    component: () => import('@/views/CrisisEventView.vue')
   },
   {
     path: '/news',

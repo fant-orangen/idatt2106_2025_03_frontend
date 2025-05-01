@@ -108,7 +108,47 @@
   "crisis": {
     "crisis-status": "Krisestatus",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
-    "no-crisis": "Ingen pågående krise"
+    "no-crisis": "Ingen pågående krise",
+    "no_active_crisis": "Ingen aktive krisehendelser",
+    "title": "Krisehendelser",
+    "map_view": "Kartvisning",
+    "active_events": "Aktive hendelser",
+    "other_events": "Andre aktive hendelser",
+    "more_events": "+ {count} flere hendelser",
+    "error_loading_events": "Kunne ikke laste krisehendelser",
+    "details": "Krisedetaljer",
+    "status_history": "Hendelseshistorikk",
+    "select_event_for_history": "Velg en krisehendelse for å se historikken",
+    "no_changes": "Ingen historikk funnet for denne hendelsen",
+    "loading_more": "Laster mer historikk...",
+    "no_more_history": "Ingen mer historikk å laste",
+    "error_loading_changes": "Kunne ikke laste hendelseshistorikk",
+    "error_loading_details": "Kunne ikke laste hendelsesdetaljer",
+    "select_event_for_news": "Velg en krisehendelse for å se relaterte nyheter",
+    "related_news": "Relaterte nyheter",
+    "no_related_news": "Ingen relaterte nyheter funnet for denne hendelsen",
+    "error_loading_news": "Kunne ikke laste relaterte nyheter",
+    "coordinates": "Koordinater",
+    "radius": "Radius",
+    "started": "Startet",
+    "updated": "Oppdatert",
+    "created_by": "Opprettet av",
+    "previous": "Tidligere",
+    "new": "Ny",
+    "by_user": "Av bruker {user}",
+    "change_types": {
+      "creation": "Opprettet",
+      "level_change": "Alvorlighetsgrad endret",
+      "description_update": "Beskrivelse oppdatert",
+      "epicenter_moved": "Plassering endret"
+    },
+    "changes": {
+      "created": "Hendelsen ble opprettet",
+      "level_changed": "Alvorlighetsgrad endret fra {old} til {new}",
+      "description_updated": "Beskrivelse oppdatert",
+      "location_changed": "Koordinater oppdatert",
+      "unknown": "Ukjent endring"
+    }
   },
   "navigation": {
     "home": "Hjem",
@@ -134,6 +174,15 @@
     "current-situation": "Nåværende hendelser",
     "read-info-preparations": "Les mer om hvordan du kan forberede deg til en krise",
     "info-current-crisis": "Les mer om den nåværende krisetype"
+  },
+  "news": {
+    "title": "Nyheter",
+    "loading_more": "Laster flere nyheter...",
+    "no_more_news": "Ingen flere nyheter å laste",
+    "related_news": "Relaterte nyheter",
+    "no_news_found": "Ingen nyheter funnet",
+    "published_at": "Publisert",
+    "read_more": "Les mer"
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",
