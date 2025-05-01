@@ -218,6 +218,31 @@ class InventoryService {
       throw error;
     }
   }
+
+  /**
+   * Search for product types by name and category
+   * @param search The search string
+   * @param category The category to filter by (food, water, medicine)
+   * @param page Page number (0-based)
+   * @param size Page size
+   * @returns Promise containing a page of product types
+   */
+  async searchProductTypes(search: string, category: string, page: number = 0, size: number = 20): Promise<Page<ProductType>> {
+    try {
+      const response = await api.get('/inventory/product-types/search', {
+        params: {
+          search,
+          category,
+          page,
+          size
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error searching product types:', error);
+      throw error;
+    }
+  }
 }
 
 export const inventoryService = new InventoryService();

@@ -112,10 +112,17 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { format } from 'date-fns';
 import { inventoryService } from '@/services/InventoryService';
 import { useProductStore } from '@/stores/ProductStore';
+
+const props = defineProps({
+  searchText: {
+    type: String,
+    default: ''
+  }
+});
 
 const productStore = useProductStore();
 productStore.setType('medicine');
@@ -152,7 +159,42 @@ const fetchProductTypes = async () => {
     isLoading.value = false;
   }
 };
+
 onMounted(fetchProductTypes);
+
+let searchTimeout;
+watch(() => props.searchText, async (val) => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(async () => {
+    if (val && val.trim() !== '') {
+      isLoading.value = true;
+      try {
+        const response = await inventoryService.searchProductTypes(val, 'medicine');
+        if (response && response.content) {
+          items.value = response.content.map(product => ({
+            id: product.id,
+            name: product.name,
+            unit: product.unit,
+            edit: false,
+            batches: [],
+            totalUnits: 0
+          }));
+          await Promise.all(items.value.map(async (item) => {
+            try {
+              item.totalUnits = await inventoryService.getTotalUnitsForProductType(item.id);
+            } catch {
+              item.totalUnits = 0;
+            }
+          }));
+        }
+      } finally {
+        isLoading.value = false;
+      }
+    } else {
+      fetchProductTypes();
+    }
+  }, 200);
+});
 
 const toggleEdit = async (index) => {
   const item = items.value[index];

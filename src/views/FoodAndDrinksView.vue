@@ -16,16 +16,19 @@
           @click="goTo('medicine')"
         >Medisin</button>
       </nav>
+      <!-- Inventory Search Bar -->
+      <InventorySearchBar class="mb-6" @update:search="searchText = $event" />
       <!-- Dynamic inventory subcomponent -->
-      <component :is="currentComponent" />
+      <component :is="currentComponent" :search-text="searchText" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, watch, defineAsyncComponent } from 'vue';
+import { computed, watch, defineAsyncComponent, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useProductStore } from '@/stores/ProductStore';
+import InventorySearchBar from '@/components/inventory/InventorySearchBar.vue';
 
 const FoodInventory = defineAsyncComponent(() => import('@/components/inventory/FoodInventory.vue'));
 const WaterInventory = defineAsyncComponent(() => import('@/components/inventory/WaterInventory.vue'));
@@ -34,6 +37,8 @@ const MedicineInventory = defineAsyncComponent(() => import('@/components/invent
 const route = useRoute();
 const router = useRouter();
 const productStore = useProductStore();
+
+const searchText = ref('');
 
 const tabMap = {
   food: FoodInventory,
