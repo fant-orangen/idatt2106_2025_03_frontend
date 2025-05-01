@@ -50,7 +50,7 @@
           </div>
 
           <div v-if="hasMoreEvents" class="text-xs text-center italic mt-2">
-            {{ t('crisis.more_events', '+ {count} more', { count: crisisEvents.length - maxDisplay }) }}
+            {{ t('crisis.more_events', { count: crisisEvents.length - maxDisplay }) }}
           </div>
         </div>
       </CardContent>

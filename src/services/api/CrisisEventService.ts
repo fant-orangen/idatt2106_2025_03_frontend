@@ -25,7 +25,7 @@ function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
     level: level,
     startTime: backendEvent.startTime,
     isActive: backendEvent.active,
-    createdBy: `User ${backendEvent.createdByUserId}`,
+    createdBy: `User ${backendEvent.createdByUser}`,
     createdAt: backendEvent.updatedAt,
     updatedAt: backendEvent.updatedAt
   };

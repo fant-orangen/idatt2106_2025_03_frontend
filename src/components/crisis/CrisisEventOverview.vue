@@ -161,7 +161,8 @@ const fetchAndSelectCrisis = async (crisisId: number) => {
     } else {
       error.value = t('crisis.error_loading_details', 'Failed to load event details');
     }
-  } catch (error) {
+  } catch (err) {
+    console.error('Error loading crisis details:', err);
     error.value = t('crisis.error_loading_details', 'Failed to load event details');
   } finally {
     loading.value = false;
@@ -198,7 +199,7 @@ watch(mapData, (newVal) => {
  *
  * @param event - The crisis event that was selected
  */
-const handleCrisisSelect = (event: CrisisEventDto) => {
+const handleCrisisSelect = (event: CrisisEventPreviewDto | CrisisEventDto) => {
   // Update the URL with the selected crisis ID
   router.replace({
     path: router.currentRoute.value.path,

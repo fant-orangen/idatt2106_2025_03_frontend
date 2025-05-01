@@ -62,7 +62,7 @@
             </div>
 
             <div class="text-xs text-muted-foreground mt-1">
-              {{ t('crisis.by_user', { user: change.userName }) }}
+              {{ t('crisis.by_user', { user: change.createdByUserId }) }}
             </div>
           </div>
         </div>
