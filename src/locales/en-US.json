@@ -82,7 +82,6 @@
     "map-reset": "Map reset.",
     "edit-POI": "Edit point of interest",
     "poi-details": "POI details"
-
   },
   "notifications": {
     "notification": "Notification",
@@ -233,7 +232,6 @@
     "no-users": "No users in this household yet",
     "done": "done",
     "manage-members": "manage members",
-
     "create": {
       "title": "Create New Household",
       "subtitle": "Set up your household for emergency preparedness",
@@ -249,7 +247,6 @@
         "generic": "Failed to create household"
       }
     },
-
     "join": {
       "title": "Join Household",
       "subtitle": "Join an existing household with an invitation code",
@@ -434,7 +431,7 @@
     "date": "Date when the event first occurred.",
     "successfully": "Event Created Successfully",
     "success-message": "Your event has been added to the system.",
-    "success-added":"had been added.",
+    "success-added": "had been added.",
     "go-to-admin": "Go to Admin Panel",
     "errors": {
       "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
@@ -475,7 +472,7 @@
       "description": "Write some information describing the POI. Where is it? What is its purpose?",
       "successfully": "POI Created Successfully",
       "success-message": "Your POI has been added to the system.",
-      "success-added":"had been added.",
+      "success-added": "had been added.",
       "go-to-admin": "Go to Admin Panel",
       "description-placeholder": "Description"
     },
@@ -486,12 +483,12 @@
       "contact-info": "Contact information"
     },
     "POI-type": {
-    "defibrillator": "Defibrillator",
-    "shelter": "Shelter",
-    "water-source": "Water Source",
-    "food": "Food Distribution"
-  }
-},
+      "defibrillator": "Defibrillator",
+      "shelter": "Shelter",
+      "water-source": "Water Source",
+      "food": "Food Distribution"
+    }
+  },
   "add-poi": {
     "name": "Name",
     "description": "Description",
@@ -509,5 +506,4 @@
     "title": "Language",
     "select-language": "Select Language"
   }
-
-
+}

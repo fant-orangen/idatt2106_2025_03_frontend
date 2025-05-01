@@ -2,148 +2,97 @@ import api from '@/services/api/AxiosInstance';
 import type { AxiosResponse } from 'axios';
 
 /**
- * Edit existing POIS:
- * @param id of the POI to edit.
- * @param updateData the data to update.
+ * Edit existing POI.
+ * @param id - ID of the POI to edit.
+ * @param updateData - The data to update.
  */
-
 export async function editPoi(id: number, updateData: any): Promise<AxiosResponse> {
   return await api.put(`/poi/${id}`, updateData, {
-    headers: {
-      'Content-Type': 'application/json',
-    }
+    headers: { 'Content-Type': 'application/json' }
   });
 }
 
 /**
- * Deletes an existing point of interest (POI) by its ID.
- * Makes a DELETE request to the backend API at /poi/{id}.
- *
- * @param {number} id - the ID of the POI to delete.
- * @returns {Promise<void>} a promise resolving when deletion is complete.
- * @throws {Error} if the deletion fails.
+ * Delete a POI by ID.
+ * @param id - ID of the POI to delete.
  */
 export async function deletePoi(id: number): Promise<void> {
   await api.delete(`/poi/${id}`, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
+    headers: { 'Content-Type': 'application/json' }
+  });
 }
 
-
 /**
- * Creates a new event by sending event data to the backend API.
- * Makes a POST request to the '/crisis-events' endpoint with the provided event info.
- * Automatically includes the authentication token if available.
- *
- * @param {Object} eventData - Contains the event details to be created, such as:
- * @param {string} eventData.name - The name of the event (mapped from title)
- * @param {number} eventData.latitude - The latitude coordinate of the event
- * @param {number} eventData.longitude - The longitude coordinate of the event
- * @param {string} [eventData.address] - The address of the event (optional if coordinates are given)
- * @param {number} eventData.radius - The effective radius around the event in meters
- * @param {string} eventData.severity - The severity of the event (green, yellow, red)
- * @param {string} eventData.description - A description of the event
- * @param {string} eventData.startTime - The start time of the event (ISO format)
- * @returns {Promise<AxiosResponse>} Promise resolving to the server response
- * @throws {Error} When the event creation fails or network issues occur.
+ * Create a new crisis event.
  */
 export async function createEvent(eventData: any): Promise<AxiosResponse> {
-    // Assuming this function remains as is, ensure the eventData structure matches backend CreateCrisisEventDto
-    return await api.post('/crisis-events', eventData, {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return await api.post('/crisis-events', eventData, {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
 
 /**
- * Fetches all current crisis events from the backend API.
- * Makes a GET request to the '/crisis-events/all' endpoint.
- * Automatically includes the authentication token if available.
- * @returns {Promise<AxiosResponse<any>>} Server response with a list of events.
+ * Get all current crisis events.
  */
 export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
-  return await api.get('/crisis-events/all', { // Backend endpoint might need adjustment if pagination is used
-    headers: {
-      'Content-Type': 'application/json'
-    }
-});
+  return await api.get('/crisis-events/all', {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
 
 /**
- * Creates a new POI by sending data to the backend API.
- * Makes a POST request to the '/api/poi' endpoint with the provided info.
- * Automatically includes the authentication token if available.
- *
- * @param {Object} poiData - Contains the POI details to be created (matching CreatePoiDto).
- * @param {string} poiData.name - The name of the POI (mapped from title)
- * @param {number} poiData.latitude - The latitude coordinate of the POI
- * @param {number} poiData.longitude - The longitude coordinate of the POI
- * @param {number} poiData.poiTypeId - The integer ID of the POI type
- * @param {string} [poiData.address] - The address of the POI (optional)
- * @param {string} [poiData.description] - A description of the POI (optional)
- * @param {string} [poiData.openingHours] - Opening hours as a string (optional)
- * @param {string} [poiData.contactInfo] - Contact information (optional)
- * @returns {Promise<AxiosResponse>} Promise resolving to the server response.
- * @throws {Error} When the POI creation fails or network issues occur.
+ * Updates an existing crisis event.
+ * @param id - ID of the event to update.
+ * @param eventData - Data to update.
+ */
+export async function updateCurrentEvent(id: number, eventData: any): Promise<AxiosResponse<any>> {
+  return await api.put(`/crisis-events/${id}`, eventData, {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+
+/**
+ * Create a new POI.
  */
 export async function createPOI(poiData: any): Promise<AxiosResponse> {
-    // *** MODIFIED: Corrected the endpoint URL ***
-    // The backend PoiController uses '/api/poi' for POST requests
-    return await api.post('/poi', poiData, {
-        // *** END MODIFIED ***
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    });
+  return await api.post('/poi', poiData, {
+    headers: { 'Content-Type': 'application/json' }
+  });
 }
 
 /**
- * Fetches all the admin users from the backend API. 
- * Sends a GET request to the '/super-admin/all' endpoint to retrieve a list of all admin users. 
- * @returns {Promise<AxiosResponse<any>>} Server response with a list of admin users.
+ * Get all admin users.
  */
-export async function getAdminUsers() {
+export async function getAdminUsers(): Promise<AxiosResponse<any>> {
   return await api.get('/super-admin/all', {
-    headers: {
-      'Content-Type': 'application/json'
-    }
+    headers: { 'Content-Type': 'application/json' }
   });
 }
 
 /**
- * Creates a new admin user. 
- * Sends a PUT request to the '/super-admin' endpoint with the new adnmin user email. 
- * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the post operation.
+ * Add a new admin user.
  */
-export async function addNewAdmin(userID: number) {
-  console.log('user id er: ', userID);
-  return await api.put('/super-admin/add/' + userID, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
+export async function addNewAdmin(userID: number): Promise<AxiosResponse<any>> {
+  return await api.put(`/super-admin/add/${userID}`, null, {
+    headers: { 'Content-Type': 'application/json' }
   });
 }
 
 /**
- * Removes the admin role, changes it to normal user role, in backend API. 
- * Sends a put request to the '/super-admin/revoke/{id}' endpoint with the admin user ID. 
- * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
+ * Revoke admin rights from a user.
  */
-export async function revokeAdminRights(adminID: number) {
-  const id = adminID.toString();
-  console.log('Admin id from AdminServices: ', id);
-  return await api.put('/super-admin/revoke/' + id, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
+export async function revokeAdminRights(adminID: number): Promise<AxiosResponse<any>> {
+  return await api.put(`/super-admin/revoke/${adminID}`, null, {
+    headers: { 'Content-Type': 'application/json' }
   });
 }
 
-export async function getUserId(email: string) {
-  return await api.get('/super-admin/user-info/' + email, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
+/**
+ * Get user ID by email.
+ */
+export async function getUserId(email: string): Promise<AxiosResponse<any>> {
+  return await api.get(`/super-admin/user-info/${email}`, {
+    headers: { 'Content-Type': 'application/json' }
   });
 }
