@@ -93,6 +93,8 @@
     "title": "Crisis Events",
     "map_view": "Map View",
     "active_events": "Active Events",
+    "more_events": "+ {count} more events",
+    "error_loading_events": "Failed to load crisis events",
     "details": "Crisis Details",
     "status_history": "Event History",
     "select_event_for_history": "Select a crisis event to view its history",
