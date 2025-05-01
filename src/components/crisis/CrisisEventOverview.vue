@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
+import type { CrisisEventDto, CrisisEventPreviewDto } from '@/models/CrisisEvent.ts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StaticMapWithCircle from '@/components/map/StaticMapWithCircle.vue';
 import { Badge } from '@/components/ui/badge';
@@ -100,7 +100,7 @@ import {
   fetchCrisisEventById
 } from '@/services/api/CrisisEventService.ts';
 
-const crisisEvents = ref<CrisisEventDto[]>([]);
+const crisisEvents = ref<CrisisEventPreviewDto[]>([]);
 const { t } = useI18n();
 const selectedCrisis = ref<CrisisEventDto | null>(null);
 const loading = ref(false);
