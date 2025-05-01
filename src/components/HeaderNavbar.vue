@@ -85,7 +85,8 @@ const topNotifications = ref<NotificationMessage[]>([])
 
 onMounted(async () => {
   try {
-    topNotifications.value = await getNotifications()
+    const page = await getNotifications()
+    topNotifications.value = page.content.slice(0, 3)
   } catch (error) {
     console.error('Failed to fetch notifications:', error)
   }

@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/UserStore';
 import type { NotificationMessage } from '@/models/NotificationMessage.ts';
 import SockJS from 'sockjs-client';
 import { Client, over } from 'stompjs';
+import { toast } from 'vue-sonner';
 
 /**
  * Composable for managing WebSocket connections and notifications.
@@ -17,7 +18,12 @@ export function useWebSocket() {
 
   const handleNotification = (message: NotificationMessage) => {
     console.log('Received notification:', message);
-    // Handle notification logic here
+    // Display a toast notification
+    toast(message.preferenceType || 'New Notification', {
+      description: message.description || 'You have a new notification',
+      duration: 5000,
+      position: 'bottom-right',
+    });
   };
 
   const tryConnect = () => {
