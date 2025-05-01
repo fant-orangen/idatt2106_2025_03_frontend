@@ -150,7 +150,11 @@ export const useUserStore = defineStore('user', () => {
     clearAuthState()
   }
 
-  const loggedIn = computed(() => isAuthenticated.value)
+  const loggedIn = computed(() => isAuthenticated.value);
+
+  const isSuperAdminUser = computed(() => role.value === 'SUPERADMIN');
+
+  const isAdminUser = computed (() => role.value === 'ADMIN' || role.value === 'SUPERADMIN');
 
   return {
     token,
@@ -167,5 +171,7 @@ export const useUserStore = defineStore('user', () => {
     verify2FACodeInput,
     loggedIn,
     initializeFromStorage,
-  }
-})
+    isAdminUser,
+    isSuperAdminUser
+  };
+});
