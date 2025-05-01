@@ -242,6 +242,16 @@ const saveBatch = async (productIndex, batchIndex) => {
     Number(batch.amount),
     batch.expires || undefined
   );
+  // Fetch updated batches after adding
+  const response = await inventoryService.getProductBatches(productId);
+  if (response && response.content) {
+    product.batches = response.content.map(batch => ({
+      id: batch.id,
+      amount: batch.number.toString(),
+      expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : ''
+    }));
+    productStore.addBatchIds(product.name, product.batches);
+  }
   batch.isNew = false;
   await updateTotalUnits(product.id);
 };

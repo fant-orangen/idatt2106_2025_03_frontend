@@ -12,9 +12,12 @@
       ]"
     >
       <!-- Product overview -->
-      <div class="grid grid-cols-3 items-center">
-        <div class="font-medium">💧 {{ item?.name }}</div>
+      <div class="grid grid-cols-4 items-center">
+        <div class="font-medium">
+          <span>💧</span> {{ item?.name }}
+        </div>
         <div class="text-center">{{ getTotalAmount(item) }}</div>
+        <div class="text-center">{{ item?.caloriesPerUnit }} kcal per {{ item?.unit }}</div>
         <div class="text-right">
           <button @click="toggleEdit(index)" class="text-sm text-primary underline">
             {{ item?.edit ? 'Lagre' : 'Rediger' }}
@@ -26,7 +29,7 @@
         <div
           v-for="(batch, bIndex) in item.batches"
           :key="bIndex"
-          class="grid grid-cols-4 gap-3 items-center"
+          class="grid grid-cols-5 gap-3 items-center"
         >
           <input
             v-model="batch.amount"
@@ -34,21 +37,21 @@
             class="bg-input text-foreground py-2 px-3 text-center rounded-md"
             placeholder="Mengde"
           />
-          <div class="text-sm text-center">L</div>
+          <div class="text-sm text-center">{{ item.unit }}</div>
           <input
             v-model="batch.expires"
             class="bg-input text-foreground py-2 px-3 text-center rounded-md"
             placeholder="Utløp"
-            readonly
+            :readonly="true"
           />
           <button
             v-if="batch.isNew"
-            @click="saveBatch(index, bIndex)"
+            @click="() => { console.log('WaterInventory: Save batch clicked', { productIndex: index, batchIndex: bIndex, batch }); saveBatch(index, bIndex); }"
             class="text-sm text-primary underline"
           >
             Lagre
           </button>
-          <button @click="removeBatch(index, bIndex)" class="text-sm text-destructive underline">
+          <button @click="() => { console.log('WaterInventory: Delete batch clicked', { productIndex: index, batchIndex: bIndex, batch }); removeBatch(index, bIndex); }" class="text-sm text-destructive underline">
             Slett
           </button>
         </div>
@@ -70,13 +73,22 @@
     <!-- Add new product type -->
     <div class="pt-6 space-y-2">
       <h2 class="text-lg font-semibold">Legg til</h2>
-      <div class="grid grid-cols-3 gap-4 items-center">
+      <div class="grid grid-cols-4 gap-4 items-center">
         <input
           v-model="newProductName"
           placeholder="Produktnavn"
           class="bg-input text-foreground py-2 px-3 rounded-md"
         />
-        <div class="bg-input text-foreground py-2 px-3 rounded-md flex items-center">L</div>
+        <select v-model="newProductUnit" class="bg-input text-foreground py-2 px-3 rounded-md">
+          <option disabled value="">Velg enhet</option>
+          <option value="l">L</option>
+          <option value="dl">dl</option>
+        </select>
+        <input
+          v-model="newProductCalories"
+          placeholder="kcal per enhet"
+          class="bg-input text-foreground py-2 px-3 rounded-md"
+        />
         <button @click="addProduct" class="text-sm text-primary underline">
           + Legg til
         </button>
@@ -111,6 +123,8 @@ productStore.setType('water');
 
 const items = ref([]);
 const newProductName = ref("");
+const newProductUnit = ref("");
+const newProductCalories = ref("");
 const showExistsModal = ref(false);
 const isLoading = ref(true);
 
@@ -124,7 +138,8 @@ const fetchProductTypes = async () => {
     items.value = response.content.map(product => ({
       id: product.id,
       name: product.name,
-      unit: 'L',
+      unit: product.unit,
+      caloriesPerUnit: product.caloriesPerUnit?.toString() || '0',
       edit: false,
       batches: [],
       totalUnits: 0
@@ -214,6 +229,16 @@ const saveBatch = async (productIndex, batchIndex) => {
     Number(batch.amount),
     batch.expires || undefined
   );
+  // Fetch updated batches after adding
+  const response = await inventoryService.getProductBatches(productId);
+  if (response && response.content) {
+    product.batches = response.content.map(batch => ({
+      id: batch.id,
+      amount: batch.number.toString(),
+      expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : ''
+    }));
+    productStore.addBatchIds(product.name, product.batches);
+  }
   batch.isNew = false;
   await updateTotalUnits(product.id);
 };
@@ -234,29 +259,29 @@ const removeBatch = async (productIndex, batchIndex) => {
 
 const addProduct = async () => {
   const name = newProductName.value.trim();
-  if (!name) return;
+  if (!name || !newProductUnit.value || !newProductCalories.value) return;
   const exists = items.value.some(
-    (item) => item?.name?.trim().toLowerCase() === name.toLowerCase()
+    (item) => item?.name?.toLowerCase() === name.toLowerCase()
   );
   if (exists) {
     showExistsModal.value = true;
     return;
   }
-  try {
-    await inventoryService.createWaterProductType({
-      name,
-      unit: 'l',
-      category: 'water'
-    });
-    newProductName.value = "";
-    await fetchProductTypes();
-  } catch (error) {
-    if (error && error.response && error.response.status === 400 &&
-        typeof error.response.data === 'string' &&
-        error.response.data.toLowerCase().includes('unique')) {
-      showExistsModal.value = true;
-    }
+  const unit = newProductUnit.value.toLowerCase();
+  const validUnits = ['l', 'dl'];
+  if (!validUnits.includes(unit)) {
+    return;
   }
+  await inventoryService.createWaterProductType({
+    name,
+    unit,
+    caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
+    category: 'water'
+  });
+  newProductName.value = "";
+  newProductUnit.value = "";
+  newProductCalories.value = "";
+  await fetchProductTypes();
 };
 
 const updateTotalUnits = async (productId) => {

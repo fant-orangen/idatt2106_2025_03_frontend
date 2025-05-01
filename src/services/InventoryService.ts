@@ -105,6 +105,7 @@ class InventoryService {
           size
         }
       });
+      this.productStore.addProductIdsFromPage(response.data.content);
       return response.data;
     } catch (error) {
       console.error('Error fetching water product types:', error);
@@ -126,6 +127,7 @@ class InventoryService {
           size
         }
       });
+      this.productStore.addProductIdsFromPage(response.data.content);
       return response.data;
     } catch (error) {
       console.error('Error fetching medicine product types:', error);
