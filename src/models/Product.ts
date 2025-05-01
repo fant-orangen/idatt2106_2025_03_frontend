@@ -14,7 +14,7 @@ export interface ProductBatch {
   number: number;
 }
 
-export type ProductUnit = 'kg' | 'l' | 'stk' | 'gram' | 'dl';
+export type ProductUnit = 'kg' | 'l' | 'stk' | 'gram' | 'dl' | 'mcg' | 'mg' | 'dose';
 
 export interface CreateProductTypeRequest {
   name: string;

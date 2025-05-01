@@ -17,7 +17,6 @@
           <span>💧</span> {{ item?.name }}
         </div>
         <div class="text-center">{{ getTotalAmount(item) }}</div>
-        <div class="text-center">{{ item?.caloriesPerUnit }} kcal per {{ item?.unit }}</div>
         <div class="text-right">
           <button @click="toggleEdit(index)" class="text-sm text-primary underline">
             {{ item?.edit ? 'Lagre' : 'Rediger' }}
@@ -37,7 +36,7 @@
             class="bg-input text-foreground py-2 px-3 text-center rounded-md"
             placeholder="Mengde"
           />
-          <div class="text-sm text-center">{{ item.unit }}</div>
+          <div class="text-sm text-center">{{ item.unit === 'l' ? 'liter' : item.unit }}</div>
           <input
             v-model="batch.expires"
             class="bg-input text-foreground py-2 px-3 text-center rounded-md"
@@ -79,16 +78,7 @@
           placeholder="Produktnavn"
           class="bg-input text-foreground py-2 px-3 rounded-md"
         />
-        <select v-model="newProductUnit" class="bg-input text-foreground py-2 px-3 rounded-md">
-          <option disabled value="">Velg enhet</option>
-          <option value="l">L</option>
-          <option value="dl">dl</option>
-        </select>
-        <input
-          v-model="newProductCalories"
-          placeholder="kcal per enhet"
-          class="bg-input text-foreground py-2 px-3 rounded-md"
-        />
+        <div class="bg-input text-foreground py-2 px-3 rounded-md text-center select-none">liter</div>
         <button @click="addProduct" class="text-sm text-primary underline">
           + Legg til
         </button>
@@ -124,7 +114,6 @@ productStore.setType('water');
 const items = ref([]);
 const newProductName = ref("");
 const newProductUnit = ref("");
-const newProductCalories = ref("");
 const showExistsModal = ref(false);
 const isLoading = ref(true);
 
@@ -139,7 +128,6 @@ const fetchProductTypes = async () => {
       id: product.id,
       name: product.name,
       unit: product.unit,
-      caloriesPerUnit: product.caloriesPerUnit?.toString() || '0',
       edit: false,
       batches: [],
       totalUnits: 0
@@ -259,7 +247,8 @@ const removeBatch = async (productIndex, batchIndex) => {
 
 const addProduct = async () => {
   const name = newProductName.value.trim();
-  if (!name || !newProductUnit.value || !newProductCalories.value) return;
+  if (!name) return;
+  newProductUnit.value = 'l';
   const exists = items.value.some(
     (item) => item?.name?.toLowerCase() === name.toLowerCase()
   );
@@ -267,20 +256,17 @@ const addProduct = async () => {
     showExistsModal.value = true;
     return;
   }
-  const unit = newProductUnit.value.toLowerCase();
-  const validUnits = ['l', 'dl'];
+  const unit = 'l';
+  const validUnits = ['l'];
   if (!validUnits.includes(unit)) {
     return;
   }
   await inventoryService.createWaterProductType({
     name,
     unit,
-    caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
     category: 'water'
   });
   newProductName.value = "";
-  newProductUnit.value = "";
-  newProductCalories.value = "";
   await fetchProductTypes();
 };
 
@@ -293,7 +279,7 @@ const updateTotalUnits = async (productId) => {
 
 const getTotalAmount = (item) => {
   if (item.totalUnits === undefined) return "-";
-  return `${item.totalUnits}${item.unit}`;
+  return `${item.totalUnits}${item.unit === 'l' ? 'liter' : item.unit}`;
 };
 
 const deleteProductType = async (index) => {

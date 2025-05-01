@@ -17,7 +17,6 @@
           {{ item?.name }}
         </div>
         <div class="text-center">{{ getTotalAmount(item) }}</div>
-        <div class="text-center">{{ item?.caloriesPerUnit }} kcal per {{ item?.unit }}</div>
         <div class="text-right">
           <button @click="toggleEdit(index)" class="text-sm text-primary underline">
             {{ item?.edit ? 'Lagre' : 'Rediger' }}
@@ -80,14 +79,10 @@
         />
         <select v-model="newProductUnit" class="bg-input text-foreground py-2 px-3 rounded-md">
           <option disabled value="">Velg enhet</option>
-          <option value="stk">stk</option>
-          <option value="gram">gram</option>
+          <option value="mcg">mcg</option>
+          <option value="mg">mg</option>
+          <option value="dose">dose</option>
         </select>
-        <input
-          v-model="newProductCalories"
-          placeholder="kcal per enhet"
-          class="bg-input text-foreground py-2 px-3 rounded-md"
-        />
         <button @click="addProduct" class="text-sm text-primary underline">
           + Legg til
         </button>
@@ -123,7 +118,6 @@ productStore.setType('medicine');
 const items = ref([]);
 const newProductName = ref("");
 const newProductUnit = ref("");
-const newProductCalories = ref("");
 const showExistsModal = ref(false);
 const isLoading = ref(true);
 
@@ -138,7 +132,6 @@ const fetchProductTypes = async () => {
       id: product.id,
       name: product.name,
       unit: product.unit,
-      caloriesPerUnit: product.caloriesPerUnit?.toString() || '0',
       edit: false,
       batches: [],
       totalUnits: 0
@@ -255,7 +248,7 @@ const removeBatch = async (productIndex, batchIndex) => {
 
 const addProduct = async () => {
   const name = newProductName.value.trim();
-  if (!name || !newProductUnit.value || !newProductCalories.value) return;
+  if (!name || !newProductUnit.value) return;
   const exists = items.value.some(
     (item) => item?.name?.toLowerCase() === name.toLowerCase()
   );
@@ -264,19 +257,17 @@ const addProduct = async () => {
     return;
   }
   const unit = newProductUnit.value.toLowerCase();
-  const validUnits = ['stk', 'gram'];
+  const validUnits = ['mcg', 'mg', 'dose'];
   if (!validUnits.includes(unit)) {
     return;
   }
   await inventoryService.createMedicineProductType({
     name,
     unit,
-    caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
     category: 'medicine'
   });
   newProductName.value = "";
   newProductUnit.value = "";
-  newProductCalories.value = "";
   await fetchProductTypes();
 };
 
