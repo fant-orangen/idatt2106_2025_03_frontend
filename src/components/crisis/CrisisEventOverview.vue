@@ -74,7 +74,7 @@
       <NewsOverview
         :crisis-id="selectedCrisis.id"
         title="Crisis Related News"
-        :page-size="2"
+        :page-size="3"
       />
     </div>
   </div>

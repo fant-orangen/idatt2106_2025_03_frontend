@@ -55,7 +55,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
-import { fetchNewsByCrisisEvent } from '@/services/api/NewsService';
 import { paginatedCrisisNews } from '@/services/api/PaginatedNewsService';
 
 const props = defineProps<{
@@ -93,23 +92,15 @@ const loadMore = () => {
 const fetchPaginatedNews = async (crisisId: number) => {
   if (loading.value || !hasMore.value) return;
 
-  // Set appropriate loading state
   if (page.value === 0) {
     initialLoading.value = true;
   }
   loading.value = true;
 
   try {
-    // Determine which paginated fetch function to use
     const fetchFn = props.paginatedFetchFn || paginatedCrisisNews;
-
-    // Use the paginated news service
     const response = await fetchFn(page.value, size, crisisId);
-
-    // Add new items to the list
     news.value.push(...response.content);
-
-    // Update pagination
     page.value++;
     hasMore.value = page.value < response.totalPages;
   } catch (err) {
@@ -118,28 +109,6 @@ const fetchPaginatedNews = async (crisisId: number) => {
   } finally {
     loading.value = false;
     initialLoading.value = false;
-  }
-};
-
-// Legacy fetch method for backward compatibility
-const fetchNews = async (crisisId: number) => {
-  if (!crisisId) return;
-  loading.value = true;
-  error.value = null;
-  try {
-    if (props.fetchNewsFn) {
-      news.value = await props.fetchNewsFn(crisisId);
-    } else {
-      // Use paginated fetch but reset first
-      news.value = [];
-      page.value = 0;
-      hasMore.value = true;
-      await fetchPaginatedNews(crisisId);
-    }
-  } catch (error) {
-    error.value = errorMessage;
-  } finally {
-    loading.value = false;
   }
 };
 
