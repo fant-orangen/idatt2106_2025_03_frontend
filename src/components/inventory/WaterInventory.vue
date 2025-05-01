@@ -37,12 +37,17 @@
             placeholder="Mengde"
           />
           <div class="text-sm text-center">{{ item.unit === 'l' ? 'liter' : item.unit }}</div>
-          <input
-            v-model="batch.expires"
-            class="bg-input text-foreground py-2 px-3 text-center rounded-md"
-            placeholder="Utløp"
-            :readonly="true"
-          />
+          <template v-if="batch.isNew">
+            <input
+              v-model="batch.expires"
+              class="bg-input text-foreground py-2 px-3 text-center rounded-md"
+              placeholder="Utløp"
+              :readonly="true"
+            />
+          </template>
+          <template v-else>
+            <div class="text-sm text-center">{{ batch.expires }}</div>
+          </template>
           <button
             v-if="batch.isNew"
             @click="() => { console.log('WaterInventory: Save batch clicked', { productIndex: index, batchIndex: bIndex, batch }); saveBatch(index, bIndex); }"

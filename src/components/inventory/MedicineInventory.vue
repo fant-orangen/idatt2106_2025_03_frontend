@@ -37,11 +37,16 @@
             placeholder="Mengde"
           />
           <div class="text-sm text-center">{{ item.unit }}</div>
-          <input
-            v-model="batch.expires"
-            class="bg-input text-foreground py-2 px-3 text-center rounded-md"
-            placeholder="Utløp"
-          />
+          <template v-if="batch.isNew">
+            <input
+              v-model="batch.expires"
+              class="bg-input text-foreground py-2 px-3 text-center rounded-md"
+              placeholder="Utløp"
+            />
+          </template>
+          <template v-else>
+            <div class="text-sm text-center">{{ batch.expires }}</div>
+          </template>
           <button
             v-if="batch.isNew"
             @click="() => { console.log('MedicineInventory: Save batch clicked', { productIndex: index, batchIndex: bIndex, batch }); saveBatch(index, bIndex); }"
