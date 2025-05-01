@@ -2,6 +2,7 @@
 import { ref, h } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 import { useI18n } from 'vue-i18n'
+import { AxiosError } from 'axios' // Import AxiosError type
 
 const { t } = useI18n()
 
@@ -23,6 +24,7 @@ import {
 import router from '@/router'
 import { Eye, EyeOff } from 'lucide-vue-next'
 import { CardContent, Card, CardHeader, CardTitle } from '@/components/ui/card'
+import { PinInputGroup, PinInputInput, PinInput } from '@/components/ui/pin-input'
 
 // Reactive variables for form fields and error messages
 const email = ref('')
@@ -31,6 +33,8 @@ const isView = ref(false)
 const userStore = useUserStore()
 const errorMessage = ref('')
 const resetEmail = ref('')
+const isTwoFactorAuthDialogOpen = ref(false)
+const pinValue = ref<string[]>([])
 
 /**
  * Handles the login process by verifying the user's credentials.
@@ -43,12 +47,62 @@ const resetEmail = ref('')
 async function handleLogin() {
   try {
     errorMessage.value = ''
-    await userStore.verifyLogin(email.value, password.value)
-    // alert(t('success.login-successful'))
+    const response = await userStore.verifyLogin(email.value, password.value)
+
+    // Check HTTP status code
+    if (response.status === 200) {
+      userStore.login(response.status, response.data.token, email.value)
+      router.push('/')
+    } else if (response.status === 202) {
+      // If the response status is 202, it indicates that 2FA is required
+      userStore.send2FACodeToEmail(email.value)
+      isTwoFactorAuthDialogOpen.value = true
+    } else {
+      errorMessage.value = t('errors.unexpected-error')
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError && error.response) {
+      const status = error.response.status
+      if (status === 401) {
+        errorMessage.value = t('errors.invalid-credentials')
+      } else if (status === 403) {
+        errorMessage.value = t('errors.account-locked')
+      } else {
+        errorMessage.value = t('errors.unexpected-error')
+      }
+    } else {
+      errorMessage.value = t('errors.network-error')
+    }
+    console.error('Login error:', error)
+  }
+}
+
+/**
+ * Handles the completion of the 2FA code input.
+ *
+ * @async
+ * @function handleComplete
+ * @returns {Promise<void>} Resolves when the 2FA verification is complete.
+ * @throws {Error} If the verification fails, an error message is displayed.
+ */
+async function handleComplete() {
+  try {
+    console.log('Pin value:', Number(pinValue.value.join('')))
+    const pinAsNumber = Number(pinValue.value.join(''))
+    console.log('Pin as number:', pinAsNumber)
+    const response = await userStore.verify2FACodeInput(email.value, pinAsNumber)
+    if (response.status === 200) {
+      userStore.login(response.status, response.data.token, email.value)
+      isTwoFactorAuthDialogOpen.value = false
+    } else {
+      errorMessage.value = t('errors.invalid-2fa-code')
+    }
+
     router.push('/')
+    console.log('User role is: ',userStore.role)
   } catch (error) {
     errorMessage.value = t('errors.login-failed')
-    console.error('Login error:', error)
+    console.log('Login error', error)
   }
 }
 </script>
@@ -139,6 +193,30 @@ async function handleLogin() {
                     </Button>
                   </DialogClose>
                 </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Dialog v-model:open="isTwoFactorAuthDialogOpen">
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {{ $t('login.2fa-login-title') }}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {{ $t('login.2fa-login-description') }}
+                  </DialogDescription>
+                </DialogHeader>
+                <PinInput
+                  id="pin-input"
+                  v-model="pinValue"
+                  placeholder="○"
+                  class="flex justify-center items-center gap-2"
+                  @complete="handleComplete"
+                >
+                  <PinInputGroup>
+                    <PinInputInput v-for="(id, index) in 6" :key="id" :index="index" />
+                  </PinInputGroup>
+                </PinInput>
+                <DialogFooter> </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>

@@ -11,7 +11,7 @@
             type="email"
             :placeholder="$t('household.enter-email')"
             required
-          />
+          ></Input>
         </div>
         <!-- Personal message -->
         <div>
@@ -21,7 +21,7 @@
             v-model="message"
             :placeholder="$t('household.optional-message')"
             rows="3"
-          />
+          ></Textarea>
         </div>
 
         <div class="flex justify-between">
@@ -32,7 +32,7 @@
         </div>
 
         <!-- Buttons -->
-        <div class="flex gap-2">
+        <div class="flex flex-col md:flex-row gap-2">
           <Button type="submit" variant="default" :disabled="isLoading">
             <span v-if="isLoading" class="mr-2">
               <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24">

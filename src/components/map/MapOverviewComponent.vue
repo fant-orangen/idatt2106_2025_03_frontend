@@ -1,10 +1,10 @@
 <template>
-  <div class="filter-toggle flex justify-end gap-4 mb-4">
-    <Button @click="findNearestShelter" variant="destructive">
+  <div class="filter-toggle flex flex-col justify-end gap-4 mb-4 md:flex-row">
+    <Button @click="findNearestShelter" variant="destructive" class="w-full md:w-auto">
       <font-awesome-icon :icon="['fas', 'house-chimney']" class="mr-2" />
       {{ t('map.nearest-shelter') }}
     </Button>
-    <Button @click="isFilterMenuVisible = !isFilterMenuVisible">
+    <Button @click="isFilterMenuVisible = !isFilterMenuVisible" class="w-full md:w-auto">
       <font-awesome-icon
         :icon="['fas', isFilterMenuVisible ? 'chevron-up' : 'chevron-down']"
         class="mr-2"
@@ -13,13 +13,15 @@
     </Button>
   </div>
 
-  <Card v-if="isFilterMenuVisible" class="mb-8 filter-card">
+  <Card v-if="isFilterMenuVisible" class="mb-8 filter-card relative z-20">
     <CardHeader>
       <CardTitle>{{ t('map.filter') }}</CardTitle>
     </CardHeader>
     <CardContent>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <!-- Grid Layout for Filters -->
+      <div class="grid grid-cols-1 gap-4 items-end md:grid-cols-3">
         <div>
+          <!-- My Location Button -->
           <Button @click="getUserLocation" class="w-full">
             {{ t('map.my-location') }}
           </Button>
@@ -34,7 +36,8 @@
             Lat: {{ userLocation.latitude.toFixed(4) }}, Lon: {{ userLocation.longitude.toFixed(4) }}
           </p>
         </div>
-
+        
+        <!-- Distance Input -->
         <div>
           <label for="distance" class="text-sm font-medium block mb-1">
             {{ t('map.distance') }}
@@ -51,6 +54,7 @@
           />
         </div>
 
+        <!-- POI Type Selector -->
         <div>
           <label for="poi-type" class="text-sm font-medium block mb-1">
             {{ t('map.poi-type') }}
@@ -73,13 +77,15 @@
         </div>
       </div>
 
-      <div class="flex justify-between items-center gap-4 mt-4">
-        <div class="flex gap-4">
-          <Button variant="outline" @click="resetFilters">
+      <!-- Action Buttons -->
+      <div class="flex flex-col gap-4 mt-4 md:flex-row md:justify-between">
+        <div class="flex flex-col gap-4 md:flex-row">
+          <Button variant="outline" class="w-full md:w-auto" @click="resetFilters">
             {{ t('map.reset-filter') }}
           </Button>
           <Button
             variant="secondary"
+            class="w-full md:w-auto"
             @click="findNearestPoi"
             :disabled="!userLocation || !selectedPoiType"
           >
@@ -88,7 +94,7 @@
         </div>
         <Button
           variant="outline"
-          class="border-primary text-primary hover:bg-primary/10 hover:text-primary focus-visible:ring-primary/50"
+          class="w-full md:w-auto border-primary text-primary hover:bg-primary/10 hover:text-primary focus-visible:ring-primary/50"
           @click="applyFilters"
         >
           {{ t('map.apply-filter') }}
@@ -97,9 +103,9 @@
     </CardContent>
   </Card>
 
-  <div class="map-wrapper relative z-0 h-[50em]">
-    <div v-if="isLoadingPois || isLoadingCrisisEvents" class="overlay">{{ t('map.loading') }}</div>
-    <div v-else-if="poiError" class="overlay text-red-600">
+  <div class="relative z-0 overflow-visible h-[50em]">
+    <div v-if="isLoadingPois || isLoadingCrisisEvents" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10">{{ t('map.loading') }}</div>
+    <div v-else-if="poiError" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10 text-red-600">
       {{ poiError }}
     </div>
     <MapComponent
@@ -110,6 +116,7 @@
     />
   </div>
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -474,24 +481,3 @@ onMounted(async () => {
   }
 });
 </script>
-<style scoped>
-.filter-toggle,
-.filter-card {
-  position: relative;
-  z-index: 20;
-}
-.map-wrapper {
-  position: relative;
-  z-index: 0;
-  overflow: visible;
-}
-.overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.8);
-  z-index: 10;
-}
-</style>

@@ -9,7 +9,8 @@ const notifications = ref<NotificationMessage[]>([]);
 
 onMounted(async () => {
   try {
-    notifications.value = await getNotifications();
+    const page = await getNotifications();
+    notifications.value = page.content;
   } catch (error) {
     console.error('Failed to load notifications:', error);
   }
