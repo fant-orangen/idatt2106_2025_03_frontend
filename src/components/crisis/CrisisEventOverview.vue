@@ -73,8 +73,8 @@
       <!-- Related News -->
       <NewsOverview
         :crisis-id="selectedCrisis.id"
-        :fetch-news-fn="fetchNewsByCrisisEvent"
-        title="Crisis Releated News"
+        title="Crisis Related News"
+        :page-size="2"
       />
     </div>
   </div>
@@ -91,7 +91,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import CrisisDetails from '@/components/crisis/CrisisDetails.vue';
 import CrisisEventHistory from '@/components/crisis/CrisisEventHistory.vue';
 import NewsOverview from '../news/NewsOverview.vue';
-import { fetchNewsByCrisisEvent } from '@/services/api/NewsService.ts'
 import { watch } from 'vue';
 import {formatDateFull} from '@/utils/dateUtils.ts';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';

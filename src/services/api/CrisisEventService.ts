@@ -85,7 +85,7 @@ export async function fetchCrisisEventById(id: number): Promise<CrisisEventDto |
 export async function fetchCrisisEventChanges(
   crisisEventId: number,
   page: number,
-  size = 20
+  size = 5
 ): Promise<Page<CrisisEventChange>> {
   try {
     console.log("page : ", page);

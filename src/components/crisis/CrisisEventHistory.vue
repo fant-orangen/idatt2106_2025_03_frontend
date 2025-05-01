@@ -81,7 +81,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { fetchCrisisEventChanges } from '@/services/api/CrisisEventService.ts';
 import { formatDateFull } from '@/utils/dateUtils.ts';
-import InfiniteScroll from '@/composables/infiniteScroll.vue';
+import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 
 const props = defineProps<{
   crisisId: number | null;
