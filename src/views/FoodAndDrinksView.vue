@@ -402,7 +402,7 @@ const addProduct = async () => {
       name,
       unit,
       caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
-      isWater: name.toLowerCase() === 'vann'
+      category: 'food' // TODO: make this dynamic
     });
 
     // Clear the input fields
