@@ -1,6 +1,7 @@
-import api from '@/services/api/AxiosInstance';
-import type { AxiosResponse } from 'axios'; // Import AxiosResponse type
-import { type CrisisEventDto } from '@/models/CrisisEvent'
+import api from '@/services/api/AxiosInstance'
+import type { AxiosResponse } from 'axios' // Import AxiosResponse type
+import { type CrisisEventDto, type UpdateCrisisEventDto } from '@/models/CrisisEvent'
+import type { Page } from '@/types/Page.ts'
 
 /**
  * Creates a new event by sending event data to the backend API.
@@ -19,8 +20,7 @@ import { type CrisisEventDto } from '@/models/CrisisEvent'
  * @returns {Promise<AxiosResponse>} Promise resolving to the server response
  * @throws {Error} When the event creation fails or network issues occur.
  */
-export async function createEvent(eventData: any): Promise<AxiosResponse> {
-  // Assuming this function remains as is, ensure the eventData structure matches backend CreateCrisisEventDto
+export async function createEvent(eventData: CrisisEventDto): Promise<AxiosResponse> {
   return await api.post('/crisis-events', eventData, {
     headers: {
       'Content-Type': 'application/json'
@@ -46,25 +46,7 @@ export async function createEvent(eventData: any): Promise<AxiosResponse> {
  * @throws {Error} When the POI creation fails or network issues occur.
  */
 export async function createPOI(poiData: any): Promise<AxiosResponse> {
-  // *** MODIFIED: Corrected the endpoint URL ***
-  // The backend PoiController uses '/api/poi' for POST requests
   return await api.post('/poi', poiData, {
-    // *** END MODIFIED ***
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-}
-
-
-/**
- * Fetches all current crisis events from the backend API.
- * Makes a GET request to the '/crisis-events/all' endpoint.
- * Automatically includes the authentication token if available.
- * @returns {Promise<AxiosResponse<any>>} Server response with a list of events.
- */
-export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
-  return await api.get('/crisis-events/all', { // Backend endpoint might need adjustment if pagination is used
     headers: {
       'Content-Type': 'application/json'
     }
@@ -74,13 +56,30 @@ export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
 /**
  * Updates an existing crisis event in the backend.
  * Sends a PUT request to the '/crisis-events/{id}' endpoint with the updated event data.
+ * 
  * @param {number} id - The ID of the event to update.
  * @param {object} eventData  - An object containing the updated event fields (matching UpdateCrisisEventDto).
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
  */
-export async function updateCurrentEvent(id: number, eventData: CrisisEventDto): Promise<AxiosResponse<any>> {
-  // Assuming this function remains as is, ensure eventData matches UpdateCrisisEventDto
+export async function updateCurrentEvent(id: number, eventData: UpdateCrisisEventDto): Promise<AxiosResponse<any>> {
+  console.log('Got this info from update: ', eventData);
   return await api.put('/crisis-events/'+ id, eventData, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+
+/**
+ * Deactivates a current event. Sets the event to inactive in the backend API. 
+ * Calls a PUT request to the '/crisis-events/deactivate/{id}' endpoint. 
+ * 
+ * @param id - The ID of the event chosen to be deactivated. 
+ * @returns { Promise<AxiosResponse<any>> }A promise resolving to the server response after the update operation.
+ */
+export async function deactivateCurrentEvent(id: number): Promise<AxiosResponse<any>> {
+  return await api.put('/crisis-events/deactivate/'+ id, {
     headers: {
       'Content-Type': 'application/json'
     }
@@ -93,7 +92,8 @@ export async function updateCurrentEvent(id: number, eventData: CrisisEventDto):
  * @returns {Promise<AxiosResponse<any>>} Server response with a list of admin users.
  */
 export async function getAdminUsers() {
-  return await api.get('/super-admin/all', {
+  return await api.get<Page<CrisisEventDto>>('/super-admin/all', {
+    params: { size: 20 },
     headers: {
       'Content-Type': 'application/json'
     }
@@ -129,6 +129,14 @@ export async function revokeAdminRights(adminID: number) {
   });
 }
 
+
+/**
+ * Retrieves the user ID from the backend API by searching for the user
+ * having the provided email address. 
+ * Makes a GET request to the '/super-admin/user-info/{email}' endpoint.
+ * @param email - the email address to the wanted user
+ * @returns { Promise<AxiosResponse<any>> } - Response object contains the user id and the email. 
+ */
 export async function getUserId(email: string) {
   return await api.get('/super-admin/user-info/' + email, {
     headers: {
