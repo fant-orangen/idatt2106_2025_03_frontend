@@ -30,6 +30,15 @@
     "2fa-login-title": "To-trinnsverifisering",
     "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn."
   },
+  "reset-password": {
+    "title": "Tilbakestill passord",
+    "code": "Verifiseringskode",
+    "new-password": "Nytt passord",
+    "confirm-new-password": "Bekreft passord",
+    "update-button": "Oppdater passord",
+    "password-updated": "Passord oppdatert",
+    "password-update-failed": "Kunne ikke oppdatere passord"
+  },
   "admin": {
     "administrate": "Administrer",
     "make-new-event": "Legg til en ny hendelse",
