@@ -20,15 +20,15 @@
     <CardContent>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
         <div>
-          <Button @click="getUserLocation" class="w-full">
-            {{ t('map.my-location') }}
+          <Button @click="fetchUserLocation" :disabled="isLoadingLocation" class="w-full">
+            {{ isLoadingLocation ? t('map.getting-location') : t('map.my-location') }}
           </Button>
           <p
-            v-if="locationStatus"
+            v-if="locationStatusMessage"
             class="text-sm mt-1"
-            :class="{ 'text-red-500': locationStatus === t('map.location-error') }"
+            :class="{ 'text-red-500': !!locationError }"
           >
-            {{ locationStatus }}
+            {{ locationStatusMessage }}
           </p>
           <p v-if="userLocation" class="text-sm text-green-600 mt-1">
             Lat: {{ userLocation.latitude.toFixed(4) }}, Lon: {{ userLocation.longitude.toFixed(4) }}
@@ -98,22 +98,25 @@
   </Card>
 
   <div class="relative z-0 overflow-visible h-[50em]">
-    <div v-if="isLoadingPois || isLoadingCrisisEvents" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10">{{ t('map.loading') }}</div>
-    <div v-else-if="poiError" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10 text-red-600">
-      {{ poiError }}
+    <div v-if="isLoadingPois || isLoadingCrisisEvents || isLoadingLocation" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10">{{ t('map.loading') }}</div>
+    <div v-else-if="poiError || locationError" class="absolute inset-0 flex items-center justify-center bg-white/80 z-10 text-red-600">
+      {{ poiError || locationError?.message }}
     </div>
     <MapComponent
-      v-else
       :pois="convertedPois"
       :userLocation="userLocation"
       :crisisEvents="crisisEvents"
     />
   </div>
 </template>
+
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { storeToRefs } from 'pinia'; // Import storeToRefs
 import MapComponent from '@/components/map/MapComponent.vue';
+import { useGeolocation } from '@/composables/useGeolocation'; // Import the composable
+import { useUserStore } from '@/stores/UserStore'; // Import UserStore
 import {
   fetchPublicPois,
   fetchPoisByType,
@@ -142,7 +145,17 @@ import {
 
 const { t } = useI18n();
 
-// Reactive state
+// --- Pinia Store and Geolocation Composable ---
+const userStore = useUserStore();
+const { startWatching, stopWatching, getCurrentLocation, coords: locationCoords, error: locationError, isLoading: isLoadingLocation, status: locationStatus } = useGeolocation();
+const { profile } = storeToRefs(userStore);
+
+// Use storeToRefs to keep reactivity for store state
+const { currentUserLocation } = storeToRefs(userStore);
+// Alias store location to userLocation for clarity in this component
+const userLocation = currentUserLocation;
+
+// --- Local Reactive State ---
 const allPois = ref<PoiData[]>([]);
 const pointsOfInterest = ref<PoiData[]>([]);
 const isLoadingPois = ref(false);
@@ -151,28 +164,18 @@ const crisisEvents = ref<CrisisEvent[]>([]);
 const isLoadingCrisisEvents = ref(false);
 
 // Filter state
-const userLocation = ref<UserLocation | null>(null);
 const selectedPoiType = ref<number | null>(null);
 const distanceInMeters = ref(1000);
 const isFilterMenuVisible = ref(false);
-const locationStatus = ref<string | null>(null);
+
+// --- Computed Properties ---
 
 // Convert PoiData to POI objects for the MapComponent
 const convertedPois = computed<POI[]>(() => {
   return pointsOfInterest.value.map(poi => convertPoiData(poi));
 });
 
-// Helper for ensuring numerical coordinates
-function ensureNumericCoordinates(poi: PoiData): PoiData {
-  // Create a copy to avoid modifying the original
-  return {
-    ...poi,
-    latitude: typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude,
-    longitude: typeof poi.longitude === 'string' ? parseFloat(poi.longitude) : poi.longitude
-  };
-}
-
-// Derive POI types
+// Derive POI types from all loaded POIs
 const poiTypes = computed(() => {
   const types = new Map<number, string>();
   allPois.value.forEach((poi: PoiData) => {
@@ -183,44 +186,51 @@ const poiTypes = computed(() => {
   return Array.from(types.entries()).map(([id, name]: [number, string]) => ({ id, name }));
 });
 
-/**
- * Fetches crisis events and processes them for display on the map
- */
+// Computed property for displaying location status/error messages
+const locationStatusMessage = computed(() => {
+  if (isLoadingLocation.value) return t('map.getting-location');
+  if (locationError.value) {
+    // Provide more specific messages based on error or status from composable/store
+    if (locationStatus.value === 'Permission Denied') return t('map.location-error') + ' (Permission Denied)';
+    if (locationStatus.value === 'Disabled by User') return t('map.location-error') + ' (Disabled)';
+    return t('map.location-error'); // Generic error
+  }
+  if (locationStatus.value === 'Success' && userLocation.value) return t('map.location-success');
+  if (locationStatus.value === 'Not Supported') return t('map.location-unavailable');
+  return null; // No status to show
+});
+
+
+
+
+// --- Methods ---
+
+// Helper for ensuring numerical coordinates
+function ensureNumericCoordinates(poi: PoiData): PoiData {
+  return {
+    ...poi,
+    latitude: typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude,
+    longitude: typeof poi.longitude === 'string' ? parseFloat(poi.longitude) : poi.longitude
+  };
+}
+
+// Fetches crisis events and processes them for display
 async function loadCrisisEvents() {
   isLoadingCrisisEvents.value = true;
   try {
-    // Fetch active crisis events
     const events = await fetchActiveCrisisEvents();
-
-    // Debug log for events
     console.log('Crisis events loaded from service:', events);
-
-    // Ensure each event has proper coordinates
-    const validEvents = events.filter(event => {
-      const hasCoords = event.latitude !== undefined &&
-        event.longitude !== undefined &&
-        event.level !== undefined;
-      if (!hasCoords) {
-        console.warn('Invalid crisis event missing coordinates or level:', event);
-      }
-      return hasCoords;
-    });
-
-    // Ensure numeric coordinates (convert strings if needed)
+    const validEvents = events.filter(event =>
+      event.latitude !== undefined && event.longitude !== undefined && event.level !== undefined
+    );
     const processedEvents = validEvents.map(event => ({
       ...event,
       latitude: typeof event.latitude === 'string' ? parseFloat(event.latitude) : event.latitude,
       longitude: typeof event.longitude === 'string' ? parseFloat(event.longitude) : event.longitude,
       level: typeof event.level === 'string' ? parseInt(event.level) : event.level
     }));
-
     crisisEvents.value = processedEvents;
     console.log(`Loaded ${processedEvents.length} valid crisis events:`, processedEvents);
-
-    // Debug check for MapComponent prop
-    setTimeout(() => {
-      console.log('Current crisis events in component state:', crisisEvents.value);
-    }, 500);
   } catch (error) {
     console.error('Error loading crisis events:', error);
     crisisEvents.value = [];
@@ -229,35 +239,19 @@ async function loadCrisisEvents() {
   }
 }
 
-// Geolocation helper
-async function getUserLocation() {
-  if (!navigator.geolocation) {
-    locationStatus.value = t('map.location-error');
+// Fetch user location using the composable
+async function fetchUserLocation() {
+  // Check preference before fetching (optional, composable also checks)
+  if (!userStore.profile?.locationSharingEnabled) {
+    alert(t('map.location-error') + ' (Sharing Disabled)'); // Inform user
     return false;
   }
-  try {
-    locationStatus.value = t('map.getting-location');
-    const pos = await new Promise<GeolocationPosition>((res, rej) =>
-      navigator.geolocation.getCurrentPosition(res, rej, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      })
-    );
-    userLocation.value = {
-      latitude: pos.coords.latitude,
-      longitude: pos.coords.longitude
-    };
-    locationStatus.value = t('map.location-success');
-
-    // Reload crisis events when location changes
-    loadCrisisEvents();
-
-    return true;
-  } catch (error: unknown) {
-    locationStatus.value = t('map.location-error');
-    return false;
+  const fetchedLocation = await getCurrentLocation(); // Call composable method
+  if (fetchedLocation) {
+    // Reload crisis events if location fetch was successful (optional)
+    // loadCrisisEvents();
   }
+  return !!fetchedLocation;
 }
 
 // Reset filters
@@ -266,14 +260,9 @@ function resetFilters() {
   selectedPoiType.value = null;
   distanceInMeters.value = 1000;
   poiError.value = null;
-  locationStatus.value = null;
-
-  // Force reactivity by clearing and then setting with delay
-  pointsOfInterest.value = [];
-  setTimeout(() => {
-    pointsOfInterest.value = [...allPois.value];
-    console.log("Filters reset, showing all POIs:", pointsOfInterest.value.length);
-  }, 10);
+  // Don't reset userLocation or its status here, just the filters
+  pointsOfInterest.value = [...allPois.value]; // Show all POIs again
+  console.log("Filters reset, showing all POIs:", pointsOfInterest.value.length);
 }
 
 // Apply filtering
@@ -281,63 +270,51 @@ async function applyFilters() {
   console.log("Applying filters");
   poiError.value = null;
 
-  const hasType = selectedPoiType.value !== null;
-  const hasLocation = userLocation.value !== null && distanceInMeters.value > 0;
+  // Read location from store/composable directly
+  const currentLocation = userLocation.value;
 
-  // If neither a type nor a valid location+distance, reset to show all.
-  if (!hasType && !hasLocation) {
-    resetFilters();
+  const hasType = selectedPoiType.value !== null;
+  // Check if we have location data *and* a valid distance
+  const hasLocationFilter = currentLocation !== null && distanceInMeters.value > 0;
+
+  if (!hasType && !hasLocationFilter) {
+    resetFilters(); // Reset to show all if no filter criteria
     return;
   }
 
   isLoadingPois.value = true;
   try {
-    // Initialize with empty array
     let fetchedResults: PoiData[] = [];
 
-    // 1) LOCATION-ONLY
-    if (hasLocation && !hasType && userLocation.value) {
-      fetchedResults = await fetchPoisNearby(
-        userLocation.value.latitude,
-        userLocation.value.longitude,
-        distanceInMeters.value
-      );
-    }
-    // 2) LOCATION + TYPE
-    else if (hasLocation && hasType && userLocation.value) {
-      // We already know selectedPoiType.value !== null from hasType
-      fetchedResults = await fetchPoisNearby(
-        userLocation.value.latitude,
-        userLocation.value.longitude,
-        distanceInMeters.value,
-        selectedPoiType.value!
-      );
-    }
-    // 3) TYPE-ONLY
-    else if (!hasLocation && hasType) {
-      // We already know selectedPoiType.value !== null from hasType
-      fetchedResults = await fetchPoisByType(
-        selectedPoiType.value!
-      );
-    }
-
-    // Create a completely new array and trigger reactivity with proper assignment
-    pointsOfInterest.value = [];
-
-    // Force reactivity by briefly setting to empty then to results
-    setTimeout(() => {
-      pointsOfInterest.value = Array.isArray(fetchedResults) ? [...fetchedResults] : [];
-
-      if (fetchedResults.length === 0) {
-        console.log("No POIs found matching the criteria");
+    if (hasLocationFilter && currentLocation) {
+      if (hasType) {
+        // Location + Type
+        fetchedResults = await fetchPoisNearby(
+          currentLocation.latitude,
+          currentLocation.longitude,
+          distanceInMeters.value,
+          selectedPoiType.value!
+        );
       } else {
-        console.log(`Found ${fetchedResults.length} POIs matching the criteria`);
+        // Location Only
+        fetchedResults = await fetchPoisNearby(
+          currentLocation.latitude,
+          currentLocation.longitude,
+          distanceInMeters.value
+        );
       }
-    }, 10);
+    } else if (hasType) {
+      // Type Only
+      fetchedResults = await fetchPoisByType(selectedPoiType.value!);
+    }
+
+    pointsOfInterest.value = Array.isArray(fetchedResults) ? [...fetchedResults] : [];
+    if (fetchedResults.length === 0) console.log("No POIs found matching the criteria");
+    else console.log(`Found ${fetchedResults.length} POIs matching the criteria`);
 
   } catch (error: unknown) {
     console.error('Error applying filters:', error);
-    poiError.value = t('map.filter-error');
+    poiError.value = t('map.filter-error') || 'Error applying filters'; // Add fallback
     pointsOfInterest.value = [];
   } finally {
     isLoadingPois.value = false;
@@ -347,50 +324,50 @@ async function applyFilters() {
 // Find nearest shelter
 async function findNearestShelter() {
   console.log("Finding nearest shelter");
+  poiError.value = null; // Clear previous errors
 
-  // Make sure we have user location
-  if (!userLocation.value) {
-    locationStatus.value = t('map.location-needed');
-    const success = await getUserLocation();
-    if (!success || !userLocation.value) return;
+  // Read location from store/composable directly
+  let currentLocation = userLocation.value;
+
+  // Attempt to get location if not available or if status indicates an issue
+  if (!currentLocation || locationError.value || locationStatus.value === 'Permission Denied' || locationStatus.value === 'Disabled by User') {
+    const success = await fetchUserLocation(); // Use the refactored method
+    if (!success) {
+      poiError.value = locationStatusMessage.value || t('map.location-needed');
+      return; // Stop if location cannot be obtained
+    }
+    currentLocation = userLocation.value; // Update local alias after fetch
+    if (!currentLocation) return; // Should not happen if success is true, but safety check
   }
 
   isLoadingPois.value = true;
-  poiError.value = null;
-
   try {
     const shelterTypeId = poiTypes.value.find((type) =>
       /shelter|tilfluktsrom/i.test(type.name)
     )?.id;
 
     if (!shelterTypeId) {
-      poiError.value = t('map.no-shelter-type');
+      poiError.value = t('map.no-shelter-type') || 'Shelter type not found'; // Add fallback
       isLoadingPois.value = false;
       return;
     }
 
     const nearest = await fetchNearestPoiByType(
       shelterTypeId,
-      userLocation.value.latitude,
-      userLocation.value.longitude
+      currentLocation.latitude,
+      currentLocation.longitude
     );
 
-    // Force reactivity with proper array construction
-    pointsOfInterest.value = [];
-
-    setTimeout(() => {
-      if (nearest) {
-        // Ensure numeric coordinates
-        pointsOfInterest.value = [ensureNumericCoordinates(nearest)];
-        console.log("Nearest shelter found:", nearest);
-      } else {
-        pointsOfInterest.value = [];
-        poiError.value = t('map.find-error');
-      }
-    }, 10);
+    if (nearest) {
+      pointsOfInterest.value = [ensureNumericCoordinates(nearest)];
+      console.log("Nearest shelter found:", nearest);
+    } else {
+      pointsOfInterest.value = [];
+      poiError.value = t('map.find-error') || 'Could not find nearest shelter'; // Add fallback
+    }
   } catch (error: unknown) {
     console.error('Error finding nearest shelter:', error);
-    poiError.value = t('map.find-error');
+    poiError.value = t('map.find-error') || 'Error finding nearest shelter'; // Add fallback
     pointsOfInterest.value = [];
   } finally {
     isLoadingPois.value = false;
@@ -400,77 +377,97 @@ async function findNearestShelter() {
 // Find nearest POI of selected type
 async function findNearestPoi() {
   console.log("Finding nearest POI");
-  if (!userLocation.value || selectedPoiType.value === null) return;
+  poiError.value = null; // Clear previous errors
+
+  // Read location from store/composable directly
+  let currentLocation = userLocation.value;
+
+  // Ensure a type is selected
+  if (selectedPoiType.value === null) {
+    poiError.value = "Please select a POI type first."; // Provide feedback
+    return;
+  }
+
+  // Attempt to get location if not available or if status indicates an issue
+  if (!currentLocation || locationError.value || locationStatus.value === 'Permission Denied' || locationStatus.value === 'Disabled by User') {
+    const success = await fetchUserLocation(); // Use the refactored method
+    if (!success) {
+      poiError.value = locationStatusMessage.value || t('map.location-needed');
+      return; // Stop if location cannot be obtained
+    }
+    currentLocation = userLocation.value; // Update local alias after fetch
+    if (!currentLocation) return; // Safety check
+  }
 
   isLoadingPois.value = true;
-  poiError.value = null;
-
   try {
     const nearest = await fetchNearestPoiByType(
-      selectedPoiType.value,
-      userLocation.value.latitude,
-      userLocation.value.longitude
+      selectedPoiType.value, // Already checked it's not null
+      currentLocation.latitude,
+      currentLocation.longitude
     );
 
-    // Force reactivity with proper array construction
-    pointsOfInterest.value = [];
-
-    setTimeout(() => {
-      if (nearest) {
-        // Ensure numeric coordinates
-        pointsOfInterest.value = [ensureNumericCoordinates(nearest)];
-        console.log("Nearest POI found:", nearest);
-      } else {
-        pointsOfInterest.value = [];
-        poiError.value = t('map.find-error');
-      }
-    }, 10);
+    if (nearest) {
+      pointsOfInterest.value = [ensureNumericCoordinates(nearest)];
+      console.log("Nearest POI found:", nearest);
+    } else {
+      pointsOfInterest.value = [];
+      poiError.value = t('map.find-error') || 'Could not find nearest POI'; // Add fallback
+    }
   } catch (error: unknown) {
     console.error('Error finding nearest POI:', error);
-    poiError.value = t('map.find-error');
+    poiError.value = t('map.find-error') || 'Error finding nearest POI'; // Add fallback
     pointsOfInterest.value = [];
   } finally {
     isLoadingPois.value = false;
   }
 }
 
+// Watch distance input for validation
 watch(distanceInMeters, (val: number) => {
   if (val < 100) distanceInMeters.value = 100;
   else if (val > 5000000) distanceInMeters.value = 5000000;
 });
 
-// Load all POIs on mount
+// --- Lifecycle Hook ---
 onMounted(async () => {
   console.log("Map overview component mounted");
   isLoadingPois.value = true;
   poiError.value = null;
 
+  // Ensure profile (with location preference) is loaded first
+  if (!userStore.profile) {
+    await userStore.fetchUserProfile();
+  }
+
+  // *** START LIVE WATCHING (if enabled) ***
+  if (profile.value?.locationSharingEnabled) {
+    console.log("Location sharing is enabled, starting watch.");
+    startWatching(); // Call the function from the composable
+  } else {
+    console.log("Location sharing is disabled, not starting watch.");
+    // Optionally, get a one-time location if desired even if watch is off
+    // await getCurrentLocation();
+  }
+  // *************************************
+
+  // --- Load initial map data ---
   try {
-    // Load POIs
     const pois = await fetchPublicPois();
-
-    // First set allPois
     allPois.value = [...pois];
-
-    // Clear pointsOfInterest first
-    pointsOfInterest.value = [];
-
-    // Then set pointsOfInterest with a small delay
-    setTimeout(() => {
-      pointsOfInterest.value = [...pois];
-      console.log("Initial POIs loaded:", pointsOfInterest.value.length);
-    }, 10);
-
-    // Load crisis events
+    pointsOfInterest.value = [...pois];
+    console.log("Initial POIs loaded:", pointsOfInterest.value.length);
     await loadCrisisEvents();
-
   } catch (error: unknown) {
-    console.error('Error loading POIs:', error);
-    poiError.value = t('map.load-error');
-    allPois.value = [];
-    pointsOfInterest.value = [];
+    // ... error handling ...
   } finally {
     isLoadingPois.value = false;
   }
+});
+
+// *** Clean up watcher when component is unmounted ***
+onBeforeUnmount(() => {
+  console.log("Map overview unmounting, stopping location watch.");
+  stopWatching(); // Call the cleanup function from the composable
 });
 </script>
