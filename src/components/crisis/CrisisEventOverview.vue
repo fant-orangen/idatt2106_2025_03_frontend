@@ -79,6 +79,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import type { CrisisEventDto, CrisisEventPreviewDto } from '@/models/CrisisEvent.ts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StaticMapWithCircle from '@/components/map/StaticMapWithCircle.vue';
@@ -109,6 +110,7 @@ import {
  * @component
  */
 
+const router = useRouter();
 const crisisEvents = ref<CrisisEventPreviewDto[]>([]);
 const { t } = useI18n();
 const selectedCrisis = ref<CrisisEventDto | null>(null);
@@ -125,7 +127,17 @@ onMounted(async () => {
     console.log("events: ", events);
     crisisEvents.value = events;
 
-    if (crisisEvents.value.length > 0 && !selectedCrisis.value) {
+    // Check if there's a crisis ID in the URL query parameter
+    const crisisIdFromQuery = router.currentRoute.value.query.id;
+
+    if (crisisIdFromQuery && typeof crisisIdFromQuery === 'string') {
+      // If there's a crisis ID in the URL, select that crisis
+      const crisisId = parseInt(crisisIdFromQuery, 10);
+      if (!isNaN(crisisId)) {
+        await fetchAndSelectCrisis(crisisId);
+      }
+    } else if (crisisEvents.value.length > 0 && !selectedCrisis.value) {
+      // Otherwise, select the first crisis
       await fetchAndSelectCrisis(crisisEvents.value[0].id);
     }
   } catch (error) {
@@ -187,6 +199,12 @@ watch(mapData, (newVal) => {
  * @param event - The crisis event that was selected
  */
 const handleCrisisSelect = (event: CrisisEventDto) => {
+  // Update the URL with the selected crisis ID
+  router.replace({
+    path: router.currentRoute.value.path,
+    query: { id: event.id.toString() }
+  });
+
   fetchAndSelectCrisis(event.id);
 };
 </script>
