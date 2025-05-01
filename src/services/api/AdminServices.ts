@@ -76,7 +76,6 @@ export async function createEvent(eventData: CrisisEventDto): Promise<AxiosRespo
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
  */
 export async function updateCurrentEvent(id: number, eventData: UpdateCrisisEventDto): Promise<AxiosResponse<any>> {
-  console.log('Got this info from update: ', eventData);
   return await api.put('/crisis-events/'+ id, eventData, {
     headers: {
       'Content-Type': 'application/json'
@@ -106,7 +105,7 @@ export async function deactivateCurrentEvent(id: number): Promise<AxiosResponse<
  * @returns {Promise<AxiosResponse<any>>} Server response with a list of admin users.
  */
 export async function getAdminUsers() {
-  return await api.get<Page<CrisisEventDto>>('/super-admin/all', {
+  return await api.get<Page<any>>('/super-admin/all', {
     params: { size: 20 },
     headers: {
       'Content-Type': 'application/json'

@@ -305,7 +305,7 @@ async function getAllAdmins() {
     try {
         const response = await getAdminUsers();
         console.log('Fetched admins from backend!', response.data);
-        admins.value = response.data;
+        admins.value = response.data.content;
     } catch (error) {
         console.error('Failed to fetch admin users from backend!');
     }
