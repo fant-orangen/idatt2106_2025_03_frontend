@@ -65,7 +65,8 @@
     "searching": "Searching...",
     "address-not-found": "Could not find the address.",
     "search-error": "Error searching for address.",
-    "map-reset": "Map reset."
+    "map-reset": "Map reset.",
+    "poi-details": "POI details"
   },
   "notifications": {
     "notification": "Notification",
@@ -417,7 +418,8 @@
     "date": "Date when the event first occurred.",
     "successfully": "Event Created Successfully",
     "success-message": "Your event has been added to the system.",
-    "success-added": "had been added.",
+    "success-added":"had been added.",
+    "go-to-admin": "Go to Admin Panel",
     "errors": {
       "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
       "latitude": "The latitude must be between -90 and 90.",
@@ -454,7 +456,12 @@
       "title": "This will be the title of your point of interest (POI).",
       "coordinates": "Insert the coordinates or the address of your POI. You can also click on the map to get the coordinates automatically!",
       "type": "Choose what type of POI this is.",
-      "description": "Write some information describing the POI. Where is it? What is its purpose?"
+      "description": "Write some information describing the POI. Where is it? What is its purpose?",
+      "successfully": "POI Created Successfully",
+      "success-message": "Your POI has been added to the system.",
+      "success-added":"had been added.",
+      "go-to-admin": "Go to Admin Panel",
+      "description-placeholder": "Description"
     },
     "titles": {
       "type": "Type",
