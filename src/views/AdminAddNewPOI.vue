@@ -1,5 +1,6 @@
 <template>
-  <div style="margin: 20px">
+  <div class="m-5">
+    <!--Breadcrumb at the top left-->
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
@@ -7,215 +8,242 @@
             {{ $t('navigation.admin-panel') }}
           </BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbSeparator />
+        <BreadcrumbSeparator/>
         <BreadcrumbItem>
           <BreadcrumbPage href="/add-new-POI">{{ $t('navigation.new-POI') }}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
   </div>
-  <div class="admin-add-poi-page">
-    <h1>{{ $t('admin.make-new-POI') || 'Legg til et nytt interessepunkt' }}</h1>
 
-    <div class="content-container">
-      <div class="form-section">
-        <form @submit.prevent="submitPOI">
-          <div class="form-section-header">
-            <h2>{{ $t('admin.basic-info') || 'Grunnleggende informasjon' }}</h2>
-          </div>
+  <!--Title-->
+  <h1 class="text-4xl text-center mb-6">{{ $t('admin.make-new-POI') }}:</h1>
 
-          <div class="form-group">
-            <label for="title">{{ $t('add-event-info.titles.title') || 'Tittel' }}</label>
-            <input
-              id="title"
-              v-model="formData.title"
-              type="text"
-              :placeholder="
-                $t('admin.poi-title-placeholder') || 'Skriv inn tittel på interessepunktet'
-              "
-              required
-            />
-            <div class="form-description">
-              {{ $t('add-POI-info.info.title') || 'Dette vil være tittelen på interessepunktet.' }}
-            </div>
-          </div>
+  <div class="grid lg:grid-cols-2 grid-cols-1 gap-8 max-w-7xl mx-auto my-8 p-5">
+    <div class="p-5 bg-background rounded-lg shadow-md flex flex-col">
+      <form @submit="onSubmit" class="flex-grow flex flex-col justify-between">
+        <!--Title of POI -->
+        <FormField v-slot="{ componentField, meta, errorMessage }" name="title">
+          <FormItem>
+            <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
+            <FormControl>
+              <Input type="text" :placeholder="$t('add-event-info.titles.title')" v-bind="componentField" />
+            </FormControl>
+            <FormDescription>{{ $t('add-POI-info.info.title') }}</FormDescription>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+          </FormItem>
+        </FormField>
+        <br>
 
-          <div class="form-group">
-            <label for="type">{{ $t('add-POI-info.titles.type') || 'Type' }}</label>
-            <select id="type" v-model="formData.type" required>
-              <option value="" disabled selected>
-                {{
-                  $t('admin.select-poi-type') || 'Velg hvilken type interessepunkt dette skal være'
-                }}
-              </option>
-              <option value="defibrillator">
-                {{ $t('add-POI-info.POI-type.defibrillator') || 'Hjertestarter' }}
-              </option>
-              <option value="shelter">
-                {{ $t('add-POI-info.POI-type.shelter') || 'Tilfluktsrom' }}
-              </option>
-              <option value="water-source">
-                {{ $t('add-POI-info.POI-type.water-source') || 'Vannkilde' }}
-              </option>
-              <option value="food-station">
-                {{ $t('add-POI-info.POI-type.food') || 'Matutdeling' }}
-              </option>
-            </select>
-            <div class="form-description">
-              {{
-                $t('add-POI-info.info.type') || 'Velg hvilken type interessepunkt dette skal være.'
-              }}
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="description">{{
-                $t('add-event-info.titles.description') || 'Informasjon'
-              }}</label>
-            <textarea
-              id="description"
-              v-model="formData.description"
-              :placeholder="
-                $t('admin.description-placeholder') ||
-                'Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'
-              "
-              rows="4"
-              required
-            ></textarea>
-            <div class="form-description">
-              {{
-                $t('add-POI-info.info.description') ||
-                'Skriv litt informasjo som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?'
-              }}
-            </div>
-          </div>
-
-          <div class="form-section-header">
-            <h2>{{ $t('admin.location-info') || 'Plassering' }}</h2>
-          </div>
-
-          <div class="form-group">
-            <label for="address">{{ $t('add-event-info.titles.address') || 'Adresse' }}</label>
-            <input
-              id="address"
-              v-model="formData.address"
-              type="text"
-              :placeholder="$t('admin.address-placeholder') || 'Eksempelveien 2'"
-            />
-          </div>
-
-          <div class="coordinates-container">
-            <div class="form-group half-width">
-              <label for="latitude">{{
-                  $t('add-event-info.titles.latitude') || 'Breddegrad'
-                }}</label>
-              <input
-                id="latitude"
-                v-model="formData.latitude"
-                type="number"
-                step="0.000001"
-                required
-                readonly
-              />
-            </div>
-
-            <div class="form-group half-width">
-              <label for="longitude">{{
-                  $t('add-event-info.titles.longitude') || 'Lengdegrad'
-                }}</label>
-              <input
-                id="longitude"
-                v-model="formData.longitude"
-                type="number"
-                step="0.000001"
-                required
-                readonly
-              />
-            </div>
-          </div>
-
-          <div class="form-section-header">
-            <h2>{{ $t('admin.hours-contact-info') || 'Åpningstider og kontaktinformasjon' }}</h2>
-          </div>
-
-          <div class="hours-container">
-            <div class="form-group half-width">
-              <label for="openfrom">{{ $t('add-POI-info.titles.open-from') || 'Åpent fra' }}</label>
-              <input id="openfrom" v-model="formData.openfrom" type="time" />
-            </div>
-
-            <div class="form-group half-width">
-              <label for="opento">{{ $t('add-POI-info.titles.open-to') || 'Åpent til' }}</label>
-              <input id="opento" v-model="formData.opento" type="time" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="contactinfo">{{
-                $t('add-POI-info.titles.contact-info') || 'Kontaktinformasjon'
-              }}</label>
-            <input
-              id="contactinfo"
-              v-model="formData.contactinfo"
-              type="tel"
-              placeholder="+47 123 45 678"
-            />
-            <div class="form-description">
-              {{
-                $t('admin.contact-info-description') ||
-                'Telefonnummer til en ansvarlig kontaktperson.'
-              }}
-            </div>
-          </div>
-
-          <div v-if="formError" class="form-error">
-            {{ formError }}
-          </div>
-
-          <div class="form-actions">
-            <button type="button" class="cancel-button" @click="cancelForm">
-              {{ $t('admin.cancel') || 'Avbryt' }}
-            </button>
-
-            <button type="submit" class="submit-button" :disabled="!isFormValid || isSubmitting">
-              <span v-if="isSubmitting">{{ $t('admin.submitting') || 'Lagrer...' }}</span>
-              <span v-else>{{ $t('admin.submit') || 'Lagre' }}</span>
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div class="map-section">
-        <AdminMapController
-          :mapComponent="mapComponentInstance"
-          @location-selected="handleLocationSelected"
-          @location-cleared="handleLocationCleared"
-        />
-
-        <div class="map-container">
-          <MapComponent
-            ref="mapComponent"
-            :adminMode="true"
-            :centerLat="initialCenter.lat ?? 63.4305"
-            :centerLon="initialCenter.lng ?? 10.3951"
-            :initialZoom="6"
-            @map-clicked="handleMapClick"
-          />
+        <div class="mb-4 pb-2.5 border-b border-border">
+          <h2 class="text-xl font-semibold m-0">{{ $t('admin.location-info') || 'Plassering' }}</h2>
         </div>
+
+        <!--Placement of POI-->
+        <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
+          <FormField v-slot="{ componentField, meta, errorMessage }" name="latitude">
+            <FormItem class="flex-1">
+              <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.000001" placeholder="latitude" v-bind="componentField" readonly />
+              </FormControl>
+              <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField, meta, errorMessage }" name="longitude">
+            <FormItem class="flex-1">
+              <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.000001" placeholder="longitude" v-bind="componentField" readonly />
+              </FormControl>
+              <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
+        </div>
+
+        <FormField v-slot="{ componentField, meta, errorMessage }" name="address">
+          <FormItem>
+            <FormLabel>{{$t('add-event-info.titles.address')}}</FormLabel>
+            <FormControl>
+              <Input type="text" :placeholder="$t('admin.address-placeholder') || 'Eksempelveien 2'" v-bind="componentField" />
+            </FormControl>
+            <FormDescription>{{ $t('add-event-info.coordinates') }}</FormDescription>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+          </FormItem>
+        </FormField>
+        <br>
+
+        <div class="mb-4 pb-2.5 border-b border-border">
+          <h2 class="text-xl font-semibold m-0">{{ $t('admin.poi-details') || 'POI-detaljer' }}</h2>
+        </div>
+
+        <!--Select type field-->
+        <FormField v-slot="{ componentField, meta, errorMessage }" name="type">
+          <FormItem>
+            <FormLabel>{{$t('add-POI-info.titles.type')}}</FormLabel>
+            <Select v-bind="componentField">
+              <FormControl>
+                <SelectTrigger style="cursor: pointer;">
+                  <SelectValue :placeholder="$t('add-POI-info.titles.type') || 'Velg en type'" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="defibrillator">{{$t('add-POI-info.POI-type.defibrillator')}}</SelectItem>
+                  <SelectItem value="shelter">{{$t('add-POI-info.POI-type.shelter')}}</SelectItem>
+                  <SelectItem value="water-source">{{$t('add-POI-info.POI-type.water-source')}}</SelectItem>
+                  <SelectItem value="food-station">{{$t('add-POI-info.POI-type.food')}}</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <FormDescription>{{ $t('add-POI-info.info.type') }}</FormDescription>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+          </FormItem>
+        </FormField>
+        <br>
+
+        <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
+          <!--Open from time-->
+          <FormField v-slot="{ componentField, meta, errorMessage }" name="openfrom">
+            <FormItem class="flex-1">
+              <FormLabel>{{$t('add-POI-info.titles.open-from')}}</FormLabel>
+              <FormControl>
+                <Input type="time" v-bind="componentField" />
+              </FormControl>
+              <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
+
+          <!--Open to time-->
+          <FormField v-slot="{ componentField, meta, errorMessage }" name="opento">
+            <FormItem class="flex-1">
+              <FormLabel>{{$t('add-POI-info.titles.open-to')}}</FormLabel>
+              <FormControl>
+                <Input type="time" v-bind="componentField" />
+              </FormControl>
+              <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
+        </div>
+        <br>
+
+        <!--Contact information field-->
+        <FormField v-slot="{ componentField, meta, errorMessage }" name="contactinfo">
+          <FormItem>
+            <FormLabel>{{$t('add-POI-info.titles.contact-info')}}</FormLabel>
+            <FormControl>
+              <Input type="tel" placeholder="+47 123 45 678" v-bind="componentField" />
+            </FormControl>
+            <FormDescription>{{ $t('add-POI-info.titles.contact-info') }}</FormDescription>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+          </FormItem>
+        </FormField>
+        <br>
+
+        <!--Description of POI-->
+        <FormField v-slot="{ componentField, meta, errorMessage }" name="description">
+          <FormItem>
+            <FormLabel>{{$t('add-event-info.titles.description')}}:</FormLabel>
+            <FormControl>
+              <Textarea :placeholder="$t('add-POI-info.info.description-placeholder') || 'Description'" v-bind="componentField"></Textarea>
+            </FormControl>
+            <FormDescription>{{ $t('add-POI-info.info.description') }}</FormDescription>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+          </FormItem>
+        </FormField>
+        <br>
+
+        <Button type="submit" :disabled="isSubmitting">
+          <span v-if="isSubmitting">{{ $t('admin.submitting') || 'Lagrer...' }}</span>
+          <span v-else>{{ $t('admin.submit') || 'Lagre' }}</span>
+        </Button>
+      </form>
+    </div>
+
+    <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8">
+      <!-- Add AdminMapController component -->
+      <AdminMapController
+        :mapComponent="mapComponentInstance"
+        @location-selected="handleLocationSelected"
+        @location-cleared="handleLocationCleared"
+      />
+
+      <!-- Map container -->
+      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md">
+        <MapComponent
+          ref="mapComponent"
+          :adminMode="true"
+          :centerLat="mapCenterLat"
+          :centerLon="mapCenterLng"
+          :initialZoom="6"
+          @map-clicked="handleMapClick"
+        />
       </div>
     </div>
   </div>
+
+  <!-- Success Dialog -->
+  <Dialog :open="isSuccessDialogOpen" @update:open="isSuccessDialogOpen = $event">
+    <DialogContent
+      class="
+      fixed top-1/2 left-1/2
+      transform -translate-x-1/2 -translate-y-1/2
+      w-full max-w-md
+      max-h-[80vh] overflow-auto
+      bg-white rounded-lg p-6
+      z-[1001]
+    "
+    >
+      <DialogHeader>
+        <DialogTitle>{{ $t('add-POI-info.info.successfully') }}</DialogTitle>
+        <DialogDescription>
+          {{ $t('add-POI-info.info.success-message') }}
+        </DialogDescription>
+      </DialogHeader>
+
+      <div class="py-4">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-600">
+              <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+          </div>
+          <p class="text-lg">
+            <strong>{{ createdPOIName }}</strong> {{ $t('add-POI-info.info.success-added') }}
+          </p>
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button @click="navigateToAdminPanel">{{ $t('add-POI-info.info.go-to-admin') }}</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
-<script lang="ts">
-import { ref, computed, onMounted, watch, defineComponent } from 'vue'
+<script setup lang="ts">
+/**
+ * @fileoverview This file defines the AdminAddPOI Vue component.
+ * It provides an administrative interface for adding new points of interest (POIs) to the system.
+ * It utilizes VeeValidate for form handling and validation, Zod for schema definition,
+ * and integrates with MapComponent and AdminMapController for location selection.
+ * API calls are made via the AdminServices module.
+ */
+
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-// Ensure createPOI is correctly imported
-import { createPOI } from '@/services/api/AdminServices' // <-- Make sure path is correct
+import { createPOI } from '@/services/api/AdminServices'
+import { useI18n } from 'vue-i18n';
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import * as L from 'leaflet'
 import MapComponent from '@/components/map/MapComponent.vue'
 import AdminMapController from '@/components/admin/AdminMapController.vue'
-import * as L from 'leaflet'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -223,26 +251,50 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb/index.js'
+} from '@/components/ui/breadcrumb'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
-// Define interfaces for the component
+/**
+ * Represents geographical coordinates.
+ * @interface Location
+ * @property {number | null} lat - Latitude.
+ * @property {number | null} lng - Longitude.
+ */
 interface Location {
   lat: number | null;
   lng: number | null;
 }
 
-interface FormData {
-  title: string;
-  type: string; // Keep as string from select input
-  description: string;
-  address: string;
-  latitude: number | null;
-  longitude: number | null;
-  openfrom: string;
-  opento: string;
-  contactinfo: string;
-}
-
+/**
+ * Represents the event object emitted when the map is clicked.
+ * @interface MapClickEvent
+ * @property {object} latlng - Contains latitude and longitude.
+ * @property {number} latlng.lat - Latitude of the click event.
+ * @property {number} latlng.lng - Longitude of the click event.
+ */
 interface MapClickEvent {
   latlng: {
     lat: number;
@@ -250,465 +302,306 @@ interface MapClickEvent {
   };
 }
 
-export default defineComponent({
-  name: 'AdminAddPOIPage',
-  components: {
-    BreadcrumbLink,
-    BreadcrumbItem,
-    BreadcrumbList,
-    BreadcrumbPage,
-    Breadcrumb,
-    BreadcrumbSeparator,
-    MapComponent,
-    AdminMapController,
-  },
-  setup() {
-    const { t } = useI18n()
-    const router = useRouter()
+const { t } = useI18n();
+const router = useRouter();
 
-    // Component references
-    const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null)
-    const tempMarker = ref<L.Marker | null>(null)
+// --- State and Initialization ---
+const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null);
+const tempMarker = ref<L.Marker | null>(null);
+const isSuccessDialogOpen = ref(false);
+const createdPOIName = ref('');
+const isSubmitting = ref(false);
 
-    // Initial center coordinates (Norway)
-    const initialCenter: Location = {
-      lat: 63.4305,
-      lng: 10.3951,
+// Initial center coordinates for Norway (fixed as number for MapComponent requirements)
+const initialCenter = ref<Location>({
+  lat: 63.4305,
+  lng: 10.3951,
+});
+
+// Computed properties to safely map initialCenter to required number types
+const mapCenterLat = computed(() => initialCenter.value.lat ?? 63.4305);
+const mapCenterLng = computed(() => initialCenter.value.lng ?? 10.3951);
+
+// Form validation schema
+const formSchema = toTypedSchema(
+  z.object({
+    // Title: required string, min 2, max 50 chars
+    title: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
+
+    // Latitude: optional number between -90 and 90
+    latitude: z.preprocess(
+      (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
+      z.number()
+      .min(-90, t('add-event-info.errors.latitude'))
+      .max(90, t('add-event-info.errors.latitude'))
+      .optional()
+    ),
+
+    // Longitude: optional number between -180 and 180
+    longitude: z.preprocess(
+      (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
+      z.number()
+      .min(-180, t('add-event-info.errors.longitude'))
+      .max(180, t('add-event-info.errors.longitude'))
+      .optional()
+    ),
+
+    // Address: optional string, max 100 chars
+    address: z.string()
+    .max(100, t('add-event-info.errors.address'))
+    .optional(),
+
+    // Type: required enum with POI types
+    type: z.enum(['defibrillator', 'shelter', 'water-source', 'food-station'], {
+      required_error: t('add-POI-info.errors.type') || 'POI type is required'
+    }),
+
+    // Contact info: optional string with phone number format validation
+    contactinfo: z.string()
+    .optional()
+    .refine((val) => {
+      if (!val) return true;
+      const phoneRegex = /^(\+?\d{1,3}[- ]?)?\d{8,12}$/;
+      return phoneRegex.test(val);
+    }, {
+      message: t('add-event-info.errors.contact-info') || 'Invalid phone number format'
+    }),
+
+    // Opening hours fields
+    openfrom: z.string().optional(),
+    opento: z.string().optional(),
+
+    // Description: required string, min 10, max 500 chars
+    description: z.string()
+    .min(10, t('add-event-info.errors.description'))
+    .max(500, t('add-event-info.errors.description')),
+  })
+  // Refine step 1: Ensure either coordinates or address are provided
+  .refine(
+    (data) => {
+      const hasCoords = (data.latitude !== undefined && !isNaN(data.latitude)) &&
+        (data.longitude !== undefined && !isNaN(data.longitude));
+      const hasAddress = data.address && data.address.trim().length >= 2;
+      return hasCoords || hasAddress;
+    },
+    {
+      message: t('add-event-info.errors.position-missing') || 'Either coordinates or address must be provided',
+      path: ['address'],
+    }
+  )
+  // Refine step 2: Ensure both opening time fields are provided if either one is
+  .refine(
+    (data) => !(data.openfrom || data.opento) || (data.openfrom && data.opento),
+    {
+      message: t('add-POI-info.errors.opening-hours') || 'Both opening and closing times must be provided',
+      path: ['openfrom'],
+    }
+  )
+);
+
+/**
+ * VeeValidate form instance.
+ * Manages form state, validation based on formSchema, and submission handling.
+ */
+const form = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    title: '',
+    latitude: undefined,
+    longitude: undefined,
+    address: '',
+    type: undefined,
+    contactinfo: '',
+    openfrom: '',
+    opento: '',
+    description: ''
+  }
+});
+
+// --- Computed Properties ---
+
+/**
+ * Computed property to safely access the MapComponent instance.
+ * @returns {InstanceType<typeof MapComponent> | null} The map component instance or null.
+ */
+const mapComponentInstance = computed(() => {
+  return mapComponent.value || null;
+});
+
+// --- Map Interaction Functions ---
+
+/**
+ * Handles the 'map-clicked' event from the MapComponent.
+ * Updates the form's latitude and longitude fields and the map marker.
+ * @param {MapClickEvent} event - The event object containing click coordinates.
+ */
+function handleMapClick(event: MapClickEvent): void {
+  console.log('Map clicked at:', event.latlng);
+  const location: Location = {
+    lat: event.latlng.lat,
+    lng: event.latlng.lng
+  };
+  handleLocationSelected(location);
+}
+
+/**
+ * Updates the form's latitude and longitude fields and the temporary map marker
+ * when a location is selected via map click or controller.
+ * Clears any validation error associated with the address field.
+ * @param {Location} location - The selected location coordinates.
+ */
+function handleLocationSelected(location: Location): void {
+  console.log('Location selected:', location);
+  if (location.lat !== null && location.lng !== null) {
+    form.setFieldValue('latitude', location.lat);
+    form.setFieldValue('longitude', location.lng);
+    updateMapMarker(location.lat, location.lng);
+    form.setFieldError('address', undefined); // Clear address validation error if coordinates are now set
+  }
+}
+
+/**
+ * Clears the form's latitude and longitude fields and removes the temporary marker
+ * when the location is cleared via the map controller.
+ */
+function handleLocationCleared(): void {
+  console.log('Location cleared');
+  form.setFieldValue('latitude', undefined);
+  form.setFieldValue('longitude', undefined);
+  if (tempMarker.value && mapComponent.value?.removeMarker) {
+    mapComponent.value.removeMarker(tempMarker.value as L.Marker);
+    tempMarker.value = null;
+  }
+}
+
+/**
+ * Adds or updates the temporary marker on the map at the specified coordinates.
+ * Sets the marker's popup/tooltip content based on the current form title and description.
+ * @param {number} lat - Latitude for the marker.
+ * @param {number} lng - Longitude for the marker.
+ */
+function updateMapMarker(lat: number, lng: number): void {
+  // Ensure map component and its methods are available
+  if (!mapComponent.value?.addMarker) {
+    console.error('Map component or addMarker method not available');
+    return;
+  }
+
+  // Remove existing marker if present
+  if (tempMarker.value && mapComponent.value.removeMarker) {
+    mapComponent.value.removeMarker(tempMarker.value as L.Marker);
+  }
+
+  // Get title and description from form values (use fallbacks)
+  const title = form.values.title || t('navigation.new-POI') || 'Nytt interessepunkt';
+  const description = form.values.description || '';
+  const popupContent = `<b>${title}</b><br>${description}`;
+
+  // Add the new marker
+  tempMarker.value = mapComponent.value.addMarker(lat, lng, title);
+
+  // Bind popup and tooltip if marker exists and methods are available
+  if (tempMarker.value) {
+    if (typeof tempMarker.value.bindPopup === 'function') {
+      tempMarker.value.bindPopup(popupContent).openPopup();
+    } else if (typeof tempMarker.value.bindTooltip === 'function') {
+      tempMarker.value.bindTooltip(title).openTooltip();
+    }
+  }
+}
+
+/**
+ * Navigates the user back to the admin panel after closing the success dialog.
+ */
+function navigateToAdminPanel(): void {
+  isSuccessDialogOpen.value = false;
+  router.push('/admin-panel');
+}
+
+// --- Form Submission Logic ---
+
+/**
+ * Handles the form submission event triggered by VeeValidate.
+ * Maps form data to the backend API structure,
+ * calls the createPOI service, and manages success/error states.
+ * @param {object} values - The validated form values provided by VeeValidate.
+ */
+const onSubmit = form.handleSubmit(async (values) => {
+  console.log('Form values on submit:', values);
+  isSubmitting.value = true;
+
+  try {
+    // Map POI type to backend ID
+    let poiTypeId: number;
+    switch (values.type) {
+      case 'shelter': poiTypeId = 4; break;
+      case 'water-source': poiTypeId = 6; break;
+      case 'food-station': poiTypeId = 5; break;
+      case 'defibrillator': poiTypeId = 1; break;
+      default:
+        throw new Error(t('add-event-info.errors.type') || 'Invalid POI type selected');
     }
 
-    // Form data
-    const formData = ref<FormData>({
-      title: '',
-      type: '', // Keep as string from select input
-      description: '',
-      address: '',
-      latitude: null,
-      longitude: null,
-      openfrom: '',
-      opento: '',
-      contactinfo: '',
-    })
-
-    const isSubmitting = ref(false)
-    const formError = ref('')
-
-    // Computed property to get map component instance
-    const mapComponentInstance = computed(() => {
-      // Ensure mapComponent.value is defined before accessing its properties
-      return mapComponent.value ? (mapComponent.value as InstanceType<typeof MapComponent>) : null;
-    });
-
-    // Computed property to check if form is valid
-    const isFormValid = computed(() => {
-      // Keep existing validation logic
-      return (
-        formData.value.title &&
-        formData.value.title.length >= 2 &&
-        formData.value.type && // Ensure a type is selected
-        formData.value.description &&
-        formData.value.description.length >= 10 &&
-        formData.value.latitude !== null &&
-        formData.value.longitude !== null
-      )
-    })
-
-    // Handle map click to select location
-    function handleMapClick(event: MapClickEvent): void {
-      // Keep existing logic
-      console.log('Map clicked at:', event.latlng)
-      const location: Location = {
-        lat: event.latlng.lat,
-        lng: event.latlng.lng,
-      }
-      handleLocationSelected(location)
+    // Format opening hours if both values are provided
+    let openingHours = '';
+    if (values.openfrom && values.opento) {
+      openingHours = `${values.openfrom} - ${values.opento}`;
     }
 
-    // Handle location selected from the map controller
-    function handleLocationSelected(location: Location): void {
-      // Keep existing logic
-      console.log('Location selected:', location)
-      formData.value.latitude = location.lat
-      formData.value.longitude = location.lng
-      if (location.lat !== null && location.lng !== null) {
-        updateMapMarker(location.lat, location.lng)
-        // Optional: Attempt reverse geocoding here if needed
-        // tryReverseGeocode(location.lat, location.lng);
-      }
-      console.log('Selected location:', location)
-    }
+    // Prepare the payload matching the backend's CreatePOIDto
+    const poiData = {
+      name: values.title,
+      latitude: values.latitude !== undefined ? Number(values.latitude) : null,
+      longitude: values.longitude !== undefined ? Number(values.longitude) : null,
+      address: values.address || null,
+      poiTypeId: poiTypeId,
+      description: values.description || null,
+      openingHours: openingHours || null,
+      contactInfo: values.contactinfo || null,
+    };
 
-    // Handle location cleared
-    function handleLocationCleared(): void {
-      // Keep existing logic
-      console.log('Location cleared')
-      formData.value.latitude = null
-      formData.value.longitude = null
-      if (tempMarker.value && mapComponent.value && mapComponent.value.removeMarker) {
-        mapComponent.value.removeMarker(tempMarker.value as any)
-        tempMarker.value = null
-      }
-    }
+    console.log('Submitting POI data:', poiData);
+    const response = await createPOI(poiData);
+    console.log('POI created successfully:', response.data);
 
-    // Update or create marker on the map
-    function updateMapMarker(lat: number, lng: number): void {
-      // Keep existing logic
-      if (!mapComponent.value || !mapComponent.value.addMarker) {
-        console.error('Map component or addMarker method not available')
-        return
-      }
-      if (tempMarker.value && mapComponent.value.removeMarker) {
-        mapComponent.value.removeMarker(tempMarker.value as any)
-      }
-      const title = formData.value.title || t('navigation.new-POI') || 'Nytt interessepunkt'
-      // Add marker using MapComponent's method
-      tempMarker.value = mapComponent.value.addMarker(lat, lng, title)
+    // Show success dialog on successful creation
+    createdPOIName.value = values.title;
+    isSuccessDialogOpen.value = true;
 
-      // --- ADDED: Update marker popup/tooltip if possible ---
-      if (tempMarker.value) {
-        if (typeof tempMarker.value.bindPopup === 'function') {
-          tempMarker.value.bindPopup(`<b>${title}</b><br>${formData.value.description || ''}`).openPopup();
-        } else if (typeof tempMarker.value.bindTooltip === 'function') {
-          tempMarker.value.bindTooltip(title).openTooltip();
-        }
-      }
-      // --- END ADDED ---
-    }
+  } catch (error: any) {
+    // Handle errors during submission
+    console.error('Error creating POI:', error);
+    // Extract a user-friendly error message from the API response or error object
+    const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+    // Display error to user (e.g., associate with a form field)
+    form.setFieldError('title', `${t('admin.submission-error') || 'Submission error:'} ${errorMessage}`);
+  } finally {
+    isSubmitting.value = false;
+  }
+});
 
-    // *** MODIFIED: submitPOI function ***
-    async function submitPOI(): Promise<void> {
-      if (!isFormValid.value) {
-        formError.value = t('admin.form-invalid') || 'Vennligst fyll ut alle påkrevde felt.'
-        return
+// --- Watchers ---
+
+/**
+ * Watches the form's title field for changes.
+ * Updates the temporary map marker's popup/tooltip content dynamically.
+ */
+watch(
+  () => form.values.title,
+  (newTitle) => {
+    if (form.values && tempMarker.value && mapComponent.value) {
+      const markerTitle = newTitle || t('navigation.new-POI') || 'Nytt interessepunkt';
+      const description = form.values.description || '';
+      const popupContent = `<b>${markerTitle}</b><br>${description}`;
+
+      if (typeof tempMarker.value.setPopupContent === 'function') {
+        tempMarker.value.setPopupContent(popupContent);
       }
 
-      isSubmitting.value = true
-      formError.value = ''
-
-      // --- ADDED: Map frontend type string to backend poiTypeId integer ---
-      // Based on data.sql and frontend options
-      // Adjust IDs as needed based on your actual database setup or add new types.
-      let poiTypeId: number | null = null;
-      switch (formData.value.type) {
-        case 'shelter':
-          poiTypeId = 4; // Matches 'Shelter' in data.sql
-          break;
-        case 'water-source':
-          poiTypeId = 6; // Matches 'Water Distribution Point'
-          break;
-        case 'food-station':
-          poiTypeId = 5; // Matches 'Grocery Store' (assuming this is the intent for food distribution)
-          break;
-        case 'defibrillator':
-          // Assuming Defibrillator might relate to Hospital or needs a new type ID
-          // Use a placeholder or add a specific type ID in your backend/DB
-          poiTypeId = 1; // Example: Using 'Hospital' ID as placeholder
-          console.warn("Mapping 'defibrillator' to POI Type ID 1 (Hospital). Adjust if needed.");
-          break;
-        default:
-          formError.value = t('add-event-info.errors.type') || 'Ugyldig interessepunkttype valgt.';
-          isSubmitting.value = false;
-          return;
-      }
-      // --- END ADDED ---
-
-      // --- ADDED: Combine opening hours ---
-      let openingHours = '';
-      if (formData.value.openfrom && formData.value.opento) {
-        openingHours = `${formData.value.openfrom} - ${formData.value.opento}`;
-      } else if (formData.value.openfrom) {
-        openingHours = `Fra ${formData.value.openfrom}`; // Adjusted translation
-      } else if (formData.value.opento) {
-        openingHours = `Til ${formData.value.opento}`; // Adjusted translation
-      }
-      // --- END ADDED ---
-
-
-      try {
-        // --- MODIFIED: Format data for API according to CreatePoiDto ---
-        // Backend expects 'name', 'latitude', 'longitude', 'poiTypeId' as mandatory
-        // Other fields like address, description, openingHours, contactInfo are optional
-        const poiData = {
-          // Map 'title' to 'name' as expected by backend DTO
-          name: formData.value.title,
-          latitude: formData.value.latitude!, // Use non-null assertion as isFormValid checks this
-          longitude: formData.value.longitude!, // Use non-null assertion
-          address: formData.value.address || null, // Send null if empty
-          // Use the mapped poiTypeId
-          poiTypeId: poiTypeId,
-          description: formData.value.description || null,
-          // Use combined openingHours
-          openingHours: openingHours || null,
-          contactInfo: formData.value.contactinfo || null, // Send null if empty
-        }
-        // --- END MODIFIED ---
-
-        console.log('Submitting POI data:', poiData)
-
-        // Call API to create the POI - Service endpoint URL should be corrected in AdminServices.ts
-        const response = await createPOI(poiData)
-        console.log('POI created:', response.data)
-
-        // Consider adding a success notification (e.g., using a toast library)
-        // toast.success('POI created successfully!')
-
-        router.push('/admin-panel')
-      } catch (error: any) {
-        console.error('Error creating POI:', error)
-        // Display more specific error from backend if possible
-        const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
-        formError.value = `${t('admin.submission-error') || 'Feil ved lagring.'} ${errorMsg}`;
-      } finally {
-        isSubmitting.value = false
+      if (typeof tempMarker.value.setTooltipContent === 'function') {
+        tempMarker.value.setTooltipContent(markerTitle);
       }
     }
-    // *** END MODIFIED: submitPOI function ***
-
-
-    // Cancel and return to admin panel
-    function cancelForm(): void {
-      // Keep existing logic
-      router.push('/admin-panel')
-    }
-
-    // *** MODIFIED: Watcher for title changes ***
-    // Update marker tooltip/popup when title changes
-    watch(
-      () => formData.value.title,
-      (newTitle: string) => {
-        if (tempMarker.value && mapComponent.value) {
-          const markerTitle = newTitle || t('navigation.new-POI') || 'Nytt interessepunkt';
-          // Update popup or tooltip content if the marker exists and methods are available
-          if (typeof tempMarker.value.setPopupContent === 'function') {
-            tempMarker.value.setPopupContent(`<b>${markerTitle}</b><br>${formData.value.description || ''}`);
-          }
-          if (typeof tempMarker.value.setTooltipContent === 'function') {
-            tempMarker.value.setTooltipContent(markerTitle);
-          }
-          console.log('Updated marker title/popup to:', markerTitle);
-        }
-      },
-    )
-    // *** END MODIFIED ***
-
-    // Initialize
-    onMounted((): void => {
-      console.log('AdminAddPOIPage mounted')
-      // Optional: Fetch POI Types from backend if needed for dynamic select options
-      // fetchPoiTypes();
-    })
-
-    return {
-      // Keep existing return values
-      mapComponent,
-      mapComponentInstance,
-      initialCenter,
-      formData,
-      isSubmitting,
-      formError,
-      isFormValid,
-      handleMapClick,
-      handleLocationSelected,
-      handleLocationCleared,
-      submitPOI,
-      cancelForm,
-    }
-  },
-})
+  }
+);
 </script>
-
-<style scoped>
-/* Keep existing styles */
-.admin-add-poi-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.content-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-
-.form-section {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.form-section-header {
-  margin-bottom: 15px;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.form-section-header h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0;
-  padding-bottom: 10px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-input,
-select,
-textarea {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 14px;
-}
-
-input[type='number'] {
-  -moz-appearance: textfield;
-}
-
-input[type='number']::-webkit-outer-spin-button,
-input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input:read-only {
-  background-color: #e9ecef;
-  cursor: not-allowed;
-}
-
-.form-description {
-  font-size: 12px;
-  color: #6c757d;
-  margin-top: 4px;
-}
-
-.coordinates-container,
-.hours-container {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-.half-width {
-  flex: 1;
-  margin-bottom: 0;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 30px;
-}
-
-.submit-button,
-.cancel-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.submit-button {
-  background-color: #4a89dc;
-  color: white;
-}
-
-.submit-button:hover:not(:disabled) {
-  background-color: #3a79cc;
-}
-
-.submit-button:disabled {
-  background-color: #a8c6f0;
-  cursor: not-allowed;
-}
-
-.cancel-button {
-  background-color: #f8f9fa;
-  border: 1px solid #ced4da;
-  color: #212529;
-}
-
-.cancel-button:hover {
-  background-color: #e9ecef;
-}
-
-.map-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.map-container {
-  flex-grow: 1;
-  min-height: 500px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #dee2e6;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Error message */
-.form-error {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 20px;
-}
-
-/* Responsive layout */
-@media (max-width: 992px) {
-  .content-container {
-    grid-template-columns: 1fr;
-  }
-
-  .map-section {
-    order: 1;
-  }
-
-  .form-section {
-    order: 2;
-  }
-
-  .map-container {
-    min-height: 400px;
-  }
-}
-
-@media (max-width: 576px) {
-  .coordinates-container,
-  .hours-container {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .half-width {
-    margin-bottom: 10px;
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-  }
-
-  .submit-button,
-  .cancel-button {
-    width: 100%;
-  }
-}
-</style>

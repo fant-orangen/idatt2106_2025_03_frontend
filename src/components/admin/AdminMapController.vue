@@ -1,68 +1,82 @@
 <template>
-  <div class="admin-map-controller">
-    <h3>{{ $t('admin.map-controls') || 'Kartkontroller' }}</h3>
+  <Card class="admin-map-controller">
+    <CardHeader>
+      <CardTitle>{{ $t('admin.map-controls') || 'Kartkontroller' }}</CardTitle>
+    </CardHeader>
 
-    <div class="map-controls">
-      <div class="control-group">
-        <button
-          class="admin-button admin-get-location"
-          @click="getUserLocation"
-          :disabled="isGettingLocation"
-        >
-          <span v-if="isGettingLocation">{{ $t('admin.getting-location') || 'Henter...' }}</span>
-          <span v-else>{{ $t('admin.get-location') || 'Hent posisjon' }}</span>
-        </button>
+    <CardContent>
+      <div class="map-controls">
+        <div class="control-group">
+          <Button
+            class="control-button"
+            @click="getUserLocation"
+            :disabled="isGettingLocation"
+            variant="default"
+          >
+            <span v-if="isGettingLocation">{{ $t('admin.getting-location') || 'Henter...' }}</span>
+            <span v-else>{{ $t('admin.get-location') || 'Hent posisjon' }}</span>
+          </Button>
 
-        <button
-          class="admin-button admin-reset-map"
-          @click="resetMap"
-        >
-          {{ $t('admin.reset-map') || 'Tilbakestill kart' }}
-        </button>
+          <Button
+            class="control-button"
+            @click="resetMap"
+            variant="secondary"
+          >
+            {{ $t('admin.reset-map') || 'Tilbakestill kart' }}
+          </Button>
+        </div>
+
+        <div v-if="statusMessage" class="status-message">
+          {{ statusMessage }}
+        </div>
       </div>
 
-      <div v-if="statusMessage" class="status-message">
-        {{ statusMessage }}
+      <div class="search-location">
+        <Label for="search-address">
+          {{ $t('admin.search-location') || 'Søk etter adresse' }}
+        </Label>
+        <div class="search-input-container">
+          <Input
+            id="search-address"
+            v-model="searchAddress"
+            :placeholder="$t('admin.enter-address') || 'Skriv inn adresse'"
+            @keyup.enter="searchLocation"
+          />
+          <Button
+            @click="searchLocation"
+            :disabled="isSearching"
+            variant="default"
+          >
+            <span v-if="isSearching">{{ $t('admin.searching') || 'Søker...' }}</span>
+            <span v-else>{{ $t('admin.search') || 'Søk' }}</span>
+          </Button>
+        </div>
       </div>
-    </div>
 
-    <div class="search-location">
-      <div class="search-label">
-        {{ $t('admin.search-location') || 'Søk etter adresse' }}
+      <div v-if="selectedLocation.lat !== null && selectedLocation.lng !== null" class="current-selection">
+        <Label as="h4" class="selection-title">{{ $t('admin.selected-location') || 'Valgt plassering' }}</Label>
+        <div class="selection-details">
+          <p>
+            <strong>{{ $t('admin.latitude') || 'Breddegrad' }}:</strong> {{ selectedLocation.lat.toFixed(6) }}<br>
+            <strong>{{ $t('admin.longitude') || 'Lengdegrad' }}:</strong> {{ selectedLocation.lng.toFixed(6) }}
+          </p>
+          <Button
+            @click="clearSelectedLocation"
+            variant="destructive"
+            size="sm"
+          >
+            {{ $t('admin.clear-selection') || 'Fjern valgt plassering' }}
+          </Button>
+        </div>
       </div>
-      <div class="search-input-container">
-        <input
-          v-model="searchAddress"
-          :placeholder="$t('admin.enter-address') || 'Skriv inn adresse'"
-          class="search-input"
-          @keyup.enter="searchLocation"
-        />
-        <button class="search-button" @click="searchLocation" :disabled="isSearching">
-          <span v-if="isSearching">{{ $t('admin.searching') || 'Søker...' }}</span>
-          <span v-else>{{ $t('admin.search') || 'Søk' }}</span>
-        </button>
-      </div>
-    </div>
 
-    <div v-if="selectedLocation.lat !== null && selectedLocation.lng !== null" class="current-selection">
-      <h4>{{ $t('admin.selected-location') || 'Valgt plassering' }}</h4>
-      <div class="selection-details">
-        <p>
-          <strong>{{ $t('admin.latitude') || 'Breddegrad' }}:</strong> {{ selectedLocation.lat.toFixed(6) }}<br>
-          <strong>{{ $t('admin.longitude') || 'Lengdegrad' }}:</strong> {{ selectedLocation.lng.toFixed(6) }}
+      <div class="instructions">
+        <p class="instruction-text text-sm text-muted-foreground">
+          {{ $t('admin.map-instructions') || 'Klikk på kartet for å velge plassering for nytt interessepunkt.' }}
         </p>
-        <button class="admin-button clear-button" @click="clearSelectedLocation">
-          {{ $t('admin.clear-selection') || 'Fjern valgt plassering' }}
-        </button>
       </div>
-    </div>
-
-    <div class="instructions">
-      <p class="instruction-text">
-        {{ $t('admin.map-instructions') || 'Klikk på kartet for å velge plassering for nytt interessepunkt.' }}
-      </p>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script lang="ts">
@@ -70,6 +84,17 @@ import { ref, defineComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { PropType } from 'vue';
 import * as L from 'leaflet';
+
+// Import shadcn components
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 // Define interfaces for the component
 interface Location {
@@ -89,6 +114,15 @@ interface MapComponentRef {
 
 export default defineComponent({
   name: 'AdminMapController',
+  components: {
+    Button,
+    Input,
+    Label,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  },
   props: {
     // Use the more specific interface for the prop type
     mapComponent: {
@@ -151,7 +185,6 @@ export default defineComponent({
       }
     }
 
-    // *** MODIFIED: searchLocation function ***
     async function searchLocation(): Promise<void> {
       if (!searchAddress.value.trim()) {
         statusMessage.value = t('admin.enter-valid-address') || 'Vennligst skriv inn en gyldig adresse.';
@@ -162,9 +195,7 @@ export default defineComponent({
       isSearching.value = true;
 
       try {
-        // --- MODIFIED: Replace placeholder with real geocoding call ---
         const location = await geocodeAddressWithNominatim(searchAddress.value);
-        // --- END MODIFIED ---
 
         if (location && location.lat !== null && location.lng !== null) {
           if (props.mapComponent?.centerMap) {
@@ -187,12 +218,7 @@ export default defineComponent({
         isSearching.value = false;
       }
     }
-    // *** END MODIFIED: searchLocation function ***
 
-
-    // *** REPLACED: Placeholder geocodeAddress function ***
-    // Example implementation using Nominatim (OpenStreetMap's geocoder)
-    // REMEMBER: Check Nominatim's Usage Policy: https://operations.osmfoundation.org/policies/nominatim/
     async function geocodeAddressWithNominatim(address: string): Promise<Location | null> {
       // Prioritize search within Norway
       const viewbox = '5.0,57.8,31.5,71.2'; // Approximate bounding box for Norway
@@ -219,8 +245,6 @@ export default defineComponent({
           const lng = parseFloat(result.lon);
           console.log("Nominatim result:", result);
           if (!isNaN(lat) && !isNaN(lng)) {
-            // Optional: Update address field in parent if needed and emit
-            // emit('address-found', result.display_name); // Needs adding emit to component
             return { lat, lng };
           } else {
             console.warn("Nominatim returned invalid coordinates:", result);
@@ -234,25 +258,21 @@ export default defineComponent({
         throw error; // Re-throw to be caught by searchLocation
       }
     }
-    // *** END REPLACED ***
 
     // Handle selection of a location
     function setSelectedLocation(location: Location): void {
-      // Keep existing logic
       selectedLocation.value = location; // Update local state for display
       emit('location-selected', location); // Emit to parent (AdminAddNewPOI)
     }
 
     // Clear the currently selected location
     function clearSelectedLocation(): void {
-      // Keep existing logic
       selectedLocation.value = { lat: null, lng: null };
       emit('location-cleared');
     }
 
     // Reset the map view
     function resetMap(): void {
-      // Keep existing logic
       if (props.mapComponent?.centerMap) {
         // Using initial center from Norway as default
         props.mapComponent.centerMap(63.4305, 10.3951, 6); // Center on Trondheim with default zoom
@@ -267,11 +287,10 @@ export default defineComponent({
       searchAddress,
       statusMessage,
       selectedLocation,
-      isGettingLocation, // Return new state
-      isSearching, // Return new state
+      isGettingLocation,
+      isSearching,
       getUserLocation,
       searchLocation,
-      // No need to return setSelectedLocation if only used internally before emit
       clearSelectedLocation,
       resetMap
     };
@@ -280,139 +299,60 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Keep existing styles */
 .admin-map-controller {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   margin-bottom: 20px;
-}
-
-h3, h4 {
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-weight: 600;
-}
-
-.map-controls {
-  margin-bottom: 16px;
 }
 
 .control-group {
   display: flex;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
-.admin-button {
-  background-color: #4a89dc;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s, opacity 0.2s;
+.control-button {
+  flex: 1;
 }
-
-.admin-button:hover:not(:disabled) {
-  background-color: #3a79cc;
-}
-
-.admin-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.admin-reset-map {
-  background-color: #6c757d;
-}
-
-.admin-reset-map:hover:not(:disabled) {
-  background-color: #5a6268;
-}
-
-.clear-button {
-  background-color: #dc3545; /* Red color for clear/delete actions */
-  margin-top: 8px; /* Add some space above the clear button */
-}
-
-.clear-button:hover:not(:disabled) {
-  background-color: #c82333;
-}
-
 
 .status-message {
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem;
   padding: 4px 0;
-  color: #6c757d; /* Muted text color */
-  min-height: 1.25rem; /* Reserve space to prevent layout shifts */
+  color: hsl(var(--muted-foreground));
+  min-height: 1.25rem;
+  margin-bottom: 12px;
 }
 
 .search-location {
   margin-bottom: 16px;
 }
 
-.search-label {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 4px;
-}
-
 .search-input-container {
   display: flex;
   gap: 8px;
+  margin-top: 4px;
 }
-
-.search-input {
-  flex-grow: 1;
-  padding: 8px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.search-button {
-  background-color: #4a89dc;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: background-color 0.2s, opacity 0.2s;
-}
-.search-button:hover:not(:disabled) {
-  background-color: #3a79cc;
-}
-.search-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 
 .current-selection {
-  background-color: #e9f5fe; /* Light blue background */
-  border-radius: 6px;
+  background-color: hsl(var(--accent) / 0.2);
+  border-radius: 8px;
   padding: 12px;
   margin-bottom: 16px;
-  border: 1px solid #bde0fe; /* Slightly darker blue border */
+  border: 1px solid hsl(var(--accent) / 0.5);
 }
 
-.selection-details {
-  font-size: 0.875rem; /* 14px */
+.selection-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .selection-details p {
-  margin-bottom: 8px; /* Space between text and button */
-  line-height: 1.4; /* Improve readability */
+  margin-bottom: 8px;
+  line-height: 1.4;
 }
 
 .instructions {
   margin-top: 16px;
-  font-size: 0.875rem; /* 14px */
-  color: #6c757d;
 }
 
 .instruction-text {
@@ -424,19 +364,9 @@ h3, h4 {
   .control-group {
     flex-direction: column;
   }
-  .admin-button {
-    width: 100%; /* Make buttons full width */
-  }
 
   .search-input-container {
     flex-direction: column;
-  }
-  .search-button {
-    width: 100%; /* Make button full width */
-  }
-  .clear-button {
-    width: auto; /* Keep clear button width auto */
-    align-self: flex-start; /* Align clear button to the left */
   }
 }
 </style>

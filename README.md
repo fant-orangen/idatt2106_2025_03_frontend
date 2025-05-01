@@ -6,18 +6,20 @@ This project is the frontend for the **Krisefikser** application, built using **
 
 ## Table of Contents
 
-- Recommended IDE Setup
-- Features
-- Technologies Used
-- Project Setup
-  - Development
-  - Production
-  - Testing
-- Folder Structure
-- Localization
-- Linting and Formatting
-- Contributing
-- License
+- [Recommended IDE Setup](#recommended-ide-setup)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Project Setup](#project-setup)
+  - [Install Dependencies](#install-dependencies)
+  - [Development](#development)
+  - [Production](#production)
+  - [Testing](#testing)
+- [Folder Structure](#folder-structure)
+- [Localization](#localization)
+- [Linting and Formatting](#linting-and-formatting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
 ---
 

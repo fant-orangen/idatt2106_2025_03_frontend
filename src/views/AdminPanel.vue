@@ -60,6 +60,8 @@ import {
 
 const { t } = useI18n()
 const router = useRouter()
+const userStore = useUserStore();
+
 </script>
 
 <style scoped>
