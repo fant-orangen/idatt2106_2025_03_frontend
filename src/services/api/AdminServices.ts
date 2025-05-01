@@ -63,7 +63,6 @@ export async function createPOI(poiData: any): Promise<AxiosResponse> {
  * @returns {Promise<AxiosResponse<any>>} Server response with a list of events.
  */
 export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
-  // Assuming this function remains as is
   return await api.get('/crisis-events/all', { // Backend endpoint might need adjustment if pagination is used
     headers: {
       'Content-Type': 'application/json'
@@ -81,6 +80,56 @@ export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
 export async function updateCurrentEvent(id: number, eventData: any): Promise<AxiosResponse<any>> {
   // Assuming this function remains as is, ensure eventData matches UpdateCrisisEventDto
   return await api.put('/crisis-events/'+ id, eventData, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
+ * Fetches all the admin users from the backend API. 
+ * Sends a GET request to the '/super-admin/all' endpoint to retrieve a list of all admin users. 
+ * @returns {Promise<AxiosResponse<any>>} Server response with a list of admin users.
+ */
+export async function getAdminUsers() {
+  return await api.get('/super-admin/all', {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
+ * Creates a new admin user. 
+ * Sends a PUT request to the '/super-admin' endpoint with the new adnmin user email. 
+ * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the post operation.
+ */
+export async function addNewAdmin(userID: number) {
+  console.log('user id er: ', userID);
+  return await api.put('/super-admin/add/' + userID, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
+ * Removes the admin role, changes it to normal user role, in backend API. 
+ * Sends a put request to the '/super-admin/revoke/{id}' endpoint with the admin user ID. 
+ * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
+ */
+export async function revokeAdminRights(adminID: number) {
+  const id = adminID.toString();
+  console.log('Admin id from AdminServices: ', id);
+  return await api.put('/super-admin/revoke/' + id, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+export async function getUserId(email: string) {
+  return await api.get('/super-admin/user-info/' + email, {
     headers: {
       'Content-Type': 'application/json'
     }
