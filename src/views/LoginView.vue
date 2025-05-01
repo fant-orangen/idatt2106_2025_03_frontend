@@ -35,21 +35,17 @@ const errorMessage = ref('')
 const resetEmail = ref('')
 const isTwoFactorAuthDialogOpen = ref(false)
 const pinValue = ref<string[]>([])
-/* global grecaptcha */
 
 async function testRecaptcha() {
   try {
     console.log('Testing reCAPTCHA...')
     // Ensure the reCAPTCHA library is ready
-    await grecaptcha.enterprise.ready(async () => {
+    await grecaptcha.ready(async () => {
       console.log('reCAPTCHA is ready...')
       // Execute reCAPTCHA and get the token
-      const token = await grecaptcha.enterprise.execute(
-        '6LcTxCorAAAAAF8Ae6Q__20X_Bqgh05-CATxVZRD',
-        {
-          action: 'TEST',
-        },
-      )
+      const token = grecaptcha.execute('6Lee4CorAAAAABwb4TokgKDs9GdFCxpaiZTKfkfQ', {
+        action: 'TEST',
+      })
       console.log('reCAPTCHA Token:', token)
 
       if (!token) {
@@ -79,22 +75,20 @@ async function handleLogin() {
 
     // Generate the reCAPTCHA token
     const recaptchaToken = await new Promise<string>((resolve, reject) => {
-      grecaptcha.enterprise.ready(async () => {
-        try {
-          console.log('reCAPTCHA ready')
-          const token = await grecaptcha.enterprise.execute(
-            '6LcTxCorAAAAAF8Ae6Q__20X_Bqgh05-CATxVZRD',
-            { action: 'LOGIN' },
-          )
-          console.log('reCAPTCHA Token:', token)
-
-          if (!token) {
-            throw new Error('Failed to generate reCAPTCHA token')
-          }
-          resolve(token)
-        } catch (error) {
-          reject(error)
-        }
+      grecaptcha.ready(() => {
+        grecaptcha
+          .execute('6Lee4CorAAAAABwb4TokgKDs9GdFCxpaiZTKfkfQ', {
+            action: 'LOGIN',
+          })
+          .then((token) => {
+            console.log('reCAPTCHA Token:', token)
+            if (!token) {
+              reject(new Error('Failed to generate reCAPTCHA token'))
+            } else {
+              resolve(token)
+            }
+          })
+          .catch((error) => reject(error))
       })
     })
 
@@ -108,7 +102,6 @@ async function handleLogin() {
       router.push('/')
       userStore.login(response.status, response.data.token, email.value)
     } else if (response.status === 202) {
-      // If the response status is 202, it indicates that 2FA is required
       userStore.send2FACodeToEmail(email.value)
       isTwoFactorAuthDialogOpen.value = true
     } else {
