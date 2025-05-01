@@ -13,11 +13,18 @@ import type { Page } from '@/types/Page';
 export async function fetchNewsByCrisisEvent(
   crisisEventId: number,
   page: number = 0,
-  size: number = 2
+  size: number = 10
 ): Promise<Page<News>> {
   try {
-    // The actual API might not support pagination, so we're simulating it here
-    const response = await api.get(`/news/${crisisEventId}`);
+    // Use the correct API endpoint format based on the backend controller
+    // The backend expects /{crisisEventId} with pagination as query params
+    const response = await api.get(`/news/${crisisEventId}`, {
+      params: {
+        page,
+        size
+      }
+    });
+
     console.log("News API response data:", response.data);
 
     // If the API returns a Page object directly, we can just return it
@@ -26,7 +33,7 @@ export async function fetchNewsByCrisisEvent(
     }
 
     // Otherwise, we need to simulate pagination on the client side
-    const allNews = response.data.content || response.data;
+    const allNews = response.data.content || response.data || [];
     const totalItems = allNews.length;
     const totalPages = Math.ceil(totalItems / size);
     const startIndex = page * size;
@@ -41,8 +48,15 @@ export async function fetchNewsByCrisisEvent(
       number: page
     };
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch news';
     console.error(`Error fetching news for crisis event ${crisisEventId}:`, error);
-    throw new Error(errorMessage);
+
+    // Return empty page result instead of throwing error to prevent component crashes
+    return {
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: size,
+      number: page
+    };
   }
 }

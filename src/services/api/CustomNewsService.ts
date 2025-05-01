@@ -16,7 +16,7 @@ export async function fetchGeneralNews(): Promise<News[]> {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch general news';
     console.error('Error fetching general news:', error);
-    
+
     // For demo purposes, return mock data if the API fails
     console.log('Returning mock general news data');
     return [
@@ -69,5 +69,9 @@ export async function fetchGeneralNews(): Promise<News[]> {
   }
 }
 
-// Create a paginated version of the general news service with 2 items per page
-export const paginatedGeneralNews = createPaginatedNewsService(fetchGeneralNews, 2);
+// Create a paginated version of the general news service
+// This function will be called with (crisisId, page, size) but we'll ignore the crisisId
+export const paginatedGeneralNews = createPaginatedNewsService(
+  // Wrapper function to adapt parameter order
+  async (crisisId: number) => fetchGeneralNews()
+);

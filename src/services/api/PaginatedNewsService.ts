@@ -17,54 +17,54 @@ export function createPaginatedNewsService<T extends any[]>(
   // Store the full dataset to avoid refetching
   let cachedData: T | null = null;
   let lastArgs: any[] | null = null;
-  
+
   /**
    * Fetches paginated news using the provided fetch function
-   * 
+   *
    * @param page - The page number to fetch (0-based index)
    * @param size - The number of items per page (overrides default)
-   * @param args - Arguments to pass to the fetch function
+   * @param crisisId - The ID of the crisis event
    * @returns Paginated response
    */
   return async function fetchPaginated(
     page: number = 0,
     size: number = pageSize,
-    ...args: any[]
+    crisisId: number
   ): Promise<Page<T[number]>> {
     try {
       // Check if we need to fetch new data
-      const needsFetch = !cachedData || 
-        !lastArgs || 
-        JSON.stringify(lastArgs) !== JSON.stringify(args);
-      
+      const needsFetch = !cachedData ||
+        !lastArgs ||
+        lastArgs[0] !== crisisId;
+
       // Fetch data if needed
       if (needsFetch) {
-        const response = await fetchFunction(...args);
+        const response = await fetchFunction(crisisId);
         cachedData = response;
-        lastArgs = args;
+        lastArgs = [crisisId];
       }
-      
+
       if (!cachedData) {
         throw new Error('Failed to fetch data');
       }
-      
+
       // If the data is already a Page object, return it
       if (
-        typeof cachedData === 'object' && 
-        cachedData !== null && 
-        'content' in cachedData && 
+        typeof cachedData === 'object' &&
+        cachedData !== null &&
+        'content' in cachedData &&
         'totalPages' in cachedData
       ) {
         return cachedData as unknown as Page<T[number]>;
       }
-      
+
       // Otherwise, create a paginated response
       const totalItems = cachedData.length;
       const totalPages = Math.ceil(totalItems / size);
       const startIndex = page * size;
       const endIndex = Math.min(startIndex + size, totalItems);
       const paginatedContent = cachedData.slice(startIndex, endIndex);
-      
+
       return {
         content: paginatedContent,
         totalElements: totalItems,
@@ -94,15 +94,20 @@ export async function fetchPaginatedNewsByCrisisEvent(
   size: number = 3
 ): Promise<Page<News>> {
   try {
-    // The actual API might not support pagination, so we're simulating it here
-    const response = await api.get(`/news/${crisisEventId}`);
+    // Use the correct API endpoint format with pagination parameters
+    const response = await api.get(`/news/${crisisEventId}`, {
+      params: {
+        page,
+        size
+      }
+    });
     console.log("News API response data:", response.data);
-    
+
     // If the API returns a Page object directly, we can just return it
     if (response.data.content && response.data.totalPages !== undefined) {
       return response.data;
     }
-    
+
     // Otherwise, we need to simulate pagination on the client side
     const allNews = response.data.content || response.data;
     const totalItems = allNews.length;
@@ -110,7 +115,7 @@ export async function fetchPaginatedNewsByCrisisEvent(
     const startIndex = page * size;
     const endIndex = Math.min(startIndex + size, totalItems);
     const paginatedContent = allNews.slice(startIndex, endIndex);
-    
+
     return {
       content: paginatedContent,
       totalElements: totalItems,
