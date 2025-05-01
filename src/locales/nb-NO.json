@@ -95,6 +95,7 @@
     "title": "Krisehendelser",
     "map_view": "Kartvisning",
     "active_events": "Aktive hendelser",
+    "other_events": "Andre aktive hendelser",
     "more_events": "+ {count} flere hendelser",
     "error_loading_events": "Kunne ikke laste krisehendelser",
     "details": "Krisedetaljer",

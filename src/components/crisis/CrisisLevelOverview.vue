@@ -5,29 +5,53 @@
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
           <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />
           <div>{{ t('crisis.crisis-status') }}</div>
-          <div class="text-base font-semibold">
-            {{ mainCrisis?.name || t('crisis.no-crisis') }}
-          </div>
         </CardTitle>
       </CardHeader>
-      <CardContent class="flex justify-between items-center w-full px-4">
-        <div class="flex flex-wrap gap-4 w-full justify-center">
+      <CardContent class="flex flex-col items-center w-full px-4">
+        <!-- Main Crisis (Highest Severity) -->
+        <div v-if="mainCrisis" class="main-crisis mb-4 w-full text-center">
           <div
-            v-for="event in displayedEvents"
-            :key="event.id"
-            class="flex items-center gap-2 px-3 py-1 rounded-full bg-opacity-10 hover:bg-opacity-20 transition-colors"
-            :class="getSeverityBgClass(event.severity)"
-            @click.stop="selectCrisis(event)"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-colors cursor-pointer dark:text-white"
+            :style="{
+              backgroundColor: `${getSeverityColor(mainCrisis.severity)}20`,
+              borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}`
+            }"
+            @click.stop="selectCrisis(mainCrisis)"
           >
-            <span class="text-sm font-medium">{{ event.name }}</span>
+            <span class="text-base font-semibold">{{ mainCrisis.name }}</span>
             <span
-              class="w-3 h-3 rounded-full flex-shrink-0"
-              :class="getSeverityClass(event.severity)"
+              class="w-4 h-4 rounded-full flex-shrink-0"
+              :style="{ backgroundColor: getSeverityColor(mainCrisis.severity) }"
             ></span>
           </div>
-          <span v-if="hasMoreEvents" class="text-sm text-gray-500 self-center">
+        </div>
+
+        <div v-else class="main-crisis mb-4 w-full text-center">
+          <div class="text-base font-semibold">{{ t('crisis.no-crisis') }}</div>
+        </div>
+
+        <!-- Other Crisis Events as Links -->
+        <div v-if="otherEvents.length > 0" class="other-events w-full mt-3">
+          <div class="text-sm font-medium mb-2 text-center">{{ t('crisis.other_events', 'Other active events') }}</div>
+          <div class="flex flex-wrap justify-center gap-3">
+            <a
+              v-for="event in otherEvents"
+              :key="event.id"
+              href="#"
+              class="text-sm text-primary hover:underline flex items-center gap-1 px-2"
+              @click.prevent.stop="selectCrisis(event)"
+            >
+              <span class="truncate max-w-[120px]">{{ event.name }}</span>
+              <span
+                class="w-2 h-2 rounded-full flex-shrink-0"
+                :style="{ backgroundColor: getSeverityColor(event.severity) }"
+              ></span>
+            </a>
+          </div>
+
+          <div v-if="hasMoreEvents" class="text-xs text-center italic mt-2">
             {{ t('crisis.more_events', '+ {count} more', { count: crisisEvents.length - maxDisplay }) }}
-          </span>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -41,6 +65,7 @@ import { useRouter } from 'vue-router';
 import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
 import { fetchAllCrisisEvents } from '@/services/api/CrisisEventService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 
 /**
  * CrisisLevelOverview component
@@ -70,28 +95,19 @@ const fetchCrisisEvents = async () => {
 };
 
 /**
- * Returns the CSS class for a severity level dot
+ * Returns the other crisis events (excluding the main one)
  */
-const getSeverityClass = (severity: string): string => {
-  switch (severity.toLowerCase()) {
-    case 'green': return 'bg-green-500';
-    case 'yellow': return 'bg-yellow-500';
-    case 'red': return 'bg-red-500';
-    default: return 'bg-gray-500';
-  }
-};
+const otherEvents = computed(() => {
+  if (crisisEvents.value.length <= 1) return [];
 
-/**
- * Returns the CSS background class for a severity level button
- */
-const getSeverityBgClass = (severity: string): string => {
-  switch (severity.toLowerCase()) {
-    case 'green': return 'bg-green-500 bg-opacity-10 hover:bg-green-500 hover:bg-opacity-20';
-    case 'yellow': return 'bg-yellow-500 bg-opacity-10 hover:bg-yellow-500 hover:bg-opacity-20';
-    case 'red': return 'bg-red-500 bg-opacity-10 hover:bg-red-500 hover:bg-opacity-20';
-    default: return 'bg-gray-500 bg-opacity-10 hover:bg-gray-500 hover:bg-opacity-20';
-  }
-};
+  // Sort by severity and return all except the first one (main crisis)
+  const sorted = [...crisisEvents.value].sort((a, b) => {
+    const severityRank = { red: 3, yellow: 2, green: 1 };
+    return (severityRank[b.severity] || 0) - (severityRank[a.severity] || 0);
+  });
+
+  return sorted.slice(1, maxDisplay);
+});
 
 /**
  * Returns the crisis with the highest severity level
@@ -118,14 +134,25 @@ const hasMoreEvents = computed(() => crisisEvents.value.length > maxDisplay);
  * Returns the CSS class for the container based on highest severity
  */
 const containerClass = computed(() => {
-  if (crisisEvents.value.length === 0) return 'bg-gray-100 dark:bg-gray-800';
+  if (crisisEvents.value.length === 0) return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
 
-  const hasRed = crisisEvents.value.some(e => e.severity === 'red');
-  const hasYellow = crisisEvents.value.some(e => e.severity === 'yellow');
+  // Use the main crisis severity to determine the container color
+  if (mainCrisis.value) {
+    const severity = mainCrisis.value.severity;
 
-  if (hasRed) return 'bg-red-100 dark:bg-red-900 dark:bg-opacity-20 border border-red-300 dark:border-red-700';
-  if (hasYellow) return 'bg-yellow-100 dark:bg-yellow-900 dark:bg-opacity-20 border border-yellow-300 dark:border-yellow-700';
-  return 'bg-green-100 dark:bg-green-900 dark:bg-opacity-20 border border-green-300 dark:border-green-700';
+    switch (severity) {
+      case 'red':
+        return 'bg-white dark:bg-gray-800 border border-red-300 dark:border-red-700';
+      case 'yellow':
+        return 'bg-white dark:bg-gray-800 border border-yellow-300 dark:border-yellow-700';
+      case 'green':
+        return 'bg-white dark:bg-gray-800 border border-green-300 dark:border-green-700';
+      default:
+        return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
+    }
+  }
+
+  return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
 });
 
 /**
@@ -162,5 +189,36 @@ onMounted(fetchCrisisEvents);
 
 .crisis-status:hover {
   transform: translateY(-2px);
+}
+
+.main-crisis > div {
+  transition: all 0.2s ease;
+}
+
+.main-crisis > div:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.other-events {
+  max-width: 100%;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dark .other-events {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.other-events a {
+  position: relative;
+}
+
+.other-events a:hover {
+  text-decoration: underline;
+}
+
+.dark .other-events a {
+  color: rgba(255, 255, 255, 0.9);
 }
 </style>

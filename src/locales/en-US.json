@@ -94,6 +94,7 @@
     "title": "Crisis Events",
     "map_view": "Map View",
     "active_events": "Active Events",
+    "other_events": "Other active events",
     "more_events": "+ {count} more events",
     "error_loading_events": "Failed to load crisis events",
     "details": "Crisis Details",
