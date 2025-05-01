@@ -80,3 +80,39 @@ export async function verify2FACode(userEmail: string, code: number) {
   console.log('Verifying 2FA code:', code)
   return await api.post('/auth/verify-2fa', { email: userEmail, code: code })
 }
+
+/**
+ * Changes the password for a user.
+ *
+ * This function makes a POST request to the backend API to change the user's password.
+ *
+ * @param {string} userEmail - The email address of the user whose password is to be changed
+ * @param {string} oldPassword - The current password of the user
+ * @param {string} newPassword - The new password to set for the user
+ * @returns {Promise<import('axios').AxiosResponse>} - A promise that resolves to the server response
+ */
+export async function changePassword(userEmail: string, oldPassword: string, newPassword: string) {
+  return await api.post('/auth/change-password', {
+    email: userEmail,
+    password: newPassword,
+    oldPassword: oldPassword,
+  })
+}
+
+/**
+ * Changes the email address for a user.
+ *
+ * This function makes a POST request to the backend API to change the user's email address.
+ *
+ * @param {string} email - The current email address of the user
+ * @param {string} newEmail - The new email address to set for the user
+ * @param {string} password - The password of the user for verification
+ * @returns {Promise<import('axios').AxiosResponse>} - A promise that resolves to the server response
+ */
+export async function changeEmail(email: string, newEmail: string, password: string) {
+  return await api.post('/auth/change-email', {
+    email: email,
+    newEmail: newEmail,
+    password: password,
+  })
+}
