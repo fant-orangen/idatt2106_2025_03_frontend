@@ -46,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '@/stores/UserStore.ts'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
