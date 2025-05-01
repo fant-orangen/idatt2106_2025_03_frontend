@@ -29,13 +29,13 @@
                 <div class="p-4">
                     <h4 class="mb-4 text-sm font-medium leading-none">{{ $t('add-event-info.titles.choose-event') }}:</h4>
 
-                    <div v-for="(event, index) in events" :key="index" @click="selectEvent(event)"
+                    <div v-for="(event, index) in events" :key="index" @click="selectEvent(index)"
                     class="text-sm hover:underline cursor-pointer transition-colors"
                     :class="{
                         'bg-muted': false,
                         'hover:bg-muted/50': true
                     }">
-                        {{ event.title }} | {{ event.priority }} | {{ event.time }} | {{ event.date }}
+                        {{ event.name }} | {{ event.severity }} | {{ event.startTime }}
                         <Separator class="my-2" />
                     </div>
                 </div>
@@ -46,11 +46,11 @@
             <!--Title of the event-->
             <form @submit="onSubmit">
                 <div class="read-only">
-                    <FormField  name="title">
+                    <FormField name="name">
                         <FormItem>
                             <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
                             <FormControl>
-                                <Input type="text" :value="selectedEvent?.title" readonly disabled />
+                                <Input type="text" :model-value="selectedEvent?.name" readonly disabled />
                             </FormControl>
                             <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
                         </FormItem>
@@ -59,7 +59,7 @@
                 <br>
 
                 <div class="container">
-                    <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
+                    <FormField v-slot="{ field, meta, errorMessage }" name="epicenterLatitude">
                     <FormItem>
                         <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
                         <FormControl>
@@ -70,7 +70,7 @@
                 </FormField>
 
                 <!--Longitude field-->
-                <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
+                <FormField v-slot="{ field, meta, errorMessage }" name="epicenterLongitude">
                     <FormItem>
                         <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
                         <FormControl>
@@ -136,7 +136,7 @@
                 <br>
 
                     <!--Choosing a priority-->
-                <FormField v-slot="{ field, meta, errorMessage }" name="priority">
+                <FormField v-slot="{ field, meta, errorMessage }" name="severity">
                     <FormItem>
                         <FormLabel>{{$t('add-event-info.titles.priority')}}</FormLabel>
                         <FormControl>
@@ -186,7 +186,8 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentEvents, updateCurrentEvent } from '@/services/api/AdminServices'
+import { updateCurrentEvent } from '@/services/api/AdminServices'
+import { fetchAllCrisisEvents } from '@/services/api/CrisisEventService'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -225,13 +226,15 @@ import {
 
 interface Event {
   id: number;
-  title: string;
-  latitude?: number;
-  longitude?: number;
+  name: string;
+  description: string;
+  epicenterLatitude?: number;
+  epicenterLongitude?: number;
   address?: string;
   radius: number;
-  priority: 'Low' | 'Medium' | 'High';
-  description: string;
+  severity: 'green' | 'yellow' | 'red';
+  startTime: string,
+  updatedAt?: string,
   time?: string;
   date?: string;
 }
@@ -241,28 +244,27 @@ const selectedEvent = ref<Event | null>(null);
 
 const router = useRouter();
 
-
-const selectEvent = (event: Event | number) => {
-    if (typeof event === 'number') {
-        // Handle the case where event is just an ID (for test data)
-        selectedEvent.value = {
-            id: event,
-            title: 'Test Event',
-            radius: 0,
-            priority: 'Low',
-            description: 'Test Description'
-        };
-        return;
-    }
+const selectEvent = (index: number) => {  
+    selectedEvent.value = events.value[index];
+       selectedEvent.value = {
+        id: events[index].id,
+        name: event.name,
+        radius: 0,
+        severity: 'green',
+        startTime: '2025-01-01T09:04:33.999999', //example date & Time
+        description: 'Test Description'
+       }
+    
 
     selectedEvent.value = event;
     console.log('Selected event: ', event);
     form.setValues({
-        latitude: event.latitude || '',
-        longitude: event.longitude || '',
+        name: event.name || '',
+        latitude: event.epicenterLatitude || '',
+        longitude: event.epicenterLongitude || '',
         address: event.address || '',
         radius: event.radius || '',
-        priority: event.priority || undefined,
+        severity: event.severity || undefined,
         description: event.description || ''
     })
 }
@@ -273,7 +275,8 @@ const selectEvent = (event: Event | number) => {
  */
 onMounted(async () => {
     try {
-        const response = await getCurrentEvents();
+        const response = await fetchAllCrisisEvents();
+        console.log('All events gotten content: ', response.data);
         events.value = response.data;
     } catch (error) {
         console.error('Failed to get events from backend!', error);
