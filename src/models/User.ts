@@ -6,11 +6,11 @@
  * @interface RegistrationData
  */
 export interface RegistrationData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
+  email: string
+  password: string
+  firstName: string
+  lastName: string
+  phoneNumber: string
 }
 
 /**
@@ -18,16 +18,16 @@ export interface RegistrationData {
  *
  * @type UserCreatePayload
  */
-export type UserCreatePayload = RegistrationData;
+export type UserCreatePayload = RegistrationData
 
 /**
  * Public-facing data transfer object for user information.
  * Matches backend UserResponseDto.java
  */
 export interface UserResponseDto {
-  displayName: string;
-  createdAt: string;
-  email?: string;
+  displayName: string
+  createdAt: string
+  email?: string
 }
 
 /**
@@ -37,15 +37,15 @@ export interface UserResponseDto {
  * @interface BackendUser
  */
 export interface BackendUser {
-  id: number | string;
-  email: string;
-  displayName: string;
-  role: 'USER' | 'ADMIN';
-  firstName: string | null;
-  lastName: string | null;
-  phone: string | null;
-  createdAt: string;
-  updatedAt: string;
+  id: number | string
+  email: string
+  displayName: string
+  role: 'USER' | 'ADMIN'
+  firstName: string | null
+  lastName: string | null
+  phone: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 /**
@@ -58,14 +58,14 @@ export interface BackendUser {
  * @template T - The type of objects contained in the content array
  */
 export interface SpringPage<T> {
-  content: T[];
-  totalPages: number;
-  totalElements: number;
-  size: number;
-  number: number;
-  first: boolean;         // True if this is the first page
-  last: boolean;          // True if this is the last page
-  empty: boolean;         // True if the content list is empty
+  content: T[]
+  totalPages: number
+  totalElements: number
+  size: number
+  number: number
+  first: boolean // True if this is the first page
+  last: boolean // True if this is the last page
+  empty: boolean // True if the content list is empty
 }
 
 /**
@@ -74,17 +74,17 @@ export interface SpringPage<T> {
  *
  * @typedef {SpringPage<BackendUser>} PaginatedUserResponse
  */
-export type PaginatedUserResponse = SpringPage<BackendUser>;
+export type PaginatedUserResponse = SpringPage<BackendUser>
 
 /**
  * Interface for user filter parameters
  */
 export interface UserFilterParams {
-  search?: string;
-  role?: 'USER' | 'ADMIN';
-  sortBy?: string;
-  sortDirection?: 'asc' | 'desc';
-  [key: string]: string | undefined;
+  search?: string
+  role?: 'USER' | 'ADMIN'
+  sortBy?: string
+  sortDirection?: 'asc' | 'desc'
+  [key: string]: string | undefined
 }
 
 /**
@@ -94,13 +94,13 @@ export interface UserFilterParams {
  * @interface AdminUserUpdatePayload
  */
 export interface AdminUserUpdatePayload {
-  email: string;
-  password?: string;
-  displayName: string;
-  firstName: string | null;
-  lastName: string | null;
-  phone: string | null;
-  role?: 'USER' | 'ADMIN';
+  email: string
+  password?: string
+  displayName: string
+  firstName: string | null
+  lastName: string | null
+  phone: string | null
+  role?: 'USER' | 'ADMIN'
 }
 
 /**
@@ -111,9 +111,22 @@ export interface AdminUserUpdatePayload {
  * @interface UserProfile
  */
 export interface UserProfile {
-  id?: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
+  id?: number
+  email: string
+  firstName: string
+  lastName: string
+  phone: string
+}
+
+/**
+ * Interface representing user preferences.
+ *
+ * Contains settings related to user experience and security.
+ *
+ * @interface UserPreferenceDto
+ */
+export interface UserPreferencesDto {
+  locationSharingEnabled: boolean
+  notificationsEnabled: boolean
+  twoFactorAuthenticationEnabled: boolean
 }

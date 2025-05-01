@@ -1,6 +1,6 @@
 <template>
-  <div id="mapContainer">
-    <div :id="mapContainerId" style="width: 100%; height: 100%;"></div>
+  <div id="mapContainer" class="h-full w-full relative">
+    <div :id="mapContainerId" class="w-full h-full"></div>
   </div>
 </template>
 
@@ -773,14 +773,9 @@ export default defineComponent({
   height: 100%;
   width: 100%;
   position: relative;
-  min-height: 300px;
 }
 
 /* Make sure the map container fills its parent */
-:deep(#mapContainer > div) {
-  height: 100%;
-  width: 100%;
-}
 
 :deep(.admin-marker-icon) {
   filter: hue-rotate(90deg); /* Makes the marker green */

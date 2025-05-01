@@ -21,6 +21,8 @@
     "phone": "Phone",
     "password": "Password",
     "confirm-password": "Confirm Password",
+    "confirm-email": "Confirm email",
+    "username": "Username",
     "reset-password-description": "Enter your email address below to reset your password.",
     "enter-email": "Enter your email",
     "reset-password": "Reset Password",
@@ -33,6 +35,18 @@
     "make-new-POI": "Add a new point of interest",
     "make-new-activity": "Make a new activity",
     "edit-event": "Edit a current event",
+    "super-admin": "Super Admin",
+    "current-admins": "Current admin users",
+    "edit-admin": "Handle admin users",
+    "user-notfound": "This user doesn't exist!",
+    "administrate-profile": "Administrate profile",
+    "delete-user": "Delete user",
+    "revoke-rights": "Revoke admin rights",
+    "send-pw-link": "Send new password link",
+    "new-admin": "Add new admin user",
+    "are-you-sure": "Are you sure you want to continue?",
+    "give-rights": "Give admin rights to an existing user.",
+    "if-continue": "If you continue you will give admin rights to the account with this email address",
     "basic-info": "Basic Information",
     "poi-title-placeholder": "Enter title for the point of interest",
     "select-poi-type": "Select the type of point of interest this should be",
@@ -65,7 +79,8 @@
     "searching": "Searching...",
     "address-not-found": "Could not find the address.",
     "search-error": "Error searching for address.",
-    "map-reset": "Map reset."
+    "map-reset": "Map reset.",
+    "poi-details": "POI details"
   },
   "notifications": {
     "notification": "Notification",
@@ -386,7 +401,8 @@
       "security": {
         "title": "Account Security",
         "description": "Enhance your account's security with two-step verification, requiring a code sent to your email in addition to your password for login.",
-        "twoStep": "Turn on 2 step verification"
+        "enableTwoStep": "Turn on 2 step verification",
+        "disableTwoStep": "Turn off 2 step verification"
       },
       "delete": {
         "title": "Delete Account",
@@ -417,6 +433,7 @@
     "successfully": "Event Created Successfully",
     "success-message": "Your event has been added to the system.",
     "success-added":"had been added.",
+    "go-to-admin": "Go to Admin Panel",
     "errors": {
       "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
       "latitude": "The latitude must be between -90 and 90.",
@@ -453,7 +470,12 @@
       "title": "This will be the title of your point of interest (POI).",
       "coordinates": "Insert the coordinates or the address of your POI. You can also click on the map to get the coordinates automatically!",
       "type": "Choose what type of POI this is.",
-      "description": "Write some information describing the POI. Where is it? What is its purpose?"
+      "description": "Write some information describing the POI. Where is it? What is its purpose?",
+      "successfully": "POI Created Successfully",
+      "success-message": "Your POI has been added to the system.",
+      "success-added":"had been added.",
+      "go-to-admin": "Go to Admin Panel",
+      "description-placeholder": "Description"
     },
     "titles": {
       "type": "Type",
@@ -467,6 +489,10 @@
       "water-source": "Water Source",
       "food": "Food Distribution"
     }
+  },
+  "language": {
+    "title": "Language",
+    "select-language": "Select Language"
   },
   "footer": {
     "title": "Krisefikser.no",
