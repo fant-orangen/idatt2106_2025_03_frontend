@@ -59,9 +59,23 @@ const routes = [
     component: () => import('@/components/household/CreateNewHousehold.vue'),
   },
   {
-    path: '/food-and-drinks',
-    name: 'FoodAndDrinks',
+    path: '/inventory/food',
+    name: 'FoodInventory',
     component: () => import('@/views/FoodAndDrinksView.vue'),
+  },
+  {
+    path: '/inventory/water',
+    name: 'WaterInventory',
+    component: () => import('@/views/FoodAndDrinksView.vue'),
+  },
+  {
+    path: '/inventory/medicine',
+    name: 'MedicineInventory',
+    component: () => import('@/views/FoodAndDrinksView.vue'),
+  },
+  {
+    path: '/food-and-drinks',
+    redirect: { name: 'FoodInventory' },
   },
   {
     path: '/shelter-frontpage',
@@ -92,11 +106,6 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),
-  },
-  {
-    path: '/medicine-inventory',
-    name: 'MedicineInventory',
-    component: () => import('@/views/MedicineInventory.vue'),
   },
 ]
 

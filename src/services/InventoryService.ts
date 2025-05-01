@@ -14,7 +14,7 @@ class InventoryService {
    */
   async getFoodProductTypes(page: number = 0, size: number = 20): Promise<Page<ProductType>> {
     try {
-      const response = await api.get('/inventory/product-types', {
+      const response = await api.get('/inventory/product-types/food', {
         params: {
           page,
           size
