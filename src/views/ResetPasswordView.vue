@@ -6,12 +6,12 @@ import { useI18n } from 'vue-i18n'
 import { AxiosError } from 'axios'
 import * as z from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
+import { resetPassword } from '@/services/UserService'
 
 // Import shadcn-vue components
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'vue-sonner'
-import { Label } from '@/components/ui/label'
 import { CardContent, Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Eye, EyeOff } from 'lucide-vue-next'
 import {
@@ -61,23 +61,16 @@ const form = useForm({
  */
 const handleReset = form.handleSubmit(async (values) => {
   try {
-    const response = await userStore.verifyLogin(values.token, values.password)
-
-    if (response.status === 200) {
-      userStore.login(response.status, response.data.token, values.token)
-      router.push('/')
-    } else if (response.status === 202) {
-      // Handle 2FA if required
-    } else {
-      toast.error(t('errors.unexpected-error'))
-    }
+    await resetPassword(values.token, values.password)
+    toast.success(t('reset-password.updated'))
+    router.push('/login')
   } catch (error: unknown) {
     if (error instanceof AxiosError && error.response) {
       const status = error.response.status
-      if (status === 401) {
-        toast.error(t('errors.invalid-credentials'))
-      } else if (status === 403) {
-        toast.error(t('errors.account-locked'))
+      if (status === 400) {
+        toast.error(t('reset-password.invalid-token'))
+      } else if (status === 422) {
+        toast.error(t('reset-password.validation-error'))
       } else {
         toast.error(t('errors.unexpected-error'))
       }
