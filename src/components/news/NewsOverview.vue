@@ -55,7 +55,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
-import { fetchNewsByCrisisEvent, NewsService } from '@/services/api/NewsService';
+import { fetchNewsByCrisisEvent, fetchPaginatedNewsByCrisisEvent } from '@/services/api/NewsService';
 
 const props = defineProps<{
   crisisId: number | null;
@@ -98,8 +98,8 @@ const fetchPaginatedNews = async (crisisId: number) => {
   loading.value = true;
 
   try {
-    // Use custom paginated service with the specified page size if no custom function is provided
-    const fetchFn = props.paginatedFetchFn || NewsService.getPaginatedCrisisNews(size);
+    // Use custom paginated function if provided, otherwise use the default one
+    const fetchFn = props.paginatedFetchFn || ((id, pg, sz) => fetchPaginatedNewsByCrisisEvent(id, pg, sz));
 
     // Pass the parameters in the correct order (crisisId, page, size)
     console.log(`Fetching news with crisisId=${crisisId}, page=${page.value}, size=${size}`);

@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import NewsOverview from '@/components/news/NewsOverview.vue';
-import { paginatedGeneralNews, paginatedGeneralNewsLarge } from '@/services/api/CustomNewsService';
+import { fetchGeneralNewsSmall as paginatedGeneralNews, fetchGeneralNewsLarge as paginatedGeneralNewsLarge } from '@/services/api/NewsService';
 </script>
 
 <style scoped>
