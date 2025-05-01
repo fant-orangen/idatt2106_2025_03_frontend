@@ -59,21 +59,17 @@
       </Card>
     </div>
 
-    <!-- Crisis Details Section -->
     <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Crisis Information -->
       <CrisisDetails :crisis="selectedCrisis" />
 
-      <!-- Crisis Status History -->
       <CrisisEventHistory
         :crisis-id="selectedCrisis.id"
         :key="`history-${selectedCrisis.id}`"
       />
 
-      <!-- Related News -->
       <NewsOverview
         :crisis-id="selectedCrisis.id"
-        title="Crisis Related News"
+        :title="t('news.related_news', 'Related News')"
         :page-size="3"
       />
     </div>
@@ -100,12 +96,29 @@ import {
   fetchCrisisEventById
 } from '@/services/api/CrisisEventService.ts';
 
+/**
+ * CrisisEventOverview component
+ *
+ * This is the main component for displaying crisis events. It includes:
+ * - A map view showing the selected crisis event's location
+ * - A list of active crisis events that can be selected
+ * - Detailed information about the selected crisis
+ * - A history of changes made to the crisis event
+ * - Related news articles
+ *
+ * @component
+ */
+
 const crisisEvents = ref<CrisisEventPreviewDto[]>([]);
 const { t } = useI18n();
 const selectedCrisis = ref<CrisisEventDto | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
+/**
+ * Fetch all crisis events when the component is mounted
+ * and select the first one by default
+ */
 onMounted(async () => {
   try {
     const events = await fetchAllCrisisEvents();
@@ -120,6 +133,11 @@ onMounted(async () => {
   }
 });
 
+/**
+ * Fetches detailed information about a specific crisis event and selects it
+ *
+ * @param crisisId - The ID of the crisis event to fetch and select
+ */
 const fetchAndSelectCrisis = async (crisisId: number) => {
   if (!crisisId) return;
   try {
@@ -138,6 +156,10 @@ const fetchAndSelectCrisis = async (crisisId: number) => {
   }
 };
 
+/**
+ * Computed property that formats map data for the selected crisis
+ * Extracts coordinates, radius, and determines color based on severity
+ */
 const mapData = computed(() => {
   if (!selectedCrisis.value) {
     return null;
@@ -152,10 +174,18 @@ const mapData = computed(() => {
   };
 });
 
+/**
+ * Watch for changes to map data for debugging purposes
+ */
 watch(mapData, (newVal) => {
   console.log('mapData updated:', newVal);
 });
 
+/**
+ * Handles selection of a crisis event from the list
+ *
+ * @param event - The crisis event that was selected
+ */
 const handleCrisisSelect = (event: CrisisEventDto) => {
   fetchAndSelectCrisis(event.id);
 };

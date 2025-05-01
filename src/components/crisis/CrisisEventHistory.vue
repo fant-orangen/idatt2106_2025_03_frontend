@@ -83,7 +83,26 @@ import { fetchCrisisEventChanges } from '@/services/api/CrisisEventService.ts';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 
+/**
+ * CrisisEventHistory component
+ *
+ * This component displays a chronological history of changes made to a crisis event.
+ * It shows a timeline of modifications including:
+ * - Creation events
+ * - Severity level changes
+ * - Description updates
+ * - Location changes
+ *
+ * The component supports infinite scrolling to load more history items as needed.
+ *
+ * @component
+ */
+
+/**
+ * Component props
+ */
 const props = defineProps<{
+  /** The ID of the crisis event to show history for. Can be null if no crisis is selected. */
   crisisId: number | null;
 }>();
 
@@ -96,6 +115,12 @@ const hasMore = ref(true);
 const loading = ref(false);
 const initialLoading = ref(false);
 
+/**
+ * Returns the appropriate CSS class for a change type badge
+ *
+ * @param changeType - The type of change
+ * @returns CSS class string for styling the badge
+ */
 const getChangeTypeClass = (changeType: string): string => {
   switch (changeType) {
     case 'creation': return 'bg-green-500 text-white';
@@ -106,6 +131,12 @@ const getChangeTypeClass = (changeType: string): string => {
   }
 };
 
+/**
+ * Gets the translated display name for a change type
+ *
+ * @param changeType - The type of change
+ * @returns Localized name for the change type
+ */
 const getChangeTypeName = (changeType: string): string => {
   return t(`crisis.change_types.${changeType}`, {
     'creation': 'Created',
@@ -115,6 +146,12 @@ const getChangeTypeName = (changeType: string): string => {
   }[changeType] || changeType);
 };
 
+/**
+ * Generates a human-readable description of the change
+ *
+ * @param change - The change event object
+ * @returns Localized description of what changed
+ */
 const getChangeDescription = (change: CrisisEventChange): string => {
   switch (change.changeType) {
     case 'creation':
@@ -133,19 +170,31 @@ const getChangeDescription = (change: CrisisEventChange): string => {
   }
 };
 
+/**
+ * Computed property that sorts changes by date (newest first)
+ */
 const sortedChanges = computed(() => {
   return [...changes.value].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 });
 
-// Function to load more data
+/**
+ * Function to load more data when scrolling
+ * Called by the InfiniteScroll component
+ */
 const loadMore = () => {
   if (props.crisisId) {
     fetchChanges(props.crisisId);
   }
 };
 
+/**
+ * Fetches a page of crisis event changes from the API
+ * Handles loading states and pagination
+ *
+ * @param crisisId - The ID of the crisis event to fetch changes for
+ */
 const fetchChanges = async (crisisId: number) => {
   console.log('fetchChanges called'); // Debugging
   if (loading.value || !hasMore.value) {
@@ -177,6 +226,9 @@ const fetchChanges = async (crisisId: number) => {
   }
 };
 
+/**
+ * Watch for changes to the crisis ID and reload data when it changes
+ */
 watch(() => props.crisisId, (newId) => {
   console.log('crisisId changed:', newId);
   // Reset pagination and state when crisis changes

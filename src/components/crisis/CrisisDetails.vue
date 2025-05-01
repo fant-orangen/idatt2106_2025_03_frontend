@@ -70,13 +70,36 @@ import { Badge } from '@/components/ui/badge';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import { getSeverityClass } from '@/utils/severityUtils';
 
+/**
+ * CrisisDetails component
+ *
+ * This component displays detailed information about a crisis event, including:
+ * - Name and severity level
+ * - Description
+ * - Geographic coordinates and affected radius
+ * - Timestamps (start time and last update)
+ * - Creator information
+ *
+ * @component
+ */
+
+/**
+ * Component props
+ */
 const props = defineProps<{
+  /** The crisis event to display details for. Can be null if no crisis is selected. */
   crisis: CrisisEventDto | null;
 }>();
 
 const { t } = useI18n();
 const router = useRouter();
 
+/**
+ * Validates if a coordinate value is valid (a finite number)
+ *
+ * @param coord - The coordinate value to check
+ * @returns True if the coordinate is valid, false otherwise
+ */
 const isValidCoordinate = (coord: unknown): boolean => {
   console.log("unknown", coord);
   if (typeof coord !== 'number' || isNaN(coord)) {
@@ -85,6 +108,10 @@ const isValidCoordinate = (coord: unknown): boolean => {
   return isFinite(coord);
 };
 
+/**
+ * Computed property that formats and enhances crisis data for display
+ * Adds formatted timestamps and severity class for styling
+ */
 const crisisDetails = computed(() => {
   if (!props.crisis) return null;
 
