@@ -50,6 +50,24 @@ export async function createPOI(poiData: any): Promise<AxiosResponse> {
 }
 
 /**
+ * Creates a new event by sending event data to the backend API.
+ * Makes a POST request to the '/crisis-events' endpoint with the provided event info.
+ * Automatically includes the authentication token if available.
+ *
+ * @param {Object} eventData - Contains the event details to be created, such as: name, latitude, longitude, 
+ * address, radius, severity, description, starttime.
+ *     
+ * @returns {Promise<AxiosResponse>} Promise resolving to the server response
+ */
+export async function createEvent(eventData: CrisisEventDto): Promise<AxiosResponse> {
+  return await api.post('/crisis-events', eventData, {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+/**
  * Updates an existing crisis event in the backend.
  * Sends a PUT request to the '/crisis-events/{id}' endpoint with the updated event data.
  * 
