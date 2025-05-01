@@ -6,11 +6,7 @@
       <CardTitle>{{ t('crisis.status_history', 'Event History') }}</CardTitle>
     </CardHeader>
     <CardContent>
-      <div v-if="loading" class="flex justify-center items-center py-6">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-
-      <div v-else-if="error" class="text-center py-4 text-red-500">
+      <div v-if="error" class="text-center py-4 text-red-500">
         {{ error }}
       </div>
 
@@ -18,55 +14,60 @@
         {{ t('crisis.select_event_for_history', 'Select a crisis event to view its history') }}
       </div>
 
-      <div v-else-if="changes.length === 0" class="text-center py-4 text-muted-foreground">
+      <div v-else-if="changes.length === 0 && !loading" class="text-center py-4 text-muted-foreground">
         {{ t('crisis.no_changes', 'No history found for this event') }}
       </div>
 
-      <InfiniteScroll
-        v-else
-        :isLoading="loading"
-        :hasMore="hasMore"
-        @load-more="() => crisisId && fetchChanges(crisisId)"
-      >
-        <ScrollArea class="h-[300px] overflow-y-auto">
-          <div class="relative pl-6 border-l border-muted space-y-4 py-2">
-            <div
-              v-for="change in sortedChanges"
-              :key="change.id"
-              class="relative"
-            >
-              <div class="absolute w-3 h-3 rounded-full bg-primary -left-7 top-2"></div>
+      <div v-else-if="initialLoading" class="flex justify-center items-center py-6">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
 
-              <!-- Render change content -->
-              <div class="mb-1 flex items-center justify-between">
-                <Badge :class="getChangeTypeClass(change.changeType)">
-                  {{ getChangeTypeName(change.changeType) }}
-                </Badge>
-                <time class="text-xs text-muted-foreground">
-                  {{ formatDateFull(change.createdAt) }}
-                </time>
+      <ScrollArea v-if="crisisId && !error && !initialLoading" class="h-[300px]">
+        <InfiniteScroll
+          :isLoading="loading"
+          :hasMore="hasMore"
+          :loadingText="t('crisis.loading_more', 'Loading more history...')"
+          :endMessage="t('crisis.no_more_history', 'No more history to load')"
+          @load-more="loadMore"
+        >
+          <div v-if="changes.length > 0" class="relative pl-6 border-l border-muted space-y-4 py-2">
+          <div
+            v-for="change in sortedChanges"
+            :key="change.id"
+            class="relative"
+          >
+            <div class="absolute w-3 h-3 rounded-full bg-primary -left-7 top-2"></div>
+
+            <!-- Render change content -->
+            <div class="mb-1 flex items-center justify-between">
+              <Badge :class="getChangeTypeClass(change.changeType)">
+                {{ getChangeTypeName(change.changeType) }}
+              </Badge>
+              <time class="text-xs text-muted-foreground">
+                {{ formatDateFull(change.createdAt) }}
+              </time>
+            </div>
+
+            <p class="text-sm mb-1">{{ getChangeDescription(change) }}</p>
+
+            <div v-if="change.changeType === 'description_update'" class="mt-2 space-y-2">
+              <div v-if="change.oldValue" class="text-xs bg-muted p-2 rounded">
+                <div class="font-semibold text-muted-foreground">{{ t('crisis.previous', 'Previous') }}:</div>
+                <div>{{ change.oldValue }}</div>
               </div>
-
-              <p class="text-sm mb-1">{{ getChangeDescription(change) }}</p>
-
-              <div v-if="change.changeType === 'description_update'" class="mt-2 space-y-2">
-                <div v-if="change.oldValue" class="text-xs bg-muted p-2 rounded">
-                  <div class="font-semibold text-muted-foreground">{{ t('crisis.previous', 'Previous') }}:</div>
-                  <div>{{ change.oldValue }}</div>
-                </div>
-                <div v-if="change.newValue" class="text-xs bg-muted p-2 rounded">
-                  <div class="font-semibold text-muted-foreground">{{ t('crisis.new', 'New') }}:</div>
-                  <div>{{ change.newValue }}</div>
-                </div>
-              </div>
-
-              <div class="text-xs text-muted-foreground mt-1">
-                {{ t('crisis.by_user', { user: change.userName }) }}
+              <div v-if="change.newValue" class="text-xs bg-muted p-2 rounded">
+                <div class="font-semibold text-muted-foreground">{{ t('crisis.new', 'New') }}:</div>
+                <div>{{ change.newValue }}</div>
               </div>
             </div>
+
+            <div class="text-xs text-muted-foreground mt-1">
+              {{ t('crisis.by_user', { user: change.userName }) }}
+            </div>
           </div>
-        </ScrollArea>
-      </InfiniteScroll>
+        </div>
+        </InfiniteScroll>
+      </ScrollArea>
     </CardContent>
   </Card>
 </template>
@@ -80,7 +81,6 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { fetchCrisisEventChanges } from '@/services/api/CrisisEventService.ts';
 import { formatDateFull } from '@/utils/dateUtils.ts';
-import { useInfiniteScroll } from '@/composables/UseInfiniteScroll.ts';
 import InfiniteScroll from '@/composables/infiniteScroll.vue';
 
 const props = defineProps<{
@@ -94,6 +94,7 @@ const page = ref(0);
 const size = 3;
 const hasMore = ref(true);
 const loading = ref(false);
+const initialLoading = ref(false);
 
 const getChangeTypeClass = (changeType: string): string => {
   switch (changeType) {
@@ -138,13 +139,26 @@ const sortedChanges = computed(() => {
   );
 });
 
+// Function to load more data
+const loadMore = () => {
+  if (props.crisisId) {
+    fetchChanges(props.crisisId);
+  }
+};
+
 const fetchChanges = async (crisisId: number) => {
   console.log('fetchChanges called'); // Debugging
   if (loading.value || !hasMore.value) {
     console.log('Not fetching changes because loading:', loading.value, 'hasMore:', hasMore.value); // Debugging
     return;
   }
+
+  // Set appropriate loading state
+  if (page.value === 0) {
+    initialLoading.value = true;
+  }
   loading.value = true;
+
   try {
     console.log('Fetching page:', page.value); // Debugging
     const response = await fetchCrisisEventChanges(crisisId, page.value, size);
@@ -155,22 +169,27 @@ const fetchChanges = async (crisisId: number) => {
     console.log('Updated hasMore:', hasMore.value); // Debugging
   } catch (err) {
     console.error('Failed to load more changes:', err);
+    error.value = t('crisis.error_loading_changes', 'Failed to load event history');
   } finally {
     loading.value = false;
+    initialLoading.value = false;
     console.log('Loading finished'); // Debugging
   }
 };
 
 watch(() => props.crisisId, (newId) => {
   console.log('crisisId changed:', newId);
-  // Reset pagination when crisis changes
+  // Reset pagination and state when crisis changes
   changes.value = [];
   page.value = 0;
   hasMore.value = true;
+  error.value = null;
 
   if (newId) {
     fetchChanges(newId);
   }
 }, { immediate: true });
+
+
 
 </script>
