@@ -39,7 +39,7 @@ class InventoryService {
    */
   async createProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
     try {
-      const response = await api.post('/inventory/product-types', productData);
+      const response = await api.post('/inventory/product-types/food', productData);
       return response.data;
     } catch (error) {
       console.error('Error creating product type:', error);
