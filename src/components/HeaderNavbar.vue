@@ -27,7 +27,11 @@ const router = useRouter()
 const userStore = useUserStore()
 const isMenuOpen = ref(false)
 
-type MenuLink = { label: string; route?: string; action?: (() => void) | undefined };
+type MenuLink = { 
+  label: string; 
+  route?: string; 
+  action?: () => void;
+};
 
 const menuLinks = computed<MenuLink[]>(() => {
   if (!userStore.loggedIn) {
@@ -35,20 +39,24 @@ const menuLinks = computed<MenuLink[]>(() => {
       { label: 'Home', route: '/' },
       { label: 'Login', route: '/login' },
       { label: 'Register', route: '/register' },
-    ]
+    ];
   } else {
-    const links = [
+    const links: MenuLink[] = [
       { label: 'Home', route: '/' },
       { label: 'Profile', route: '/profile' },
       { label: 'Settings', route: '/settings' },
-    ]
+    ];
+
     if (userStore.isAdminUser) {
-      links.push({ label: 'Admin Panel', route: '/admin-panel' })
+      links.push({ label: 'Admin Panel', route: '/admin-panel' });
     }
-    links.push({ label: 'Log out', action: logOut })
-    return links
+
+    links.push({ label: 'Log out', action: logOut });
+
+    return links;
   }
-})
+});
+
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
