@@ -90,6 +90,7 @@
     "crisis-status": "Crisis Status",
     "more-crisis-info": "Read more about your current crisis situation",
     "no-crisis": "No ongoing crisis",
+    "no_active_crisis": "No active crisis events",
     "title": "Crisis Events",
     "map_view": "Map View",
     "active_events": "Active Events",

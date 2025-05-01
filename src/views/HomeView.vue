@@ -49,12 +49,6 @@ onMounted(async () => {
       <!-- Dynamic Buttons -->
       <div class="crisis-components flex flex-col gap-20">
         <component :is="crisisComponents[currentStatus]" />
-
-        <!-- Crisis Level Overview Component -->
-        <CrisisLevelOverview
-          :max-display="4"
-          @select-crisis="handleCrisisSelect"
-        />
       </div>
       <div class="map flex-grow">
         <MapOverviewComponent />

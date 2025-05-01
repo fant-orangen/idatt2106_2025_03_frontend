@@ -91,6 +91,7 @@
     "crisis-status": "Krisestatus",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
     "no-crisis": "Ingen pågående krise",
+    "no_active_crisis": "Ingen aktive krisehendelser",
     "title": "Krisehendelser",
     "map_view": "Kartvisning",
     "active_events": "Aktive hendelser",
