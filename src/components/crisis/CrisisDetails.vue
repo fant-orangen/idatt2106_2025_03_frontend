@@ -44,6 +44,16 @@
             <span class="font-semibold">{{ t('crisis.updated', 'Updated') }}</span>
             <span class="col-span-2">{{ crisisDetails.formattedUpdateTime || 'N/A' }}</span>
           </div>
+
+          <div class="grid grid-cols-3 text-sm">
+            <span class="font-semibold">{{ t('crisis.created_by', 'Created By') }}</span>
+            <span class="col-span-2">{{ crisisDetails.createdByUser || 'N/A' }}</span>
+          </div>
+
+          <Badge :variant="crisisDetails.scenarioThemeId || 'default'">
+            {{ crisisDetails.severity ? crisisDetails.severity.toUpperCase() : 'UNKNOWN' }}
+          </Badge>
+
         </div>
       </div>
     </CardContent>
@@ -53,10 +63,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {formatDateFull} from '@/utils/dateUtils.ts';
+import { formatDateFull } from '@/utils/dateUtils.ts';
 import { getSeverityClass } from '@/utils/severityUtils';
 
 const props = defineProps<{
@@ -64,6 +75,7 @@ const props = defineProps<{
 }>();
 
 const { t } = useI18n();
+const router = useRouter();
 
 const isValidCoordinate = (coord: unknown): boolean => {
   console.log("unknown", coord);
@@ -83,4 +95,19 @@ const crisisDetails = computed(() => {
     severityClass: getSeverityClass(props.crisis.severity),
   };
 });
+
+/**
+ * Navigates to the scenario page with the current crisis ID
+ * For now, we'll navigate to a placeholder route
+ */
+function navigateToScenarioPage() {
+  if (!props.crisis) return;
+
+  // For now, navigate to the crisis event view with a query parameter
+  // This can be updated later to navigate to a specific scenario page
+  router.push({
+    name: 'CrisisEvent',
+    query: { scenarioId: props.crisis.id }
+  });
+}
 </script>

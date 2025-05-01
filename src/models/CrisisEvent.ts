@@ -9,7 +9,7 @@ export interface CrisisEventDto {
   radius: number | null;
   startTime: string;
   updatedAt: string;
-  createdByUserId: number;
+  createdByUser: number;
   active: boolean;
   scenarioThemeId: number;
 }
