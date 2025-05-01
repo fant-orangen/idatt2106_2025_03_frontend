@@ -1,88 +1,82 @@
 <template>
-  <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 shadow-sm mb-5">
-    <h3 class="text-lg font-semibold mb-4">
-      {{ $t('admin.map-controls') || 'Kartkontroller' }}
-    </h3>
+  <Card class="admin-map-controller">
+    <CardHeader>
+      <CardTitle>{{ $t('admin.map-controls') || 'Kartkontroller' }}</CardTitle>
+    </CardHeader>
 
-    <!-- Map Controls -->
-    <div class="space-y-4">
-      <div class="flex flex-col sm:flex-row gap-4">
-        <button
-          class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          @click="getUserLocation"
-          :disabled="isGettingLocation"
-        >
-          <span v-if="isGettingLocation">{{ $t('admin.getting-location') || 'Henter...' }}</span>
-          <span v-else>{{ $t('admin.get-location') || 'Hent posisjon' }}</span>
-        </button>
+    <CardContent>
+      <div class="map-controls">
+        <div class="control-group">
+          <Button
+            class="control-button"
+            @click="getUserLocation"
+            :disabled="isGettingLocation"
+            variant="default"
+          >
+            <span v-if="isGettingLocation">{{ $t('admin.getting-location') || 'Henter...' }}</span>
+            <span v-else>{{ $t('admin.get-location') || 'Hent posisjon' }}</span>
+          </Button>
 
-        <button
-          class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
-          @click="resetMap"
-        >
-          {{ $t('admin.reset-map') || 'Tilbakestill kart' }}
-        </button>
+          <Button
+            class="control-button"
+            @click="resetMap"
+            variant="secondary"
+          >
+            {{ $t('admin.reset-map') || 'Tilbakestill kart' }}
+          </Button>
+        </div>
+
+        <div v-if="statusMessage" class="status-message">
+          {{ statusMessage }}
+        </div>
       </div>
 
-      <div v-if="statusMessage" class="text-sm text-gray-600">
-        {{ statusMessage }}
+      <div class="search-location">
+        <Label for="search-address">
+          {{ $t('admin.search-location') || 'Søk etter adresse' }}
+        </Label>
+        <div class="search-input-container">
+          <Input
+            id="search-address"
+            v-model="searchAddress"
+            :placeholder="$t('admin.enter-address') || 'Skriv inn adresse'"
+            @keyup.enter="searchLocation"
+          />
+          <Button
+            @click="searchLocation"
+            :disabled="isSearching"
+            variant="default"
+          >
+            <span v-if="isSearching">{{ $t('admin.searching') || 'Søker...' }}</span>
+            <span v-else>{{ $t('admin.search') || 'Søk' }}</span>
+          </Button>
+        </div>
       </div>
-    </div>
 
-    <!-- Search Location -->
-    <div class="mt-6">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
-        {{ $t('admin.search-location') || 'Søk etter adresse' }}
-      </label>
-      <div class="flex flex-col sm:flex-row gap-4">
-        <input
-          v-model="searchAddress"
-          :placeholder="$t('admin.enter-address') || 'Skriv inn adresse'"
-          class="flex-grow border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-          @keyup.enter="searchLocation"
-        />
-        <button
-          class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
-          @click="searchLocation"
-          :disabled="isSearching"
-        >
-          <span v-if="isSearching">{{ $t('admin.searching') || 'Søker...' }}</span>
-          <span v-else>{{ $t('admin.search') || 'Søk' }}</span>
-        </button>
+      <div v-if="selectedLocation.lat !== null && selectedLocation.lng !== null" class="current-selection">
+        <Label as="h4" class="selection-title">{{ $t('admin.selected-location') || 'Valgt plassering' }}</Label>
+        <div class="selection-details">
+          <p>
+            <strong>{{ $t('admin.latitude') || 'Breddegrad' }}:</strong> {{ selectedLocation.lat.toFixed(6) }}<br>
+            <strong>{{ $t('admin.longitude') || 'Lengdegrad' }}:</strong> {{ selectedLocation.lng.toFixed(6) }}
+          </p>
+          <Button
+            @click="clearSelectedLocation"
+            variant="destructive"
+            size="sm"
+          >
+            {{ $t('admin.clear-selection') || 'Fjern valgt plassering' }}
+          </Button>
+        </div>
       </div>
-    </div>
 
-    <!-- Selected Location -->
-    <div
-      v-if="selectedLocation.lat !== null && selectedLocation.lng !== null"
-      class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6"
-    >
-      <h4 class="text-sm font-semibold text-blue-700 mb-2">
-        {{ $t('admin.selected-location') || 'Valgt plassering' }}
-      </h4>
-      <div class="text-sm text-gray-700">
-        <p>
-          <strong>{{ $t('admin.latitude') || 'Breddegrad' }}:</strong>
-          {{ selectedLocation.lat.toFixed(6) }}<br />
-          <strong>{{ $t('admin.longitude') || 'Lengdegrad' }}:</strong>
-          {{ selectedLocation.lng.toFixed(6) }}
+      <div class="instructions">
+        <p class="instruction-text text-sm text-muted-foreground">
+          {{ $t('admin.map-instructions') || 'Klikk på kartet for å velge plassering for nytt interessepunkt.' }}
         </p>
-        <button
-          class="bg-red-500 text-white px-4 py-2 mt-3 rounded-md hover:bg-red-600"
-          @click="clearSelectedLocation"
-        >
-          {{ $t('admin.clear-selection') || 'Fjern valgt plassering' }}
-        </button>
       </div>
-    </div>
-
-    <!-- Instructions -->
-    <div class="mt-6 text-sm text-gray-600">
-      <p>
-        {{ $t('admin.map-instructions') || 'Klikk på kartet for å velge plassering for nytt interessepunkt.' }}
-      </p>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script lang="ts">
@@ -90,6 +84,17 @@ import { ref, defineComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { PropType } from 'vue';
 import * as L from 'leaflet';
+
+// Import shadcn components
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 // Define interfaces for the component
 interface Location {
@@ -108,6 +113,15 @@ interface MapComponentRef {
 
 export default defineComponent({
   name: 'AdminMapController',
+  components: {
+    Button,
+    Input,
+    Label,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+  },
   props: {
     mapComponent: {
       type: Object as PropType<MapComponentRef | null>,
@@ -235,8 +249,8 @@ export default defineComponent({
     }
 
     function setSelectedLocation(location: Location): void {
-      selectedLocation.value = location;
-      emit('location-selected', location);
+      selectedLocation.value = location; // Update local state for display
+      emit('location-selected', location); // Emit to parent (AdminAddNewPOI)
     }
 
     function clearSelectedLocation(): void {
@@ -268,3 +282,76 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.admin-map-controller {
+  margin-bottom: 20px;
+}
+
+.control-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.control-button {
+  flex: 1;
+}
+
+.status-message {
+  font-size: 0.875rem;
+  padding: 4px 0;
+  color: hsl(var(--muted-foreground));
+  min-height: 1.25rem;
+  margin-bottom: 12px;
+}
+
+.search-location {
+  margin-bottom: 16px;
+}
+
+.search-input-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.current-selection {
+  background-color: hsl(var(--accent) / 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid hsl(var(--accent) / 0.5);
+}
+
+.selection-title {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.selection-details p {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.instructions {
+  margin-top: 16px;
+}
+
+.instruction-text {
+  line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .control-group {
+    flex-direction: column;
+  }
+
+  .search-input-container {
+    flex-direction: column;
+  }
+}
+</style>
