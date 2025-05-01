@@ -109,7 +109,6 @@ interface MapComponentRef {
   removeMarker?: (marker: L.Marker) => void;
   centerMap?: (lat: number, lng: number, zoom?: number) => void;
   forceMapRefresh?: () => void;
-  // Methods likely available from the assumed MapComponent structure
 }
 
 export default defineComponent({
@@ -124,22 +123,20 @@ export default defineComponent({
     CardTitle,
   },
   props: {
-    // Use the more specific interface for the prop type
     mapComponent: {
-      type: Object as PropType<MapComponentRef | null>, // Allow null initially
-      required: true
-    }
+      type: Object as PropType<MapComponentRef | null>,
+      required: true,
+    },
   },
-  emits: ['location-selected', 'location-cleared'], // Keep existing emits
+  emits: ['location-selected', 'location-cleared'],
   setup(props, { emit }) {
     const { t } = useI18n();
     const searchAddress = ref<string>('');
     const statusMessage = ref<string>('');
-    const isGettingLocation = ref(false); // Added state for button disabling
-    const isSearching = ref(false); // Added state for button disabling
+    const isGettingLocation = ref(false);
+    const isSearching = ref(false);
     const selectedLocation = ref<Location>({ lat: null, lng: null });
 
-    // Get user's current location
     async function getUserLocation(): Promise<void> {
       statusMessage.value = t('admin.getting-location') || 'Henter posisjon...';
       isGettingLocation.value = true;
@@ -154,27 +151,26 @@ export default defineComponent({
         const position = await new Promise<GeolocationPosition>((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
             enableHighAccuracy: true,
-            timeout: 8000, // Increased timeout
-            maximumAge: 0
+            timeout: 8000,
+            maximumAge: 0,
           });
         });
 
         const location: Location = {
           lat: position.coords.latitude,
-          lng: position.coords.longitude
+          lng: position.coords.longitude,
         };
 
-        // Center map on user location
         if (props.mapComponent?.centerMap && location.lat !== null && location.lng !== null) {
-          props.mapComponent.centerMap(location.lat, location.lng, 15); // Zoom in closer
+          props.mapComponent.centerMap(location.lat, location.lng, 15);
           statusMessage.value = t('admin.location-found') || 'Posisjon funnet.';
-          setTimeout(() => { statusMessage.value = ''; }, 3000);
+          setTimeout(() => {
+            statusMessage.value = '';
+          }, 3000);
         } else {
-          console.error("Map component or centerMap method not available, or location coordinates are null");
           statusMessage.value = t('admin.location-error') || 'Kunne ikke sentrere kart.';
         }
       } catch (error: any) {
-        console.error('Error getting location:', error);
         if (error.code === error.PERMISSION_DENIED) {
           statusMessage.value = t('map.location-error') || 'Posisjonstilgang nektet.';
         } else {
@@ -199,38 +195,36 @@ export default defineComponent({
 
         if (location && location.lat !== null && location.lng !== null) {
           if (props.mapComponent?.centerMap) {
-            props.mapComponent.centerMap(location.lat, location.lng, 15); // Zoom in
-          } else {
-            console.error("Map component or centerMap method not available");
+            props.mapComponent.centerMap(location.lat, location.lng, 15);
           }
 
-          // Emit the selected location
-          setSelectedLocation(location); // This emits 'location-selected'
+          setSelectedLocation(location);
           statusMessage.value = t('admin.location-found') || 'Posisjon funnet.';
-          setTimeout(() => { statusMessage.value = ''; }, 3000); // Clear message after delay
+          setTimeout(() => {
+            statusMessage.value = '';
+          }, 3000);
         } else {
           statusMessage.value = t('admin.address-not-found') || 'Kunne ikke finne adressen.';
         }
       } catch (error: any) {
         statusMessage.value = t('admin.search-error') || 'Feil ved søk etter adresse.';
-        console.error('Error searching for address:', error);
       } finally {
         isSearching.value = false;
       }
     }
 
     async function geocodeAddressWithNominatim(address: string): Promise<Location | null> {
-      // Prioritize search within Norway
-      const viewbox = '5.0,57.8,31.5,71.2'; // Approximate bounding box for Norway
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&countrycodes=no&viewbox=${viewbox}&bounded=1`;
-      console.log(`Geocoding address: ${address} using URL: ${url}`);
+      const viewbox = '5.0,57.8,31.5,71.2';
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+        address
+      )}&limit=1&countrycodes=no&viewbox=${viewbox}&bounded=1`;
 
       try {
         const response = await fetch(url, {
           headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'Krisefikser.no Admin Panel/1.0' // Be polite to Nominatim
-          }
+            Accept: 'application/json',
+            'User-Agent': 'Krisefikser.no Admin Panel/1.0',
+          },
         });
 
         if (!response.ok) {
@@ -243,43 +237,34 @@ export default defineComponent({
           const result = data[0];
           const lat = parseFloat(result.lat);
           const lng = parseFloat(result.lon);
-          console.log("Nominatim result:", result);
+
           if (!isNaN(lat) && !isNaN(lng)) {
             return { lat, lng };
-          } else {
-            console.warn("Nominatim returned invalid coordinates:", result);
           }
-        } else {
-          console.log("Nominatim found no results for:", address);
         }
-        return null; // Address not found or invalid coordinates
+        return null;
       } catch (error) {
-        console.error('Nominatim geocoding failed:', error);
-        throw error; // Re-throw to be caught by searchLocation
+        throw error;
       }
     }
 
-    // Handle selection of a location
     function setSelectedLocation(location: Location): void {
       selectedLocation.value = location; // Update local state for display
       emit('location-selected', location); // Emit to parent (AdminAddNewPOI)
     }
 
-    // Clear the currently selected location
     function clearSelectedLocation(): void {
       selectedLocation.value = { lat: null, lng: null };
       emit('location-cleared');
     }
 
-    // Reset the map view
     function resetMap(): void {
       if (props.mapComponent?.centerMap) {
-        // Using initial center from Norway as default
-        props.mapComponent.centerMap(63.4305, 10.3951, 6); // Center on Trondheim with default zoom
+        props.mapComponent.centerMap(63.4305, 10.3951, 6);
         statusMessage.value = t('admin.map-reset') || 'Kart tilbakestilt.';
-        setTimeout(() => { statusMessage.value = ''; }, 3000);
-      } else {
-        console.error("Map component or centerMap method not available");
+        setTimeout(() => {
+          statusMessage.value = '';
+        }, 3000);
       }
     }
 
@@ -292,9 +277,9 @@ export default defineComponent({
       getUserLocation,
       searchLocation,
       clearSelectedLocation,
-      resetMap
+      resetMap,
     };
-  }
+  },
 });
 </script>
 

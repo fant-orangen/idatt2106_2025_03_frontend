@@ -59,22 +59,18 @@
       </Card>
     </div>
 
-    <!-- Crisis Details Section -->
     <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Crisis Information -->
       <CrisisDetails :crisis="selectedCrisis" />
 
-      <!-- Crisis Status History -->
       <CrisisEventHistory
         :crisis-id="selectedCrisis.id"
         :key="`history-${selectedCrisis.id}`"
       />
 
-      <!-- Related News -->
       <NewsOverview
         :crisis-id="selectedCrisis.id"
-        :fetch-news-fn="fetchNewsByCrisisEvent"
-        title="Crisis Releated News"
+        :title="t('news.related_news', 'Related News')"
+        :page-size="3"
       />
     </div>
   </div>
@@ -83,7 +79,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
+import { useRouter } from 'vue-router';
+import type { CrisisEventDto, CrisisEventPreviewDto } from '@/models/CrisisEvent.ts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StaticMapWithCircle from '@/components/map/StaticMapWithCircle.vue';
 import { Badge } from '@/components/ui/badge';
@@ -91,7 +88,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import CrisisDetails from '@/components/crisis/CrisisDetails.vue';
 import CrisisEventHistory from '@/components/crisis/CrisisEventHistory.vue';
 import NewsOverview from '../news/NewsOverview.vue';
-import { fetchNewsByCrisisEvent } from '@/services/api/NewsService.ts'
 import { watch } from 'vue';
 import {formatDateFull} from '@/utils/dateUtils.ts';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
@@ -101,19 +97,47 @@ import {
   fetchCrisisEventById
 } from '@/services/api/CrisisEventService.ts';
 
-const crisisEvents = ref<CrisisEventDto[]>([]);
+/**
+ * CrisisEventOverview component
+ *
+ * This is the main component for displaying crisis events. It includes:
+ * - A map view showing the selected crisis event's location
+ * - A list of active crisis events that can be selected
+ * - Detailed information about the selected crisis
+ * - A history of changes made to the crisis event
+ * - Related news articles
+ *
+ * @component
+ */
+
+const router = useRouter();
+const crisisEvents = ref<CrisisEventPreviewDto[]>([]);
 const { t } = useI18n();
 const selectedCrisis = ref<CrisisEventDto | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
+/**
+ * Fetch all crisis events when the component is mounted
+ * and select the first one by default
+ */
 onMounted(async () => {
   try {
     const events = await fetchAllCrisisEvents();
     console.log("events: ", events);
     crisisEvents.value = events;
 
-    if (crisisEvents.value.length > 0 && !selectedCrisis.value) {
+    // Check if there's a crisis ID in the URL query parameter
+    const crisisIdFromQuery = router.currentRoute.value.query.id;
+
+    if (crisisIdFromQuery && typeof crisisIdFromQuery === 'string') {
+      // If there's a crisis ID in the URL, select that crisis
+      const crisisId = parseInt(crisisIdFromQuery, 10);
+      if (!isNaN(crisisId)) {
+        await fetchAndSelectCrisis(crisisId);
+      }
+    } else if (crisisEvents.value.length > 0 && !selectedCrisis.value) {
+      // Otherwise, select the first crisis
       await fetchAndSelectCrisis(crisisEvents.value[0].id);
     }
   } catch (error) {
@@ -121,6 +145,11 @@ onMounted(async () => {
   }
 });
 
+/**
+ * Fetches detailed information about a specific crisis event and selects it
+ *
+ * @param crisisId - The ID of the crisis event to fetch and select
+ */
 const fetchAndSelectCrisis = async (crisisId: number) => {
   if (!crisisId) return;
   try {
@@ -132,13 +161,18 @@ const fetchAndSelectCrisis = async (crisisId: number) => {
     } else {
       error.value = t('crisis.error_loading_details', 'Failed to load event details');
     }
-  } catch (error) {
+  } catch (err) {
+    console.error('Error loading crisis details:', err);
     error.value = t('crisis.error_loading_details', 'Failed to load event details');
   } finally {
     loading.value = false;
   }
 };
 
+/**
+ * Computed property that formats map data for the selected crisis
+ * Extracts coordinates, radius, and determines color based on severity
+ */
 const mapData = computed(() => {
   if (!selectedCrisis.value) {
     return null;
@@ -153,11 +187,25 @@ const mapData = computed(() => {
   };
 });
 
+/**
+ * Watch for changes to map data for debugging purposes
+ */
 watch(mapData, (newVal) => {
   console.log('mapData updated:', newVal);
 });
 
-const handleCrisisSelect = (event: CrisisEventDto) => {
+/**
+ * Handles selection of a crisis event from the list
+ *
+ * @param event - The crisis event that was selected
+ */
+const handleCrisisSelect = (event: CrisisEventPreviewDto | CrisisEventDto) => {
+  // Update the URL with the selected crisis ID
+  router.replace({
+    path: router.currentRoute.value.path,
+    query: { id: event.id.toString() }
+  });
+
   fetchAndSelectCrisis(event.id);
 };
 </script>

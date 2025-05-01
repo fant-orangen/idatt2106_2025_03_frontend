@@ -1,22 +1,45 @@
 import { defineStore } from 'pinia';
 //import { inventoryService } from '@/services/InventoryService';
 
+// Define allowed inventory types
+export type InventoryType = 'food' | 'water' | 'medicine';
+const inventoryTypes: InventoryType[] = ['food', 'water', 'medicine'];
+
 export const useProductStore = defineStore('product', {
   state: () => ({
-    productIds: new Set<number>(),
-    productMap: new Map<string, number>(), // Map of product names to IDs
-    batchMap: new Map<string, number>(), // Map of batch keys to IDs
+    currentType: 'food' as InventoryType,
+    productIds: {
+      food: new Set<number>(),
+      water: new Set<number>(),
+      medicine: new Set<number>(),
+    } as Record<InventoryType, Set<number>>,
+    productMap: {
+      food: new Map<string, number>(),
+      water: new Map<string, number>(),
+      medicine: new Map<string, number>(),
+    } as Record<InventoryType, Map<string, number>>,
+    batchMap: {
+      food: new Map<string, number>(),
+      water: new Map<string, number>(),
+      medicine: new Map<string, number>(),
+    } as Record<InventoryType, Map<string, number>>,
   }),
 
   actions: {
+    setType(type: InventoryType) {
+      if (inventoryTypes.includes(type)) {
+        this.currentType = type;
+      }
+    },
     /**
      * Add product IDs from a page of products to the store
      * @param products Page of products from the API
      */
     addProductIdsFromPage(products: { id: number; name: string }[]) {
+      const type = this.currentType;
       products.forEach(product => {
-        this.productIds.add(product.id);
-        this.productMap.set(product.name.toLowerCase(), product.id);
+        this.productIds[type].add(product.id);
+        this.productMap[type].set(product.name.toLowerCase(), product.id);
       });
     },
 
@@ -26,12 +49,13 @@ export const useProductStore = defineStore('product', {
      * @param batches Array of batches with IDs
      */
     addBatchIds(productName: string, batches: { id: number; amount: string; expires: string }[]) {
+      const type = this.currentType;
       const productId = this.getProductId(productName);
       if (!productId) return;
 
       batches.forEach(batch => {
         const batchKey = `${productId}-${batch.amount}-${batch.expires}`;
-        this.batchMap.set(batchKey, batch.id);
+        this.batchMap[type].set(batchKey, batch.id);
       });
     },
 
@@ -43,11 +67,12 @@ export const useProductStore = defineStore('product', {
      * @returns Batch ID or undefined if not found
      */
     getBatchId(productName: string, amount: string, expires: string): number | undefined {
+      const type = this.currentType;
       const productId = this.getProductId(productName);
       if (!productId) return undefined;
 
       const batchKey = `${productId}-${amount}-${expires}`;
-      return this.batchMap.get(batchKey);
+      return this.batchMap[type].get(batchKey);
     },
 
     /**
@@ -56,16 +81,19 @@ export const useProductStore = defineStore('product', {
      * @returns Product ID or undefined if not found
      */
     getProductId(name: string): number | undefined {
-      return this.productMap.get(name.toLowerCase());
+      const type = this.currentType;
+      return this.productMap[type].get(name.toLowerCase());
     },
 
     /**
      * Clear all stored product IDs and batch IDs
      */
     clearProductIds() {
-      this.productIds.clear();
-      this.productMap.clear();
-      this.batchMap.clear();
+      inventoryTypes.forEach(type => {
+        this.productIds[type].clear();
+        this.productMap[type].clear();
+        this.batchMap[type].clear();
+      });
     }
   }
 });

@@ -25,7 +25,7 @@ function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
     level: level,
     startTime: backendEvent.startTime,
     isActive: backendEvent.active,
-    createdBy: `User ${backendEvent.createdByUserId}`,
+    createdBy: `User ${backendEvent.createdByUser}`,
     createdAt: backendEvent.updatedAt,
     updatedAt: backendEvent.updatedAt
   };
@@ -85,7 +85,7 @@ export async function fetchCrisisEventById(id: number): Promise<CrisisEventDto |
 export async function fetchCrisisEventChanges(
   crisisEventId: number,
   page: number,
-  size = 20
+  size = 5
 ): Promise<Page<CrisisEventChange>> {
   try {
     console.log("page : ", page);

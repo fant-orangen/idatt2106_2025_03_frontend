@@ -4,27 +4,23 @@ import { type CrisisEventDto, type UpdateCrisisEventDto } from '@/models/CrisisE
 import type { Page } from '@/types/Page.ts'
 
 /**
- * Creates a new event by sending event data to the backend API.
- * Makes a POST request to the '/crisis-events' endpoint with the provided event info.
- * Automatically includes the authentication token if available.
- *
- * @param {Object} eventData - Contains the event details to be created, such as:
- * @param {string} eventData.name - The name of the event (mapped from title)
- * @param {number} eventData.latitude - The latitude coordinate of the event
- * @param {number} eventData.longitude - The longitude coordinate of the event
- * @param {string} [eventData.address] - The address of the event (optional if coordinates are given)
- * @param {number} eventData.radius - The effective radius around the event in meters
- * @param {string} eventData.severity - The severity of the event (green, yellow, red)
- * @param {string} eventData.description - A description of the event
- * @param {string} eventData.startTime - The start time of the event (ISO format)
- * @returns {Promise<AxiosResponse>} Promise resolving to the server response
- * @throws {Error} When the event creation fails or network issues occur.
+ * Edit existing POI.
+ * @param id - ID of the POI to edit.
+ * @param updateData - The data to update.
  */
-export async function createEvent(eventData: CrisisEventDto): Promise<AxiosResponse> {
-  return await api.post('/crisis-events', eventData, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
+export async function editPoi(id: number, updateData: any): Promise<AxiosResponse> {
+  return await api.put(`/poi/${id}`, updateData, {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+/**
+ * Delete a POI by ID.
+ * @param id - ID of the POI to delete.
+ */
+export async function deletePoi(id: number): Promise<void> {
+  await api.delete(`/poi/${id}`, {
+    headers: { 'Content-Type': 'application/json' }
   });
 }
 
@@ -105,12 +101,9 @@ export async function getAdminUsers() {
  * Sends a PUT request to the '/super-admin' endpoint with the new adnmin user email. 
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the post operation.
  */
-export async function addNewAdmin(userID: number) {
-  console.log('user id er: ', userID);
-  return await api.put('/super-admin/add/' + userID, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
+export async function addNewAdmin(userID: number): Promise<AxiosResponse<any>> {
+  return await api.put(`/super-admin/add/${userID}`, null, {
+    headers: { 'Content-Type': 'application/json' }
   });
 }
 
@@ -129,18 +122,11 @@ export async function revokeAdminRights(adminID: number) {
   });
 }
 
-
 /**
- * Retrieves the user ID from the backend API by searching for the user
- * having the provided email address. 
- * Makes a GET request to the '/super-admin/user-info/{email}' endpoint.
- * @param email - the email address to the wanted user
- * @returns { Promise<AxiosResponse<any>> } - Response object contains the user id and the email. 
+ * Get user ID by email.
  */
-export async function getUserId(email: string) {
-  return await api.get('/super-admin/user-info/' + email, {
-    headers: {
-      'Content-Type': 'application/json'
-    }
+export async function getUserId(email: string): Promise<AxiosResponse<any>> {
+  return await api.get(`/super-admin/user-info/${email}`, {
+    headers: { 'Content-Type': 'application/json' }
   });
 }

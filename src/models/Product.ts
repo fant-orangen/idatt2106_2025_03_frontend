@@ -3,7 +3,7 @@ export interface ProductType {
   name: string;
   unit: string;
   caloriesPerUnit: number;
-  isWater: boolean;
+  category: 'food' | 'water' | 'medicine';
 }
 
 export interface ProductBatch {
@@ -14,11 +14,11 @@ export interface ProductBatch {
   number: number;
 }
 
-export type ProductUnit = 'kg' | 'l' | 'stk' | 'gram' | 'dl';
+export type ProductUnit = 'kg' | 'l' | 'stk' | 'gram' | 'dl' | 'mcg' | 'mg' | 'dose';
 
 export interface CreateProductTypeRequest {
   name: string;
   unit: ProductUnit;
   caloriesPerUnit: number;
-  isWater: boolean;
+  category: 'food' | 'water' | 'medicine';
 }
