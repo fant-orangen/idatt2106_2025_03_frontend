@@ -114,7 +114,20 @@ const routes = [
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),
   },
+  {
+    path: '/medicine-inventory',
+    name: 'MedicineInventory',
+    component: () => import('@/views/MedicineInventory.vue'),
+  },
+  {
+    path: '/edit-POI',
+    name: 'AdminEditPOI',
+    component: () => import('@/views/AdminEditPOI.vue'),
+    meta: { requiresAdmin: true},
+  },
 ]
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

@@ -81,6 +81,7 @@
     "address-not-found": "Kunne ikke finne adressen.",
     "search-error": "Feil ved søk etter adresse.",
     "map-reset": "Kart tilbakestilt.",
+    "edit-POI": "Rediger interessepunkt",
     "poi-details": "Interessepunkt-detaljer"
   },
   "notifications": {
@@ -482,8 +483,22 @@
       "food": "Matutdeling"
     }
   },
+  "add-poi": {
+    "name": "Navn",
+    "description": "Beskrivelse",
+    "latitude": "Breddegrad",
+    "longitude": "Lengdegrad",
+    "opening-hours": "Åpningstider",
+    "contact": "Kontaktinformasjon",
+    "type": "Type",
+    "submit": "Lagre",
+    "delete": "Slett",
+    "confirm-delete": "Er du sikker på at du vil slette dette interessepunktet?"
+  },
   "language": {
     "title": "Språk",
     "select-language": "Velg språk"
+
   }
+
 }
