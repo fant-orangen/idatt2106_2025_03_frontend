@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: 20px">
+  <div class="m-5">
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
@@ -15,11 +15,11 @@
     </Breadcrumb>
   </div>
 
-  <h1>{{ $t('admin.make-new-event') }}:</h1>
+  <h1 class="text-4xl text-center mb-8">{{ $t('admin.make-new-event') }}:</h1>
 
-  <div class="content-container">
-    <div class="form-section">
-      <form @submit="onSubmit">
+  <div class="grid lg:grid-cols-2 grid-cols-1 gap-8 max-w-7xl mx-auto my-8 p-5">
+    <div class="p-5 bg-background rounded-lg shadow-md flex flex-col">
+      <form @submit="onSubmit" class="flex-grow flex flex-col justify-between">
         <FormField v-slot="{ componentField, meta, errorMessage }" name="title">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.title') }}</FormLabel>
@@ -32,13 +32,13 @@
         </FormField>
         <br />
 
-        <div class="form-section-header">
-          <h2>{{ $t('admin.location-info') || 'Plassering' }}</h2>
+        <div class="mb-4 pb-2.5 border-b border-border">
+          <h2 class="text-xl font-semibold m-0">{{ $t('admin.location-info') || 'Plassering' }}</h2>
         </div>
 
-        <div class="coordinates-container">
+        <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
           <FormField v-slot="{ componentField, meta, errorMessage }" name="latitude">
-            <FormItem class="half-width">
+            <FormItem class="flex-1">
               <FormLabel>{{ $t('add-event-info.titles.latitude') }}</FormLabel>
               <FormControl>
                 <Input type="number" step="0.000001" placeholder="latitude" v-bind="componentField" readonly />
@@ -48,7 +48,7 @@
           </FormField>
 
           <FormField v-slot="{ componentField, meta, errorMessage }" name="longitude">
-            <FormItem class="half-width">
+            <FormItem class="flex-1">
               <FormLabel>{{ $t('add-event-info.titles.longitude') }}</FormLabel>
               <FormControl>
                 <Input type="number" step="0.000001" placeholder="longitude" v-bind="componentField" readonly />
@@ -70,8 +70,8 @@
         </FormField>
         <br />
 
-        <div class="form-section-header">
-          <h2>{{ $t('admin.basic-info') || 'Hendelsesdetaljer' }}</h2>
+        <div class="mb-4 pb-2.5 border-b border-border">
+          <h2 class="text-xl font-semibold m-0">{{ $t('admin.basic-info') || 'Hendelsesdetaljer' }}</h2>
         </div>
 
         <FormField v-slot="{ componentField, meta, errorMessage }" name="radius">
@@ -86,9 +86,9 @@
         </FormField>
         <br />
 
-        <div class="datetime-container">
+        <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
           <FormField v-slot="{ componentField, meta, errorMessage }" name="time">
-            <FormItem class="half-width">
+            <FormItem class="flex-1">
               <FormLabel>{{ $t('add-event-info.titles.time') }}</FormLabel>
               <FormControl>
                 <Input type="time" v-bind="componentField" />
@@ -99,7 +99,7 @@
           </FormField>
 
           <FormField v-slot="{ componentField, meta, errorMessage }" name="date">
-            <FormItem class="half-width">
+            <FormItem class="flex-1">
               <FormLabel>{{ $t('add-event-info.titles.date') }}</FormLabel>
               <FormControl>
                 <Input type="date" v-bind="componentField" />
@@ -150,13 +150,13 @@
       </form>
     </div>
 
-    <div class="map-section">
+    <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8">
       <AdminMapController
         :mapComponent="mapComponentInstance"
         @location-selected="handleLocationSelected"
         @location-cleared="handleLocationCleared"
       />
-      <div class="map-container">
+      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md">
         <MapComponent
           ref="mapComponent"
           :adminMode="true"
@@ -566,116 +566,3 @@ const onSubmit = form.handleSubmit(async (values) => {
   }
 });
 </script>
-
-<style scoped>
-/* (Keep the same styles as provided in the previous response) */
-.content-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  max-width: 1200px;
-  margin: 30px auto;
-  padding: 20px;
-}
-
-.form-section {
-  padding: 20px;
-  background-color: hsl(var(--background));
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* Ensure form section takes available height */
-  display: flex;
-  flex-direction: column;
-}
-
-.form-section form {
-  flex-grow: 1; /* Allow form to grow */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Push button to bottom */
-}
-
-
-.map-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.map-container {
-  flex-grow: 1;
-  min-height: 500px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #dee2e6;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  font-size: 2em;
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.form-section-header {
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid hsl(var(--border));
-}
-
-.form-section-header h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-
-.coordinates-container,
-.datetime-container {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 1rem;
-}
-
-.half-width {
-  flex: 1;
-}
-
-/* Shadcn form components often handle width well, but ensure consistency */
-.form-item {
-  margin-bottom: 1rem; /* Consistent spacing */
-}
-
-Input {
-  width: 100%;
-}
-Textarea {
-  width: 100%;
-  min-height: 80px; /* Ensure textarea has some height */
-}
-SelectTrigger {
-  width: 100%;
-}
-
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-  .content-container {
-    grid-template-columns: 1fr;
-  }
-  .map-section {
-    order: -1;
-    margin-bottom: 30px;
-  }
-  .map-container {
-    min-height: 400px;
-  }
-}
-
-@media (max-width: 576px) {
-  .coordinates-container,
-  .datetime-container {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-</style>
