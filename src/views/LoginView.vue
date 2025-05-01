@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, h } from 'vue'
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 import { useI18n } from 'vue-i18n'
 import { AxiosError } from 'axios' // Import AxiosError type
@@ -35,30 +35,7 @@ const errorMessage = ref('')
 const resetEmail = ref('')
 const isTwoFactorAuthDialogOpen = ref(false)
 const pinValue = ref<string[]>([])
-
-async function testRecaptcha() {
-  try {
-    console.log('Testing reCAPTCHA...')
-    // Ensure the reCAPTCHA library is ready
-    await grecaptcha.ready(async () => {
-      console.log('reCAPTCHA is ready...')
-      // Execute reCAPTCHA and get the token
-      const token = grecaptcha.execute('6Lee4CorAAAAABwb4TokgKDs9GdFCxpaiZTKfkfQ', {
-        action: 'TEST',
-      })
-      console.log('reCAPTCHA Token:', token)
-
-      if (!token) {
-        throw new Error('Failed to generate reCAPTCHA token')
-      }
-
-      // Optionally, send the token to your backend for validation
-      console.log('Token is ready for backend validation.')
-    })
-  } catch (error) {
-    console.error('reCAPTCHA Error:', error)
-  }
-}
+/* global grecaptcha */
 
 /**
  * Handles the login process by verifying the user's credentials.
@@ -80,7 +57,7 @@ async function handleLogin() {
           .execute('6Lee4CorAAAAABwb4TokgKDs9GdFCxpaiZTKfkfQ', {
             action: 'LOGIN',
           })
-          .then((token) => {
+          .then((token: string) => {
             console.log('reCAPTCHA Token:', token)
             if (!token) {
               reject(new Error('Failed to generate reCAPTCHA token'))
@@ -88,7 +65,7 @@ async function handleLogin() {
               resolve(token)
             }
           })
-          .catch((error) => reject(error))
+          .catch((error: unknown) => reject(error))
       })
     })
 
@@ -272,7 +249,6 @@ async function handleComplete() {
             {{ $t('login.login') }}
           </Button>
           <p v-if="errorMessage" class="error text-red text-center mt-2">{{ errorMessage }}</p>
-          <Button @click="testRecaptcha">Test reCAPTCHA</Button>
         </form>
       </CardContent>
     </Card>
