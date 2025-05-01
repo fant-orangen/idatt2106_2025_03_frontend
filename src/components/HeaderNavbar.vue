@@ -42,7 +42,7 @@ const menuLinks = computed<MenuLink[]>(() => {
       { label: 'Profile', route: '/profile' },
       { label: 'Settings', route: '/settings' },
     ]
-    if (userStore.loggedIn) {
+    if (userStore.isAdminUser) {
       links.push({ label: 'Admin Panel', route: '/admin-panel' })
     }
     links.push({ label: 'Log out', action: logOut })
@@ -116,7 +116,7 @@ function goToPage(route: string) {
   <div
     id="navbar"
     class="navbar shadow-md bg-secondary text-secondary-foreground flex justify-between items-center px-5 py-3 transition-all duration-300"
-  >
+  > 
     <!-- Left Section: Language Selector -->
     <div class="navbar-right flex gap-4">
       <RouterLink to="/" class="hover:text-primary">
@@ -140,7 +140,7 @@ function goToPage(route: string) {
               v-for="language in languages"
               :key="language.code"
               @click="selectLanguage(language)"
-              class="cursor-poi nter"
+              class="cursor-pointer"
             >
               {{ language.label }}
             </DropdownMenuItem>
@@ -165,19 +165,19 @@ function goToPage(route: string) {
       @click.self="toggleMenu"
     >
       <div
-        class="menu-card fixed top-0 left-0 w-4/5 max-w-sm h-full bg-secondary text-secondary-foreground shadow-lg p-5 transition-transform transform"
+        class="menu-card fixed top-0 right-0 w-4/5 max-w-sm h-full bg-secondary text-secondary-foreground shadow-lg p-5 transition-transform transform"
         :class="{ '-translate-x-full': !isMenuOpen, 'translate-x-0': isMenuOpen }"
       >
         <!-- Close Button -->
         <button
-          class="close-button text-primary text-lg mb-4"
+          class="close-button absolute top-4 right-4 text-primary text-lg mb-4"
           @click="toggleMenu"
         >
           ✖
         </button>
 
         <!-- Mobile Menu Links -->
-        <ul class="menu-links space-y-4">
+        <ul class="menu-links space-y-4 mt-12">
           <li
             v-for="link in menuLinks"
             :key="link.route"
@@ -205,8 +205,8 @@ function goToPage(route: string) {
         to="/register"
         class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
       >
-        {{ $t('login.signup') }}</RouterLink
-      >
+        {{ $t('login.signup') }}
+      </RouterLink>
       <div class="flex gap-2">
         <DropdownMenu v-if="userStore.loggedIn">
           <DropdownMenuTrigger as-child>
@@ -270,5 +270,7 @@ function goToPage(route: string) {
         <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
       </Button>
     </div>
+    </div>
   </div>
+
 </template>
