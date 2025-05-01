@@ -22,9 +22,11 @@ const routes = [
   {
     path: '/notifications',
     name: 'Notifications',
-    component: () => import('@/views/NotificationView.vue'), 
-    meta: { requiresAuth: true },
-  },
+    component: () => import('@/views/NotificationView.vue') },
+  {
+    path: '/crisis-event',
+    name: 'CrisisEvent',
+    component: () => import('@/views/CrisisEventView.vue') },
   {
     path: '/news',
     name: 'News',
