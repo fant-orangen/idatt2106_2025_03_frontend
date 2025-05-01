@@ -1,16 +1,7 @@
 import api from '@/services/api/AxiosInstance';
 import type { CrisisEvent } from '@/types/map';
-import type { CrisisEventChange, CrisisEventDto } from '@/models/CrisisEvent.ts'
-
-// Define an interface representing the Page structure from Spring Boot
-interface Page<T> {
-  content: T[];
-  totalPages: number;
-  totalElements: number;
-  size: number;
-  number: number; // Current page number (0-indexed)
-  // Add other Page properties if needed (first, last, empty, etc.)
-}
+import type { CrisisEventChange, CrisisEventDto } from '@/models/CrisisEvent.ts';
+import type { Page } from '@/types/Page.ts';
 
 /**
  * Converts a backend crisis event to the frontend CrisisEvent format.
@@ -83,11 +74,13 @@ export async function fetchCrisisEventById(id: number): Promise<CrisisEventDto |
 }
 
 /**
- * Fetches changes for a specific crisis event.
- * Makes a GET request to the '/crisis-events/{id}/changes' endpoint.
+ * Fetches paginated crisis event changes for a given crisis event ID.
  *
- * @param {number} crisisEventId - The ID of the crisis event
- * @returns {Promise<CrisisEventChange[]>} Array of changes for the crisis event
+ * @param crisisEventId - The ID of the crisis event.
+ * @param page - The page number to fetch (0-based index).
+ * @param size - The number of items per page (default is 20).
+ * @returns A paginated response containing crisis event changes.
+ * @throws Error if the request fails.
  */
 export async function fetchCrisisEventChanges(
   crisisEventId: number,
@@ -95,6 +88,7 @@ export async function fetchCrisisEventChanges(
   size = 20
 ): Promise<Page<CrisisEventChange>> {
   try {
+    console.log("page : ", page);
     const response = await api.get<Page<CrisisEventChange>>(
       `/crisis-events/${crisisEventId}/changes`,
       { params: { page, size } }
