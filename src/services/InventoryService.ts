@@ -7,12 +7,12 @@ class InventoryService {
   private productStore = useProductStore();
 
   /**
-   * Get all product types for the current household
+   * Get all food product types for the current household
    * @param page page number (0-based)
    * @param size page size
    * @returns Promise containing a page of product types
    */
-  async getProductTypes(page: number = 0, size: number = 20): Promise<Page<ProductType>> {
+  async getFoodProductTypes(page: number = 0, size: number = 20): Promise<Page<ProductType>> {
     try {
       const response = await api.get('/inventory/product-types', {
         params: {
@@ -33,16 +33,102 @@ class InventoryService {
   }
 
   /**
-   * Create a new product type
+   * Create a new food product type
    * @param productData The product data to create
    * @returns Promise containing the created product
    */
-  async createProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
+  async createFoodProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
     try {
       const response = await api.post('/inventory/product-types/food', productData);
       return response.data;
     } catch (error) {
       console.error('Error creating product type:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new water product type
+   * @param productData The product data to create
+   * @returns Promise containing the created product
+   */
+  async createWaterProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
+    try {
+      const response = await api.post('/inventory/product-types/water', productData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating water product type:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new medicine product type
+   * @param productData The product data to create
+   * @returns Promise containing the created product
+   */
+  async createMedicineProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
+    try {
+      const response = await api.post('/inventory/product-types/medicine', productData);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating medicine product type:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get the total amount of water for the household
+   * @returns Promise containing the total water amount
+   */
+  async getTotalWater(): Promise<number> {
+    try {
+      const response = await api.get('/inventory/product-types/water/sum');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching total water:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all water product types for the current household
+   * @param page page number (0-based)
+   * @param size page size
+   * @returns Promise containing a page of water product types
+   */
+  async getWaterProductTypes(page: number = 0, size: number = 20): Promise<Page<ProductType>> {
+    try {
+      const response = await api.get('/inventory/product-types/water', {
+        params: {
+          page,
+          size
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching water product types:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all medicine product types for the current household
+   * @param page page number (0-based)
+   * @param size page size
+   * @returns Promise containing a page of medicine product types
+   */
+  async getMedicineProductTypes(page: number = 0, size: number = 20): Promise<Page<ProductType>> {
+    try {
+      const response = await api.get('/inventory/product-types/medicine', {
+        params: {
+          page,
+          size
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching medicine product types:', error);
       throw error;
     }
   }

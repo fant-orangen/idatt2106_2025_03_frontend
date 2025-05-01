@@ -160,7 +160,7 @@ const error = ref(null);
 const fetchProductTypes = async () => {
   try {
     isLoading.value = true;
-    const response = await inventoryService.getProductTypes();
+    const response = await inventoryService.getFoodProductTypes();
 
     if (!response || !response.content) {
       throw new Error('Invalid response format from server');
@@ -398,7 +398,7 @@ const addProduct = async () => {
     }
 
     // Create the product in the backend
-    await inventoryService.createProductType({
+    await inventoryService.createFoodProductType({
       name,
       unit,
       caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
