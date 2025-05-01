@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 
 // Import shadcn-vue components
@@ -25,6 +25,8 @@ const successMessage = ref('')
 // Access the UserStore to handle registration logic
 const userStore = useUserStore()
 
+/* global grecaptcha */
+
 // // Disable scrolling when the page is loaded
 // onMounted(() => {
 //   document.body.style.overflow = 'hidden'
@@ -48,6 +50,29 @@ async function handleRegister() {
     errorMessage.value = ''
     successMessage.value = ''
 
+    errorMessage.value = ''
+    // Execute reCAPTCHA challenge
+    console.log('Executing reCAPTCHA...')
+    // Generate the reCAPTCHA token
+
+    const token = await new Promise<string>((resolve, reject) => {
+      grecaptcha.ready(() => {
+        grecaptcha
+          .execute('6LcTxCorAAAAAF8Ae6Q__20X_Bqgh05-CATxVZRD', {
+            action: 'LOGIN',
+          })
+          .then((token) => {
+            console.log('reCAPTCHA Token:', token)
+            if (!token) {
+              reject(new Error('Failed to generate reCAPTCHA token'))
+            } else {
+              resolve(token)
+            }
+          })
+          .catch(reject)
+      })
+    })
+
     // Check if passwords match
     if (password.value !== confirmPassword.value) {
       errorMessage.value = t('errors.passwords-do-not-match') as string
@@ -61,6 +86,7 @@ async function handleRegister() {
       firstName: firstName.value,
       lastName: lastName.value,
       phoneNumber: phone.value,
+      recaptchaToken: token,
     })
 
     successMessage.value = t('success.registration-successful') as string
