@@ -31,11 +31,17 @@ export interface CrisisEventDto {
 }
 
 export interface UpdateCrisisEventDto {
+  /** Name/title of the crisis event */
   name: string;
+  /** Optional detailed description of the crisis event */
   description?: string;
+  /** Severity level of the crisis (green=low, yellow=medium, red=high) */
   severity: 'green' | 'yellow' | 'red';
+  /** Latitude coordinate of the crisis epicenter */
   latitude: number;
+  /** Longitude coordinate of the crisis epicenter */
   longitude: number;
+  /** Radius of the affected area in meters */
   radius: number | null;
 }
 

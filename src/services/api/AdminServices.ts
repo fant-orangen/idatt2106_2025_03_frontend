@@ -76,7 +76,7 @@ export async function createEvent(eventData: CrisisEventDto): Promise<AxiosRespo
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
  */
 export async function updateCurrentEvent(id: number, eventData: UpdateCrisisEventDto): Promise<AxiosResponse<any>> {
-  return await api.put('/crisis-events/'+ id, eventData, {
+  return await api.put(`/crisis-events/${id}`, eventData, {
     headers: {
       'Content-Type': 'application/json'
     }

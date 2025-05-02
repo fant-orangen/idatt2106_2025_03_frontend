@@ -111,7 +111,7 @@
         </div>
         <br />
 
-        <FormField v-slot="{ componentField, meta, errorMessage }" name="priority">
+          <FormField v-slot="{ componentField, meta, errorMessage }" name="priority">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.priority') }}</FormLabel>
             <Select v-bind="componentField">
@@ -122,9 +122,9 @@
               </FormControl>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="Low">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
-                  <SelectItem value="Medium">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
-                  <SelectItem value="High">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
+                  <SelectItem class="severity-tag green" value="Low">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
+                  <SelectItem class="severity-tag yellow" value="Medium">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
+                  <SelectItem class="severity-tag red" value="High">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -132,6 +132,45 @@
             <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
           </FormItem>
         </FormField>
+        <br>
+
+      <!--Category of event-->
+      <FormField v-slot="{ field, meta, errorMessage }" name="category">
+        <FormItem>
+            <FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
+             <FormControl>
+                
+              <Select v-bind="field">
+                <SelectTrigger style="cursor: pointer;">
+                  <SelectValue :placeholder="$t('add-event-info.titles.category')"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>{{ $t('sidebar.themes.extremeWeather.title') }}</SelectLabel> 
+                      <SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>                         <SelectItem value="">{{ $t('sidebar.themes.extremeWeather.flood') }}</SelectItem>
+                      <SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
+                      <SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
+                      <SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
+                  </SelectGroup>
+                
+                  <SelectGroup>
+                    <SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}</SelectLabel>
+                    <SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
+                    <SelectItem value="war">{{ $t('add-event-info.scenarios.war') }}</SelectItem>
+                    <SelectItem value="forest fire">{{ $t('add-event-info.scenarios.forestFire') }}</SelectItem>
+                    <SelectItem value="power outage">{{ $t('add-event-info.scenarios.powerOutage') }}</SelectItem>
+                    <SelectItem value="water shortage">{{ $t('add-event-info.scenarios.waterShortage') }}</SelectItem>
+                    <SelectItem value="cyber attack">{{ $t('add-event-info.scenarios.cyberAttack') }}</SelectItem>
+                    <SelectItem value="major accident">{{ $t('add-event-info.scenarios.majorAccident') }}</SelectItem>
+                  </SelectGroup>
+              </SelectContent>
+             </Select>
+            </FormControl>
+            <FormDescription>{{ $t('add-event-info.category') }}</FormDescription>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+          </FormItem>
+        </FormField>
+        
         <br />
 
         <FormField v-slot="{ componentField, meta, errorMessage }" name="description">
@@ -330,6 +369,7 @@ const formSchema = toTypedSchema(
     date: z.string().optional(),
     // Priority/Severity: required enum ('Low', 'Medium', 'High')
     priority: z.enum(['Low', 'Medium', 'High'], { required_error: t('add-event-info.errors.priority') }),
+    category: z.enum(['pandemic','war','flood','hurricane','drought','heatwave','forest fire', 'power outage','water shortage','cyber attack','major accident']),
     // Description: required string, min 10, max 500 chars
     description: z.string().min(10, t('add-event-info.errors.description')).max(500, t('add-event-info.errors.description')),
   })
@@ -566,3 +606,24 @@ const onSubmit = form.handleSubmit(async (values) => {
   }
 });
 </script>
+
+<style scoped>
+.severity-tag {
+	padding: 2px 10px;
+	border-radius: 8px;
+	text-transform: uppercase;
+}
+
+.green {
+	width: fit-content;
+	background-color: var(--color-chart-2); /* should be green but is off*/
+}
+.yellow {
+	width: fit-content;
+	background-color: var(--color-chart-4); /*should be yellow on dark mode... */
+}
+.red {
+	width: fit-content;
+	background-color: var(--color-chart-1); /*should be red but is blue  */
+}
+</style>
