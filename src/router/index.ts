@@ -153,6 +153,13 @@ const routes = [
     component: () => import('@/views/FoodAndDrinksView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/group',
+    name: 'GroupPage',
+    component: () => import('@/views/GroupPage.vue'),
+    meta: { requiresAuth: true }
+  }
+
 ]
 
 const router = createRouter({

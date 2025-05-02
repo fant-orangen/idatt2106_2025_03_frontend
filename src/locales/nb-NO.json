@@ -555,6 +555,14 @@
     "title": "Språk",
     "select-language": "Velg språk"
   },
+  "group": {
+    "title": "Mine Grupper",
+    "shared-inventory": "Felles beredskapslager",
+    "invite-household": "Inviter husholdning",
+    "switch-group": "Bytt gruppe",
+    "share-from-inventory": "Del varer fra ditt lager",
+    "go-to-groups" : "Gå til dine grupper →"
+  },
   "scenarioThemes": {
     "title": "Krisescenario-temaer",
     "noThemesFound": "Ingen scenariotemaer funnet",
@@ -571,4 +579,5 @@
   "common": {
     "back": "Tilbake"
   }
+
 }

@@ -562,6 +562,14 @@
     "title": "Language",
     "select-language": "Select Language"
   },
+  "group": {
+    "title": "My Groups",
+    "shared-inventory": "Shared emergency inventory",
+    "invite-household": "Invite household",
+    "switch-group": "Switch group",
+    "share-from-inventory": "Share items from your inventory",
+    "go-to-groups": "Go to your groups →"
+},
   "scenarioThemes": {
     "title": "Crisis Scenario Themes",
     "noThemesFound": "No scenario themes found",
@@ -578,4 +586,5 @@
   "common": {
     "back": "Back"
   }
+
 }
