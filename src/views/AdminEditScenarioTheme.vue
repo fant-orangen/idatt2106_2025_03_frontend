@@ -176,6 +176,14 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * AdminEditScenarioTheme component
+ *
+ * This component provides functionality to edit or delete existing scenario themes.
+ * It includes a list of themes to select from, a form for editing, and confirmation dialogs.
+ *
+ * @component
+ */
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -192,8 +200,6 @@ import type {
   ScenarioThemeDto,
   UpdateScenarioThemeDto
 } from '@/models/ScenarioTheme'
-
-// UI Components
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -251,7 +257,10 @@ const isSuccessDialogOpen = ref(false)
 const isDeleteSuccessDialogOpen = ref(false)
 const isDeleteConfirmOpen = ref(false)
 
-// Form validation schema
+/**
+ * Form validation schema using Zod
+ * Defines validation rules for the scenario theme form fields
+ */
 const formSchema = toTypedSchema(
   z.object({
     name: z.string()

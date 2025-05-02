@@ -41,8 +41,8 @@
               <FormItem>
                 <FormLabel>{{ $t('admin.scenario-theme-description-label') }}</FormLabel>
                 <FormControl>
-                  <Textarea 
-                    v-bind="field" 
+                  <Textarea
+                    v-bind="field"
                     :placeholder="$t('admin.scenario-theme-description-placeholder')"
                     class="min-h-[100px]"
                   />
@@ -57,8 +57,8 @@
               <FormItem>
                 <FormLabel>{{ $t('admin.scenario-theme-instructions') }}</FormLabel>
                 <FormControl>
-                  <Textarea 
-                    v-bind="field" 
+                  <Textarea
+                    v-bind="field"
                     :placeholder="$t('admin.scenario-theme-instructions-placeholder')"
                     class="min-h-[200px]"
                   />
@@ -73,8 +73,8 @@
 
             <!-- Submit button -->
             <div class="flex justify-end">
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 :disabled="isSubmitting"
                 class="w-full md:w-auto"
               >
@@ -105,6 +105,14 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * AdminAddNewScenarioTheme component
+ *
+ * This component provides a form for administrators to create new scenario themes.
+ * It includes validation, form submission handling, and success feedback.
+ *
+ * @component
+ */
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -157,7 +165,10 @@ const router = useRouter()
 const isSubmitting = ref(false)
 const isSuccessDialogOpen = ref(false)
 
-// Form validation schema
+/**
+ * Form validation schema using Zod
+ * Defines validation rules for the scenario theme form fields
+ */
 const formSchema = toTypedSchema(
   z.object({
     name: z.string()
@@ -172,7 +183,9 @@ const formSchema = toTypedSchema(
   })
 )
 
-// Initialize form
+/**
+ * Initialize form with validation schema and default values
+ */
 const form = useForm({
   validationSchema: formSchema,
   initialValues: {
@@ -182,29 +195,34 @@ const form = useForm({
   }
 })
 
-// Form submission handler
+/**
+ * Form submission handler
+ * Creates a new scenario theme with the form data
+ */
 const onSubmit = form.handleSubmit(async (values) => {
   isSubmitting.value = true
-  
+
   try {
     const themeData: CreateScenarioThemeDto = {
       name: values.name,
       description: values.description,
       instructions: values.instructions
     }
-    
+
     await createScenarioTheme(themeData)
     isSuccessDialogOpen.value = true
     form.resetForm()
   } catch (error) {
     console.error('Failed to create scenario theme:', error)
-    // You could add error handling here, such as displaying a toast notification
   } finally {
     isSubmitting.value = false
   }
 })
 
-// Navigate back to admin panel after successful creation
+/**
+ * Navigate back to admin panel after successful creation
+ * Closes the success dialog and redirects to the admin panel
+ */
 function navigateToAdminPanel() {
   isSuccessDialogOpen.value = false
   router.push('/admin-panel')

@@ -7,6 +7,14 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
+/**
+ * ThemeContent component
+ *
+ * This component displays content for both static themes and dynamic scenario themes.
+ * It handles loading scenario theme details from the backend and rendering appropriate content.
+ *
+ * @component
+ */
 import { computed, ref, watch } from 'vue'
 import { marked } from 'marked'
 import {
@@ -43,6 +51,14 @@ const scenarioTheme = ref<ScenarioThemeDetailsDto | null>(null)
 const loadingScenario = ref(false)
 const scenarioError = ref<string | null>(null)
 
+/**
+ * Gets the translation key for a theme based on its type
+ * Maps theme keys to their corresponding translation paths
+ *
+ * @param themeKey - The identifier for the theme
+ * @param type - Whether to get the title or content translation key
+ * @returns The translation key path or null if not found
+ */
 function getTranslationKey(themeKey: string, type: 'title' | 'content'): string | null {
   if (!themeKey) return null
 
@@ -83,6 +99,10 @@ async function loadScenarioTheme(id: number) {
   }
 }
 
+/**
+ * Watch for changes to the selected scenario ID
+ * Loads the scenario theme when a new ID is selected
+ */
 watch(() => props.selectedScenarioId, (newId) => {
   if (newId) {
     loadScenarioTheme(newId)
@@ -91,6 +111,10 @@ watch(() => props.selectedScenarioId, (newId) => {
   }
 }, { immediate: true })
 
+/**
+ * Computed property for the title translation key
+ * Returns null for scenario themes (which have their own title)
+ */
 const titleKey = computed(() => {
   if (props.selectedScenarioId && scenarioTheme.value) {
     return null
@@ -100,6 +124,10 @@ const titleKey = computed(() => {
   return getTranslationKey(props.selectedTheme, 'title')
 })
 
+/**
+ * Computed property for the content translation key
+ * Returns null for scenario themes (which have their own content)
+ */
 const contentKey = computed(() => {
   if (props.selectedScenarioId && scenarioTheme.value) {
     return null // We'll use the scenario theme content directly
@@ -109,6 +137,10 @@ const contentKey = computed(() => {
   return getTranslationKey(props.selectedTheme, 'content')
 })
 
+/**
+ * Computed property for the rendered content
+ * Returns null for scenario themes (handled separately in template)
+ */
 const renderedContent = computed(() => {
   if (props.selectedScenarioId && scenarioTheme.value) {
     return null // We'll use the scenario theme content directly
@@ -120,24 +152,39 @@ const renderedContent = computed(() => {
   return null
 })
 
+/**
+ * Computed property for theme-specific resources translation key
+ */
 const themeResources = computed(() => {
   if (!props.selectedTheme) return null
 
   return `infoPage.themeSpecificResources.${props.selectedTheme}`
 })
 
+/**
+ * Opens the read more sheet
+ */
 function openReadMore() {
   isReadMoreOpen.value = true
 }
 
+/**
+ * Closes the read more sheet
+ */
 function closeReadMore() {
   isReadMoreOpen.value = false
 }
 
+/**
+ * Opens the emergency contacts sheet
+ */
 function openEmergencyContacts() {
   isEmergencyContactsOpen.value = true
 }
 
+/**
+ * Closes the emergency contacts sheet
+ */
 function closeEmergencyContacts() {
   isEmergencyContactsOpen.value = false
 }

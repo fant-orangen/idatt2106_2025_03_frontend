@@ -1,3 +1,8 @@
+/**
+ * Service for handling scenario themes.
+ * Provides functions to fetch, create, update, and delete scenario themes.
+ */
+
 import api from '@/services/api/AxiosInstance';
 import type { ScenarioThemeDto, ScenarioThemeDetailsDto, CreateScenarioThemeDto, UpdateScenarioThemeDto } from '@/models/ScenarioTheme';
 import type { Page } from '@/types/Page';
@@ -23,7 +28,7 @@ export async function fetchAllScenarioThemes(
     return response.data;
   } catch (error) {
     console.error('Error fetching scenario themes:', error);
-    // Return empty page result instead of throwing error to prevent component crashes
+
     return {
       content: [],
       totalElements: 0,
@@ -112,7 +117,6 @@ export async function deleteScenarioTheme(themeData: UpdateScenarioThemeDto): Pr
       ...themeData,
       status: 'archived'
     }
-    console.log("delete ::: ", archiveData);
 
     const response = await api.patch(`/scenario-themes`, archiveData);
     return response.data;

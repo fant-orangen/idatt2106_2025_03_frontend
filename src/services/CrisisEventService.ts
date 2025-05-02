@@ -1,9 +1,13 @@
-// src/services/CrisisEventService.ts
+/**
+ * Service for handling crisis events.
+ * Provides functions to fetch, filter, and process crisis events from the backend API.
+ * Includes mapping functions to convert between backend and frontend data models.
+ */
 
 import api from '@/services/api/AxiosInstance';
-import type { CrisisEvent } from '@/types/map'; // Frontend domain model
-import type { Page } from '@/types/Page'; // Reusable Page type
-import type { BackendCrisisEvent} from '@/models/BackendCrisisEvent'; // Import the backend model interface
+import type { CrisisEvent } from '@/types/map';
+import type { Page } from '@/types/Page';
+import type { BackendCrisisEvent} from '@/models/BackendCrisisEvent';
 import type { CrisisEventDto, CrisisEventPreviewDto, CrisisEventChange } from '@/models/CrisisEvent.ts';
 
 /**
@@ -23,7 +27,10 @@ function mapBackendToFrontendEvent(backendEvent: BackendCrisisEvent): CrisisEven
     default: level = 1;
   }
 
-  // --- Safely parse numeric values ---
+  /**
+   * Safely parse numeric values from the backend event
+   * Handles potential type inconsistencies in the API response
+   */
   let latitude: number = NaN;
   let longitude: number = NaN;
   let radius: number = NaN;
@@ -41,32 +48,27 @@ function mapBackendToFrontendEvent(backendEvent: BackendCrisisEvent): CrisisEven
   } catch (e) { console.error(`Error parsing longitude for event ${backendEvent.id}:`, e); }
 
   try {
-    // Assuming backend 'radius' corresponds to frontend 'radius'. Adjust if units differ.
     radius = typeof backendEvent.radius === 'number'
       ? backendEvent.radius
       : parseFloat(backendEvent.radius as any);
   } catch (e) { console.error(`Error parsing radius for event ${backendEvent.id}:`, e); }
 
-  // Log if parsing resulted in NaN
   if (isNaN(latitude) || isNaN(longitude) || isNaN(radius)) {
     console.error(`Invalid numeric data after parsing for Crisis Event ID ${backendEvent.id}`, backendEvent);
-    // Decide on fallback strategy: skip event, use defaults, etc.
-    // Returning potentially invalid data might cause issues later. Consider returning null or throwing.
   }
-  // --- End safe parsing ---
 
   return {
     id: backendEvent.id,
     name: backendEvent.name,
     description: backendEvent.description,
-    latitude: latitude, // Use parsed value
-    longitude: longitude, // Use parsed value
+    latitude: latitude,
+    longitude: longitude,
     level: level,
-    radius: radius, // Use parsed value - Ensure this property exists and is needed in frontend CrisisEvent type
+    radius: radius,
     startTime: backendEvent.startTime,
     isActive: backendEvent.active,
     createdBy: `User ${backendEvent.createdByUser?.id ?? 'Unknown'}`,
-    createdAt: backendEvent.startTime, // Using startTime as creation time for simplicity
+    createdAt: backendEvent.startTime,
     updatedAt: backendEvent.updatedAt,
   };
 }
@@ -93,11 +95,14 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c; // Distance in meters
+  return R * c;
 }
 
 
-// --- API Service Functions ---
+/**
+ * API Service Functions for Crisis Events
+ * These functions handle communication with the backend API
+ */
 
 /**
  * Fetches all crisis events from the backend API, returned as a Page object.
@@ -114,9 +119,8 @@ export async function fetchAllCrisisEvents(pageable?: { page?: number; size?: nu
     });
 
     const mappedContent = response.data.content
-    .map(mapBackendToFrontendEvent)
-    // Optional: Filter out events where mapping failed (e.g., NaN coordinates)
-    .filter(event => !isNaN(event.latitude) && !isNaN(event.longitude) && !isNaN(event.radius));
+      .map(mapBackendToFrontendEvent)
+      .filter(event => !isNaN(event.latitude) && !isNaN(event.longitude) && !isNaN(event.radius));
 
 
     return {
@@ -125,7 +129,7 @@ export async function fetchAllCrisisEvents(pageable?: { page?: number; size?: nu
     };
   } catch (error) {
     console.error('Error fetching all crisis events:', error);
-    return { // Return empty page structure on error
+    return {
       content: [],
       totalPages: 0,
       totalElements: 0,
@@ -174,7 +178,7 @@ export async function fetchAllPreviewCrisisEvents(
  */
 export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
   try {
-    const allEventsPage = await fetchAllCrisisEvents({ size: 200 }); // Fetch large page
+    const allEventsPage = await fetchAllCrisisEvents({ size: 200 });
     const activeEvents = allEventsPage.content.filter(event => event.isActive);
 
     console.log(`Loaded ${allEventsPage.totalElements} total events from API, ${activeEvents.length} are active.`);
