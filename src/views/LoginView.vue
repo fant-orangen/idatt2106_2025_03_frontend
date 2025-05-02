@@ -129,6 +129,29 @@ async function handleComplete() {
     console.log('Login error', error)
   }
 }
+
+/**
+ * Requests a new 2FA email to be sent to the user.
+ *
+ * @async
+ * @function requestNew2FAEmail
+ * @returns {Promise<void>} Resolves when the email request is complete.
+ * @throws {Error} If the request fails, an error message is displayed.
+ */
+ async function requestNew2FAEmail() {
+  try {
+    await userStore.send2FACodeToEmail(email.value);
+    toast(t('login.new-2fa-email-sent'), {
+      description: t('login.check-your-email'),
+    });
+  } catch (error: unknown) {
+    console.error('Error requesting new 2FA email:', error);
+    toast(t('errors.unexpected-error'), {
+      type: 'error',
+      description: t('login.failed-to-send-2fa-email'),
+    });
+  }
+}
 </script>
 
 <template>
@@ -240,6 +263,14 @@ async function handleComplete() {
                     <PinInputInput v-for="(id, index) in 6" :key="id" :index="index" />
                   </PinInputGroup>
                 </PinInput>
+                <Button
+                  type="button"
+                  variant="outline"
+                  @click="requestNew2FAEmail"
+                >
+                  {{ $t('login.request-new-2fa-email') }}
+                </Button>
+
                 <DialogFooter> </DialogFooter>
               </DialogContent>
             </Dialog>
