@@ -34,7 +34,7 @@ export const useNotificationStore = defineStore('notification', () => {
       const fetchedNotifications = await getNotifications(); // Assume this returns NotificationMessage[]
 
       // Sort by createdAt descending (newest first) for consistent display
-      notifications.value = fetchedNotifications.sort((a, b) =>
+      notifications.value = fetchedNotifications.content.sort((a: NotificationMessage, b: NotificationMessage) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       hasFetchedInitial.value = true; // Mark initial fetch as done
