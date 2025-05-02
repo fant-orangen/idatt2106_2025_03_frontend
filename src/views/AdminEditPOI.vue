@@ -56,27 +56,26 @@
           </FormField>
 
           <!-- Latitude and longitude -->
-          <div class="container">
             <FormField name="latitude" v-slot="{ field }">
-              <FormItem class="mt-4">
-                <FormLabel>{{ t('add-poi.latitude') }}</FormLabel>
-                <FormControl>
-                  <Input type="number" v-model="field.value" />
-                </FormControl>
-              </FormItem>
+                <FormItem class="mt-4">
+                    <FormLabel>{{ t('add-poi.latitude') }}</FormLabel>
+                    <FormControl>
+                        <Input type="number" step="any" v-model.number="field.value" />
+                    </FormControl>
+                </FormItem>
             </FormField>
 
             <FormField name="longitude" v-slot="{ field }">
-              <FormItem class="mt-4">
-                <FormLabel>{{ t('add-poi.longitude') }}</FormLabel>
-                <FormControl>
-                  <Input type="number" v-model="field.value" />
-                </FormControl>
-              </FormItem>
+                <FormItem class="mt-4">
+                    <FormLabel>{{ t('add-poi.longitude') }}</FormLabel>
+                    <FormControl>
+                        <Input type="number" step="any" v-model.number="field.value" />
+                    </FormControl>
+                </FormItem>
             </FormField>
-          </div>
 
-          <!-- Description -->
+
+            <!-- Description -->
           <FormField name="description" v-slot="{ field }">
             <FormItem class="mt-4">
               <FormLabel>{{ t('add-poi.description') }}</FormLabel>
@@ -236,9 +235,12 @@ onMounted(async () => {
 const formSchema = toTypedSchema(z.object({
   name: z.string().min(2),
   description: z.string().optional(),
-  latitude: z.preprocess(val => val ? Number(val) : undefined, z.number().optional()),
-  longitude: z.preprocess(val => val ? Number(val) : undefined, z.number().optional()),
-  contactInfo: z.string().optional(),
+    latitude: z
+        .preprocess(val => val !== '' ? Number(val) : undefined, z.number().optional()),
+    longitude: z
+        .preprocess(val => val !== '' ? Number(val) : undefined, z.number().optional()),
+
+    contactInfo: z.string().optional(),
   openingFrom: z.string().optional(),
   openingTo: z.string().optional(),
   poiTypeId: z.preprocess(val => val ? Number(val) : undefined, z.number().optional())
