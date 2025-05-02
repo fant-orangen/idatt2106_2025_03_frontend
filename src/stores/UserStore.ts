@@ -106,9 +106,10 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  async function verifyLogin(userEmail: string, password: string) {
+  async function verifyLogin(userEmail: string, password: string, recaptchaToken: string) {
     try {
-      const response = await fetchToken({ username: userEmail, password })
+      console.log('Verifying login...')
+      const response = await fetchToken({ email: userEmail, password, recaptchaToken })
       return response
       // login(response.status, response.data.token, userEmail);
     } catch (error) {
@@ -120,7 +121,7 @@ export const useUserStore = defineStore('user', () => {
   async function registerUser(userData: RegistrationData) {
     try {
       await register(userData)
-      await verifyLogin(userData.email, userData.password)
+      await verifyLogin(userData.email, userData.password, userData.recaptchaToken)
     } catch (error) {
       console.error('Registration error:', error)
       throw error
@@ -150,11 +151,11 @@ export const useUserStore = defineStore('user', () => {
     clearAuthState()
   }
 
-  const loggedIn = computed(() => isAuthenticated.value);
+  const loggedIn = computed(() => isAuthenticated.value)
 
-  const isSuperAdminUser = computed(() => role.value === 'SUPERADMIN');
+  const isSuperAdminUser = computed(() => role.value === 'SUPERADMIN')
 
-  const isAdminUser = computed (() => role.value === 'ADMIN' || role.value === 'SUPERADMIN');
+  const isAdminUser = computed(() => role.value === 'ADMIN' || role.value === 'SUPERADMIN')
 
   return {
     token,
@@ -172,6 +173,6 @@ export const useUserStore = defineStore('user', () => {
     loggedIn,
     initializeFromStorage,
     isAdminUser,
-    isSuperAdminUser
-  };
-});
+    isSuperAdminUser,
+  }
+})
