@@ -7,7 +7,7 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { ChevronRight, ChevronDown } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useI18n } from 'vue-i18n'
@@ -15,9 +15,10 @@ import type { SidebarNode } from '@/views/information/EnhancedInformationView.vu
 
 const { t } = useI18n()
 
-defineProps<{
+const props = defineProps<{
   sections: SidebarNode[]
   selectedTheme: string | null
+  selectedScenarioId: number | null
   showSidebarMobile: boolean
 }>()
 
@@ -30,7 +31,8 @@ const emit = defineEmits<{
 const expandedSections = ref<Record<string, boolean>>({
   // Default to having the top-level sections expanded
   'crisisSituations': true,
-  'extremeWeather': true
+  'extremeWeather': true,
+  'scenarioThemes': true
 })
 
 // We're removing the icon helper function as requested
@@ -74,6 +76,14 @@ function handleThemeSelected(themeKey: string): void {
 function toggleMobileSidebar(): void {
   emit('toggle-mobile-sidebar')
 }
+
+// Watch for changes in selectedScenarioId and ensure the scenario section is expanded
+watch(() => props.selectedScenarioId, (newId) => {
+  if (newId) {
+    // Make sure the scenarioThemes section is expanded
+    expandedSections.value['scenarioThemes'] = true;
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -141,15 +151,21 @@ function toggleMobileSidebar(): void {
                         <button
                           class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                           :class="[
-                            getBorderClass(2, selectedTheme === subChild.key),
-                            { 'bg-accent/50': selectedTheme === subChild.key }
+                            getBorderClass(2, selectedTheme === subChild.key || (subChild.isScenario && subChild.scenarioId === selectedScenarioId)),
+                            { 'bg-accent/50': selectedTheme === subChild.key || (subChild.isScenario && subChild.scenarioId === selectedScenarioId) }
                           ]"
                           :style="getIndentClass(2)"
                           @click="handleThemeSelected(subChild.key)"
                         >
                           <div class="flex items-center gap-2">
-                            <span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
-                            <span :class="getTextClass(2)">
+                            <span
+                              class="h-2 w-2 rounded-full"
+                              :class="{
+                                'bg-primary': subChild.isScenario && subChild.scenarioId === selectedScenarioId,
+                                'bg-muted-foreground': !(subChild.isScenario && subChild.scenarioId === selectedScenarioId)
+                              }"
+                            ></span>
+                            <span :class="[getTextClass(2), {'font-bold': subChild.isScenario && subChild.scenarioId === selectedScenarioId}]">
                               {{ subChild.isScenario ? subChild.titleKey : t(subChild.titleKey) }}
                             </span>
                           </div>
@@ -163,15 +179,21 @@ function toggleMobileSidebar(): void {
                     <button
                       class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                       :class="[
-                        getBorderClass(1, selectedTheme === child.key),
-                        { 'bg-accent/50': selectedTheme === child.key }
+                        getBorderClass(1, selectedTheme === child.key || (child.isScenario && child.scenarioId === selectedScenarioId)),
+                        { 'bg-accent/50': selectedTheme === child.key || (child.isScenario && child.scenarioId === selectedScenarioId) }
                       ]"
                       :style="getIndentClass(1)"
                       @click="handleThemeSelected(child.key)"
                     >
                       <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
-                        <span :class="getTextClass(1)">
+                        <span
+                          class="h-2 w-2 rounded-full"
+                          :class="{
+                            'bg-primary': child.isScenario && child.scenarioId === selectedScenarioId,
+                            'bg-muted-foreground': !(child.isScenario && child.scenarioId === selectedScenarioId)
+                          }"
+                        ></span>
+                        <span :class="[getTextClass(1), {'font-bold': child.isScenario && child.scenarioId === selectedScenarioId}]">
                           {{ child.isScenario ? child.titleKey : t(child.titleKey) }}
                         </span>
                       </div>
@@ -186,8 +208,8 @@ function toggleMobileSidebar(): void {
               <button
                 class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                 :class="[
-                  getBorderClass(0, selectedTheme === section.key),
-                  { 'bg-accent/50': selectedTheme === section.key }
+                  getBorderClass(0, selectedTheme === section.key || (section.isScenario && section.scenarioId === selectedScenarioId)),
+                  { 'bg-accent/50': selectedTheme === section.key || (section.isScenario && section.scenarioId === selectedScenarioId) }
                 ]"
                 :style="getIndentClass(0)"
                 @click="handleThemeSelected(section.key)"

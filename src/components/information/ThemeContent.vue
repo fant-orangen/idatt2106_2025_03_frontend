@@ -16,6 +16,7 @@ export default defineComponent({
  * @component
  */
 import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { marked } from 'marked'
 import {
   Card,
@@ -43,6 +44,8 @@ const props = defineProps<{
   themeIcon: string
   selectedScenarioId: number | null
 }>()
+
+const router = useRouter()
 
 const isReadMoreOpen = ref(false)
 const isEmergencyContactsOpen = ref(false)
@@ -200,6 +203,8 @@ function closeEmergencyContacts() {
   </div>
 
   <div v-else-if="selectedScenarioId && scenarioTheme" class="max-w-4xl mx-auto">
+
+
     <div class="mb-4">
       <h1 class="text-2xl md:text-3xl font-bold">{{ scenarioTheme.name }}</h1>
     </div>
@@ -238,6 +243,8 @@ function closeEmergencyContacts() {
 
   <!-- Regular theme content -->
   <div v-else-if="selectedTheme && titleKey && renderedContent" class="max-w-4xl mx-auto">
+
+
     <div class="mb-4">
       <h1 class="text-2xl md:text-3xl font-bold">{{ $t(titleKey) }}</h1>
     </div>
@@ -385,6 +392,8 @@ function closeEmergencyContacts() {
   </div>
 
   <div v-else class="h-full flex flex-col items-center justify-center text-center p-4">
+
+
     <div class="mb-4 text-6xl">📚</div>
     <h2 class="text-2xl font-bold mb-2">{{ $t('infoPage.selectThemePrompt') }}</h2>
     <p class="text-muted-foreground max-w-md">
