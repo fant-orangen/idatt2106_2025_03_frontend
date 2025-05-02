@@ -503,6 +503,7 @@
       "contact-info": "Make sure to write a valid phone number."
     },
     "scenarios": {
+      "undefined": "Select a category",
       "flood": "Flood",
       "hurricane": "Hurricane",
       "drought":"Drought",
@@ -532,6 +533,7 @@
       "category": "Category"
     },
     "crisis-level": {
+      "undefined":"Select a crisis level",
       "low": "Low",
       "medium": "Medium",
       "high": "High",

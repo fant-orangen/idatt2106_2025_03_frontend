@@ -137,39 +137,39 @@
       <!--Category of event-->
       <FormField v-slot="{ field, meta, errorMessage }" name="category">
         <FormItem>
-            <FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
-             <FormControl>
-                
-              <Select v-bind="field">
-                <SelectTrigger style="cursor: pointer;">
-                  <SelectValue :placeholder="$t('add-event-info.titles.category')"/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>{{ $t('sidebar.themes.extremeWeather.title') }}</SelectLabel> 
-                      <SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>                         <SelectItem value="">{{ $t('sidebar.themes.extremeWeather.flood') }}</SelectItem>
-                      <SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
-                      <SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
-                      <SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
-                  </SelectGroup>
-                
-                  <SelectGroup>
-                    <SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}</SelectLabel>
-                    <SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
-                    <SelectItem value="war">{{ $t('add-event-info.scenarios.war') }}</SelectItem>
-                    <SelectItem value="forest fire">{{ $t('add-event-info.scenarios.forestFire') }}</SelectItem>
-                    <SelectItem value="power outage">{{ $t('add-event-info.scenarios.powerOutage') }}</SelectItem>
-                    <SelectItem value="water shortage">{{ $t('add-event-info.scenarios.waterShortage') }}</SelectItem>
-                    <SelectItem value="cyber attack">{{ $t('add-event-info.scenarios.cyberAttack') }}</SelectItem>
-                    <SelectItem value="major accident">{{ $t('add-event-info.scenarios.majorAccident') }}</SelectItem>
-                  </SelectGroup>
+          <FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
+          <FormControl>
+              
+            <Select v-bind="field">
+              <SelectTrigger style="cursor: pointer;">
+                <SelectValue :placeholder="$t('add-event-info.scenarios.undefined')"/>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>{{ $t('sidebar.themes.crisisSituations.extremeWeather.title') }}:</SelectLabel> 
+                  <SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>
+                  <SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
+                  <SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
+                  <SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
+                </SelectGroup>
+              
+                <SelectGroup>
+                  <SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}:</SelectLabel>
+                  <SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
+                  <SelectItem value="war">{{ $t('add-event-info.scenarios.war') }}</SelectItem>
+                  <SelectItem value="forest fire">{{ $t('add-event-info.scenarios.forest fire') }}</SelectItem>
+                  <SelectItem value="power outage">{{ $t('add-event-info.scenarios.power outage') }}</SelectItem>
+                  <SelectItem value="water shortage">{{ $t('add-event-info.scenarios.water shortage') }}</SelectItem>
+                  <SelectItem value="cyber attack">{{ $t('add-event-info.scenarios.cyber attack') }}</SelectItem>
+                  <SelectItem value="major accident">{{ $t('add-event-info.scenarios.major accident') }}</SelectItem>
+                </SelectGroup>
               </SelectContent>
-             </Select>
-            </FormControl>
-            <FormDescription>{{ $t('add-event-info.category') }}</FormDescription>
-            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField>
+            </Select>
+          </FormControl>
+          <FormDescription>{{ $t('add-event-info.category') }}</FormDescription>
+          <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+        </FormItem>
+      </FormField>
         
         <br />
 
@@ -263,6 +263,9 @@ import * as z from 'zod'; // Schema validation library
 import { useI18n } from 'vue-i18n'; // Internationalization library
 import { Input } from '@/components/ui/input'; // UI Input component
 import { Textarea } from '@/components/ui/textarea'; // UI Textarea component
+import { getScenarioThemePreview } from '@/services/api/ScenarioThemeService';
+import { CrisisEventDto } from '@/models/CrisisEvent'
+import { ScenarioThemePreview } from '@/models/ScenarioTheme'
 import {
   FormControl,
   FormDescription,
@@ -284,6 +287,7 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'; // UI Select components
@@ -332,7 +336,7 @@ const { t } = useI18n(); // i18n instance
 const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null); // Ref to the map component
 const tempMarker = ref<L.Marker | null>(null); // Ref to the temporary marker on the map
 const initialCenter: Location = { lat: 63.4305, lng: 10.3951 }; // Initial map center (Norway)
-
+const scenarioPreviews = ref<ScenarioThemePreview[]>([]);
 // Dialog state
 const isSuccessDialogOpen = ref(false); // Controls success dialog visibility
 const createdEventName = ref(''); // Stores the created event name for the dialog
@@ -369,7 +373,8 @@ const formSchema = toTypedSchema(
     date: z.string().optional(),
     // Priority/Severity: required enum ('Low', 'Medium', 'High')
     priority: z.enum(['Low', 'Medium', 'High'], { required_error: t('add-event-info.errors.priority') }),
-    category: z.enum(['pandemic','war','flood','hurricane','drought','heatwave','forest fire', 'power outage','water shortage','cyber attack','major accident']),
+    category: z.enum(['pandemic','war','flood','hurricane','drought','heatwave','forest fire', 'power outage','water shortage','cyber attack','major accident'])
+    .optional(),
     // Description: required string, min 10, max 500 chars
     description: z.string().min(10, t('add-event-info.errors.description')).max(500, t('add-event-info.errors.description')),
   })
@@ -410,6 +415,7 @@ const form = useForm({
     time: '',
     date: '',
     priority: undefined, // Initialize select as undefined
+    category: undefined,
     description: '',
   },
 });
@@ -551,6 +557,7 @@ watch(
 const onSubmit = form.handleSubmit(async (values) => {
   console.log('Form values on submit:', values);
   try {
+    scenarioPreviews.value = await getCategories();
     // Map frontend priority ('Low', 'Medium', 'High') to backend severity ('green', 'yellow', 'red')
     let severity: 'green' | 'yellow' | 'red';
     switch (values.priority) {
@@ -583,9 +590,10 @@ const onSubmit = form.handleSubmit(async (values) => {
       address: values.address || null, // Send null if address is empty/undefined
       // Ensure radius is passed as a number
       radius: typeof values.radius === 'number' ? values.radius : parseFloat(values.radius || '0'),
-      severity: severity, // Use the mapped lowercase severity string
+      severity: values.severity, // Use the mapped lowercase severity string
+      scenarioTheme: getScenarioId(values.category),
       description: values.description, // Use validated description
-      startTime: startTime // Use combined date-time string
+      startTime: values.startTime // Use combined date-time string
     };
 
     console.log('Submitting Event data:', eventData);
@@ -597,14 +605,49 @@ const onSubmit = form.handleSubmit(async (values) => {
     isSuccessDialogOpen.value = true;
 
   } catch (error: any) {
-    // Handle errors during submission
     console.error('An error occurred while submitting the event: ', error);
-    // Extract a user-friendly error message from the API response or error object
     const errorMessage = error.response?.data?.message || error.message || 'Ukjent feil oppstod.';
-    // Display error (e.g., associate with a form field or show a general alert/toast)
     form.setFieldError('title', `Innsending feilet: ${errorMessage}`); // Example: show error near title
   }
 });
+
+async function getCategories() {
+	try {
+		const response = await getScenarioThemePreview();
+		console.log('getting scenarios:', response.content);
+		scenarioPreviews.value = response.content;
+	} catch (error) {
+		console.error('Something happened when fetching categories: ', error);
+	}
+}
+
+function getScenarioName(id: number) {
+	if (!scenarioPreviews.value) {
+		return 'undefined';
+	}
+	const scenario = null;
+	for (let i = 0; i < scenarioPreviews.value.length; i++) {
+		if (scenarioPreviews.value[i].id == id) {
+			scenario = scenarioPreviews.value[i];
+			break;
+		}
+	}
+	return scenario ? scenario.name : 'undefined';
+}
+
+function getScenarioId(category: string) {
+	if (!scenarioPreviews.value) {
+		return '';
+	}
+	const scenario = null;
+	for (let i = 0; i < scenarioPreviews.value.length; i++) {
+		if (scenarioPreviews.value[i].name == category) {
+			scenario = scenarioPreviews.value[i];
+			break;
+		}
+	}
+	return scenario ? scenario.id : '';
+}
 </script>
 
 <style scoped>

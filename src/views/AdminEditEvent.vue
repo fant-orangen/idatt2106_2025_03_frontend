@@ -29,212 +29,216 @@
 	</div>
 
 	<div class="page">
-			<!--Scrollable element of all current events-->
-			<div class="events" v-if="!selectedEvent">
-					<ScrollArea class="rounded-md border w-[100%] h-[100%]" >
-							<div class="p-4">
-									<Card>
-											<CardHeader>
-													<CardTitle><b>{{ $t('add-event-info.titles.choose-event') }}:</b></CardTitle>
-											</CardHeader>
-											<CardContent class="card-content">
-													<div v-for="(event, index) in events" :key="index" @click="selectEvent(index)"
-													class="text-sm cursor-pointer transition-colors"
-													:class="{
-															'hover:bg-muted/80': true
-													}">
-															<span class="severity-tag">{{ event.name }} | </span> 
-															<span :class="['severity-tag', event.severity]">{{ $t('crisis.color.' + event.severity) }}</span> 
-															<span class="severity-tag"> | {{ formatDateFull(event.startTime) }}</span>
-															<Separator class="my-2" />
-													</div> 
-													<br>
-													
-											</CardContent>
-									</Card>
-							</div>
-					</ScrollArea>
-			</div>
-
-			<!--if user selected an event from the list: this form will show up-->
-			<div class="edit">
-					<Card v-if="selectedEvent">
-							<CardContent>
-							<!--Title of the event-->
-							<form @submit="onSubmit" >
-									<div class="read-only">
-											<FormField name="title">
-													<FormItem>
-															<FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
-															<FormControl>
-																	<Input type="text" v-model="selectedEvent.name" readonly disabled />
-															</FormControl>
-															<FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
-													</FormItem>
-											</FormField>
-											<br>
-											<FormField name="active">
-													<FormItem>
-															<FormLabel>{{$t('add-event-info.titles.active')}}</FormLabel>
-															<FormControl>
-																	<Input type="text" :placeholder=" $t('add-event-info.active.' + selectedEvent?.active)" readonly disabled />
-															</FormControl>
-															<FormDescription>{{ $t('add-event-info.active.description') }}</FormDescription>
-													</FormItem>
-											</FormField>
-									</div>
-									
-									<br>
-									<div class="container">
-											<FormField v-slot="{ field, meta, errorMessage }" name="epicenterLatitude">
-													<FormItem>
-															<FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
-															<FormControl>
-																	<Input class="w-[100px]" type="number" step="any" v-model="field.value" />
-															</FormControl>
-															<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-													</FormItem>
-											</FormField>
-
-									<!--Longitude field-->
-									<FormField v-slot="{ field, meta, errorMessage }" name="epicenterLongitude">
-											<FormItem>
-													<FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
-													<FormControl>
-															<Input class="w-[100px]" type="number" step="any" v-model="field.value" />
-													</FormControl>
-													<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-											</FormItem>
-									</FormField>
-
-									<!--Address field-->
-									<FormField v-slot="{ field, meta, errorMessage }" name="address">
-											<FormItem>
-													<FormLabel>{{$t('add-event-info.titles.address')}}</FormLabel>
-													<FormControl>
-															<Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
-													</FormControl>
-													<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-											</FormItem>
-									</FormField>
-									</div>
-									<p class="text-muted-foreground text-sm">{{ $t('add-event-info.coordinates') }}</p>
-									<br>
-
-									<!--Field for selecting a radius for the event-->
-									<FormField v-slot="{ field, meta, errorMessage }" name="radius">
-											<FormItem>
-													<FormLabel>{{$t('add-event-info.titles.radius')}}</FormLabel>
-													<FormControl>
-															<Input type="number" v-bind="field" />
-													</FormControl>
-													<FormDescription>{{ $t('add-event-info.radius') }}</FormDescription>
-													<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-											</FormItem>
-									</FormField><br>
-
-									<!--Choose time of event first occurring-->
-									<div class="read-only">
-											<FormField name="startTime">
-													<FormItem>
-															<FormLabel>{{$t('add-event-info.titles.time')}}</FormLabel>
-															<FormControl>
-																	<Input type="text" :placeholder="formatDateFull(selectedEvent.startTime)" readonly disabled />
-															</FormControl>
-															<FormDescription>{{ $t('add-event-info.time') }}</FormDescription>
-													</FormItem>
-											</FormField>
-									</div>
-									<br>
-
-											<!--Choosing a priority-->
-									<div class="container">
-											<FormField v-slot="{ field, meta, errorMessage }" name="severity">
-													<FormItem>
-															<FormLabel>{{$t('add-event-info.titles.priority')}}</FormLabel>
-															<FormControl>
-																	<Select v-bind="field">
-																			<SelectTrigger style="cursor: pointer;">
-																					<SelectValue :placeholder="$t('add-event-info.crisis-level.' +  field.value)"/>
-																			</SelectTrigger>
-																			<SelectContent>
-																					<SelectGroup>
-																							<SelectItem class="severity-tag green" value="green">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
-																							<SelectItem class="severity-tag yellow" value="yellow">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
-																							<SelectItem class="severity-tag red" value="red">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
-																					</SelectGroup>
-																			</SelectContent>
-																	</Select>
-															</FormControl>
-															<FormDescription>{{ $t('add-event-info.priority') }}</FormDescription>
-															<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-													</FormItem>
-											</FormField>
-											<br>
-
-											<!--Category of event-->
-									<FormField v-slot="{ field, meta, errorMessage }" name="category">
-										<FormItem>
-											<FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
-											<FormControl>
-													
-												<Select v-bind="field">
-													<SelectTrigger style="cursor: pointer;">
-														<SelectValue :placeholder="$t('add-event-info.scenarios.' +  field.value)"/>
-													</SelectTrigger>
-													<SelectContent>
-															<SelectGroup>
-																<SelectLabel>{{ $t('sidebar.themes.extremeWeather.title') }}</SelectLabel> 
-																	<SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>                         <SelectItem value="">{{ $t('sidebar.themes.extremeWeather.flood') }}</SelectItem>
-																	<SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
-																	<SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
-																	<SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
-															</SelectGroup>
-														
-														<SelectGroup>
-															<SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}</SelectLabel>
-															<SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
-															<SelectItem value="war">{{ $t('add-event-info.scenarios.war') }}</SelectItem>
-															<SelectItem value="forest fire">{{ $t('add-event-info.scenarios.forestFire') }}</SelectItem>
-															<SelectItem value="power outage">{{ $t('add-event-info.scenarios.powerOutage') }}</SelectItem>
-															<SelectItem value="water shortage">{{ $t('add-event-info.scenarios.waterShortage') }}</SelectItem>
-															<SelectItem value="cyber attack">{{ $t('add-event-info.scenarios.cyberAttack') }}</SelectItem>
-															<SelectItem value="major accident">{{ $t('add-event-info.scenarios.majorAccident') }}</SelectItem>
-														</SelectGroup>
-												</SelectContent>
-											</Select>
-											</FormControl>
-											<FormDescription>{{ $t('add-event-info.category') }}</FormDescription>
-											<FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
-										</FormItem>
-									</FormField>
-									</div>
-									
-									<br>
-									<!--Description of event-->
-									<FormField v-slot="{ field, meta, errorMessage }" name="description">
-											<FormItem>
-													<FormLabel>{{$t('add-event-info.titles.description')}}:</FormLabel>
-													<FormControl>
-															<Textarea type="text" v-bind="field"></Textarea>
-													</FormControl>
-													<FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
-													<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-											</FormItem>
-									</FormField><br>
-
-									<div class="buttons">
-											<Button>{{$t('add-event-info.titles.submit')}}</Button>
-											<Button type="button" variant="destructive" @click="deactivateEvent(selectedEvent.id)">{{$t('add-event-info.titles.deactivate')}}</Button>
-									</div>
-									</form>
-							</CardContent>
+		<!--Scrollable element of all current events-->
+		<div class="events" v-if="!selectedEvent">
+			<ScrollArea class="rounded-md border w-[100%] h-[100%]" >
+				<div class="p-4">
+					<Card>
+						<CardHeader>
+							<CardTitle><b>{{ $t('add-event-info.titles.choose-event') }}:</b></CardTitle>
+						</CardHeader>
+						<CardContent class="card-content">
+								<div v-for="(event, index) in events" :key="index" @click="selectEvent(index)"
+								class="text-sm cursor-pointer transition-colors"
+								:class="{
+										'hover:bg-muted/80': true
+								}">
+										<span class="severity-tag">{{ event.name }} |</span> 
+										<span :class="['severity-tag', event.severity]"> {{ $t('crisis.color.' + event.severity) }}</span> 
+										<span class="severity-tag"> | {{ formatDateFull(event.startTime) }}</span>
+										<Separator class="my-2" />
+								</div> 
+								<br>
+								
+						</CardContent>
 					</Card>
-			</div>
-			<!--The map-->
-			<div class="map" v-if="selectedEvent">
-					Burde være et map inne i redigeringsdelen
-			</div>
+				</div>
+			</ScrollArea>
+		</div>
+
+		<!--if user selected an event from the list: this form will show up-->
+		<div class="edit">
+			<Card v-if="selectedEvent">
+				<CardContent>
+					<!--Title of the event-->
+					<form @submit="onSubmit" >
+						<div class="read-only">
+							<FormField name="title">
+								<FormItem>
+									<FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
+									<FormControl>
+										<Input type="text" v-model="selectedEvent.name" readonly disabled />
+									</FormControl>
+									<FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
+								</FormItem>
+							</FormField>
+							<br>
+							<FormField name="active">
+								<FormItem>
+									<FormLabel>{{$t('add-event-info.titles.active')}}</FormLabel>
+									<FormControl>
+										<Input type="text" :placeholder=" $t('add-event-info.active.' + selectedEvent?.active)" readonly disabled />
+									</FormControl>
+									<FormDescription>{{ $t('add-event-info.active.description') }}</FormDescription>
+								</FormItem>
+							</FormField>
+						</div>
+							
+						<br>
+						<div class="container">
+							<FormField v-slot="{ field, meta, errorMessage }" name="epicenterLatitude">
+								<FormItem>
+									<FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
+									<FormControl>
+										<Input class="w-[100px]" type="number" step="any" v-model="field.value" />
+									</FormControl>
+									<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+								</FormItem>
+							</FormField>
+
+							<!--Longitude field-->
+							<FormField v-slot="{ field, meta, errorMessage }" name="epicenterLongitude">
+								<FormItem>
+									<FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
+									<FormControl>
+										<Input class="w-[100px]" type="number" step="any" v-model="field.value" />
+									</FormControl>
+									<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+								</FormItem>
+							</FormField>
+
+							<!--Address field-->
+							<FormField v-slot="{ field, meta, errorMessage }" name="address">
+								<FormItem>
+									<FormLabel>{{$t('add-event-info.titles.address')}}</FormLabel>
+									<FormControl>
+										<Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
+									</FormControl>
+									<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+								</FormItem>
+							</FormField>
+						</div>
+						<p class="text-muted-foreground text-sm">{{ $t('add-event-info.coordinates') }}</p>
+						<br>
+
+						<!--Field for selecting a radius for the event-->
+						<FormField v-slot="{ field, meta, errorMessage }" name="radius">
+							<FormItem>
+								<FormLabel>{{$t('add-event-info.titles.radius')}}</FormLabel>
+								<FormControl>
+									<Input type="number" v-bind="field" />
+								</FormControl>
+								<FormDescription>{{ $t('add-event-info.radius') }}</FormDescription>
+								<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+							</FormItem>
+						</FormField>
+						<br>
+
+						<!--Choose time of event first occurring-->
+						<div class="read-only">
+							<FormField name="startTime">
+								<FormItem>
+									<FormLabel>{{$t('add-event-info.titles.time')}}</FormLabel>
+									<FormControl>
+										<Input type="text" :placeholder="formatDateFull(selectedEvent.startTime)" readonly disabled />
+									</FormControl>
+									<FormDescription>{{ $t('add-event-info.time') }}</FormDescription>
+								</FormItem>
+							</FormField>
+						</div>
+						<br>
+
+						<!--Choosing a priority-->
+						<div class="container">
+							<FormField v-slot="{ field, meta, errorMessage }" name="severity">
+								<FormItem>
+									<FormLabel>{{$t('add-event-info.titles.priority')}}</FormLabel>
+									<FormControl>
+										<Select v-bind="field">
+											<SelectTrigger style="cursor: pointer;">
+												<SelectValue :placeholder="$t('add-event-info.crisis-level.' +  field.value)"/>
+											</SelectTrigger>
+											<SelectContent>
+												<SelectGroup>
+													<SelectItem class="severity-tag green" value="green">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
+													<SelectItem class="severity-tag yellow" value="yellow">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
+													<SelectItem class="severity-tag red" value="red">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
+												</SelectGroup>
+											</SelectContent>
+										</Select>
+									</FormControl>
+									<FormDescription>{{ $t('add-event-info.priority') }}</FormDescription>
+									<FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+								</FormItem>
+							</FormField>
+								<br>
+
+						<!--Category of event-->
+						<FormField v-slot="{ field, meta, errorMessage }" name="category">
+							<FormItem>
+								<FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
+								<FormControl>
+										
+									<Select v-bind="field">
+										<SelectTrigger style="cursor: pointer;">
+											<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/>
+										</SelectTrigger>
+										<SelectContent>
+											<SelectGroup>
+												<SelectLabel>{{ $t('sidebar.themes.crisisSituations.extremeWeather.title') }}:</SelectLabel> 
+												<SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>
+												<SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
+												<SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
+												<SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
+											</SelectGroup>
+										
+										<SelectGroup>
+											<SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}:</SelectLabel>
+											<SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
+											<SelectItem value="war">{{ $t('add-event-info.scenarios.war') }}</SelectItem>
+											<SelectItem value="forest fire">{{ $t('add-event-info.scenarios.forest fire') }}</SelectItem>
+											<SelectItem value="power outage">{{ $t('add-event-info.scenarios.power outage') }}</SelectItem>
+											<SelectItem value="water shortage">{{ $t('add-event-info.scenarios.water shortage') }}</SelectItem>
+											<SelectItem value="cyber attack">{{ $t('add-event-info.scenarios.cyber attack') }}</SelectItem>
+											<SelectItem value="major accident">{{ $t('add-event-info.scenarios.major accident') }}</SelectItem>
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+								</FormControl>
+								<FormDescription>{{ $t('add-event-info.category') }}</FormDescription>
+								<FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+							</FormItem>
+						</FormField>
+						</div>
+							
+						<br>
+						<!--Description of event-->
+						<FormField v-slot="{ field, meta, errorMessage }" name="description">
+								<FormItem>
+										<FormLabel>{{$t('add-event-info.titles.description')}}:</FormLabel>
+										<FormControl>
+											<Textarea
+											 class="descriptionArea" 
+											 v-bind="field">
+											</Textarea>
+										</FormControl>
+										<FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
+										<FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+								</FormItem>
+						</FormField><br>
+
+						<div class="buttons">
+								<Button>{{$t('add-event-info.titles.submit')}}</Button>
+								<Button type="button" variant="destructive" @click="deactivateEvent(selectedEvent.id)">{{$t('add-event-info.titles.deactivate')}}</Button>
+						</div>
+					</form>
+				</CardContent>
+			</Card>
+		</div>
+		<!--The map-->
+		<div class="map" v-if="selectedEvent">
+				Burde være et map inne i redigeringsdelen
+		</div>
 	</div>
 </div>
 </template>
@@ -243,6 +247,8 @@
 import { updateCurrentEvent, deactivateCurrentEvent } from '@/services/api/AdminServices'
 import type { CrisisEventDto, UpdateCrisisEventDto } from '@/models/CrisisEvent.ts';
 import { fetchAllCrisisEvents, fetchCrisisEventById } from '@/services/api/CrisisEventService'
+import { getScenarioThemePreview } from '@/services/api/ScenarioThemeService'
+import { type ScenarioThemePreview } from '@/models/ScenarioTheme'
 import { ref, onMounted, computed, watch } from 'vue'
 import { toast } from 'vue-sonner'
 import {formatDateFull} from '@/utils/dateUtils.ts';
@@ -288,14 +294,11 @@ CardHeader,
 CardTitle,
 } from '@/components/ui/card'
 
-/*
-* TODO: fix bug where old value of field is updated to 0, when field is not actually updated
-*/
-
 const { t } = useI18n();
 const events = ref<CrisisEventDto[]>([]);
 const selectedEvent = ref<CrisisEventDto | null>(null);
 const updatedEvent = ref<UpdateCrisisEventDto | null> (null);
+const scenarioPreviews = ref<ScenarioThemePreview[]>([]);
 
 /**
  * Saves the event the admin user chose to edit to the 'selectedEvent' variable. 
@@ -329,6 +332,7 @@ onMounted(async () => {
 			const response = await fetchAllCrisisEvents();
 			console.log('All events gotten content: ', response);
 			events.value = response;
+			await getCategories();
 	} catch (error) {
 			console.error('Failed to get events from backend!', error);
 	}
@@ -385,15 +389,15 @@ const form = useForm({
  */
 watch(selectedEvent, (event)=> {
 	if(event) {
-			form.setValues({
-					epicenterLatitude: event.epicenterLatitude ?? '',
-					epicenterLongitude: event.epicenterLongitude ?? '',
-					address: '',
-					radius: event.radius ?? '',
-					severity: event.severity ?? '',
-					category: event.
-					description: event.description ?? '',
-			});
+		form.setValues({
+			epicenterLatitude: event.epicenterLatitude ?? '',
+			epicenterLongitude: event.epicenterLongitude ?? '',
+			address: '',
+			radius: event.radius ?? '',
+			severity: event.severity ?? '',
+			category: event.scenarioThemeId ?? '',
+			description: event.description ?? '',
+		});
 	}
 });
 
@@ -416,6 +420,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 					longitude: values.epicenterLongitude ?? selectedEvent.value.epicenterLongitude,
 					description: values.description ?? selectedEvent.value.description,
 					severity: values.severity ?? selectedEvent.value.severity,
+					scenarioThemeId: getScenarioId(values.category) ?? selectedEvent.value.scenarioThemeId,
 					radius: values.radius ?? selectedEvent.value.radius,
 			};
 			console.log('Oppdaterte event verider:', updatedEvent.value)
@@ -450,15 +455,52 @@ function cancelUpdate() {
 */
 async function deactivateEvent(id: number) {
 	try {
-			await deactivateCurrentEvent(id);
-			callToast('Hendelsen er nå satt som inaktiv!');
-			
-			selectedEvent.value = null; // redirects user back to the list of events
-			updatedEvent.value = null;
-			events.value = await fetchAllCrisisEvents(); // update the list of crisis events
+		await deactivateCurrentEvent(id);
+		callToast('Hendelsen er nå satt som inaktiv!');
+		selectedEvent.value = null; // redirects user back to the list of events
+		updatedEvent.value = null;
+		events.value = await fetchAllCrisisEvents(); // update the list of crisis events
 	} catch (error) {
-			console.error('Something happened when trying to deactivate: ', error);
+		console.error('Something happened when trying to deactivate: ', error);
 	}
+}
+
+async function getCategories() {
+	try {
+		const response = await getScenarioThemePreview();
+		console.log('getting scenarios:', response.content);
+		scenarioPreviews.value = response.content;
+	} catch (error) {
+		console.error('Something happened when fetching categories: ', error);
+	}
+}
+
+function getScenarioName(id: number) {
+	if (!scenarioPreviews.value) {
+		return 'undefined';
+	}
+	const scenario = null;
+	for (let i = 0; i < scenarioPreviews.value.length; i++) {
+		if (scenarioPreviews.value[i].id == id) {
+			scenario = scenarioPreviews.value[i];
+			break;
+		}
+	}
+	return scenario ? scenario.name : 'undefined';
+}
+
+function getScenarioId(category: string) {
+	if (!scenarioPreviews.value) {
+		return '';
+	}
+	const scenario = null;
+	for (let i = 0; i < scenarioPreviews.value.length; i++) {
+		if (scenarioPreviews.value[i].name == category) {
+			scenario = scenarioPreviews.value[i];
+			break;
+		}
+	}
+	return scenario ? scenario.id : '';
 }
 
 /**
@@ -528,6 +570,12 @@ gap: 10px;
 	font-size: 1em;
 }
 
+.descriptionArea {
+	min-height: 100px;
+	overflow: auto; 
+}
+/* scroll i textboks eller er det bedre at den bare utvider seg? 
+PErsonlig liker jeg ikke scroll i tekstbokser */
 .severity-tag {
 	padding: 2px 10px;
 	border-radius: 8px;

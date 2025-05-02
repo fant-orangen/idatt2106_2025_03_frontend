@@ -61,3 +61,10 @@ export interface UpdateScenarioThemeDto {
   /** Updated instructions for handling this type of crisis (optional) */
   instructions?: string;
 }
+
+export interface ScenarioThemePreview {
+  /** Unique identifier for the scenario theme to update */
+  id: number;
+  /**Name of the scenario theme */
+  name: string;
+}

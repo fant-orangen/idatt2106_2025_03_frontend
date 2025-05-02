@@ -497,7 +497,8 @@
       "contact-info": "Skriv inn et gyldig telefonnummer."
     },
     "scenarios": {
-      "flood": "flom",
+      "undefined": "Velg en kategori",
+      "flood": "Flom",
       "hurricane": "Orkan",
       "drought":"Tørke",
       "heatwave":"Hetebølge",
@@ -506,7 +507,7 @@
       "forest fire": "Skogbrann",
       "power outage": "Strømbrudd",
       "water shortage": "Vannmangel",
-      "cyber attack": "cyber angrep",
+      "cyber attack": "Cyber angrep",
       "major accident": "Stor ulykke"
     },
     "titles": {
@@ -526,6 +527,7 @@
       "category": "Kategori"
     },
     "crisis-level": {
+      "undefined":"Velg et krisenivå",
       "low": "Lav",
       "medium": "Middels",
       "high": "Høy",

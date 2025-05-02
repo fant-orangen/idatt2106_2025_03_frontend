@@ -43,6 +43,8 @@ export interface UpdateCrisisEventDto {
   longitude: number;
   /** Radius of the affected area in meters */
   radius: number | null;
+  /**ID of associated scenario theme */
+  scenarioThemeId: number;
 }
 
 /**
