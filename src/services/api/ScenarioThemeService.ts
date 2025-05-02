@@ -100,16 +100,24 @@ export async function updateScenarioTheme(themeData: UpdateScenarioThemeDto): Pr
 }
 
 /**
- * Deletes a scenario theme.
+ * Archives a scenario theme by setting its status to 'archived'.
+ * This performs a soft delete rather than removing the theme from the database.
  *
- * @param {number} id - The ID of the scenario theme to delete
- * @returns {Promise<void>}
+ * @param {UpdateScenarioThemeDto} themeData - The theme data to be archived
+ * @returns {Promise<ScenarioThemeDto>} The archived scenario theme
  */
-export async function deleteScenarioTheme(id: number): Promise<void> {
+export async function deleteScenarioTheme(themeData: UpdateScenarioThemeDto): Promise<ScenarioThemeDto> {
   try {
-    await api.patch(`/scenario-themes/${id}`);
+    const archiveData: UpdateScenarioThemeDto = {
+      ...themeData,
+      status: 'archived'
+    }
+    console.log("delete ::: ", archiveData);
+
+    const response = await api.patch(`/scenario-themes`, archiveData);
+    return response.data;
   } catch (error) {
-    console.error(`Error deleting scenario theme with ID ${id}:`, error);
+    console.error(`Error archiving scenario theme with ID ${themeData.id}:`, error);
     throw error;
   }
 }

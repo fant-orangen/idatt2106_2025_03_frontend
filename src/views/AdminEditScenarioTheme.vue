@@ -190,7 +190,6 @@ import {
 } from '@/services/api/ScenarioThemeService'
 import type {
   ScenarioThemeDto,
-  ScenarioThemeDetailsDto,
   UpdateScenarioThemeDto
 } from '@/models/ScenarioTheme'
 
@@ -203,7 +202,6 @@ import { Loader } from 'lucide-vue-next'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -344,19 +342,27 @@ function confirmDelete() {
   isDeleteConfirmOpen.value = true
 }
 
-// Delete the selected theme
 async function deleteTheme() {
   if (!selectedTheme.value) return
 
   isSubmitting.value = true
 
   try {
-    await deleteScenarioThemeApi(selectedTheme.value.id)
+    // Get the current form values
+    const currentValues = form.values
+
+    const themeData: UpdateScenarioThemeDto = {
+      id: selectedTheme.value.id,
+      name: currentValues.name,
+      description: currentValues.description,
+      instructions: currentValues.instructions
+    }
+
+    await deleteScenarioThemeApi(themeData);
     isDeleteConfirmOpen.value = false
     isDeleteSuccessDialogOpen.value = true
   } catch (error) {
     console.error('Failed to delete scenario theme:', error)
-    // You could add error handling here, such as displaying a toast notification
   } finally {
     isSubmitting.value = false
   }
