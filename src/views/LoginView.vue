@@ -278,15 +278,6 @@ async function handleResetPassword() {
   padding: 1rem;
 }
 
-/* Styling for the login form container */
-.login-container {
-  min-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  border-radius: 8px;
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
 
 /* Styling for error messages */
 .error {
