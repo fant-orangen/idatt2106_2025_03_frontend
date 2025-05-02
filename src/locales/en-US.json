@@ -35,6 +35,7 @@
     "make-new-POI": "Add a new point of interest",
     "make-new-activity": "Make a new activity",
     "make-new-scenario-theme": "Add a new scenario theme",
+    "edit-scenario-theme": "Edit scenario themes",
     "edit-event": "Edit a current event",
     "super-admin": "Super Admin",
     "current-admins": "Current admin users",
@@ -70,6 +71,17 @@
     "scenario-theme-description-max-length": "Description cannot exceed 1000 characters",
     "scenario-theme-instructions-min-length": "Instructions must be at least 10 characters",
     "scenario-theme-instructions-max-length": "Instructions cannot exceed 5000 characters",
+    "edit-scenario-themes": "Edit Scenario Themes",
+    "select-scenario-theme": "Select a scenario theme to edit",
+    "no-scenario-themes": "No scenario themes found",
+    "loading-scenario-themes": "Loading scenario themes...",
+    "update-scenario-theme": "Update Scenario Theme",
+    "delete-scenario-theme": "Delete Scenario Theme",
+    "confirm-delete-scenario-theme": "Are you sure you want to delete this scenario theme? This action cannot be undone.",
+    "scenario-theme-updated": "Scenario Theme Updated",
+    "scenario-theme-updated-description": "The scenario theme has been successfully updated",
+    "scenario-theme-deleted": "Scenario Theme Deleted",
+    "scenario-theme-deleted-description": "The scenario theme has been successfully deleted",
     "basic-info": "Basic Information",
     "poi-title-placeholder": "Enter title for the point of interest",
     "select-poi-type": "Select the type of point of interest this should be",
@@ -582,5 +594,11 @@
   "language": {
     "title": "Language",
     "select-language": "Select Language"
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm"
   }
 }

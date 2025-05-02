@@ -36,6 +36,7 @@
     "make-new-POI": "Legg til et nytt interessepunkt",
     "make-new-activity": "Lag en ny aktivitet",
     "make-new-scenario-theme": "Legg til et nytt scenariotema",
+    "edit-scenario-theme": "Rediger scenariotemaer",
     "edit-event": "Rediger en pågående hendelse",
     "super-admin": "Super Admin",
     "current-admins": "Nåværende adminbrukere",
@@ -71,6 +72,17 @@
     "scenario-theme-description-max-length": "Beskrivelse kan ikke overstige 1000 tegn",
     "scenario-theme-instructions-min-length": "Instruksjoner må være minst 10 tegn",
     "scenario-theme-instructions-max-length": "Instruksjoner kan ikke overstige 5000 tegn",
+    "edit-scenario-themes": "Rediger scenariotemaer",
+    "select-scenario-theme": "Velg et scenariotema å redigere",
+    "no-scenario-themes": "Ingen scenariotemaer funnet",
+    "loading-scenario-themes": "Laster scenariotemaer...",
+    "update-scenario-theme": "Oppdater scenariotema",
+    "delete-scenario-theme": "Slett scenariotema",
+    "confirm-delete-scenario-theme": "Er du sikker på at du vil slette dette scenariotemaet? Denne handlingen kan ikke angres.",
+    "scenario-theme-updated": "Scenariotema oppdatert",
+    "scenario-theme-updated-description": "Scenariotemaet har blitt oppdatert",
+    "scenario-theme-deleted": "Scenariotema slettet",
+    "scenario-theme-deleted-description": "Scenariotemaet har blitt slettet",
     "basic-info": "Grunnleggende informasjon",
     "poi-title-placeholder": "Skriv inn tittel på interessepunktet",
     "select-poi-type": "Velg hvilken type interessepunkt dette skal være",
@@ -575,6 +587,11 @@
   "language": {
     "title": "Språk",
     "select-language": "Velg språk"
-
+  },
+  "common": {
+    "back": "Tilbake",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "confirm": "Bekreft"
   }
 }

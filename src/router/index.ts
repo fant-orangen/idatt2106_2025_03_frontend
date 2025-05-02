@@ -115,6 +115,12 @@ const routes = [
     meta: { requiresAdmin: true },
   },
   {
+    path: '/edit-scenario-theme',
+    name: 'EditScenarioTheme',
+    component: () => import('@/views/AdminEditScenarioTheme.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
     path: '/handle-admins',
     name: 'HandleAdmins',
     component: () => import('@/views/SuperAdminAdministrate.vue'),
