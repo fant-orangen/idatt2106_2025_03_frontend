@@ -23,12 +23,12 @@
       </Card>
 
       <!-- Crisis Selection -->
-      <Card>
+      <Card class="flex flex-col h-full">
         <CardHeader class="pb-2">
           <CardTitle>{{ t('crisis.active_events', 'Active Events') }}</CardTitle>
         </CardHeader>
-        <CardContent class="p-0">
-          <ScrollArea className="h-[180px] px-4">
+        <CardContent class="p-0 flex-grow">
+          <ScrollArea className="h-[400px] px-4">
             <InfiniteScroll
               :isLoading="loading"
               :hasMore="hasMore"
@@ -67,7 +67,7 @@
       </Card>
     </div>
 
-    <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
       <CrisisDetails :crisis="selectedCrisis" />
 
       <CrisisEventHistory

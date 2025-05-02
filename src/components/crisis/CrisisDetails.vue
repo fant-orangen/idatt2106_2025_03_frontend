@@ -1,10 +1,10 @@
 
 <template>
-  <Card>
+  <Card class="flex flex-col h-full">
     <CardHeader class="pb-2">
       <CardTitle>{{ t('crisis.details', 'Crisis Details') }}</CardTitle>
     </CardHeader>
-    <CardContent>
+    <CardContent class="flex-grow">
       <div v-if="crisisDetails" class="space-y-4">
         <h3 class="text-lg font-semibold flex items-center gap-2">
           {{ crisisDetails.name || 'Unnamed Crisis' }}

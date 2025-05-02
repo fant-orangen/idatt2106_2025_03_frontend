@@ -1,9 +1,9 @@
 <template>
-  <Card>
+  <Card class="flex flex-col h-full">
     <CardHeader class="pb-2">
       <CardTitle>{{ title }}</CardTitle>
     </CardHeader>
-    <CardContent>
+    <CardContent class="flex-grow">
       <div v-if="error" class="text-center py-4 text-red-500">
         {{ error }}
       </div>
