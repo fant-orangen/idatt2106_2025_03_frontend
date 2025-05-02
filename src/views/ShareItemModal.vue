@@ -1,9 +1,11 @@
+<!-- This is only a temporary file for sharing items. Will most likely not be needed. -->
+
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import GroupService from '@/services/api/GroupService';
 const emit = defineEmits(['close', 'shared']);
 
-// --- TYPPER ---
+// --- Types ---
 interface Batch {
   id: string;
   amount: number;
@@ -16,19 +18,19 @@ interface Product {
   batches: Batch[];
 }
 
-// --- STATE ---
+// --- State ---
 const inventory = ref<Product[]>([]);
 const selectedProductId = ref('');
 const selectedBatchId = ref('');
 const amount = ref(1);
 
-// --- HENT INVENTAR ---
+// --- Get inventory ---
 onMounted(async () => {
   const res = await GroupService.getHouseholdInventory();
   inventory.value = res.data; // Må ha denne strukturen!
 });
 
-// --- VALG ---
+// --- Choices ---
 const selectedProductBatches = computed<Batch[]>(() => {
   const product = inventory.value.find((p) => p.id === selectedProductId.value);
   return product?.batches || [];
@@ -44,7 +46,7 @@ const canShare = computed(() =>
     selectedProductId.value && selectedBatchId.value && amount.value > 0 && amount.value <= maxAmount.value
 );
 
-// --- DEL VARER ---
+// --- Share ---
 async function handleShare() {
   const groupId = await GroupService.getUserGroups().then(res => res.data?.[0]?.groupId);
   if (!groupId) return;
