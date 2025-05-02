@@ -254,7 +254,7 @@ function goToPage(route: string) {
                 <span>Settings (WIP)</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator v-if="userStore.loggedIn" />
-              <DropdownMenuItem v-if="userStore.loggedIn" @click="goToPage('/admin-panel')">
+              <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin-panel')">
                 <ShieldUser class="mr-2 h-4 w-4" />
                 <span>Admin Panel (WIP)</span>
               </DropdownMenuItem>
