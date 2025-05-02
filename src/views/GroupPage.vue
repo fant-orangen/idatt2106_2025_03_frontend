@@ -3,7 +3,7 @@
 
     <!-- Sidebar -->
     <aside class="bg-sidebar text-sidebar-foreground rounded-lg p-4 w-64 shadow flex flex-col h-full max-h-[calc(100vh-6rem)]">
-      <h2 class="text-xl font-bold mb-4">Min Gruppe</h2>
+      <h2 class="text-xl font-bold mb-4">{{ t('group.title') }}</h2>
 
       <!-- Scrollbar for list of groups -->
       <ul class="space-y-3 overflow-y-auto pr-1 flex-1">
@@ -21,19 +21,19 @@
           @click="inviteHousehold"
           class="mt-4 bg-sidebar-accent text-sidebar-accent-foreground py-2 rounded-md text-sm font-medium"
       >
-        Inviter husholdning
+        {{ t('group.invite-household') }}
       </button>
     </aside>
 
     <!-- Main content -->
     <main class="flex-1">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Gruppens felles beredskapslager</h2>
+        <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
         <button
             @click="switchGroup"
             class="underline text-sm text-primary hover:text-primary-foreground transition"
         >
-          Bytt gruppe
+          {{ t('group.switch-group') }}
         </button>
       </div>
 
@@ -55,11 +55,11 @@
           to="/inventory"
           class="inline-block bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition"
       >
-        Del varer fra ditt lager →
+        {{ t('group.share-from-inventory') }}
       </router-link>
 
+      <!-- Modal for sharing (currently unused, but kept) -->
 
-      <!-- Modal for sharing -->
       <ShareItemModal
           v-if="isShareModalOpen"
           @close="isShareModalOpen = false"
@@ -69,10 +69,13 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import GroupService from '@/services/api/GroupService';
 import ShareItemModal from '@/views/ShareItemModal.vue';
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n();
 
 interface Household {
   id: string;
