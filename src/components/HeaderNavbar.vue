@@ -85,8 +85,8 @@ const topNotifications = ref<NotificationMessage[]>([])
 
 onMounted(async () => {
   try {
-    const page = await getNotifications()
-    topNotifications.value = page.content.slice(0, 3)
+    const notifications = await getNotifications()
+    topNotifications.value = notifications.slice(0, 3)
   } catch (error) {
     console.error('Failed to fetch notifications:', error)
   }
@@ -180,7 +180,7 @@ function goToPage(route: string) {
       >
         <!-- Close Button -->
         <button
-          class="close-button absolute top-4 right-4 text-primary text-lg mb-4"
+          class="close-button absolute top-5 right-7 text-primary text-lg mb-4"
           @click="toggleMenu"
         >
           ✖
