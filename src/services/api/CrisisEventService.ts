@@ -23,6 +23,7 @@ function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
     latitude: backendEvent.epicenterLatitude,
     longitude: backendEvent.epicenterLongitude,
     level: level,
+    radius: backendEvent.radius || 1000, // Default to 1000 meters if null
     startTime: backendEvent.startTime,
     isActive: backendEvent.active,
     createdBy: `User ${backendEvent.createdByUser}`,
@@ -146,6 +147,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
         latitude: 63.4305, // Centered on the default map location
         longitude: 10.3951,
         level: 2, // Medium severity (orange)
+        radius: 1500, // Affected area radius in meters
         startTime: new Date().toISOString(),
         isActive: true,
         createdBy: "admin@example.com",
@@ -159,6 +161,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
         latitude: 63.4405, // Slightly north
         longitude: 10.3951,
         level: 3, // High severity (red)
+        radius: 2000, // Affected area radius in meters
         startTime: new Date().toISOString(),
         isActive: true,
         createdBy: "admin@example.com",
@@ -172,6 +175,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
         latitude: 63.4305,
         longitude: 10.4151, // Slightly east
         level: 1, // Low severity (yellow)
+        radius: 1000, // Affected area radius in meters
         startTime: new Date().toISOString(),
         isActive: true,
         createdBy: "admin@example.com",
