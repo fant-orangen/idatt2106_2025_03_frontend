@@ -1,6 +1,6 @@
-import { useUserStore } from '@/stores/UserStore'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getCurrentHousehold } from '@/services/HouseholdService'
+import { useUserStore } from '@/stores/UserStore';
 import { type AxiosError } from 'axios';
 
 const routes = [
@@ -29,6 +29,11 @@ const routes = [
     name: 'Notifications',
     component: () => import('@/views/NotificationView.vue'),
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/crisis-event',
+    name: 'CrisisEvent',
+    component: () => import('@/views/CrisisEventView.vue')
   },
   {
     path: '/news',
@@ -118,6 +123,35 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),
+  },
+  {
+    path: '/medicine-inventory',
+    name: 'MedicineInventory',
+    component: () => import('@/views/MedicineInventory.vue'),
+  },
+  {
+    path: '/edit-POI',
+    name: 'AdminEditPOI',
+    component: () => import('@/views/AdminEditPOI.vue'),
+    meta: { requiresAdmin: true},
+  },
+  {
+    path: '/inventory/water',
+    name: 'WaterInventory',
+    component: () => import('@/views/FoodAndDrinksView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/inventory/food',
+    name: 'FoodInventory',
+    component: () => import('@/views/FoodAndDrinksView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/inventory/medicine',
+    name: 'MedicineInventory',
+    component: () => import('@/views/FoodAndDrinksView.vue'),
+    meta: { requiresAuth: true },
   },
 ]
 

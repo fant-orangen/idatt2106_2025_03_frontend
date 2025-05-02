@@ -36,3 +36,27 @@ export const daysLeft = (date: Date): number => {
   const today = new Date();
   return daysBetween(today, date);
 };
+
+export const formatDateFull = (dateString: string | Date): string => {
+  if (!dateString) return 'N/A';
+
+  try {
+    const date = dateString instanceof Date ? dateString : new Date(dateString);
+
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid date:', dateString);
+      return 'N/A';
+    }
+
+    return date.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return 'N/A';
+  }
+};

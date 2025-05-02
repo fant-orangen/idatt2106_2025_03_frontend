@@ -4,44 +4,44 @@ import Footer from './components/Footer.vue'
 import { Toaster } from './components/ui/sonner'
 import InvitationPopup from './components/invitation/InvitationPopup.vue'
 import { RouterView } from 'vue-router'
-import { useWebSocket } from '@/composables/useWebSocket';
-import { useUserStore } from '@/stores/UserStore';
-import { onMounted, ref, watch } from 'vue';
+import { useWebSocket } from '@/composables/useWebSocket'
+import { useUserStore } from '@/stores/UserStore'
+import { onMounted, ref, watch } from 'vue'
 
-const userStore = useUserStore();
-const { isConnected } = useWebSocket();
-const isInitialized = ref(false);
+const userStore = useUserStore()
+const { isConnected } = useWebSocket()
+const isInitialized = ref(false)
 
 // Initialize the store and validate token
 onMounted(async () => {
-  console.log('App.vue mounted - Initializing store');
-  await userStore.initializeFromStorage();
+  console.log('App.vue mounted - Initializing store')
+  await userStore.initializeFromStorage()
   console.log('App.vue - State after initialization:', {
     loggedIn: userStore.loggedIn,
     userId: userStore.userId,
     profile: userStore.profile,
-    isAuthenticated: userStore.isAuthenticated
-  });
-  isInitialized.value = true;
-});
+    isAuthenticated: userStore.isAuthenticated,
+  })
+  isInitialized.value = true
+})
 
 // Watch for changes in authentication state
 watch(
   () => userStore.isAuthenticated,
   (newAuthState) => {
-    console.log('Authentication state changed:', newAuthState);
-  }
-);
+    console.log('Authentication state changed:', newAuthState)
+  },
+)
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <HeaderNavbar />
+    <HeaderNavbar class="z-9999"/>
     <Toaster class="" />
     <div class="flex-grow">
       <RouterView />
     </div>
-    <Footer />
+    <Footer class="z-9999" />
     <InvitationPopup />
     <div v-if="isInitialized && !isConnected" class="connection-status">
       Disconnected from notifications

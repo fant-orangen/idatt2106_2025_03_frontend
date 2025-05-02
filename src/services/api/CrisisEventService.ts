@@ -1,30 +1,7 @@
 import api from '@/services/api/AxiosInstance';
 import type { CrisisEvent } from '@/types/map';
-
-// Define an interface representing the Page structure from Spring Boot
-interface Page<T> {
-  content: T[];
-  totalPages: number;
-  totalElements: number;
-  size: number;
-  number: number; // Current page number (0-indexed)
-  // Add other Page properties if needed (first, last, empty, etc.)
-}
-
-// Define an interface for the backend crisis event model
-interface BackendCrisisEvent {
-  id: number;
-  name: string;
-  description?: string;
-  severity: string; // 'green', 'yellow', 'red'
-  epicenterLatitude: number;
-  epicenterLongitude: number;
-  radius?: number;
-  startTime: string;
-  updatedAt: string;
-  createdByUserId: number;
-  active: boolean;
-}
+import type { CrisisEventChange, CrisisEventDto } from '@/models/CrisisEvent.ts';
+import type { Page } from '@/types/Page.ts';
 
 /**
  * Converts a backend crisis event to the frontend CrisisEvent format.
@@ -33,7 +10,7 @@ interface BackendCrisisEvent {
  * @param backendEvent The crisis event data from the backend
  * @returns A properly formatted CrisisEvent for the frontend
  */
-function mapBackendToFrontendEvent(backendEvent: BackendCrisisEvent): CrisisEvent {
+function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
   // Convert severity string to numeric level
   let level = 1; // default level (green)
   if (backendEvent.severity === 'yellow') level = 2;
@@ -48,38 +25,77 @@ function mapBackendToFrontendEvent(backendEvent: BackendCrisisEvent): CrisisEven
     level: level,
     startTime: backendEvent.startTime,
     isActive: backendEvent.active,
-    createdBy: `User ${backendEvent.createdByUserId}`,
+    createdBy: `User ${backendEvent.createdByUser}`,
     createdAt: backendEvent.updatedAt,
     updatedAt: backendEvent.updatedAt
   };
 }
 
 /**
- * Fetches all crisis events from the backend API, returned as a Page object.
+ * Fetches all crisis events from the backend API.
  * Makes a GET request to the '/crisis-events/all' endpoint.
- * Note: This might include inactive events depending on the backend implementation.
+ * Maps backend field names to frontend expected properties.
+ * Note: This includes both active and inactive events.
  *
- * @returns {Promise<Page<CrisisEvent>>} A Page of crisis events.
+ * @returns {Promise<CrisisEventDto[]>} Array of all crisis events.
  */
-export async function fetchAllCrisisEvents(): Promise<Page<CrisisEvent>> {
+export async function fetchAllCrisisEvents(): Promise<CrisisEventDto[]> {
   try {
-    // Expect a Page<BackendCrisisEvent> structure from the backend
-    const response = await api.get<Page<BackendCrisisEvent>>('/crisis-events/all', {
+    console.log('Attempting to fetch crisis events from API...');
+    const response = await api.get<Page<CrisisEventDto>>('/crisis-events/all', {
+      params: { size: 100 },
       headers: {
         'Content-Type': 'application/json'
       }
     });
+    return response.data.content;
 
-    // Map backend events to frontend format
-    const mappedContent = response.data.content.map(mapBackendToFrontendEvent);
-
-    // Return a new Page object with mapped content
-    return {
-      ...response.data,
-      content: mappedContent
-    };
   } catch (error) {
-    console.error('Error fetching all crisis events:', error);
+    console.error(`Failed to fetch all crisis`, error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches a single crisis event by ID.
+ * Makes a GET request to the '/crisis-events/{id}' endpoint.
+ *
+ * @param {number} id - The ID of the crisis event to fetch
+ * @returns {Promise<CrisisEventDto | null>} The crisis event or null if not found
+ */
+export async function fetchCrisisEventById(id: number): Promise<CrisisEventDto | null> {
+  try {
+    const response = await api.get<CrisisEventDto>(`/crisis-events/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch crisis event ID ${id}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches paginated crisis event changes for a given crisis event ID.
+ *
+ * @param crisisEventId - The ID of the crisis event.
+ * @param page - The page number to fetch (0-based index).
+ * @param size - The number of items per page (default is 20).
+ * @returns A paginated response containing crisis event changes.
+ * @throws Error if the request fails.
+ */
+export async function fetchCrisisEventChanges(
+  crisisEventId: number,
+  page: number,
+  size = 5
+): Promise<Page<CrisisEventChange>> {
+  try {
+    console.log("page : ", page);
+    const response = await api.get<Page<CrisisEventChange>>(
+      `/crisis-events/${crisisEventId}/changes`,
+      { params: { page, size } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch changes for crisis ${crisisEventId}`, error);
     throw error;
   }
 }
@@ -94,7 +110,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
   try {
     // Try to fetch from API first
     try {
-      const response = await api.get<Page<BackendCrisisEvent>>('/crisis-events/all', {
+      const response = await api.get<Page<CrisisEventDto>>('/crisis-events/all', {
         params: {
           size: 100 // Request a large page size to get most/all events
         },
@@ -185,7 +201,7 @@ export async function fetchCrisisEventsNearby(
   try {
     // Try API first
     try {
-      const response = await api.get<BackendCrisisEvent[]>('/crisis-events/nearby', {
+      const response = await api.get<CrisisEventDto[]>('/crisis-events/nearby', {
         params: {
           latitude,
           longitude,
@@ -241,10 +257,10 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   // Haversine formula
   const dLat = lat2Rad - lat1Rad;
   const dLon = lon2Rad - lon1Rad;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1Rad) * Math.cos(lat2Rad) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return EARTH_RADIUS * c;
 }

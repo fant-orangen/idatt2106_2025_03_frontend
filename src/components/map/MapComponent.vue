@@ -237,6 +237,20 @@ export default defineComponent({
     const forceMapRefresh = (): void => {
       if (map.value) {
         map.value.invalidateSize({ animate: false });
+
+        // Update user marker position if it exists
+        if (userMarker.value && props.userLocation) {
+          const latLng = L.latLng(props.userLocation.latitude, props.userLocation.longitude);
+          userMarker.value.setLatLng(latLng);
+        }
+
+        // Update route end marker position if it exists
+        if (activeRouteMarker.value && routingControl.value) {
+          const waypoints = routingControl.value.getWaypoints();
+          if (waypoints && waypoints.length >= 2 && waypoints[1].latLng) {
+            activeRouteMarker.value.setLatLng(waypoints[1].latLng);
+          }
+        }
       }
     };
 
@@ -395,6 +409,12 @@ export default defineComponent({
         }),
         zIndexOffset: 1000 // Ensure it's on top
       }).addTo(map.value as L.Map);
+
+      // Store the destination coordinates for later use
+      if (activeRouteMarker.value) {
+        (activeRouteMarker.value as any).destinationLat = lat;
+        (activeRouteMarker.value as any).destinationLng = lng;
+      }
     }
 
     // Clear routing - original functionality
@@ -767,7 +787,14 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
+#mapContainer {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
 /* Make sure the map container fills its parent */
 
 :deep(.admin-marker-icon) {
@@ -804,6 +831,12 @@ export default defineComponent({
   100% {
     transform: scale(0.8);
     box-shadow: 0 0 0 0 rgba(74, 137, 220, 0);
+  }
+}
+
+@media (max-width: 768px) {
+  #mapContainer {
+    height: 50vh; /* Map takes up half the viewport height on mobile */
   }
 }
 

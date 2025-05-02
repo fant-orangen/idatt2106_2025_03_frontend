@@ -95,6 +95,7 @@
     "address-not-found": "Could not find the address.",
     "search-error": "Error searching for address.",
     "map-reset": "Map reset.",
+    "edit-POI": "Edit point of interest",
     "poi-details": "POI details"
   },
   "notifications": {
@@ -121,7 +122,47 @@
   "crisis": {
     "crisis-status": "Crisis Status",
     "more-crisis-info": "Read more about your current crisis situation",
-    "no-crisis": "No ongoing crisis"
+    "no-crisis": "No ongoing crisis",
+    "no_active_crisis": "No active crisis events",
+    "title": "Crisis Events",
+    "map_view": "Map View",
+    "active_events": "Active Events",
+    "other_events": "Other active events",
+    "more_events": "+ {count} more events",
+    "error_loading_events": "Failed to load crisis events",
+    "details": "Crisis Details",
+    "status_history": "Event History",
+    "select_event_for_history": "Select a crisis event to view its history",
+    "no_changes": "No history found for this event",
+    "loading_more": "Loading more history...",
+    "no_more_history": "No more history to load",
+    "error_loading_changes": "Failed to load event history",
+    "error_loading_details": "Failed to load event details",
+    "select_event_for_news": "Select a crisis event to view related news",
+    "related_news": "Related News",
+    "no_related_news": "No related news found for this event",
+    "error_loading_news": "Failed to load related news",
+    "coordinates": "Coordinates",
+    "radius": "Radius",
+    "started": "Started",
+    "updated": "Updated",
+    "created_by": "Created By",
+    "previous": "Previous",
+    "new": "New",
+    "by_user": "By user {user}",
+    "change_types": {
+      "creation": "Created",
+      "level_change": "Severity Changed",
+      "description_update": "Description Updated",
+      "epicenter_moved": "Location Changed"
+    },
+    "changes": {
+      "created": "Event was created",
+      "level_changed": "Severity changed from {old} to {new}",
+      "description_updated": "Description updated",
+      "location_changed": "Location coordinates updated",
+      "unknown": "Unknown change"
+    }
   },
   "navigation": {
     "home": "Home",
@@ -147,6 +188,15 @@
     "current-situation": "Current situation",
     "read-info-preparations": "Read more about how you can prepare for a crisis",
     "info-current-crisis": "Read more about the current crisis"
+  },
+  "news": {
+    "title": "News",
+    "loading_more": "Loading more news...",
+    "no_more_news": "No more news to load",
+    "related_news": "Related News",
+    "no_news_found": "No news found",
+    "published_at": "Published at",
+    "read_more": "Read more"
   },
   "reflect": {
     "reflection": "Reflect after crisis",
@@ -246,7 +296,6 @@
     "no-users": "No users in this household yet",
     "done": "done",
     "manage-members": "manage members",
-
     "create": {
       "title": "Create New Household",
       "subtitle": "Set up your household for emergency preparedness",
@@ -262,7 +311,6 @@
         "generic": "Failed to create household"
       }
     },
-
     "join": {
       "title": "Join Household",
       "subtitle": "Join an existing household with an invitation code",
@@ -447,7 +495,7 @@
     "date": "Date when the event first occurred.",
     "successfully": "Event Created Successfully",
     "success-message": "Your event has been added to the system.",
-    "success-added":"had been added.",
+    "success-added": "had been added.",
     "go-to-admin": "Go to Admin Panel",
     "errors": {
       "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
@@ -488,7 +536,7 @@
       "description": "Write some information describing the POI. Where is it? What is its purpose?",
       "successfully": "POI Created Successfully",
       "success-message": "Your POI has been added to the system.",
-      "success-added":"had been added.",
+      "success-added": "had been added.",
       "go-to-admin": "Go to Admin Panel",
       "description-placeholder": "Description"
     },
@@ -504,6 +552,24 @@
       "water-source": "Water Source",
       "food": "Food Distribution"
     }
+  },
+  "footer": {
+    "title": "Krisefikser.no",
+    "description": "A platform for crisis preparedness and information sharing.",
+    "contact-us": "Contact us on: "
+  },
+  "add-poi": {
+    "name": "Name",
+    "description": "Description",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "opening-hours": "Opening Hours",
+    "contact": "Contact Information",
+    "type": "Type",
+    "submit": "Save",
+    "delete": "Delete",
+    "confirm-delete": "Are you sure you want to delete this point of interest?",
+    "edit-POI": "Edit point of interest"
   },
   "language": {
     "title": "Language",
