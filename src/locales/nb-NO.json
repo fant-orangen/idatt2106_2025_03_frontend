@@ -151,6 +151,7 @@
     "active_events": "Aktive hendelser",
     "other_events": "Andre aktive hendelser",
     "more_events": "+ {count} flere hendelser",
+    "no_more_events": "Ingen flere hendelser å laste",
     "error_loading_events": "Kunne ikke laste krisehendelser",
     "details": "Krisedetaljer",
     "status_history": "Hendelseshistorikk",
