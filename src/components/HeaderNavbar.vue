@@ -22,7 +22,6 @@ import { Button } from '@/components/ui/button'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import NotificationPopover from '@/components/NotificationPopover.vue'
 
-const { t } = useI18n()
 // Store and Router setup (keep from version B, add notificationStore)
 import { useUserStore } from '@/stores/UserStore'
 const { locale, t } = useI18n()
@@ -235,41 +234,43 @@ function goToPage(route: string) {
       </RouterLink>
       <div class="flex gap-2">
         <DropdownMenu v-if="userStore.loggedIn">
-          <DropdownMenuTrigger as-child>
-            <Button
-              variant="ghost"
-              size="icon"
-              class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+        <DropdownMenuTrigger as-child>
+          <Button
+            variant="ghost"
+            size="icon"
+            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          >
+            <User class="h-5 w-5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <User class="mr-2 h-4 w-4" />
+              <span @click="goToPage('/profile')">Profile (WIP)</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/settings')">
+              <Settings class="mr-2 h-4 w-4" />
+              <span>Settings (WIP)</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator v-if="userStore.isAdminUser" />
+            <DropdownMenuItem
+              v-if="userStore.isAdminUser"
+              @click="goToPage('/admin-panel')"
             >
-              <User class="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User class="mr-2 h-4 w-4" />
-                <span @click="goToPage('/profile')">Profile (WIP)</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem @click="goToPage('/settings')">
-                <Settings class="mr-2 h-4 w-4" />
-                <span>Settings (WIP)</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator v-if="userStore.loggedIn" />
-              <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin-panel')">
-                <ShieldUser class="mr-2 h-4 w-4" />
-                <span>Admin Panel</span>
-              </DropdownMenuItem>
-            </template>
-            <DropdownMenuSeparator />
+              <ShieldUser class="mr-2 h-4 w-4" />
+              <span>Admin Panel</span>
+            </DropdownMenuItem>
             <DropdownMenuItem @click="logOut()">
               <LogOut class="mr-2 h-4 w-4" />
-              <span>Log out </span>
+              <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+
 
         <Popover>
           <PopoverTrigger as="button" class="no-border relative"> <Button
