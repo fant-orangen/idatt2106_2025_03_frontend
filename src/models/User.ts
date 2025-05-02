@@ -11,6 +11,7 @@ export interface RegistrationData {
   firstName: string
   lastName: string
   phoneNumber: string
+  recaptchaToken: string
 }
 
 /**
@@ -116,6 +117,7 @@ export interface UserProfile {
   firstName: string
   lastName: string
   phone: string
+  locationSharingEnabled: boolean;
 }
 
 /**

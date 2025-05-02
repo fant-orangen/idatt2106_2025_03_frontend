@@ -9,10 +9,23 @@
       <ShelterStore @view-beredskapslager="handleViewBeredskapslager" />
     </div>
   </div>
+
+  <!-- Navigate to groups -->
+  <button
+      @click="goToGroupPage"
+      class="ml-4 bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition"
+  >
+    {{ t('group.go-to-groups') }}
+  </button>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
+const router = useRouter()
+
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 import HouseholdMembers from '@/components/household/HouseholdMembers.vue';
 import ShelterStore from '@/components/household/ShelterStore.vue';
@@ -41,6 +54,11 @@ const handleViewBeredskapslager = () => {
 const refreshHouseholdData = async () => {
   await householdStore.fetchCurrentHousehold();
 };
+
+const goToGroupPage = () => {
+  router.push('/group')
+}
+
 
 // Fetch household data when the component mounts
 onMounted(async () => {

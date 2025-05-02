@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, h } from 'vue'
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 import { useI18n } from 'vue-i18n'
 import { AxiosError } from 'axios' // Import AxiosError type
@@ -35,6 +35,7 @@ const errorMessage = ref('')
 const resetEmail = ref('')
 const isTwoFactorAuthDialogOpen = ref(false)
 const pinValue = ref<string[]>([])
+/* global grecaptcha */
 
 /**
  * Handles the login process by verifying the user's credentials.
@@ -47,14 +48,37 @@ const pinValue = ref<string[]>([])
 async function handleLogin() {
   try {
     errorMessage.value = ''
-    const response = await userStore.verifyLogin(email.value, password.value)
+    console.log('Executing reCAPTCHA...')
 
-    // Check HTTP status code
+    // Generate the reCAPTCHA token
+    const recaptchaToken = await new Promise<string>((resolve, reject) => {
+      grecaptcha.ready(() => {
+        grecaptcha
+          .execute('6Lee4CorAAAAABwb4TokgKDs9GdFCxpaiZTKfkfQ', {
+            action: 'LOGIN',
+          })
+          .then((token: string) => {
+            console.log('reCAPTCHA Token:', token)
+            if (!token) {
+              reject(new Error('Failed to generate reCAPTCHA token'))
+            } else {
+              resolve(token)
+            }
+          })
+          .catch((error: unknown) => reject(error))
+      })
+    })
+
+    console.log('This is the token being sent:', recaptchaToken)
+
+    // Verify the login credentials
+    const response = await userStore.verifyLogin(email.value, password.value, recaptchaToken)
+
+    // Handle the response
     if (response.status === 200) {
-      userStore.login(response.status, response.data.token, email.value)
       router.push('/')
+      userStore.login(response.status, response.data.token, email.value)
     } else if (response.status === 202) {
-      // If the response status is 202, it indicates that 2FA is required
       userStore.send2FACodeToEmail(email.value)
       isTwoFactorAuthDialogOpen.value = true
     } else {
@@ -99,7 +123,7 @@ async function handleComplete() {
     }
 
     router.push('/')
-    console.log('User role is: ',userStore.role)
+    console.log('User role is: ', userStore.role)
   } catch (error) {
     errorMessage.value = t('errors.login-failed')
     console.log('Login error', error)

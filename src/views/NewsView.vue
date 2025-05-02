@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { getNotifications } from '@/services/NotificationService';
-import type { NotificationMessage } from '@/models/NotificationMessage.ts';
+import type { NotificationMessage } from '@/models/NotificationMessage';
 
 const { t } = useI18n();
 const news = ref<NotificationMessage[]>([]);
