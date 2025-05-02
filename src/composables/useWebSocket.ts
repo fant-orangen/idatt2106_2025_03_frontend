@@ -136,7 +136,7 @@ export function useWebSocket() {
           console.error('WebSocket connection error:', error);
           if (error instanceof Frame) {
             console.error('STOMP Frame details:', { command: error.command, headers: error.headers, body: error.body });
-            toast.error(`Connection Error: ${error.headers?.message || 'Check console'}`);
+            toast.error(`Connection Error: ${(error.headers as Record<string, string>)?.message || 'Check console'}`);
           } else {
             toast.error(`Connection Error: ${error}`);
           }
