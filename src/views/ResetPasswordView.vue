@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { useI18n } from 'vue-i18n'
 import { AxiosError } from 'axios'
 import * as z from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
 import { resetPassword } from '@/services/UserService'
+import { useRoute } from 'vue-router'
 
 // Import shadcn-vue components
 import { Input } from '@/components/ui/input'
@@ -23,6 +24,8 @@ import {
 import router from '@/router'
 
 const { t } = useI18n()
+const route = useRoute()
+const tokenFromQuery = ref<string | null>(null)
 
 // Reactive variables
 const isView = ref(false)
@@ -33,10 +36,10 @@ const resetPasswordSchema = toTypedSchema(
     token: z.string().nonempty(t('reset-password.token-required')),
     password: z
       .string()
-      .min(8, t('reset-password.password-req-length'))
-      .regex(/[A-Z]/, t('reset-password.password-req-uppercase'))
-      .regex(/[0-9]/, t('reset-password.password-req-number'))
-      .regex(/[\W_]/, t('reset-password.password-req-special')),
+      .min(8, t('reset-password.password-req'))
+      .regex(/[A-Z]/, t('reset-password.password-req'))
+      .regex(/[0-9]/, t('reset-password.password-req'))
+      .regex(/[\W_]/, t('reset-password.password-req')),
     confirmPassword: z.string(),
   }).refine((data) => data.password === data.confirmPassword, {
     message: t('reset-password.password-req-match'),
@@ -52,6 +55,19 @@ const form = useForm({
     password: '',
     confirmPassword: '',
   },
+})
+
+// Watch for tokenFromQuery changes and update the form's token value
+watch(tokenFromQuery, (newToken) => {
+  if (newToken) {
+    form.setFieldValue('token', newToken)
+  }
+})
+
+// Set tokenFromQuery on component mount
+onMounted(() => {
+  tokenFromQuery.value = route.query.token as string || null
+  console.log("Token from query:", tokenFromQuery.value)
 })
 
 /**

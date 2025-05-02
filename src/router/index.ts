@@ -20,9 +20,10 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
   },
   {
-    path: '/reset-password',
+    path: '/reset-password/:token',
     name: 'ResetPassword',
-    component: () => import('@/views/ResetPasswordView.vue')
+    component: () => import('@/views/ResetPasswordView.vue'),
+    props: true
   },
   {
     path: '/notifications',
