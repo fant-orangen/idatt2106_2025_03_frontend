@@ -31,6 +31,22 @@
     "2fa-login-title": "To-trinnsverifisering",
     "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn."
   },
+  "reset-password": {
+    "title": "Tilbakestill passord",
+    "code": "Verifiseringskode",
+    "new-password": "Nytt passord",
+    "confirm-new-password": "Bekreft passord",
+    "update-button": "Oppdater passord",
+    "email-sent": "E-post sendt",
+    "password-updated": "Passord oppdatert",
+    "password-update-failed": "Kunne ikke oppdatere passord",
+    "token-required": "Verifiseringskode er påkrevd",
+    "password-req": "Passord må være minst 8 tegn, a-å, A-Å, 0-9 og spesialtegn",
+    "password-req-match": "Passordene må samsvare",
+    "invalid-token": "Ugyldig verifiseringskode",
+    "validation-error": "Valideringsfeil",
+    "unexpected-error": "Uventet feil"
+  },
   "admin": {
     "administrate": "Administrer",
     "make-new-event": "Legg til en ny hendelse",
@@ -100,7 +116,10 @@
     "login-failed": "Innlogging mislyktes. Vennligst sjekk legitimasjonen din.",
     "passwords-do-not-match": "Passordene stemmer ikke overens.",
     "registration-failed": "Registrering mislyktes. Vennligst prøv igjen.",
-    "no-news-available": "Ingen nyheter tilgjengelig"
+    "no-news-available": "Ingen nyheter tilgjengelig",
+    "invalid-email": "Ugyldig e-postadresse",
+    "unexpected-error": "Uventet feil - vennligst prøv igjen senere.",
+    "network-error": "Ingen nettverkstilkobling. Vennligst sjekk internettforbindelsen din."
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",
