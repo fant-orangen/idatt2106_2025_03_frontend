@@ -103,6 +103,12 @@ const routes = [
     meta: { requiresAdmin: true },
   },
   {
+    path: '/add-new-scenario-theme',
+    name: 'AddNewScenarioTheme',
+    component: () => import('@/views/AdminAddNewScenarioTheme.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
     path: '/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
@@ -112,6 +118,12 @@ const routes = [
     path: '/edit-event',
     name: 'EditEvent',
     component: () => import('@/views/AdminEditEvent.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/edit-scenario-theme',
+    name: 'EditScenarioTheme',
+    component: () => import('@/views/AdminEditScenarioTheme.vue'),
     meta: { requiresAdmin: true },
   },
   {

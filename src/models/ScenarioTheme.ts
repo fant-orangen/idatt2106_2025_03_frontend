@@ -60,4 +60,6 @@ export interface UpdateScenarioThemeDto {
   description?: string;
   /** Updated instructions for handling this type of crisis (optional) */
   instructions?: string;
+  /** Updated status of the scenario theme (optional) */
+  status?: 'active' | 'archived';
 }

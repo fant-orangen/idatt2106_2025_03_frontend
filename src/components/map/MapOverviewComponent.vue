@@ -125,7 +125,7 @@ import {
   fetchPoisNearby,
   fetchNearestPoiByType
 } from '@/services/api/PoiService';
-import { fetchActiveCrisisEvents } from '@/services/api/CrisisEventService';
+import { fetchActiveCrisisEvents } from '@/services/CrisisEventService';
 import type { PoiData } from '@/models/PoiData';
 import type { POI, UserLocation, CrisisEvent } from '@/types/map';
 import { convertPoiData } from '@/types/map';

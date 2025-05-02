@@ -12,7 +12,7 @@
 		  </BreadcrumbList>
 		</Breadcrumb>
 	  </div>
-  
+
 	  <!-- Main Content -->
 	  <div class="flex-grow p-5">
 		<div class="page flex flex-col lg:flex-row gap-8">
@@ -26,7 +26,7 @@
 				{{ $t('admin.administrate') }}
 			  </span>
 			</h1>
-  
+
 			<Button
 			  v-if="userStore.isSuperAdminUser"
 			  @click="router.push('/handle-admins')"
@@ -50,6 +50,13 @@
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
+			  @click="router.push('/add-new-scenario-theme')"
+			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+			  {{ $t('admin.make-new-scenario-theme') }}
+			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
+			<Button
 			  @click="router.push('/add-new-activity')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
@@ -63,6 +70,13 @@
 			  {{ $t('admin.edit-event') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+			<Button
+			  @click="router.push('/edit-scenario-theme')"
+			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+			  {{ $t('admin.edit-scenario-theme') }}
+			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
 			<Button @click="router.push('/edit-poi')"
 			class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
@@ -70,7 +84,7 @@
             <font-awesome-icon icon="fa-solid fa-arrow-right" />
           </Button>
 		  </div>
-  
+
 		  <!-- Map Section -->
 		  <div class="map flex-grow">
 			<h1 class="text-2xl font-bold text-primary mb-4">
@@ -84,7 +98,7 @@
 	  </div>
 	</div>
   </template>
-  
+
   <script setup lang="ts">
   import router from '@/router'
   import { useUserStore } from '@/stores/UserStore'
@@ -96,10 +110,10 @@
 	BreadcrumbList,
   } from '@/components/ui/breadcrumb'
   import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
-  
+
   const userStore = useUserStore()
   </script>
-  
+
   <style scoped>
   /* No additional styles needed as Tailwind CSS handles the layout and responsiveness */
   </style>

@@ -7,7 +7,16 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
+/**
+ * ThemeContent component
+ *
+ * This component displays content for both static themes and dynamic scenario themes.
+ * It handles loading scenario theme details from the backend and rendering appropriate content.
+ *
+ * @component
+ */
 import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { marked } from 'marked'
 import {
   Card,
@@ -36,6 +45,8 @@ const props = defineProps<{
   selectedScenarioId: number | null
 }>()
 
+const router = useRouter()
+
 const isReadMoreOpen = ref(false)
 const isEmergencyContactsOpen = ref(false)
 
@@ -43,6 +54,14 @@ const scenarioTheme = ref<ScenarioThemeDetailsDto | null>(null)
 const loadingScenario = ref(false)
 const scenarioError = ref<string | null>(null)
 
+/**
+ * Gets the translation key for a theme based on its type
+ * Maps theme keys to their corresponding translation paths
+ *
+ * @param themeKey - The identifier for the theme
+ * @param type - Whether to get the title or content translation key
+ * @returns The translation key path or null if not found
+ */
 function getTranslationKey(themeKey: string, type: 'title' | 'content'): string | null {
   if (!themeKey) return null
 
@@ -83,6 +102,10 @@ async function loadScenarioTheme(id: number) {
   }
 }
 
+/**
+ * Watch for changes to the selected scenario ID
+ * Loads the scenario theme when a new ID is selected
+ */
 watch(() => props.selectedScenarioId, (newId) => {
   if (newId) {
     loadScenarioTheme(newId)
@@ -91,6 +114,10 @@ watch(() => props.selectedScenarioId, (newId) => {
   }
 }, { immediate: true })
 
+/**
+ * Computed property for the title translation key
+ * Returns null for scenario themes (which have their own title)
+ */
 const titleKey = computed(() => {
   if (props.selectedScenarioId && scenarioTheme.value) {
     return null
@@ -100,18 +127,26 @@ const titleKey = computed(() => {
   return getTranslationKey(props.selectedTheme, 'title')
 })
 
+/**
+ * Computed property for the content translation key
+ * Returns null for scenario themes (which have their own content)
+ */
 const contentKey = computed(() => {
   if (props.selectedScenarioId && scenarioTheme.value) {
-    return null // We'll use the scenario theme content directly
+    return null
   }
 
   if (!props.selectedTheme) return null
   return getTranslationKey(props.selectedTheme, 'content')
 })
 
+/**
+ * Computed property for the rendered content
+ * Returns null for scenario themes (handled separately in template)
+ */
 const renderedContent = computed(() => {
   if (props.selectedScenarioId && scenarioTheme.value) {
-    return null // We'll use the scenario theme content directly
+    return null
   }
 
   if (contentKey.value) {
@@ -120,24 +155,39 @@ const renderedContent = computed(() => {
   return null
 })
 
+/**
+ * Computed property for theme-specific resources translation key
+ */
 const themeResources = computed(() => {
   if (!props.selectedTheme) return null
 
   return `infoPage.themeSpecificResources.${props.selectedTheme}`
 })
 
+/**
+ * Opens the read more sheet
+ */
 function openReadMore() {
   isReadMoreOpen.value = true
 }
 
+/**
+ * Closes the read more sheet
+ */
 function closeReadMore() {
   isReadMoreOpen.value = false
 }
 
+/**
+ * Opens the emergency contacts sheet
+ */
 function openEmergencyContacts() {
   isEmergencyContactsOpen.value = true
 }
 
+/**
+ * Closes the emergency contacts sheet
+ */
 function closeEmergencyContacts() {
   isEmergencyContactsOpen.value = false
 }
@@ -153,6 +203,8 @@ function closeEmergencyContacts() {
   </div>
 
   <div v-else-if="selectedScenarioId && scenarioTheme" class="max-w-4xl mx-auto">
+
+
     <div class="mb-4">
       <h1 class="text-2xl md:text-3xl font-bold">{{ scenarioTheme.name }}</h1>
     </div>
@@ -191,6 +243,8 @@ function closeEmergencyContacts() {
 
   <!-- Regular theme content -->
   <div v-else-if="selectedTheme && titleKey && renderedContent" class="max-w-4xl mx-auto">
+
+
     <div class="mb-4">
       <h1 class="text-2xl md:text-3xl font-bold">{{ $t(titleKey) }}</h1>
     </div>
@@ -338,6 +392,8 @@ function closeEmergencyContacts() {
   </div>
 
   <div v-else class="h-full flex flex-col items-center justify-center text-center p-4">
+
+
     <div class="mb-4 text-6xl">📚</div>
     <h2 class="text-2xl font-bold mb-2">{{ $t('infoPage.selectThemePrompt') }}</h2>
     <p class="text-muted-foreground max-w-md">

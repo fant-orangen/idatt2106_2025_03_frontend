@@ -7,6 +7,15 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
+/**
+ * EnhancedInformationView component
+ *
+ * This component serves as the main view for displaying information content.
+ * It provides a sidebar navigation for different themes and displays the selected content.
+ * Handles both static themes and dynamic scenario themes loaded from the backend.
+ *
+ * @component
+ */
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,12 +24,20 @@ import ThemeContent from '@/components/information/ThemeContent.vue'
 import { fetchAllScenarioThemes } from '@/services/api/ScenarioThemeService'
 import type { ScenarioThemeDto } from '@/models/ScenarioTheme'
 
-// Define the SidebarNode interface here instead of in a separate file
+/**
+ * Interface representing a node in the sidebar navigation tree
+ * Used to build the hierarchical structure of the sidebar
+ */
 export interface SidebarNode {
+  /** Unique identifier for the node */
   key: string;
+  /** Translation key or display text for the node */
   titleKey: string;
+  /** Optional child nodes for nested navigation */
   children?: SidebarNode[];
+  /** Flag indicating if this node represents a scenario theme */
   isScenario?: boolean;
+  /** ID of the scenario if this is a scenario node */
   scenarioId?: number;
 }
 
@@ -33,6 +50,10 @@ const scenarioThemes = ref<ScenarioThemeDto[]>([])
 const loadingScenarios = ref(true)
 const scenarioError = ref<string | null>(null)
 
+/**
+ * Computed property that extracts the scenario ID from the route
+ * Checks both route params and query params for the ID
+ */
 const routeScenarioId = computed(() => {
   if (route.params.id) {
     return parseInt(route.params.id as string, 10)
@@ -41,23 +62,26 @@ const routeScenarioId = computed(() => {
   return id ? parseInt(id as string, 10) : null
 })
 
-// Sidebar sections configuration with static themes
+/**
+ * Static sidebar sections that are always available
+ */
 const staticSections: SidebarNode[] = [
   { key: 'preparednessStorage', titleKey: 'sidebar.themes.preparednessStorage' },
   { key: 'afterCrisis', titleKey: 'sidebar.themes.afterCrisis' }
 ]
 
-// Combined sections with dynamic scenario themes
+/**
+ * Computed property that combines static sections with dynamic scenario themes
+ * Creates a hierarchical structure for the sidebar navigation
+ */
 const sections = computed<SidebarNode[]>(() => {
-  // Create scenario theme nodes
   const scenarioNodes: SidebarNode[] = scenarioThemes.value.map(theme => ({
     key: `scenario-${theme.id}`,
-    titleKey: theme.name, // Use the actual name instead of a translation key
-    isScenario: true, // Flag to identify scenario themes
+    titleKey: theme.name,
+    isScenario: true,
     scenarioId: theme.id
   }))
 
-  // If we have scenario themes, add them under a parent node
   if (scenarioNodes.length > 0) {
     return [
       {
@@ -69,7 +93,6 @@ const sections = computed<SidebarNode[]>(() => {
     ]
   }
 
-  // Otherwise just return static sections
   return staticSections
 })
 
@@ -99,10 +122,8 @@ const router = useRouter()
  * @param themeKey - The key of the selected theme
  */
 function handleThemeSelected(themeKey: string): void {
-  // Check if this is a scenario theme
   if (themeKey.startsWith('scenario-')) {
     const scenarioId = parseInt(themeKey.replace('scenario-', ''), 10)
-    // Navigate to the info page with the scenario ID in the URL path
     router.push({
       name: 'ScenarioTheme',
       params: { id: scenarioId.toString() }
@@ -110,7 +131,6 @@ function handleThemeSelected(themeKey: string): void {
     selectedScenarioId.value = scenarioId
     selectedTheme.value = null
   } else {
-    // Regular theme
     selectedTheme.value = themeKey
     selectedScenarioId.value = null
   }
@@ -123,21 +143,20 @@ function toggleMobileSidebar(): void {
   showSidebarMobile.value = !showSidebarMobile.value
 }
 
-// On component mount
+/**
+ * Initialize the component when mounted
+ * Loads scenario themes and sets the selected scenario based on the route
+ */
 onMounted(async () => {
-  // Load scenario themes
   await loadScenarioThemes()
 
-  // Check if there's a scenario ID in the route
   if (routeScenarioId.value) {
-    // Find the scenario in our loaded themes
     const scenario = scenarioThemes.value.find(theme => theme.id === routeScenarioId.value)
     if (scenario) {
       selectedScenarioId.value = scenario.id
     }
   }
 
-  // Set loading to false
   isLoading.value = false
 })
 </script>
@@ -148,6 +167,7 @@ onMounted(async () => {
     <EnhancedSidebar
       :sections="sections"
       :selectedTheme="selectedTheme"
+      :selectedScenarioId="selectedScenarioId"
       :showSidebarMobile="showSidebarMobile"
       @theme-selected="handleThemeSelected"
       @toggle-mobile-sidebar="toggleMobileSidebar"
@@ -209,5 +229,4 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* Layout handled via Tailwind classes */
 </style>
