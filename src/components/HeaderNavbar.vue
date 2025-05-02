@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
-import { getNotifications } from '@/services/NotificationService.ts'
-import type { NotificationMessage } from '@/models/NotificationMessage.ts'
+import type { NotificationMessage } from '@/models/NotificationMessage'
+import { useNotificationStore } from '@/stores/NotificationStore'
 
 import {
   DropdownMenu,
@@ -25,6 +25,7 @@ import NotificationPopover from '@/components/NotificationPopover.vue'
 const { locale } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
+const notificationStore = useNotificationStore()
 
 let prevScrollpos: number = window.pageYOffset
 const languages = [
@@ -38,14 +39,16 @@ const selectedLanguage = ref(languages[0].label)
 // Dark mode toggle
 const colorMode = useColorMode()
 
-// Get the top 3 notifications
-const topNotifications = ref<NotificationMessage[]>([])
+// Get the latest notifications for the popover
+const topNotifications = computed(() => notificationStore.latestNotifications)
 
 onMounted(async () => {
-  try {
-    topNotifications.value = await getNotifications()
-  } catch (error) {
-    console.error('Failed to fetch notifications:', error)
+  if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
+    try {
+      await notificationStore.fetchNotifications()
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error)
+    }
   }
 })
 

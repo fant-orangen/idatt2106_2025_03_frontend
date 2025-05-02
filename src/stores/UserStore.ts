@@ -1,9 +1,11 @@
+// src/stores/UserStore.ts
+
 /**
  * User store module for global user state management.
  *
  * This Pinia store manages the application's user authentication state,
- * profile data (including location sharing preference), current location,
- * and provides methods for login, registration, profile updates, and location state management.
+ * profile data (including location sharing preference), and provides
+ * methods for login, registration, profile updates, and related auth flows.
  *
  * @module UserStore
  */
@@ -12,7 +14,7 @@ import { computed, ref } from 'vue';
 import api from '@/services/api/AxiosInstance.ts';
 import { fetchToken, register, send2FACode, verify2FACode } from '@/services/api/AuthService.ts';
 import type { RegistrationData, UserProfile } from '@/models/User.ts';
-import type { UserLocation } from '@/types/map'; // Import UserLocation type
+import { useGeolocationStore } from './GeolocationStore'; // Import GeolocationStore for cleanup
 
 /**
  * Extended UserProfile interface including the location sharing preference.
@@ -25,6 +27,8 @@ export interface UserProfileExtended extends UserProfile {
   emailVerified?: boolean;
   householdId?: number;
   householdName?: string;
+  // Add role if it comes from the profile endpoint
+  role?: string;
 }
 
 /**
@@ -42,29 +46,6 @@ export const useUserStore = defineStore('user', () => {
   // Holds the extended profile data, initialized to null
   const profile = ref<UserProfileExtended | null>(null);
 
-  // --- Geolocation State ---
-  /**
-   * Stores the latest successfully retrieved user location coordinates.
-   * Updated by the `useGeolocation` composable via the `setLocation` action.
-   */
-  const currentUserLocation = ref<UserLocation | null>(null);
-  /**
-   * Stores the last geolocation error encountered. Simplified to code and message.
-   * Updated by the `useGeolocation` composable via the `setLocationError` action.
-   */
-  const locationError = ref<{ code: number; message: string } | null>(null);
-  /**
-   * Boolean flag indicating if a geolocation request is currently in progress.
-   * Managed by the `setLocationLoading`, `setLocation`, and `setLocationError` actions.
-   */
-  const isLocationLoading = ref(false);
-  /**
-   * User-friendly string indicating the current status of geolocation attempts.
-   * (e.g., 'Loading', 'Success', 'Permission Denied', 'Disabled by User', 'Not Supported', 'Error').
-   * Managed by the `setLocationLoading`, `setLocation`, and `setLocationError` actions.
-   */
-  const locationStatus = ref<string | null>(null);
-
   // --- Initialization ---
   /**
    * Initializes the store state from localStorage (token, username, role, userId).
@@ -75,29 +56,41 @@ export const useUserStore = defineStore('user', () => {
     console.log('Initializing UserStore from storage...');
     const storedToken = localStorage.getItem('token');
     const storedUsername = localStorage.getItem('username');
-    const storedRole = localStorage.getItem('role');
-    const storedUserId = localStorage.getItem('userId');
+    const storedRole = localStorage.getItem('role'); // Still useful as initial guess
+    const storedUserId = localStorage.getItem('userId'); // Still useful as initial guess
 
     if (storedToken && storedUsername && storedRole && storedUserId) {
       // Temporarily set state from storage
       token.value = storedToken;
       username.value = storedUsername;
+      // Set role/userId temporarily from storage, will be overwritten by profile fetch
       role.value = storedRole;
       userId.value = storedUserId;
+
 
       try {
         // Validate the token with the backend
         console.log('Validating token...');
         await api.get('/auth/validate'); // Endpoint checks token from interceptor
 
-        // Token is valid, set authenticated state
+        // Token is valid, set authenticated state *tentatively*
+        // The profile fetch will confirm/update role/userId
         isAuthenticated.value = true;
         console.log('Token validated successfully.');
 
-        // Fetch the full user profile
+        // Fetch the full user profile - this will update role/userId correctly
         await fetchUserProfile();
+
+        // If profile fetch failed, clear state
+        if (!profile.value) {
+          console.warn('Profile fetch failed during initialization, clearing auth state.');
+          clearAuthState();
+        } else {
+          console.log('UserStore initialized successfully.');
+        }
+
       } catch (error) {
-        console.error('Token validation failed or profile fetch failed:', error);
+        console.error('Token validation failed or profile fetch failed during init:', error);
         // Clear all state if token is invalid or profile fetch fails critically
         clearAuthState();
       }
@@ -109,84 +102,40 @@ export const useUserStore = defineStore('user', () => {
 
   // --- State Clearing ---
   /**
-   * Clears all authentication, profile, and location state.
+   * Clears all authentication and profile state.
    * Removes relevant items from localStorage.
+   * Also clears geolocation state.
    */
   function clearAuthState() {
-    console.log('Clearing auth state...');
+    console.log('UserStore: Clearing auth and profile state...');
     token.value = null;
     username.value = null;
     role.value = null;
     userId.value = null;
     isAuthenticated.value = false;
     profile.value = null; // Clear profile
-    // Clear location state
-    currentUserLocation.value = null;
-    locationError.value = null;
-    isLocationLoading.value = false;
-    locationStatus.value = null;
+
     // Clear localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('role');
     localStorage.removeItem('userId');
-  }
 
-  // --- Geolocation State Actions (called by useGeolocation composable) ---
-  /**
-   * Updates the store with a successfully retrieved location.
-   * @param payload - Object containing the location, status message, and loading state.
-   */
-  function setLocation(payload: {
-    location: UserLocation | null;
-    status: string | null;
-    isLoading: boolean;
-  }) {
-    currentUserLocation.value = payload.location;
-    locationStatus.value = payload.status;
-    isLocationLoading.value = payload.isLoading;
-    locationError.value = null; // Clear error on success/status update
-  }
-
-  /**
-   * Updates the store when a geolocation error occurs.
-   * @param payload - Object containing the error, status message, and loading state.
-   */
-  function setLocationError(payload: {
-    error: GeolocationPositionError | { code: number; message: string } | null;
-    status: string | null;
-    isLoading: boolean;
-  }) {
-    // Store a simplified version of the error for easier handling
-    locationError.value = payload.error
-      ? { code: payload.error.code, message: payload.error.message }
-      : null;
-    locationStatus.value = payload.status;
-    isLocationLoading.value = payload.isLoading;
-    currentUserLocation.value = null; // Clear location on error
-  }
-
-  /**
-   * Sets the loading state for geolocation requests.
-   * @param loading - Boolean indicating if loading is active.
-   */
-  function setLocationLoading(loading: boolean) {
-    isLocationLoading.value = loading;
-    if (loading) {
-      locationStatus.value = 'Loading'; // Set status when loading starts
-      locationError.value = null; // Clear previous errors
-    }
+    // Clear geolocation state from the other store
+    const geolocationStore = useGeolocationStore();
+    geolocationStore.clearLocationState();
   }
 
   // --- User Profile Actions ---
   /**
    * Fetches the current user's profile data from the backend.
    * Requires the user to be authenticated (token must be set).
-   * Updates the `profile` ref on success.
+   * Updates the `profile` ref on success and also updates `role` and `userId` from profile data.
    */
   async function fetchUserProfile() {
-    if (!isAuthenticated.value) {
-      console.warn('Cannot fetch profile: User not authenticated.');
+    // Ensure token is set before fetching profile (even if isAuthenticated might be slightly delayed)
+    if (!token.value) {
+      console.warn('Cannot fetch profile: No token available.');
       return;
     }
     console.log('Fetching user profile...');
@@ -194,12 +143,34 @@ export const useUserStore = defineStore('user', () => {
       // Assumes backend endpoint '/api/users/me' returns UserProfileExtended data
       const response = await api.get<UserProfileExtended>('/users/me');
       profile.value = response.data;
-      console.log('User profile fetched successfully:', profile.value);
+
+      // --- Update role and userId based on fetched profile ---
+      if (profile.value) {
+        // Assuming the profile DTO includes the role and ID
+        role.value = profile.value.role || null; // Adjust based on actual profile DTO field name
+        userId.value = profile.value.id?.toString() || null; // Adjust based on actual profile DTO field name
+        // Ensure isAuthenticated reflects successful profile fetch
+        isAuthenticated.value = true;
+        console.log('User profile fetched successfully, updated role/userId:', profile.value);
+      } else {
+        console.warn('User profile fetched but data is null/empty.');
+        // Consider clearing auth if profile is essential and failed to load
+        // clearAuthState();
+      }
+
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
       // Handle error appropriately - maybe logout if unauthorized (401)
-      // For now, just clear the profile maybe?
-      // profile.value = null;
+      if ((error as any)?.response?.status === 401) {
+        console.log('Unauthorized fetching profile, clearing auth state.');
+        clearAuthState();
+      }
+      // Clear profile on error? Or keep potentially stale data? Clearing is safer.
+      profile.value = null;
+      role.value = null;
+      userId.value = null;
+      // Don't set isAuthenticated to false here unless it's a 401,
+      // as the token might still be technically valid but profile endpoint failed
     }
   }
 
@@ -232,6 +203,7 @@ export const useUserStore = defineStore('user', () => {
   /**
    * Internal function to set authentication state after successful login/token validation.
    * Parses the token, stores data in state and localStorage, and fetches the user profile.
+   * Sets isAuthenticated to true *after* profile fetch succeeds.
    * @param status - The HTTP status code (should be 200).
    * @param tokenStr - The JWT token string.
    * @param userEmail - The email of the logged-in user.
@@ -239,38 +211,49 @@ export const useUserStore = defineStore('user', () => {
   async function _handleSuccessfulAuth(status: number, tokenStr: string, userEmail: string) {
     if (status !== 200 || !tokenStr) {
       console.error('_handleSuccessfulAuth called with invalid status or token.');
+      clearAuthState(); // Clear state on invalid input
       return;
     }
     console.log('Handling successful authentication...');
+
+    // Set token first so fetchUserProfile is authorized
+    token.value = tokenStr;
+    username.value = userEmail; // Set username tentatively
+
     try {
-      const tokenParts = tokenStr.split('.');
-      if (tokenParts.length !== 3) throw new Error('Invalid JWT format');
-
-      const payload = JSON.parse(atob(tokenParts[1]));
-      if (!payload.role || !payload.userId) throw new Error('Missing role or userId in JWT payload');
-
-      // Update state
-      role.value = payload.role;
-      userId.value = payload.userId?.toString();
-      token.value = tokenStr;
-      username.value = userEmail;
-      isAuthenticated.value = true;
-
-      // Store in localStorage
-      localStorage.setItem('token', tokenStr);
-      localStorage.setItem('username', userEmail);
-      localStorage.setItem('role', payload.role);
-      localStorage.setItem('userId', payload.userId?.toString() || '');
-
-      console.log('Auth state set, fetching profile...');
-      // Fetch profile AFTER successful login
+      // --- Fetch Profile BEFORE setting final auth state ---
+      console.log('Token set, fetching profile...');
       await fetchUserProfile();
 
+      // Check if profile fetch succeeded (it updates role, userId, and potentially isAuthenticated)
+      if (!profile.value || !isAuthenticated.value) {
+        console.error('Profile fetch failed after successful authentication API call. Clearing state.');
+        // fetchUserProfile likely already called clearAuthState on critical failure (like 401)
+        // If it failed for other reasons, ensure state is clean.
+        if (isAuthenticated.value || token.value) { // Avoid redundant clear if already cleared
+          clearAuthState();
+        }
+        return; // Stop the process
+      }
+
+      // --- Profile fetched successfully, state (role, userId, isAuthenticated) is updated ---
+      // --- Now store in localStorage ---
+      console.log('Profile fetched, storing auth state to localStorage...');
+      localStorage.setItem('token', tokenStr);
+      localStorage.setItem('username', userEmail); // Store the provided email
+      localStorage.setItem('role', role.value || ''); // Store the role from fetched profile
+      localStorage.setItem('userId', userId.value || ''); // Store the userId from fetched profile
+
+      console.log('Authentication and profile fetch fully completed.');
+
     } catch (error) {
-      console.error('Error processing token or fetching profile:', error);
-      clearAuthState(); // Clear state if token parsing or profile fetch fails
+      // This catch block might be redundant if fetchUserProfile handles its errors well,
+      // but acts as a safety net.
+      console.error('Unexpected error during profile fetch or state storage in _handleSuccessfulAuth:', error);
+      clearAuthState(); // Ensure cleanup on any unexpected error
     }
   }
+
 
   /**
    * Attempts to log in the user with email and password.
@@ -289,6 +272,7 @@ export const useUserStore = defineStore('user', () => {
 
       // Handle successful direct login (no 2FA required or already verified)
       if (response.status === 200 && response.data.token && !response.data.isUsing2FA) {
+        // _handleSuccessfulAuth now includes profile fetching
         await _handleSuccessfulAuth(response.status, response.data.token, userEmail);
       }
       // If status is 202, it means 2FA is required - the calling component handles this.
@@ -312,6 +296,7 @@ export const useUserStore = defineStore('user', () => {
       await register(userData); // Call registration API
       console.log('Registration successful, attempting login...');
       // After successful registration, attempt login (which includes profile fetch)
+      // verifyLogin now calls _handleSuccessfulAuth which fetches the profile
       await verifyLogin(userData.email, userData.password);
     } catch (error) {
       console.error('Registration or subsequent login failed:', error);
@@ -351,6 +336,7 @@ export const useUserStore = defineStore('user', () => {
 
       // Handle successful 2FA verification
       if (response.status === 200 && response.data.token) {
+        // _handleSuccessfulAuth now includes profile fetching
         await _handleSuccessfulAuth(response.status, response.data.token, userEmail);
       }
 
@@ -358,12 +344,14 @@ export const useUserStore = defineStore('user', () => {
     } catch (error) {
       console.error('Error verifying 2FA code:', error);
       // Don't necessarily clear auth state here, as the initial login attempt might still be partially valid
+      // If _handleSuccessfulAuth fails above, it will clear the state.
       throw error; // Re-throw for component
     }
   }
 
   /**
    * Logs the user out by clearing all local state and stored data.
+   * Calls clearAuthState which now also clears geolocation state.
    */
   function logout() {
     console.log('Logging out user...');
@@ -375,10 +363,13 @@ export const useUserStore = defineStore('user', () => {
   // --- Computed Properties ---
   /** Checks if the user is currently authenticated. */
   const loggedIn = computed(() => isAuthenticated.value);
-  /** Checks if the user has SUPERADMIN role. */
+  /** Checks if the user has SUPERADMIN role (reads from reactive `role` ref). */
   const isSuperAdminUser = computed(() => role.value === 'SUPERADMIN');
-  /** Checks if the user has ADMIN or SUPERADMIN role. */
+  /** Checks if the user has ADMIN or SUPERADMIN role (reads from reactive `role` ref). */
   const isAdminUser = computed(() => role.value === 'ADMIN' || role.value === 'SUPERADMIN');
+  /** Computed property for the user's location sharing preference */
+  const locationSharingEnabled = computed(() => profile.value?.locationSharingEnabled ?? false);
+
 
   // --- Store Interface ---
   return {
@@ -389,10 +380,6 @@ export const useUserStore = defineStore('user', () => {
     userId,
     isAuthenticated,
     profile, // Exposes the extended profile object
-    currentUserLocation,
-    locationError,
-    isLocationLoading,
-    locationStatus,
 
     // Actions - Auth & Profile
     initializeFromStorage,
@@ -404,14 +391,10 @@ export const useUserStore = defineStore('user', () => {
     fetchUserProfile,
     updateLocationPreference,
 
-    // Actions - Location (Primarily for use by useGeolocation)
-    setLocation,
-    setLocationError,
-    setLocationLoading,
-
     // Computed Getters
     loggedIn,
     isAdminUser,
-    isSuperAdminUser
+    isSuperAdminUser,
+    locationSharingEnabled, // Expose the computed preference
   };
 });

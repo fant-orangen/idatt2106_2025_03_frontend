@@ -8,7 +8,7 @@
  */
 
 import api from '@/services/api/AxiosInstance';
-import type { NotificationMessage } from '@/models/NotificationMessage.ts'
+import type { NotificationMessage } from '@/models/NotificationMessage'
 
 const baseUrl = '/notifications';
 

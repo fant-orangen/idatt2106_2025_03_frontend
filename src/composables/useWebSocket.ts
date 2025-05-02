@@ -2,7 +2,8 @@
 
 import { ref, watch } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import type { NotificationMessage } from '@/models/NotificationMessage.ts'; // Import the type definition
+import { useNotificationStore } from '@/stores/NotificationStore';
+import type { NotificationMessage } from '@/models/NotificationMessage'; // Import the type definition
 import SockJS from 'sockjs-client';
 import { Client, over, Frame } from 'stompjs'; // Added Frame for detailed error logging
 import { toast } from 'vue-sonner'; // Import the toast function
@@ -16,6 +17,7 @@ import { toast } from 'vue-sonner'; // Import the toast function
  */
 export function useWebSocket() {
   const userStore = useUserStore();
+  const notificationStore = useNotificationStore();
   const isConnected = ref(false);
   let stompClient: Client | null = null;
   let connectionAttempted = false; // Flag to prevent multiple concurrent connection attempts
@@ -87,6 +89,9 @@ export function useWebSocket() {
                   // Parse the JSON message body into our NotificationMessage type
                   const notification: NotificationMessage = JSON.parse(message.body);
                   console.log('Parsed notification:', notification);
+
+                  // Add the notification to the store
+                  notificationStore.addNotification(notification);
 
                   // *** Frontend Improvement: Handle specific notification types ***
                   if (notification.preferenceType === 'crisis_alert') {
