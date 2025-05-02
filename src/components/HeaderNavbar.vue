@@ -23,6 +23,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import NotificationPopover from '@/components/NotificationPopover.vue'
 
 const { t } = useI18n()
+const { locale } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const isMenuOpen = ref(false)
@@ -86,7 +87,7 @@ const topNotifications = ref<NotificationMessage[]>([])
 onMounted(async () => {
   try {
     const notifications = await getNotifications()
-    topNotifications.value = notifications.slice(0, 3)
+    topNotifications.value = notifications.content.slice(0, 3)
   } catch (error) {
     console.error('Failed to fetch notifications:', error)
   }
@@ -114,7 +115,7 @@ function logOut(): void {
 
 function selectLanguage(language: { label: string; code: string }): void {
   selectedLanguage.value = language.label
-  t.value = language.code
+  locale.value = language.code
 }
 
 function goToPage(route: string) {
