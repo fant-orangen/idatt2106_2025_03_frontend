@@ -534,6 +534,7 @@
       "contact-info": "Contact information"
     },
     "POI-type": {
+      "undefined": "Select type",
       "defibrillator": "Defibrillator",
       "shelter": "Shelter",
       "water-source": "Water Source",

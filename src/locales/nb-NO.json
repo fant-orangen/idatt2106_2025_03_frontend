@@ -528,6 +528,7 @@
       "contact-info": "Kontaktinformasjon"
     },
     "POI-type": {
+      "undefined": "Velg type",
       "defibrillator": "Hjertestarter",
       "shelter": "Tilfluktsrom",
       "water-source": "Vannkilde",
