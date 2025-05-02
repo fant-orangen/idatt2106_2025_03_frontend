@@ -15,6 +15,11 @@ const routes = [
     component: () => import('@/views/information/EnhancedInformationView.vue'),
   },
   {
+    path: '/info/scenario/:id',
+    name: 'ScenarioTheme',
+    component: () => import('@/views/information/EnhancedInformationView.vue'),
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
@@ -182,7 +187,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information','NotFound', 'News','Notifications'];
+  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications'];
 
   // Allow immediate navigation if the target route is public
   if (publicRoutes.includes(to.name as string)) { //

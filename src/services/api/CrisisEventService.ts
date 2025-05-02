@@ -264,3 +264,19 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 
   return EARTH_RADIUS * c;
 }
+
+/**
+ * Fetches crisis events associated with a specific scenario theme.
+ *
+ * @param {number} scenarioThemeId - The ID of the scenario theme
+ * @returns {Promise<CrisisEventDto[]>} Array of crisis events related to the scenario theme
+ */
+export async function fetchCrisisEventsByScenarioTheme(scenarioThemeId: number): Promise<CrisisEventDto[]> {
+  try {
+    const response = await api.get<CrisisEventDto[]>(`/crisis-events/by-theme/${scenarioThemeId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch crisis events for scenario theme ${scenarioThemeId}:`, error);
+    return [];
+  }
+}
