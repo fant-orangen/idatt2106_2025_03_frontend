@@ -91,7 +91,7 @@ export async function createScenarioTheme(themeData: CreateScenarioThemeDto): Pr
  */
 export async function updateScenarioTheme(themeData: UpdateScenarioThemeDto): Promise<ScenarioThemeDto> {
   try {
-    const response = await api.put(`/scenario-themes/${themeData.id}`, themeData);
+    const response = await api.patch(`/scenario-themes`, themeData);
     return response.data;
   } catch (error) {
     console.error(`Error updating scenario theme with ID ${themeData.id}:`, error);
@@ -107,7 +107,7 @@ export async function updateScenarioTheme(themeData: UpdateScenarioThemeDto): Pr
  */
 export async function deleteScenarioTheme(id: number): Promise<void> {
   try {
-    await api.delete(`/scenario-themes/${id}`);
+    await api.patch(`/scenario-themes/${id}`);
   } catch (error) {
     console.error(`Error deleting scenario theme with ID ${id}:`, error);
     throw error;
