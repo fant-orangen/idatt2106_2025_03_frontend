@@ -1,6 +1,6 @@
 import api from '@/services/api/AxiosInstance';
 import type { CrisisEvent } from '@/types/map';
-import type { CrisisEventChange, CrisisEventDto } from '@/models/CrisisEvent.ts';
+import type { CrisisEventChange, CrisisEventDto, CrisisEventPreviewDto } from '@/models/CrisisEvent.ts';
 import type { Page } from '@/types/Page.ts';
 
 /**
@@ -33,25 +33,29 @@ function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
 
 /**
  * Fetches all crisis events from the backend API.
- * Makes a GET request to the '/crisis-events/all' endpoint.
- * Maps backend field names to frontend expected properties.
+ * Makes a GET request to the '/crisis-events/all/previews' endpoint.
  * Note: This includes both active and inactive events.
  *
- * @returns {Promise<CrisisEventDto[]>} Array of all crisis events.
+ * @param {number} page - The page number to fetch (0-based index)
+ * @param {number} size - The number of items per page
+ * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing crisis event previews
  */
-export async function fetchAllCrisisEvents(): Promise<CrisisEventDto[]> {
+export async function fetchAllCrisisEvents(
+  page = 0,
+  size = 10
+): Promise<Page<CrisisEventPreviewDto>> {
   try {
-    console.log('Attempting to fetch crisis events from API...');
-    const response = await api.get<Page<CrisisEventDto>>('/crisis-events/all', {
-      params: { size: 100 },
+    console.log('Fetching paginated crisis events, page:', page);
+    const response = await api.get<Page<CrisisEventPreviewDto>>('/crisis-events/all/previews', {
+      params: { page, size },
       headers: {
         'Content-Type': 'application/json'
       }
     });
-    return response.data.content;
-
+    console.log("crisis events page:", response.data);
+    return response.data;
   } catch (error) {
-    console.error(`Failed to fetch all crisis`, error);
+    console.error('Failed to fetch paginated crisis events', error);
     throw error;
   }
 }

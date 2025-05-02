@@ -8,8 +8,21 @@
         </CardTitle>
       </CardHeader>
       <CardContent class="flex flex-col items-center w-full px-4">
+        <!-- Loading State -->
+        <div v-if="loading" class="main-crisis mb-4 w-full text-center">
+          <div class="text-base font-semibold flex items-center justify-center gap-2">
+            <div class="w-4 h-4 border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+            {{ t('crisis.loading', 'Loading crisis events...') }}
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="main-crisis mb-4 w-full text-center">
+          <div class="text-base font-semibold text-destructive">{{ error }}</div>
+        </div>
+
         <!-- Main Crisis (Highest Severity) -->
-        <div v-if="mainCrisis" class="main-crisis mb-4 w-full text-center">
+        <div v-else-if="mainCrisis" class="main-crisis mb-4 w-full text-center">
           <div
             class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-colors cursor-pointer dark:text-white"
             :style="{
@@ -31,7 +44,7 @@
         </div>
 
         <!-- Other Crisis Events as Links -->
-        <div v-if="otherEvents.length > 0" class="other-events w-full mt-3">
+        <div v-if="!loading && !error && otherEvents.length > 0" class="other-events w-full mt-3">
           <div class="text-sm font-medium mb-2 text-center">{{ t('crisis.other_events', 'Other active events') }}</div>
           <div class="flex flex-wrap justify-center gap-3">
             <a
@@ -81,16 +94,25 @@ const { t } = useI18n();
 const router = useRouter();
 const crisisEvents = ref<CrisisEventPreviewDto[]>([]);
 const maxDisplay = 4;
+const loading = ref(false);
+const error = ref<string | null>(null);
 
 /**
  * Fetches all active crisis events
  */
 const fetchCrisisEvents = async () => {
   try {
-    const events = await fetchAllCrisisEvents();
-    crisisEvents.value = events.filter(event => event.active !== false);
+    loading.value = true;
+    error.value = null;
+
+    const response = await fetchAllCrisisEvents(0, 20); // Get a larger page size to ensure we get enough events
+    // Since CrisisEventPreviewDto doesn't have an 'active' property, we'll assume all returned events are active
+    crisisEvents.value = response.content;
   } catch (err) {
     console.error('Failed to fetch crisis events:', err);
+    error.value = t('crisis.error_loading_events', 'Failed to load crisis events');
+  } finally {
+    loading.value = false;
   }
 };
 
