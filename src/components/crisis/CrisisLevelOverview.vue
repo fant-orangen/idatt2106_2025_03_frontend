@@ -105,8 +105,7 @@ const fetchCrisisEvents = async () => {
     loading.value = true;
     error.value = null;
 
-    const response = await fetchAllCrisisEvents(0, 20); // Get a larger page size to ensure we get enough events
-    // Since CrisisEventPreviewDto doesn't have an 'active' property, we'll assume all returned events are active
+    const response = await fetchAllCrisisEvents(0, 4);
     crisisEvents.value = response.content;
   } catch (err) {
     console.error('Failed to fetch crisis events:', err);
