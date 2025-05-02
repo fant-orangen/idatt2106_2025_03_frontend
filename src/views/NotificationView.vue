@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getNotifications } from '@/services/NotificationService';
+import { useNotificationStore } from '@/stores/NotificationStore';
 import type { NotificationMessage } from '@/models/NotificationMessage.ts';
 
 const { t } = useI18n();
-const notifications = ref<NotificationMessage[]>([]);
+const notificationStore = useNotificationStore();
 
 onMounted(async () => {
-  try {
-    const page = await getNotifications();
-    notifications.value = page.content;
-  } catch (error) {
-    console.error('Failed to load notifications:', error);
+  if (!notificationStore.hasFetchedInitial) {
+    try {
+      await notificationStore.fetchNotifications();
+    } catch (error) {
+      console.error('Failed to load notifications:', error);
+    }
   }
 });
 </script>
@@ -28,15 +29,15 @@ onMounted(async () => {
     <h1 class="text-2xl font-bold mb-4">{{ t('notifications.notifications') }}</h1>
 
     <!-- Notifications Timeline -->
-    <div v-if="notifications.length > 0">
+    <div v-if="notificationStore.notifications.length > 0">
       <ul class="timeline">
         <li
-          v-for="notification in notifications"
+          v-for="notification in notificationStore.notifications"
           :key="notification.id"
         >
           <div class="dot"></div>
           <div class="timeline-content">
-            <strong>{{ notification.createdAt }}</strong> – {{ notification.description }}
+            <strong>{{ new Date(notification.createdAt).toLocaleString() }}</strong> – {{ notification.description }}
           </div>
         </li>
       </ul>
