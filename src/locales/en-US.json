@@ -107,7 +107,47 @@
   "crisis": {
     "crisis-status": "Crisis Status",
     "more-crisis-info": "Read more about your current crisis situation",
-    "no-crisis": "No ongoing crisis"
+    "no-crisis": "No ongoing crisis",
+    "no_active_crisis": "No active crisis events",
+    "title": "Crisis Events",
+    "map_view": "Map View",
+    "active_events": "Active Events",
+    "other_events": "Other active events",
+    "more_events": "+ {count} more events",
+    "error_loading_events": "Failed to load crisis events",
+    "details": "Crisis Details",
+    "status_history": "Event History",
+    "select_event_for_history": "Select a crisis event to view its history",
+    "no_changes": "No history found for this event",
+    "loading_more": "Loading more history...",
+    "no_more_history": "No more history to load",
+    "error_loading_changes": "Failed to load event history",
+    "error_loading_details": "Failed to load event details",
+    "select_event_for_news": "Select a crisis event to view related news",
+    "related_news": "Related News",
+    "no_related_news": "No related news found for this event",
+    "error_loading_news": "Failed to load related news",
+    "coordinates": "Coordinates",
+    "radius": "Radius",
+    "started": "Started",
+    "updated": "Updated",
+    "created_by": "Created By",
+    "previous": "Previous",
+    "new": "New",
+    "by_user": "By user {user}",
+    "change_types": {
+      "creation": "Created",
+      "level_change": "Severity Changed",
+      "description_update": "Description Updated",
+      "epicenter_moved": "Location Changed"
+    },
+    "changes": {
+      "created": "Event was created",
+      "level_changed": "Severity changed from {old} to {new}",
+      "description_updated": "Description updated",
+      "location_changed": "Location coordinates updated",
+      "unknown": "Unknown change"
+    }
   },
   "navigation": {
     "home": "Home",
@@ -133,6 +173,15 @@
     "current-situation": "Current situation",
     "read-info-preparations": "Read more about how you can prepare for a crisis",
     "info-current-crisis": "Read more about the current crisis"
+  },
+  "news": {
+    "title": "News",
+    "loading_more": "Loading more news...",
+    "no_more_news": "No more news to load",
+    "related_news": "Related News",
+    "no_news_found": "No news found",
+    "published_at": "Published at",
+    "read_more": "Read more"
   },
   "reflect": {
     "reflection": "Reflect after crisis",
@@ -493,6 +542,11 @@
       "water-source": "Water Source",
       "food": "Food Distribution"
     }
+  },
+  "footer": {
+    "title": "Krisefikser.no",
+    "description": "A platform for crisis preparedness and information sharing.",
+    "contact-us": "Contact us on: "
   },
   "add-poi": {
     "name": "Name",

@@ -16,24 +16,24 @@ import type { RegistrationData } from '@/models/User'
  * and returns the server response containing authentication tokens and user info.
  *
  * @param {Object} credentials - The user credentials
- * @param {string} credentials.username - User's email address used as username
+ * @param {string} credentials.email - User's email address used as username
  * @param {string} credentials.password - User's password
  * @returns {Promise<AxiosResponse>} Promise resolving to the server response
  * @throws {Error} When authentication fails or network issues occur
  */
-export async function fetchToken({ username, password }: { username: string; password: string }) {
-  return await api.post(
-    '/auth/login',
-    JSON.stringify({
-      email: username,
-      password: password,
-    }),
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  )
+export async function fetchToken(data: {
+  email: string
+  password: string
+  recaptchaToken: string
+}) {
+  try {
+    console.log('Payload being sent to backend:', data) // Log the payload
+    const response = await api.post('/auth/login', data)
+    return response
+  } catch (error) {
+    console.error('Error fetching token:', error)
+    throw error
+  }
 }
 
 /**

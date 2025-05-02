@@ -5,26 +5,26 @@
         <div class="no-crisis-buttons flex flex-col gap-4">
           <!-- Household Button -->
           <Button
-            class="flex items-center justify-between gap-2 w-72 px-6 py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
-            @click="navigateTo('household')"
+          class="flex items-center justify-between gap-2 w-full md:w-72 px-4 py-2 md:px-6 md:py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+          @click="navigateTo('household')"
           >
-            <font-awesome-icon :icon="['fas', 'home']" class="text-xl" />
-            <span class="flex-1 text-sm leading-tight break-words whitespace-normal">
-              {{ t('household.my-household') }}
+          <font-awesome-icon :icon="['fas', 'home']" class="text-lg md:text-xl" />
+          <span class="flex-1 text-sm md:text-base leading-tight break-words whitespace-normal">
+            {{ t('household.my-household') }}
             </span>
-            <ArrowRight class="text-lg" />
+            <ArrowRight class="text-base md:text-lg" />
           </Button>
   
           <!-- Info Button -->
           <Button
-            class="flex items-center justify-between gap-2 w-72 px-6 py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+            class="flex items-center justify-between gap-2 w-full md:w-72 px-4 py-2 md:px-6 md:py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
             @click="navigateTo('info')"
           >
-            <font-awesome-icon :icon="['fas', 'info-circle']" class="text-xl" />
+            <font-awesome-icon :icon="['fas', 'info-circle']" class="text-lg md:text-xl" />
             <span class="flex-1 text-sm leading-tight break-words whitespace-normal">
               {{ t('info.read-info-preparations') }}
             </span>
-            <ArrowRight class="text-lg" />
+            <ArrowRight class="text-base md:text-lg" />
           </Button>
         </div>
   

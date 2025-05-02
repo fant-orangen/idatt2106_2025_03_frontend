@@ -9,24 +9,29 @@
 
 import api from '@/services/api/AxiosInstance';
 import type { NotificationMessage } from '@/models/NotificationMessage.ts'
+import type { Page } from '@/types/Page';
 
 const baseUrl = '/notifications';
 
 /**
  * Fetches notifications for a specific user
- * @param userId The user ID
- * @returns Array of notifications
+ * @param page The page number (default: 1)
+ * @param size The number of items per page (default: 20)
+ * @returns Page of notifications
  */
-export async function getNotifications(): Promise<NotificationMessage[]> {
-  const response = await api.get(`${baseUrl}`);
-  return response.data.map(mapDatesToObjects);
+export async function getNotifications(page: number = 1, size: number = 20): Promise<Page<NotificationMessage>> {
+  const response = await api.get(`${baseUrl}?page=${page - 1}&size=${size}`);
+  console.log(response.data);
+  return {
+    ...response.data,
+    content: response.data.content.map(mapDatesToObjects)
+  };
 }
 
-
-function mapDatesToObjects(notification: any): NotificationMessage {
+function mapDatesToObjects(notification: NotificationMessage): NotificationMessage {
   return {
     ...notification,
-    notifyAt: notification.notifyAt ? new Date(notification.notifyAt) : undefined,
+    notifyAt: new Date(notification.notifyAt),
     sentAt: notification.sentAt ? new Date(notification.sentAt) : undefined,
     readAt: notification.readAt ? new Date(notification.readAt) : undefined,
     createdAt: new Date(notification.createdAt)

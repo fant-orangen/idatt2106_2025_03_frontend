@@ -11,6 +11,7 @@ export interface RegistrationData {
   firstName: string
   lastName: string
   phoneNumber: string
+  recaptchaToken: string
 }
 
 /**
