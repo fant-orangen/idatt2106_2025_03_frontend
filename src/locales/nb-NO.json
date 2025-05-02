@@ -138,6 +138,8 @@
     "started": "Startet",
     "updated": "Oppdatert",
     "created_by": "Opprettet av",
+    "scenario_theme": "Scenariotema",
+    "view_scenario_theme": "Vis scenariotema",
     "previous": "Tidligere",
     "new": "Ny",
     "by_user": "Av bruker {user}",
@@ -582,6 +584,30 @@
   "language": {
     "title": "Språk",
     "select-language": "Velg språk"
-
+  },
+  "group": {
+    "title": "Mine Grupper",
+    "shared-inventory": "Felles beredskapslager",
+    "invite-household": "Inviter husholdning",
+    "switch-group": "Bytt gruppe",
+    "share-from-inventory": "Del varer fra ditt lager",
+    "go-to-groups" : "Gå til dine grupper →"
+  },
+  "scenarioThemes": {
+    "title": "Krisescenario-temaer",
+    "noThemesFound": "Ingen scenariotemaer funnet",
+    "loadError": "Kunne ikke laste scenariotemaer",
+    "viewDetails": "Vis detaljer",
+    "description": "Beskrivelse",
+    "instructions": "Instruksjoner",
+    "noDescription": "Ingen beskrivelse tilgjengelig",
+    "noInstructions": "Ingen instruksjoner tilgjengelig",
+    "relatedCrises": "Relaterte krisehendelser",
+    "noRelatedEvents": "Ingen relaterte krisehendelser funnet",
+    "themeNotFound": "Scenariotema ikke funnet"
+  },
+  "common": {
+    "back": "Tilbake"
   }
+
 }
