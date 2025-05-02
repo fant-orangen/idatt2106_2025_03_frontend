@@ -1,12 +1,14 @@
 <script setup lang="ts">
+// Imports from both versions, ensuring NotificationStore is included
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useColorMode } from '@vueuse/core'
 import { useRouter } from 'vue-router'
 import { Globe, User, Bell, Settings, Sun, Moon, ShieldUser, LogOut } from 'lucide-vue-next'
-import { getNotifications } from '@/services/NotificationService.ts'
-import type { NotificationMessage } from '@/models/NotificationMessage.ts'
+import type { NotificationMessage } from '@/models/NotificationMessage.ts' // Keep type definition
+import { useNotificationStore } from '@/stores/NotificationStore' // Import NotificationStore (from version A)
 
+// UI Components (keep all from version B)
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,17 +18,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-
 import { Button } from '@/components/ui/button'
-import { useUserStore } from '@/stores/UserStore'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import NotificationPopover from '@/components/NotificationPopover.vue'
 
+// Store and Router setup (keep from version B, add notificationStore)
+import { useUserStore } from '@/stores/UserStore'
 const { locale } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
-const isMenuOpen = ref(false)
+const notificationStore = useNotificationStore() // Instantiate NotificationStore (from version A)
+const isMenuOpen = ref(false) // Mobile menu state (from version B)
 
+// Mobile Menu Type and Logic (from version B)
 type MenuLink = {
   label: string;
   route?: string;
@@ -43,7 +47,7 @@ const menuLinks = computed<MenuLink[]>(() => {
   } else {
     const links: MenuLink[] = [
       { label: 'Home', route: '/' },
-      { label: 'Profile', route: '/profile' },
+      // { label: 'Profile', route: '/profile' }, // Assuming profile link comes from user dropdown now
       { label: 'Settings', route: '/settings' },
     ];
 
@@ -51,22 +55,22 @@ const menuLinks = computed<MenuLink[]>(() => {
       links.push({ label: 'Admin Panel', route: '/admin-panel' });
     }
 
-    links.push({ label: 'Log out', action: logOut });
+    links.push({ label: 'Log out', action: logOut }); // Use the logout function defined below
 
     return links;
   }
 });
 
-
-function toggleMenu() {
+function toggleMenu() { // from version B
   isMenuOpen.value = !isMenuOpen.value
 }
 
-function navigateTo(route: string): void {
-  isMenuOpen.value =false
+function navigateTo(route: string): void { // from version B
+  isMenuOpen.value = false
   router.push(route)
 }
 
+// Scroll and Language setup (from version B)
 let prevScrollpos: number = window.pageYOffset
 const languages = [
   { label: 'Norsk bokmål', code: 'nb-NO' },
@@ -76,21 +80,26 @@ const languages = [
 ]
 const selectedLanguage = ref(languages[0].label)
 
-// Dark mode toggle
+// Dark mode toggle (from version B)
 const colorMode = useColorMode()
 
-// Get the top 3 notifications
-const topNotifications = ref<NotificationMessage[]>([])
+// Get the latest notifications for the popover using the store (from version A)
+const topNotifications = computed(() => notificationStore.latestNotifications)
 
+// Fetch notifications using the store on mount (from version A)
 onMounted(async () => {
-  try {
-    const page = await getNotifications()
-    topNotifications.value = page.content.slice(0, 3)
-  } catch (error) {
-    console.error('Failed to fetch notifications:', error)
+  // Only fetch if logged in and haven't fetched yet
+  if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
+    try {
+      await notificationStore.fetchNotifications()
+      console.log("NavBar: Initial notifications fetched via store.");
+    } catch (error) {
+      console.error('NavBar: Failed to fetch initial notifications via store:', error)
+    }
   }
 })
 
+// Window scroll handler (from version B)
 window.onscroll = function (): void {
   const currentScrollPos: number = window.pageYOffset
   const navbar = document.getElementById('navbar')
@@ -99,24 +108,30 @@ window.onscroll = function (): void {
     if (prevScrollpos > currentScrollPos) {
       navbar.style.top = '0'
     } else {
-      navbar.style.top = '-50px'
+      // Hide navbar when scrolling down
+      navbar.style.top = '-60px' // Adjust based on actual navbar height if needed
     }
   }
-
   prevScrollpos = currentScrollPos
 }
 
+// Logout function (from version B)
 function logOut(): void {
   userStore.logout()
+  notificationStore.resetStore() // Reset notification store on logout
+  isMenuOpen.value = false // Close mobile menu if open
   router.push('/')
 }
 
+// Select language function (from version B)
 function selectLanguage(language: { label: string; code: string }): void {
   selectedLanguage.value = language.label
   locale.value = language.code
 }
 
+// Go to page function (from version B)
 function goToPage(route: string) {
+  isMenuOpen.value = false // Close mobile menu on navigation
   router.push(route)
 }
 </script>
@@ -124,13 +139,9 @@ function goToPage(route: string) {
 <template>
   <div
     id="navbar"
-    class="navbar shadow-md bg-secondary text-secondary-foreground flex justify-between items-center px-5 py-3 transition-all duration-300"
-  >
-    <!-- Left Section: Language Selector -->
-    <div class="navbar-right flex gap-4">
-      <RouterLink to="/" class="hover:text-primary">
-        <img src="../assets/krisefikser.svg" alt="Logo" class="h-8 w-auto" />
-      </RouterLink>
+    class="navbar shadow-md bg-secondary text-secondary-foreground flex justify-between items-center px-5 py-3 transition-all duration-300 fixed top-0 left-0 right-0 z-[1000]" >
+    <div class="navbar-right flex items-center gap-4"> <RouterLink to="/" class="hover:text-primary flex items-center"> <img src="../assets/krisefikser.svg" alt="Logo" class="h-8 w-auto" />
+    </RouterLink>
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Button
@@ -141,67 +152,54 @@ function goToPage(route: string) {
             {{ selectedLanguage }}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" class="z-10000">
-          <DropdownMenuGroup>
-            <DropdownMenuLabel>{{ $t('language.select-language') }}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              v-for="language in languages"
-              :key="language.code"
-              @click="selectLanguage(language)"
-              class="cursor-pointer"
-            >
-              {{ language.label }}
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+        <DropdownMenuContent align="start" class="z-[1001]"> <DropdownMenuGroup>
+          <DropdownMenuLabel>{{ $t('language.select-language') }}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            v-for="language in languages"
+            :key="language.code"
+            @click="selectLanguage(language)"
+            class="cursor-pointer"
+          >
+            {{ language.label }}
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
 
-    <!-- Hamburger Menu Button (Visible on Mobile) -->
     <button
       class="hamburger-menu md:hidden flex items-center justify-center p-2 rounded hover:bg-input dark:hover:bg-background/40"
       @click="toggleMenu"
-    >
+      aria-label="Toggle menu" >
       <span v-if="!isMenuOpen">☰</span>
       <span v-else>✖</span>
     </button>
 
-    <!-- Sliding Menu Card (Mobile) -->
     <div
       v-if="isMenuOpen"
-      class="fixed top-0 left-0 w-full h-full bg-black/50 z-50"
-      @click.self="toggleMenu"
+      class="fixed top-0 left-0 w-full h-full bg-black/50 z-[1050]" @click.self="toggleMenu"
     >
       <div
-        class="menu-card fixed top-0 right-0 w-4/5 max-w-sm h-full bg-secondary text-secondary-foreground shadow-lg p-5 transition-transform transform"
-        :class="{ '-translate-x-full': !isMenuOpen, 'translate-x-0': isMenuOpen }"
+        class="menu-card fixed top-0 right-0 w-4/5 max-w-sm h-full bg-secondary text-secondary-foreground shadow-lg p-5 transition-transform transform translate-x-0 z-[1051]" :class="{ 'translate-x-full': !isMenuOpen }"
       >
-        <!-- Close Button -->
         <button
-          class="close-button absolute top-4 right-4 text-primary text-lg mb-4"
-          @click="toggleMenu"
-        >
+          class="close-button absolute top-4 right-4 text-primary text-xl mb-4" @click="toggleMenu"
+          aria-label="Close menu" >
           ✖
         </button>
 
-        <!-- Mobile Menu Links -->
-        <ul class="menu-links space-y-4 mt-12">
-          <li
-            v-for="link in menuLinks"
-            :key="link.route"
-            class="text-lg hover:text-primary cursor-pointer"
-            @click="link.action ? link.action() : navigateTo(link.route ?? '/')"
-          >
-            {{ link.label }}
-          </li>
+        <ul class="menu-links space-y-4 mt-16"> <li
+          v-for="link in menuLinks"
+          :key="link.label" class="text-lg hover:text-primary cursor-pointer"
+          @click="link.action ? link.action() : navigateTo(link.route ?? '/')"
+        >
+          {{ $t(link.label) }} </li>
         </ul>
       </div>
     </div>
 
-    <!-- Right Section: Desktop Navbar -->
     <div class="navbar-left hidden md:flex items-center gap-4">
-      <!-- Public Links -->
       <RouterLink
         v-if="!userStore.loggedIn"
         to="/login"
@@ -216,70 +214,97 @@ function goToPage(route: string) {
       >
         {{ $t('login.signup') }}
       </RouterLink>
-      <div class="flex gap-2">
-        <DropdownMenu v-if="userStore.loggedIn">
-          <DropdownMenuTrigger as-child>
-            <Button
-              variant="ghost"
-              size="icon"
-              class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-            >
-              <User class="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent class="z-10000">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User class="mr-2 h-4 w-4" />
-                <span @click="goToPage('/profile')">Profile (WIP)</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem @click="goToPage('/settings')">
-                <Settings class="mr-2 h-4 w-4" />
-                <span>Settings (WIP)</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator v-if="userStore.loggedIn" />
-              <DropdownMenuItem v-if="userStore.loggedIn" @click="goToPage('/admin-panel')">
-                <ShieldUser class="mr-2 h-4 w-4" />
-                <span>Admin Panel (WIP)</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator v-if="userStore.loggedIn" />
-              <DropdownMenuItem @click="logOut()">
-                <LogOut class="mr-2 h-4 w-4" />
-                <span>Log out </span>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
 
-      <!-- Notifications -->
-      <Popover>
-        <PopoverTrigger as="button" class="no-border">
+      <div class="flex items-center gap-2" v-if="userStore.loggedIn"> <DropdownMenu>
+        <DropdownMenuTrigger as-child>
           <Button
-                variant="ghost"
-                size="icon"
-                class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-                >
-                <Bell class="h-5 w-5" />
-              </Button>
-            </PopoverTrigger >
-        <PopoverContent class="z-10000">
-          <NotificationPopover :notifications="topNotifications" />
-        </PopoverContent>
-      </Popover>
+            variant="ghost"
+            size="icon"
+            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          >
+            <User class="h-5 w-5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="z-[1001]"> <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem @click="goToPage('/profile')"> <User class="mr-2 h-4 w-4" />
+              <span>Profile (WIP)</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/settings')">
+              <Settings class="mr-2 h-4 w-4" />
+              <span>Settings (WIP)</span>
+            </DropdownMenuItem>
+            <template v-if="userStore.isAdminUser">
+              <DropdownMenuSeparator />
+              <DropdownMenuItem @click="goToPage('/admin-panel')">
+                <ShieldUser class="mr-2 h-4 w-4" />
+                <span>Admin Panel</span>
+              </DropdownMenuItem>
+            </template>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem @click="logOut()">
+              <LogOut class="mr-2 h-4 w-4" />
+              <span>Log out </span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      <!-- Dark Mode Toggle -->
-      <Button
-        variant="ghost"
-        size="icon"
-        class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
-        @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
-      >
-        <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
-      </Button>
-    </div>
+        <Popover>
+          <PopoverTrigger as="button" class="no-border relative"> <Button
+            variant="ghost"
+            size="icon"
+            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          >
+            <Bell class="h-5 w-5" />
+            <span v-if="notificationStore.unreadCount > 0" class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-secondary"></span>
+          </Button>
+          </PopoverTrigger>
+          <PopoverContent class="z-[1001] w-80 p-0"> <NotificationPopover :notifications="topNotifications" /> </PopoverContent>
+        </Popover>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+          aria-label="Toggle dark mode" >
+          <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   </div>
-
 </template>
+
+<style scoped>
+/* Add specific styles here if needed, or rely on Tailwind classes */
+.no-border {
+  border: none;
+  padding: 0; /* Adjust if button padding is interfering */
+  background: none;
+}
+
+/* Ensure navbar stays on top and handles content scrolling underneath */
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensure navbar is above most content */
+}
+
+/* Add padding to the body or main content area to prevent content from hiding behind the fixed navbar */
+/* You might need to adjust the padding value based on the actual height of your navbar */
+/* Apply this in your App.vue or main layout component's style */
+/*
+body {
+  padding-top: 60px; // Example: Adjust to your navbar height
+}
+*/
+
+/* Style for the notification badge */
+.absolute.top-0.right-0 {
+  transform: translate(25%, -25%); /* Adjust badge position slightly */
+}
+</style>

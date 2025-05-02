@@ -1,6 +1,6 @@
 import SockJS from 'sockjs-client';
 import { Client, over, Frame } from 'stompjs';
-import type { NotificationMessage } from '@/models/NotificationMessage.ts';
+import type { NotificationMessage } from '@/models/NotificationMessage';
 
 // Ensure global is defined for SockJS
 if (typeof window !== 'undefined') {
