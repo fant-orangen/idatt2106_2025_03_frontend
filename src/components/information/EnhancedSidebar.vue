@@ -90,13 +90,16 @@ function getIndentClass(level: number): { paddingLeft: string } {
  * @param isActive - Whether the item is currently active/selected
  * @returns CSS class string for the border
  */
-function getBorderClass(level: number, isActive: boolean): string {
+function getBorderClass(level: number, isActive: boolean | undefined): string {
+  // Treat undefined as false
+  const active = isActive === true
+
   if (level === 0) {
-    return isActive ? 'border-l-4 border-primary' : 'border-l-4 border-transparent'
+    return active ? 'border-l-4 border-primary' : 'border-l-4 border-transparent'
   } else if (level === 1) {
-    return isActive ? 'border-l-3 border-primary/80' : 'border-l-3 border-transparent'
+    return active ? 'border-l-3 border-primary/80' : 'border-l-3 border-transparent'
   } else {
-    return isActive ? 'border-l-2 border-primary/60' : 'border-l-2 border-transparent'
+    return active ? 'border-l-2 border-primary/60' : 'border-l-2 border-transparent'
   }
 }
 
