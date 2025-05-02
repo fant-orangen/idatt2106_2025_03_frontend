@@ -121,13 +121,22 @@
               <FormControl>
                 <Select v-model="field.value">
                   <SelectTrigger>
-                    <SelectValue :placeholder="t('admin.select-poi-type')" />
+                    <SelectValue :placeholder="t('add-POI-info.POI-type.'+ field.value)" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem v-for="type in poiTypes" :value="type.id" :key="type.id">
-                        {{ type.name }}
-                      </SelectItem>
+                        <SelectItem :value="'shelter'">
+                            {{ t('add-POI-info.POI-type.shelter') }}
+                        </SelectItem>
+                        <SelectItem :value="'water-source'">
+                            {{ t('add-POI-info.POI-type.water-source') }}
+                        </SelectItem>
+                        <SelectItem :value="'defibrillator'">
+                            {{ t('add-POI-info.POI-type.defibrillator') }}
+                        </SelectItem>
+                        <SelectItem :value="'food'">
+                            {{ t('add-POI-info.POI-type.food') }}
+                        </SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -198,26 +207,19 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
+import type {PoiData} from "@/models/PoiData.ts";
 
 const { t } = useI18n()
 const router = useRouter()
 
-const pois = ref<any[]>([])
 
 /**
  * Available POI types (translated for dropdown).
  */
+const selectedPoi = ref<PoiData | null>(null)
+const pois = ref<any[]>([])
 
-const poiTypes = ref([
-  { id: 1, name: t('map.shelter') },
-  { id: 2, name: t('map.defibrillator') }
-])
 
-/**
- * The currently selected POI.
- */
-
-const selectedPoi = ref<any | null>(null)
 
 /**
  * Fetch POI's on load.
@@ -243,7 +245,7 @@ const formSchema = toTypedSchema(z.object({
     contactInfo: z.string().optional(),
   openingFrom: z.string().optional(),
   openingTo: z.string().optional(),
-  poiTypeId: z.preprocess(val => val ? Number(val) : undefined, z.number().optional())
+  poiTypeName: z.preprocess(val => val ? Number(val) : undefined, z.number().optional())
 }))
 
 /**
@@ -260,7 +262,7 @@ const form = useForm({
     contactInfo: '',
     openingFrom: '',
     openingTo: '',
-    poiTypeId: undefined
+    poiTypeName: ''
   }
 })
 
@@ -269,7 +271,7 @@ const form = useForm({
  * @param poi the selected POI-object.
  */
 
-function selectPoi(poi: any) {
+function selectPoi(poi: PoiData) {
   selectedPoi.value = poi
 
   const [openFrom, openTo] = poi.openingHours?.split('-').map((s: string) => s.trim()) || ['', '']
@@ -282,7 +284,7 @@ function selectPoi(poi: any) {
     contactInfo: poi.contactInfo || '',
     openingFrom: openFrom,
     openingTo: openTo,
-    poiTypeId: poi.poiTypeId?.toString() || ''
+    poiTypeName: poi.poiTypeName || ''
   })
 }
 
