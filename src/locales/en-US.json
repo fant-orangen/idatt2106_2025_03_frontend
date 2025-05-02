@@ -30,6 +30,22 @@
     "2fa-login-title": "Two-Step Verification",
     "2fa-login-description": "Enter the verification code sent to your email to complete the login process."
   },
+  "reset-password": {
+    "title": "Reset Password",
+    "code": "Verification Code",
+    "new-password": "New Password",
+    "confirm-new-password": "Confirm Password",
+    "update-button": "Update Password",
+    "email-sent": "Email sent",
+    "password-updated": "Password Updated",
+    "password-update-failed": "Failed to Update Password",
+    "token-required": "Verification code is required",
+    "password-req-req": "Password must be at least 8 characters, contain a-z, A-Z, 0-9, and special characters",
+    "password-req-match": "Passwords must match",
+    "invalid-token": "Invalid verification code",
+    "validation-error": "Validation error",
+    "unexpected-error": "Unexpected error"
+  },
   "admin": {
     "administrate": "Administrate",
     "make-new-event": "Add a new event",
@@ -134,7 +150,10 @@
     "login-failed": "Login failed. Please check your credentials.",
     "passwords-do-not-match": "Passwords do not match.",
     "registration-failed": "Registration failed. Please try again.",
-    "no-news-available": "No news available"
+    "no-news-available": "No news available",
+    "invalid-email": "Invalid email address",
+    "unexpected-error": "An unexpected error occurred. Please try again later.",
+    "network-error": "Network error. Please check your internet connection."
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",

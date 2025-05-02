@@ -25,6 +25,12 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
   },
   {
+    path: '/reset-password/:token',
+    name: 'ResetPassword',
+    component: () => import('@/views/ResetPasswordView.vue'),
+    props: true
+  },
+  {
     path: '/notifications',
     name: 'Notifications',
     component: () => import('@/views/NotificationView.vue'),
@@ -194,7 +200,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications'];
+  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
 
   // Allow immediate navigation if the target route is public
   if (publicRoutes.includes(to.name as string)) { //

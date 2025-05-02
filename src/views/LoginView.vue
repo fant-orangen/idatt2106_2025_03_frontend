@@ -25,6 +25,7 @@ import router from '@/router'
 import { Eye, EyeOff } from 'lucide-vue-next'
 import { CardContent, Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { PinInputGroup, PinInputInput, PinInput } from '@/components/ui/pin-input'
+import { sendPasswordResetEmail } from '@/services/UserService.ts'
 
 // Reactive variables for form fields and error messages
 const email = ref('')
@@ -129,6 +130,25 @@ async function handleComplete() {
     console.log('Login error', error)
   }
 }
+
+//handle the reset password request
+async function handleResetPassword() {
+  try {
+    await sendPasswordResetEmail(resetEmail.value) // No need to check response.status
+    toast.success(t('reset-password.email-sent'))
+  } catch (error: unknown) {
+    if (error instanceof AxiosError && error.response) {
+      const status = error.response.status
+      if (status === 400) {
+        errorMessage.value = t('errors.invalid-email')
+      } else {
+        errorMessage.value = t('errors.unexpected-error')
+      }
+    } else {
+      errorMessage.value = t('errors.network-error')
+    }
+  }
+}
 </script>
 
 <template>
@@ -203,15 +223,7 @@ async function handleComplete() {
                   <DialogClose>
                     <Button
                       type="submit"
-                      @click="
-                        () => {
-                          toast('Password Reset Request Received', {
-                            description:
-                              'You will receive an email with a link to reset your password at ' +
-                              resetEmail,
-                          })
-                        }
-                      "
+                      @click="handleResetPassword"
                     >
                       {{ $t('login.reset-password') }}
                     </Button>
@@ -266,15 +278,6 @@ async function handleComplete() {
   padding: 1rem;
 }
 
-/* Styling for the login form container */
-.login-container {
-  min-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  border-radius: 8px;
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
 
 /* Styling for error messages */
 .error {

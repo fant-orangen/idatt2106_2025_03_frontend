@@ -195,3 +195,47 @@ export async function getUserPreferences(): Promise<UserPreferencesDto> {
     throw error
   }
 }
+/**
+ * Resets the user's password using a token and a new password.
+ *
+ * Makes a POST request to the reset-password endpoint.
+ *
+ * @param {string} token - The reset token provided to the user
+ * @param {string} newPassword - The new password to set
+ * @returns {Promise<void>} Promise that resolves when the password reset is successful
+ * @throws {Error} If the request fails due to validation or network issues
+ */
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  try {
+    const payload = {
+      token,
+      newPassword,
+    };
+    await api.post('/auth/reset-password', payload);
+    console.log('Password reset successfully');
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    throw error;
+  }
+}
+/**
+ * Sends a password reset email to the user.
+ *
+ * Makes a POST request to the forgot-password endpoint.
+ *
+ * @param {string} email - The user's email address
+ * @returns {Promise<void>} Promise that resolves when the email is sent successfully
+ * @throws {Error} If the request fails due to validation or network issues
+ */
+export async function sendPasswordResetEmail(email: string): Promise<void> {
+  try {
+    const payload = {
+      email,
+    };
+    await api.post('/auth/forgot-password', payload);
+    console.log('Password reset email sent successfully');
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    throw error;
+  }
+}
