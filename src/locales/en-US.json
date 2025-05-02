@@ -487,6 +487,7 @@
     "success-message": "Your event has been added to the system.",
     "success-added": "had been added.",
     "go-to-admin": "Go to Admin Panel",
+    "category": "Choose what type of event it is, f.ex. flod, earthquake or power outage...",
     "errors": {
       "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
       "latitude": "The latitude must be between -90 and 90.",
@@ -498,6 +499,19 @@
       "position-missing": "Choose to enter either the coordinates of the event, or the address.",
       "address": "The address needs to have at least 2 characters and cannot exceed 100 characters.",
       "contact-info": "Make sure to write a valid phone number."
+    },
+    "scenarios": {
+      "flood": "Flood",
+      "hurricane": "Hurricane",
+      "drought":"Drought",
+      "heatwave":"Heatwave",
+      "pandemic":"Pandemic",
+      "war":"War",
+      "forest fire": "Forest fire",
+      "power outage": "Power outage",
+      "water shortage": "Water shortage",
+      "cyber attack": "Cyber attack",
+      "major accident": "Big accident"
     },
     "titles": {
       "address": "Address",
@@ -512,7 +526,8 @@
       "date": "Date",
       "choose-event": "Choose an event",
       "deactivate": "Deactivate event",
-      "active": "Active status"
+      "active": "Active status",
+      "category": "Category"
     },
     "crisis-level": {
       "low": "Low",

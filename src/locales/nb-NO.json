@@ -336,7 +336,7 @@
         "powerOutage": "Strømbrudd",
         "waterShortage": "Vannmangel",
         "cyberAttack": "Cyberangrep",
-        "majorAccident": "Storulykke"
+        "majorAccident": "Stor ulykke"
       },
       "preparednessStorage": "Beredskapslager",
       "afterCrisis": "Etter en krise"
@@ -481,6 +481,7 @@
     "success-message": "Hendelsen din er lagt til i systemet.",
     "success-added":"har blitt lagt til.",
     "go-to-admin": "Gå til Admin-panelet",
+    "category": "Velg hvilken type hendelse dette er, f.eks. flom, jordskjelv eller strømbrudd...",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
       "latitude": "Breddegraden må være mellom -90 og 90.",
@@ -492,6 +493,19 @@
       "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
       "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
       "contact-info": "Skriv inn et gyldig telefonnummer."
+    },
+    "scenarios": {
+      "flood": "flom",
+      "hurricane": "Orkan",
+      "drought":"Tørke",
+      "heatwave":"Hetebølge",
+      "pandemic":"Pandemi",
+      "war":"Krig",
+      "forest fire": "Skogbrann",
+      "power outage": "Strømbrudd",
+      "water shortage": "Vannmangel",
+      "cyber attack": "cyber angrep",
+      "major accident": "Stor ulykke"
     },
     "titles": {
       "address": "Adresse",
@@ -506,7 +520,8 @@
       "date": "Dato",
       "choose-event": "Velg en hendelse",
       "deactivate": "Deaktiver hendelse",
-      "active": "Aktiv status"
+      "active": "Aktiv status",
+      "category": "Kategori"
     },
     "crisis-level": {
       "low": "Lav",
