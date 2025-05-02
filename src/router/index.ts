@@ -1,6 +1,6 @@
-import { useUserStore } from '@/stores/UserStore'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getCurrentHousehold } from '@/services/HouseholdService'
+import { useUserStore } from '@/stores/UserStore';
 import { type AxiosError } from 'axios';
 
 const routes = [
@@ -22,13 +22,18 @@ const routes = [
   {
     path: '/notifications',
     name: 'Notifications',
-    component: () => import('@/views/NotificationView.vue'), 
+    component: () => import('@/views/NotificationView.vue'),
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/crisis-event',
+    name: 'CrisisEvent',
+    component: () => import('@/views/CrisisEventView.vue')
   },
   {
     path: '/news',
     name: 'News',
-    component: () => import('@/views/NewsView.vue') 
+    component: () => import('@/views/NewsView.vue')
   },
   {
     path: '/settings',
@@ -83,36 +88,65 @@ const routes = [
     path: '/admin-panel',
     name: 'AdminPanel',
     component: () => import('@/views/AdminPanel.vue'),
-    meta: { requiresAdmin: true }, 
+    meta: { requiresAdmin: true },
   },
   {
     path: '/add-new-event',
     name: 'AddNewEvent',
     component: () => import('@/views/AdminAddNewEvent.vue'),
-    meta: { requiresAdmin: true }, 
+    meta: { requiresAdmin: true },
   },
   {
     path: '/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
-    meta: { requiresAdmin: true }, 
+    meta: { requiresAdmin: true },
   },
   {
     path: '/edit-event',
     name: 'EditEvent',
     component: () => import('@/views/AdminEditEvent.vue'),
-    meta: { requiresAdmin: true }, 
+    meta: { requiresAdmin: true },
   },
   {
     path: '/handle-admins',
     name: 'HandleAdmins',
     component: () => import('@/views/SuperAdminAdministrate.vue'),
-    meta: { requiresSuperAdmin: true }, 
+    meta: { requiresSuperAdmin: true },
   },
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),
+  },
+  {
+    path: '/medicine-inventory',
+    name: 'MedicineInventory',
+    component: () => import('@/views/MedicineInventory.vue'),
+  },
+  {
+    path: '/edit-POI',
+    name: 'AdminEditPOI',
+    component: () => import('@/views/AdminEditPOI.vue'),
+    meta: { requiresAdmin: true},
+  },
+  {
+    path: '/inventory/water',
+    name: 'WaterInventory',
+    component: () => import('@/views/FoodAndDrinksView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/inventory/food',
+    name: 'FoodInventory',
+    component: () => import('@/views/FoodAndDrinksView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/inventory/medicine',
+    name: 'MedicineInventory',
+    component: () => import('@/views/FoodAndDrinksView.vue'),
+    meta: { requiresAuth: true },
   },
 ]
 
@@ -163,13 +197,13 @@ router.beforeEach(async (to, from, next) => {
     }
     console.log('Store initialized, role:', userStore.role);
   }
-  
+
   // requires super admin - not allowed
-  if (to.meta.requiresSuperAdmin && !userStore.isSuperAdminUser) { 
+  if (to.meta.requiresSuperAdmin && !userStore.isSuperAdminUser) {
     return next({ name: 'NotFound' });
   }
   // requires admin - not allowed
-  if (to.meta.requiresAdmin && !userStore.isAdminUser) { 
+  if (to.meta.requiresAdmin && !userStore.isAdminUser) {
     return next({ name: 'NotFound' });
   }
   // requires authentication - not allowed
@@ -181,12 +215,12 @@ router.beforeEach(async (to, from, next) => {
   if (!userStore.isAdminUser && !userStore.isSuperAdminUser) {
     try {
         // Attempt to fetch the user's current household information from the backend.
-        const household = await getCurrentHousehold(); 
+        const household = await getCurrentHousehold();
 
         // If the user has no household (API returns null or 404), redirect them.
-        if (!household) { 
+        if (!household) {
           // Prevent an infinite redirect loop if already on the CreateHousehold page.
-          if (to.name === 'CreateHousehold') { 
+          if (to.name === 'CreateHousehold') {
             return next(false); // Block navigation
           }
           console.log('User has no household, redirecting to CreateHousehold.');

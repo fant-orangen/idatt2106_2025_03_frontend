@@ -1,12 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+</script>
 
 <template>
   <div
-    class="footer bg-secondary text-secondary-foreground shadow-t-md flex justify-center items-center px-5 py-3 transition-all duration-300 gap-10"
-  >
-    <div>krisefikser.no</div>
+    class="footer bg-secondary text-secondary-foreground shadow-t-md flex flex-col md:flex-row justify-center items-center px-5 py-2 md:py-3 transition-all duration-300 gap-4 md:gap-10 text-center md:text-left"
+    >
+    <div>{{t('footer.title')}}</div>
     <div>© IDATT2106 Team 3</div>
-    <div>Contact us at: mageik@stud.ntnu.no</div>
+    <div>{{t('footer.contact-us')}} mageik@stud.ntnu.no</div>
   </div>
 </template>
 

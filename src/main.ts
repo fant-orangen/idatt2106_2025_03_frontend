@@ -1,4 +1,4 @@
-import './utils/polyfills';
+import './utils/polyfills'
 import './assets/index.css'
 
 import { createApp } from 'vue'
