@@ -227,7 +227,7 @@ function goToPage(route: string) {
               <User class="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent class="z-10000">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -263,8 +263,8 @@ function goToPage(route: string) {
                 >
                 <Bell class="h-5 w-5" />
               </Button>
-            </PopoverTrigger>
-        <PopoverContent>
+            </PopoverTrigger >
+        <PopoverContent class="z-10000">
           <NotificationPopover :notifications="topNotifications" />
         </PopoverContent>
       </Popover>
