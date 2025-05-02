@@ -33,26 +33,7 @@ const expandedSections = ref<Record<string, boolean>>({
   'extremeWeather': true
 })
 
-// Get theme icon based on theme key
-function getThemeIcon(themeKey: string): string {
-  const iconMap: Record<string, string> = {
-    'pandemic': '🦠',
-    'war': '🛡️',
-    'flood': '🌊',
-    'hurricane': '🌪️',
-    'drought': '☀️',
-    'heatwave': '🌡️', // Changed from fire to thermometer
-    'forestFire': '🌲', // Changed from fire to tree
-    'powerOutage': '💡',
-    'waterShortage': '💧',
-    'cyberAttack': '💻',
-    'majorAccident': '⚠️',
-    'preparednessStorage': '🧰',
-    'afterCrisis': '🏡'
-  }
-
-  return iconMap[themeKey] || '📄'
-}
+// We're removing the icon helper function as requested
 
 // Style helpers for different hierarchy levels
 function getTextClass(level: number): string {
@@ -168,8 +149,9 @@ function toggleMobileSidebar(): void {
                         >
                           <div class="flex items-center gap-2">
                             <span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
-                            <span class="text-lg">{{ getThemeIcon(subChild.key) }}</span>
-                            <span :class="getTextClass(2)">{{ t(subChild.titleKey) }}</span>
+                            <span :class="getTextClass(2)">
+                              {{ subChild.isScenario ? subChild.titleKey : t(subChild.titleKey) }}
+                            </span>
                           </div>
                         </button>
                       </li>
@@ -189,8 +171,9 @@ function toggleMobileSidebar(): void {
                     >
                       <div class="flex items-center gap-2">
                         <span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
-                        <span class="text-lg">{{ getThemeIcon(child.key) }}</span>
-                        <span :class="getTextClass(1)">{{ t(child.titleKey) }}</span>
+                        <span :class="getTextClass(1)">
+                          {{ child.isScenario ? child.titleKey : t(child.titleKey) }}
+                        </span>
                       </div>
                     </button>
                   </li>
@@ -210,8 +193,9 @@ function toggleMobileSidebar(): void {
                 @click="handleThemeSelected(section.key)"
               >
                 <div class="flex items-center gap-2">
-                  <span class="text-lg">{{ getThemeIcon(section.key) }}</span>
-                  <span :class="getTextClass(0)">{{ t(section.titleKey) }}</span>
+                  <span :class="getTextClass(0)">
+                    {{ section.isScenario ? section.titleKey : t(section.titleKey) }}
+                  </span>
                 </div>
               </button>
             </li>

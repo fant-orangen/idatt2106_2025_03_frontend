@@ -132,6 +132,8 @@
     "started": "Started",
     "updated": "Updated",
     "created_by": "Created By",
+    "scenario_theme": "Scenario Theme",
+    "view_scenario_theme": "View Scenario Theme",
     "previous": "Previous",
     "new": "New",
     "by_user": "By user {user}",
@@ -559,5 +561,30 @@
   "language": {
     "title": "Language",
     "select-language": "Select Language"
+  },
+  "group": {
+    "title": "My Groups",
+    "shared-inventory": "Shared emergency inventory",
+    "invite-household": "Invite household",
+    "switch-group": "Switch group",
+    "share-from-inventory": "Share items from your inventory",
+    "go-to-groups": "Go to your groups →"
+},
+  "scenarioThemes": {
+    "title": "Crisis Scenario Themes",
+    "noThemesFound": "No scenario themes found",
+    "loadError": "Failed to load scenario themes",
+    "viewDetails": "View Details",
+    "description": "Description",
+    "instructions": "Instructions",
+    "noDescription": "No description available",
+    "noInstructions": "No instructions available",
+    "relatedCrises": "Related Crisis Events",
+    "noRelatedEvents": "No related crisis events found",
+    "themeNotFound": "Scenario theme not found"
+  },
+  "common": {
+    "back": "Back"
   }
+
 }
