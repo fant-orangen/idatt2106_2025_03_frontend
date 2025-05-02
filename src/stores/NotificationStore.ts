@@ -1,9 +1,13 @@
 // src/stores/NotificationStore.ts
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue'; // Import computed
+import { ref, computed, onMounted } from 'vue'; // Import computed and onMounted
 import type { NotificationMessage } from '@/models/NotificationMessage';
 // Assuming NotificationService.ts exports getNotifications
 import { getNotifications } from '@/services/NotificationService';
+
+// Local storage keys
+const NOTIFICATIONS_STORAGE_KEY = 'notifications';
+const HAS_FETCHED_INITIAL_KEY = 'hasFetchedInitial';
 
 export const useNotificationStore = defineStore('notification', () => {
   // --- State ---
@@ -15,6 +19,48 @@ export const useNotificationStore = defineStore('notification', () => {
   const error = ref<string | null>(null);
   // Tracks if the initial fetch has been attempted/completed
   const hasFetchedInitial = ref(false);
+
+  // Load persisted state from localStorage on store initialization
+  onMounted(() => {
+    loadFromLocalStorage();
+  });
+
+  // Function to load state from localStorage
+  function loadFromLocalStorage() {
+    try {
+      const storedNotifications = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
+      const storedHasFetchedInitial = localStorage.getItem(HAS_FETCHED_INITIAL_KEY);
+
+      if (storedNotifications) {
+        // Parse the stored notifications and convert date strings back to Date objects
+        const parsedNotifications = JSON.parse(storedNotifications);
+        notifications.value = parsedNotifications.map((notification: any) => ({
+          ...notification,
+          notifyAt: new Date(notification.notifyAt),
+          sentAt: notification.sentAt ? new Date(notification.sentAt) : undefined,
+          readAt: notification.readAt ? new Date(notification.readAt) : undefined,
+          createdAt: new Date(notification.createdAt)
+        }));
+      }
+
+      if (storedHasFetchedInitial) {
+        hasFetchedInitial.value = JSON.parse(storedHasFetchedInitial);
+      }
+    } catch (err) {
+      console.error('Failed to load notifications from localStorage:', err);
+      // If there's an error loading from localStorage, we'll just use the default empty state
+    }
+  }
+
+  // Function to save state to localStorage
+  function saveToLocalStorage() {
+    try {
+      localStorage.setItem(NOTIFICATIONS_STORAGE_KEY, JSON.stringify(notifications.value));
+      localStorage.setItem(HAS_FETCHED_INITIAL_KEY, JSON.stringify(hasFetchedInitial.value));
+    } catch (err) {
+      console.error('Failed to save notifications to localStorage:', err);
+    }
+  }
 
   // --- Actions ---
 
@@ -38,6 +84,10 @@ export const useNotificationStore = defineStore('notification', () => {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       hasFetchedInitial.value = true; // Mark initial fetch as done
+
+      // Persist to localStorage
+      saveToLocalStorage();
+
       console.log(`NotificationStore: Fetched ${notifications.value.length} notifications.`);
     } catch (err) {
       console.error('NotificationStore: Failed to fetch notifications:', err);
@@ -55,6 +105,10 @@ export const useNotificationStore = defineStore('notification', () => {
     if (!exists) {
       // Add to the beginning of the array (newest first)
       notifications.value.unshift(newNotification);
+
+      // Persist to localStorage
+      saveToLocalStorage();
+
       console.log('NotificationStore: Added new notification via WebSocket:', newNotification.id);
     } else {
       console.log('NotificationStore: Notification already exists, skipping addition:', newNotification.id);
@@ -68,6 +122,14 @@ export const useNotificationStore = defineStore('notification', () => {
     isLoading.value = false;
     error.value = null;
     hasFetchedInitial.value = false;
+
+    // Clear localStorage
+    try {
+      localStorage.removeItem(NOTIFICATIONS_STORAGE_KEY);
+      localStorage.removeItem(HAS_FETCHED_INITIAL_KEY);
+    } catch (err) {
+      console.error('Failed to clear notifications from localStorage:', err);
+    }
   }
 
   // --- Getters (Computed Properties) ---
