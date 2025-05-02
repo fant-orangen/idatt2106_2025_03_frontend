@@ -138,7 +138,7 @@
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.description') }}:</FormLabel>
             <FormControl>
-              <Textarea :placeholder="$t('add-event-info.description')" v-bind="componentField"></Textarea>
+              <Textarea placeholder="..." v-bind="componentField"></Textarea>
             </FormControl>
             <FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
             <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
