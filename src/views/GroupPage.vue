@@ -50,12 +50,14 @@
         </div>
       </div>
 
-      <button
-          @click="openShareModal"
-          class="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition"
+      <!-- Direct to inventory -->
+      <router-link
+          to="/inventory"
+          class="inline-block bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition"
       >
         Del varer fra ditt lager →
-      </button>
+      </router-link>
+
 
       <!-- Modal for sharing -->
       <ShareItemModal
