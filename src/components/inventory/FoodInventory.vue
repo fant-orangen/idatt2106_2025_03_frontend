@@ -1,132 +1,163 @@
 <template>
-  <div>
-    <h1 class="text-3xl font-bold mb-6">Matvarer</h1>
-    <!-- Product list -->
-    <div
-      v-for="(item, index) in items"
-      :key="index"
-      :class="[
-        'border rounded-lg p-4 space-y-4',
-        item?.name?.toLowerCase() === 'vann'
-          ? 'border-primary bg-muted'
-          : 'border-border bg-card',
-        'mb-3'
-      ]"
-    >
-      <!-- Product overview -->
-      <div class="grid grid-cols-4 items-center">
-        <div class="font-medium">
-          <span v-if="item?.name?.toLowerCase() === 'vann'">💧</span> {{ item?.name }}
+  <div class="min-h-screen p-6 bg-background text-foreground">
+    <div class="max-w-5xl mx-auto space-y-8">
+      <!-- Header -->
+      <h1 class="text-3xl font-bold mb-6">Matvarer</h1>
+
+      <!-- Product List -->
+      <div
+        v-for="(item, index) in items"
+        :key="index"
+        :class="[
+          'border rounded-lg p-4 space-y-4',
+          item?.name?.toLowerCase() === 'vann'
+            ? 'border-primary bg-muted'
+            : 'border-border bg-card',
+          'mb-3'
+        ]"
+      >
+        <!-- Product Overview -->
+        <div class="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-2">
+          <div class="font-medium">
+            <span v-if="item?.name?.toLowerCase() === 'vann'">💧</span> {{ item?.name }}
+          </div>
+          <div class="text-left sm:text-left">{{ getTotalAmount(item) }}</div>
+          <div class="left-center sm:text-left">{{ item?.caloriesPerUnit }} kcal per {{ item?.unit }}</div>
+          <div class="text-right sm:text-center">
+            <Button
+              variant="link"
+              @click="toggleEdit(index)"
+              class="text-sm"
+            >
+              {{ item?.edit ? 'Lagre' : 'Rediger' }}
+            </Button>
+          </div>
         </div>
-        <div class="text-center">{{ getTotalAmount(item) }}</div>
-        <div class="text-center">{{ item?.caloriesPerUnit }} kcal per {{ item?.unit }}</div>
-        <div class="text-right">
-          <button @click="toggleEdit(index)" class="text-sm text-primary underline">
-            {{ item?.edit ? 'Lagre' : 'Rediger' }}
-          </button>
-        </div>
-      </div>
-      <!-- Batch editing -->
-      <div v-if="item.edit" class="space-y-4 mt-4">
-        <div
-          v-for="(batch, bIndex) in item.batches"
-          :key="bIndex"
-          class="grid grid-cols-5 gap-3 items-center"
-        >
-          <input
-            v-model="batch.amount"
-            type="number"
-            class="bg-input text-foreground py-2 px-3 text-center rounded-md"
-            placeholder="Mengde"
-          />
-          <div class="text-sm text-center">{{ item.unit }}</div>
-          <template v-if="batch.isNew">
-            <input
-              v-model="batch.expires"
-              class="bg-input text-foreground py-2 px-3 text-center rounded-md"
-              placeholder="Utløp"
-              :readonly="item.name.toLowerCase() === 'vann'"
+
+        <!-- Batch Editing -->
+        <div v-if="item.edit" class="space-y-4 mt-4">
+          <div
+            v-for="(batch, bIndex) in item.batches"
+            :key="bIndex"
+            class="flex flex-col sm:grid sm:grid-cols-5 gap-3 items-center"
+          >
+            <Input
+              v-model="batch.amount"
+              type="number"
+              placeholder="Mengde"
+              class="text-center w-full"
             />
-          </template>
-          <template v-else>
-            <div class="text-sm text-center">{{ batch.expires }}</div>
-          </template>
-          <button
-            v-if="batch.isNew"
-            @click="saveBatch(index, bIndex)"
-            class="text-sm text-primary underline"
-          >
-            Lagre
-          </button>
-          <button @click="removeBatch(index, bIndex)" class="text-sm text-destructive underline">
-            Slett
-          </button>
+            <div class="text-sm text-center sm:text-left">{{ item.unit }}</div>
+            <template v-if="batch.isNew">
+              <Input
+                v-model="batch.expires"
+                placeholder="Utløp"
+                class="text-center w-full"
+                :readonly="item.name.toLowerCase() === 'vann'"
+              />
+            </template>
+            <template v-else>
+              <div class="text-sm text-center sm:text-left w-full">{{ batch.expires }}</div>
+            </template>
+            <Button
+              v-if="batch.isNew"
+              variant="link"
+              @click="saveBatch(index, bIndex)"
+              class="text-sm text-primary w-full sm:w-auto"
+            >
+              Lagre
+            </Button>
+            <Button
+              variant="destructive"
+              @click="removeBatch(index, bIndex)"
+              class="text-sm w-full sm:w-auto"
+            >
+              Slett
+            </Button>
+          </div>
+
+          <!-- Add New Batch -->
+          <div class="flex flex-col sm:flex-row justify-between items-center mt-2 gap-2">
+            <Button
+              variant="link"
+              @click="addBatch(index)"
+              class="text-sm text-primary hover:underline"
+            >
+              + Legg til
+            </Button>
+            <Button
+              v-if="item.edit"
+              variant="destructive"
+              @click="deleteProductType(index)"
+              class="text-sm"
+            >
+              Slett produkttype
+            </Button>
+          </div>
         </div>
-        <!-- Add new batch -->
-        <div class="flex justify-between items-center mt-2">
-          <button @click="addBatch(index)" class="text-sm text-accent hover:underline">
+      </div>
+
+      <!-- Add New Product -->
+      <div class="pt-6 space-y-4">
+        <h2 class="text-lg font-semibold">Legg til</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
+          <Input
+            v-model="newProductName"
+            placeholder="Produktnavn"
+          />
+          <Select v-model="newProductUnit">
+            <SelectTrigger>
+              <SelectValue placeholder="Velg enhet" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="kg">kg</SelectItem>
+              <SelectItem value="l">L</SelectItem>
+              <SelectItem value="stk">stk</SelectItem>
+              <SelectItem value="gram">gram</SelectItem>
+              <SelectItem value="dl">dl</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input
+            v-model="newProductCalories"
+            placeholder="kcal per enhet"
+          />
+          <Button
+            variant="link"
+            @click="addProduct"
+            class="text-sm text-primary hover:underline"
+          >
             + Legg til
-          </button>
-          <button
-            v-if="item.edit"
-            @click="deleteProductType(index)"
-            class="text-sm text-destructive hover:underline"
-          >
-            Slett produkttype
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
-    <!-- Add new product type -->
-    <div class="pt-6 space-y-2">
-      <h2 class="text-lg font-semibold">Legg til</h2>
-      <div class="grid grid-cols-4 gap-4 items-center">
-        <input
-          v-model="newProductName"
-          placeholder="Produktnavn"
-          class="bg-input text-foreground py-2 px-3 rounded-md"
-        />
-        <select v-model="newProductUnit" class="bg-input text-foreground py-2 px-3 rounded-md">
-          <option disabled value="">Velg enhet</option>
-          <option value="kg">kg</option>
-          <option value="l">L</option>
-          <option value="stk">stk</option>
-          <option value="gram">gram</option>
-          <option value="dl">dl</option>
-        </select>
-        <input
-          v-model="newProductCalories"
-          placeholder="kcal per enhet"
-          class="bg-input text-foreground py-2 px-3 rounded-md"
-        />
-        <button @click="addProduct" class="text-sm text-primary underline">
-          + Legg til
-        </button>
-      </div>
-    </div>
-    <!-- Error popup for duplicate item -->
-    <div
-      v-if="showExistsModal"
-      class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground border border-destructive p-6 rounded-lg shadow-xl"
-    >
-      <p class="text-center">
-        <strong>Denne produkttypen finnes allerede.</strong><br>
-        Du kan ikke legge til den samme typen flere ganger.<br>
-        Trykk på "Rediger" for å legge til en ny batch.
-      </p>
-      <div class="text-right mt-4">
-        <button @click="showExistsModal = false" class="text-sm text-primary underline">
-          OK
-        </button>
-      </div>
+
+      <!-- Error Popup -->
+      <Dialog v-model="showExistsModal">
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Feil</DialogTitle>
+            <DialogDescription>
+              Denne produkttypen finnes allerede. Trykk på "Rediger" for å legge til en ny batch.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button @click="showExistsModal = false">OK</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { format } from 'date-fns';
 import { inventoryService } from '@/services/InventoryService';
 import { useProductStore } from '@/stores/ProductStore';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const props = defineProps({
   searchText: {

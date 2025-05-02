@@ -1,6 +1,6 @@
 <template>
   <div class="crisis-status cursor-pointer" @click="navigateToCrisisPage()">
-    <Card :class="`crisis-status-card w-120 ${containerClass}`">
+    <Card :class="`crisis-status-card w-[100%] md:w-120 ${containerClass}`">
       <CardHeader class="items-center">
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
           <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />

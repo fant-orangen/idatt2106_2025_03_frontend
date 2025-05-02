@@ -79,11 +79,6 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/shelter-frontpage',
-    name: 'shelter-frontpage',
-    component: () => import('@/components/shelter/CategoryPage.vue')
-  },
-  {
     path: '/medicine-inventory',
     name: 'MedicineInventory',
     component: () => import('@/views/MedicineInventory.vue'),

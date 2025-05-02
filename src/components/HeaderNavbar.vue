@@ -24,7 +24,7 @@ import NotificationPopover from '@/components/NotificationPopover.vue'
 
 // Store and Router setup (keep from version B, add notificationStore)
 import { useUserStore } from '@/stores/UserStore'
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const notificationStore = useNotificationStore() // Instantiate NotificationStore (from version A)
@@ -40,22 +40,24 @@ type MenuLink = {
 const menuLinks = computed<MenuLink[]>(() => {
   if (!userStore.loggedIn) {
     return [
-      { label: 'Home', route: '/' },
-      { label: 'Login', route: '/login' },
-      { label: 'Register', route: '/register' },
+      { label: t('navigation.home'), route: '/' },
+      { label: t('login.login'), route: '/login' },
+      { label: t('login.signup'), route: '/register' },
     ];
   } else {
     const links: MenuLink[] = [
-      { label: 'Home', route: '/' },
-      // { label: 'Profile', route: '/profile' }, // Assuming profile link comes from user dropdown now
-      { label: 'Settings', route: '/settings' },
+      { label: t('navigation.home'), route: '/' },
+      { label: t('navigation.profile'), route: '/profile' },
+      { label: t('settings.settings'), route: '/settings' },
+      { label: t('notifications.notifications'), route: '/notifications'}
     ];
 
     if (userStore.isAdminUser) {
-      links.push({ label: 'Admin Panel', route: '/admin-panel' });
+      links.push({ label: t('navigation.admin-panel'), route: '/admin-panel' });
     }
 
-    links.push({ label: 'Log out', action: logOut }); // Use the logout function defined below
+    links.push({ label: t('login.logout'), action: logOut });
+
 
     return links;
   }
@@ -88,6 +90,7 @@ const topNotifications = computed(() => notificationStore.latestNotifications)
 
 // Fetch notifications using the store on mount (from version A)
 onMounted(async () => {
+
   // Only fetch if logged in and haven't fetched yet
   if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
     try {
@@ -184,10 +187,20 @@ function goToPage(route: string) {
         class="menu-card fixed top-0 right-0 w-4/5 max-w-sm h-full bg-secondary text-secondary-foreground shadow-lg p-5 transition-transform transform translate-x-0 z-[1051]" :class="{ 'translate-x-full': !isMenuOpen }"
       >
         <button
-          class="close-button absolute top-4 right-4 text-primary text-xl mb-4" @click="toggleMenu"
-          aria-label="Close menu" >
+          class="close-button absolute top-5 right-7 text-primary text-lg mb-4"
+          @click="toggleMenu"
+        >
+
           ✖
         </button>
+        <Button
+          variant="ghost"
+          size="icon"
+          class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+        >
+          <component :is="colorMode === 'dark' ? Sun : Moon" class="h-6 w-6" />
+        </Button>
 
         <ul class="menu-links space-y-4 mt-16"> <li
           v-for="link in menuLinks"
@@ -196,7 +209,12 @@ function goToPage(route: string) {
         >
           {{ $t(link.label) }} </li>
         </ul>
+
+      <!-- Dark Mode Toggle -->
+      <div class="mt-8 flex items-center justify-center">
+
       </div>
+    </div>
     </div>
 
     <div class="navbar-left hidden md:flex items-center gap-4">
@@ -214,8 +232,8 @@ function goToPage(route: string) {
       >
         {{ $t('login.signup') }}
       </RouterLink>
-
-      <div class="flex items-center gap-2" v-if="userStore.loggedIn"> <DropdownMenu>
+      <div class="flex gap-2">
+        <DropdownMenu v-if="userStore.loggedIn">
         <DropdownMenuTrigger as-child>
           <Button
             variant="ghost"
@@ -225,31 +243,34 @@ function goToPage(route: string) {
             <User class="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="z-[1001]"> <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem @click="goToPage('/profile')"> <User class="mr-2 h-4 w-4" />
-              <span>Profile (WIP)</span>
+            <DropdownMenuItem>
+              <User class="mr-2 h-4 w-4" />
+              <span @click="goToPage('/profile')">Profile (WIP)</span>
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToPage('/settings')">
               <Settings class="mr-2 h-4 w-4" />
               <span>Settings (WIP)</span>
             </DropdownMenuItem>
-            <template v-if="userStore.isAdminUser">
-              <DropdownMenuSeparator />
-              <DropdownMenuItem @click="goToPage('/admin-panel')">
-                <ShieldUser class="mr-2 h-4 w-4" />
-                <span>Admin Panel</span>
-              </DropdownMenuItem>
-            </template>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator v-if="userStore.isAdminUser" />
+            <DropdownMenuItem
+              v-if="userStore.isAdminUser"
+              @click="goToPage('/admin-panel')"
+            >
+              <ShieldUser class="mr-2 h-4 w-4" />
+              <span>Admin Panel</span>
+            </DropdownMenuItem>
             <DropdownMenuItem @click="logOut()">
               <LogOut class="mr-2 h-4 w-4" />
-              <span>Log out </span>
+              <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+
 
         <Popover>
           <PopoverTrigger as="button" class="no-border relative"> <Button
