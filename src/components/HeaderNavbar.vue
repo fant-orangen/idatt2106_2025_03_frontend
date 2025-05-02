@@ -27,9 +27,9 @@ const router = useRouter()
 const userStore = useUserStore()
 const isMenuOpen = ref(false)
 
-type MenuLink = { 
-  label: string; 
-  route?: string; 
+type MenuLink = {
+  label: string;
+  route?: string;
   action?: () => void;
 };
 
@@ -125,7 +125,7 @@ function goToPage(route: string) {
   <div
     id="navbar"
     class="navbar shadow-md bg-secondary text-secondary-foreground flex justify-between items-center px-5 py-3 transition-all duration-300"
-  > 
+  >
     <!-- Left Section: Language Selector -->
     <div class="navbar-right flex gap-4">
       <RouterLink to="/" class="hover:text-primary">
@@ -141,7 +141,7 @@ function goToPage(route: string) {
             {{ selectedLanguage }}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="start" class="z-10000">
           <DropdownMenuGroup>
             <DropdownMenuLabel>{{ $t('language.select-language') }}</DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -227,7 +227,7 @@ function goToPage(route: string) {
               <User class="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent class="z-10000">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -263,8 +263,8 @@ function goToPage(route: string) {
                 >
                 <Bell class="h-5 w-5" />
               </Button>
-            </PopoverTrigger>
-        <PopoverContent>
+            </PopoverTrigger >
+        <PopoverContent class="z-10000">
           <NotificationPopover :notifications="topNotifications" />
         </PopoverContent>
       </Popover>
