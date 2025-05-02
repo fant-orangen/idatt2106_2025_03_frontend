@@ -33,8 +33,10 @@ const scenarioThemes = ref<ScenarioThemeDto[]>([])
 const loadingScenarios = ref(true)
 const scenarioError = ref<string | null>(null)
 
-// Check if there's a scenario ID in the route
 const routeScenarioId = computed(() => {
+  if (route.params.id) {
+    return parseInt(route.params.id as string, 10)
+  }
   const id = route.query.scenarioId
   return id ? parseInt(id as string, 10) : null
 })
@@ -100,10 +102,10 @@ function handleThemeSelected(themeKey: string): void {
   // Check if this is a scenario theme
   if (themeKey.startsWith('scenario-')) {
     const scenarioId = parseInt(themeKey.replace('scenario-', ''), 10)
-    // Navigate to the info page with the scenario ID in the query parameter
+    // Navigate to the info page with the scenario ID in the URL path
     router.push({
-      path: '/info',
-      query: { scenarioId: scenarioId.toString() }
+      name: 'ScenarioTheme',
+      params: { id: scenarioId.toString() }
     })
     selectedScenarioId.value = scenarioId
     selectedTheme.value = null

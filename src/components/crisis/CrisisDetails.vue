@@ -50,15 +50,29 @@
             <span class="col-span-2">{{ crisisDetails.createdByUser || 'N/A' }}</span>
           </div>
 
-          <div v-if="crisisDetails.scenarioThemeId" class="grid grid-cols-3 text-sm">
+          <!-- Always show the scenario theme section, even if scenarioThemeId is missing -->
+          <div class="grid grid-cols-3 text-sm">
             <span class="font-semibold">{{ t('crisis.scenario_theme', 'Scenario Theme') }}</span>
             <span class="col-span-2">
+              <!-- If we have a scenarioThemeId, show a button to navigate to it -->
               <Button
+                v-if="crisisDetails.scenarioThemeId"
                 variant="link"
                 class="p-0 h-auto text-sm font-normal"
-                @click="navigateToScenarioTheme(crisisDetails.scenarioThemeId)"
+                @click="navigateToScenarioTheme(props.crisis?.scenarioThemeId)"
               >
                 {{ t('crisis.view_scenario_theme', 'View Scenario Theme') }}
+                <ArrowRight class="ml-1 h-3 w-3" />
+              </Button>
+
+              <!-- If no scenarioThemeId is available, show a button to navigate to the first scenario theme -->
+              <Button
+                v-else
+                variant="link"
+                class="p-0 h-auto text-sm font-normal"
+                @click="navigateToDefaultScenarioTheme()"
+              >
+                {{ t('crisis.view_scenario_themes', 'View Scenario Themes') }}
                 <ArrowRight class="ml-1 h-3 w-3" />
               </Button>
             </span>
@@ -136,14 +150,24 @@ const crisisDetails = computed(() => {
 });
 
 /**
- * Navigates to the information page with the scenario theme ID
+ * Navigates to the scenario theme page with the theme ID in the URL path
  *
  * @param {number} themeId - The ID of the scenario theme to navigate to
  */
 function navigateToScenarioTheme(themeId: number) {
   router.push({
-    name: 'Information',
-    query: { scenarioId: themeId.toString() }
+    name: 'ScenarioTheme',
+    params: { id: themeId.toString() }
+  });
+}
+
+/**
+ * Navigates to the information page without a specific scenario theme ID
+ * This will show all available scenario themes
+ */
+function navigateToDefaultScenarioTheme() {
+  router.push({
+    name: 'Information'
   });
 }
 </script>
