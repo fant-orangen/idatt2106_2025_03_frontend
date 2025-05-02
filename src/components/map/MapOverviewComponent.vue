@@ -338,7 +338,7 @@ async function findNearestShelter() {
     console.log(`Found shelter type ID: ${shelterType.id}`);
     const nearest = await fetchNearestPoiByType(shelterType.id, currentLocation.latitude, currentLocation.longitude);
     if (nearest) {
-      pointsOfInterest.value = [convertPoiData(nearest)];
+      pointsOfInterest.value = [nearest];
       console.log("Nearest shelter found:", nearest);
     } else {
       pointsOfInterest.value = [];
@@ -376,7 +376,7 @@ async function findNearestPoi() {
     console.log(`Finding nearest POI of type ID: ${selectedPoiType.value}`);
     const nearest = await fetchNearestPoiByType(selectedPoiType.value, currentLocation.latitude, currentLocation.longitude);
     if (nearest) {
-      pointsOfInterest.value = [convertPoiData(nearest)];
+      pointsOfInterest.value = [nearest];
       console.log("Nearest POI found:", nearest);
     } else {
       pointsOfInterest.value = [];
