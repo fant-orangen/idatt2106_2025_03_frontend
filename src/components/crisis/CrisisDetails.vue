@@ -59,7 +59,7 @@
                 v-if="crisisDetails.scenarioThemeId"
                 variant="link"
                 class="p-0 h-auto text-sm font-normal"
-                @click="navigateToScenarioTheme(props.crisis?.scenarioThemeId)"
+                @click="navigateToScenarioTheme(crisisDetails.scenarioThemeId)"
               >
                 {{ t('crisis.view_scenario_theme', 'View Scenario Theme') }}
                 <ArrowRight class="ml-1 h-3 w-3" />
