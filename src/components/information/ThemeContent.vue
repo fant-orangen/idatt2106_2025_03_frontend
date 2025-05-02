@@ -133,7 +133,7 @@ const titleKey = computed(() => {
  */
 const contentKey = computed(() => {
   if (props.selectedScenarioId && scenarioTheme.value) {
-    return null // We'll use the scenario theme content directly
+    return null
   }
 
   if (!props.selectedTheme) return null
@@ -146,7 +146,7 @@ const contentKey = computed(() => {
  */
 const renderedContent = computed(() => {
   if (props.selectedScenarioId && scenarioTheme.value) {
-    return null // We'll use the scenario theme content directly
+    return null
   }
 
   if (contentKey.value) {

@@ -7,6 +7,15 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
+/**
+ * EnhancedSidebar component
+ *
+ * This component provides a hierarchical navigation sidebar for the information section.
+ * It displays both static themes and dynamic scenario themes in a collapsible tree structure.
+ * Highlights the currently selected theme or scenario.
+ *
+ * @component
+ */
 import { ref, watch } from 'vue'
 import { ChevronRight, ChevronDown } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
@@ -15,29 +24,45 @@ import type { SidebarNode } from '@/views/information/EnhancedInformationView.vu
 
 const { t } = useI18n()
 
+/**
+ * Component props
+ */
 const props = defineProps<{
+  /** Hierarchical sections to display in the sidebar */
   sections: SidebarNode[]
+  /** Currently selected theme key */
   selectedTheme: string | null
+  /** Currently selected scenario ID */
   selectedScenarioId: number | null
+  /** Whether the mobile sidebar is visible */
   showSidebarMobile: boolean
 }>()
 
+/**
+ * Component events
+ */
 const emit = defineEmits<{
+  /** Emitted when a theme is selected */
   'theme-selected': [key: string]
+  /** Emitted when the mobile sidebar toggle is clicked */
   'toggle-mobile-sidebar': []
 }>()
 
-// Track expanded sections
+/**
+ * Tracks which sections are expanded in the sidebar
+ */
 const expandedSections = ref<Record<string, boolean>>({
-  // Default to having the top-level sections expanded
   'crisisSituations': true,
   'extremeWeather': true,
   'scenarioThemes': true
 })
 
-// We're removing the icon helper function as requested
-
-// Style helpers for different hierarchy levels
+/**
+ * Gets the appropriate text class based on the hierarchy level
+ *
+ * @param level - The hierarchy level (0 = top level, 1 = second level, etc.)
+ * @returns CSS class string for the text
+ */
 function getTextClass(level: number): string {
   if (level === 0) {
     return 'text-lg font-bold uppercase tracking-wide'
@@ -48,10 +73,23 @@ function getTextClass(level: number): string {
   }
 }
 
+/**
+ * Gets the appropriate indentation based on the hierarchy level
+ *
+ * @param level - The hierarchy level (0 = top level, 1 = second level, etc.)
+ * @returns CSS style object with paddingLeft property
+ */
 function getIndentClass(level: number): { paddingLeft: string } {
   return { paddingLeft: `${level * 1.5}rem` }
 }
 
+/**
+ * Gets the appropriate border class based on the hierarchy level and active state
+ *
+ * @param level - The hierarchy level (0 = top level, 1 = second level, etc.)
+ * @param isActive - Whether the item is currently active/selected
+ * @returns CSS class string for the border
+ */
 function getBorderClass(level: number, isActive: boolean): string {
   if (level === 0) {
     return isActive ? 'border-l-4 border-primary' : 'border-l-4 border-transparent'
@@ -62,25 +100,37 @@ function getBorderClass(level: number, isActive: boolean): string {
   }
 }
 
-// Toggle section expansion
+/**
+ * Toggles the expansion state of a section
+ *
+ * @param sectionKey - The key of the section to toggle
+ */
 function toggleSection(sectionKey: string): void {
   expandedSections.value[sectionKey] = !expandedSections.value[sectionKey]
 }
 
-// Handle theme selection
+/**
+ * Handles theme selection and emits the selected theme key
+ *
+ * @param themeKey - The key of the selected theme
+ */
 function handleThemeSelected(themeKey: string): void {
   emit('theme-selected', themeKey)
 }
 
-// Toggle mobile sidebar
+/**
+ * Toggles the visibility of the sidebar on mobile devices
+ */
 function toggleMobileSidebar(): void {
   emit('toggle-mobile-sidebar')
 }
 
-// Watch for changes in selectedScenarioId and ensure the scenario section is expanded
+/**
+ * Watches for changes in the selected scenario ID
+ * Ensures the scenario themes section is expanded when a scenario is selected
+ */
 watch(() => props.selectedScenarioId, (newId) => {
   if (newId) {
-    // Make sure the scenarioThemes section is expanded
     expandedSections.value['scenarioThemes'] = true;
   }
 }, { immediate: true })
