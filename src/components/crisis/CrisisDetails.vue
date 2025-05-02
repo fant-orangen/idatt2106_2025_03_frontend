@@ -50,9 +50,19 @@
             <span class="col-span-2">{{ crisisDetails.createdByUser || 'N/A' }}</span>
           </div>
 
-          <Badge :variant="crisisDetails.scenarioThemeId || 'default'">
-            {{ crisisDetails.severity ? crisisDetails.severity.toUpperCase() : 'UNKNOWN' }}
-          </Badge>
+          <div v-if="crisisDetails.scenarioThemeId" class="grid grid-cols-3 text-sm">
+            <span class="font-semibold">{{ t('crisis.scenario_theme', 'Scenario Theme') }}</span>
+            <span class="col-span-2">
+              <Button
+                variant="link"
+                class="p-0 h-auto text-sm font-normal"
+                @click="navigateToScenarioTheme(crisisDetails.scenarioThemeId)"
+              >
+                {{ t('crisis.view_scenario_theme', 'View Scenario Theme') }}
+                <ArrowRight class="ml-1 h-3 w-3" />
+              </Button>
+            </span>
+          </div>
 
         </div>
       </div>
@@ -64,9 +74,11 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { ArrowRight } from 'lucide-vue-next';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import { getSeverityClass } from '@/utils/severityUtils';
 
@@ -124,17 +136,14 @@ const crisisDetails = computed(() => {
 });
 
 /**
- * Navigates to the scenario page with the current crisis ID
- * For now, we'll navigate to a placeholder route
+ * Navigates to the information page with the scenario theme ID
+ *
+ * @param {number} themeId - The ID of the scenario theme to navigate to
  */
-function navigateToScenarioPage() {
-  if (!props.crisis) return;
-
-  // For now, navigate to the crisis event view with a query parameter
-  // This can be updated later to navigate to a specific scenario page
+function navigateToScenarioTheme(themeId: number) {
   router.push({
-    name: 'CrisisEvent',
-    query: { scenarioId: props.crisis.id }
+    name: 'Information',
+    query: { scenarioId: themeId.toString() }
   });
 }
 </script>
