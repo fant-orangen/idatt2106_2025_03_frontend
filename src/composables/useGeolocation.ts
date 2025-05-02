@@ -25,7 +25,7 @@ export function useGeolocation() {
   const error = computed(() => geolocationStore.locationError);       // Read from GeolocationStore
   const isLoading = computed(() => geolocationStore.isLocationLoading); // Read from GeolocationStore
   const status = computed(() => geolocationStore.locationStatus);     // Read from GeolocationStore
-  const locationSharingUserPref = computed(() => userStore.locationSharingEnabled); // Read preference from UserStore
+  const locationSharingUserPref = computed(() => userStore); // Read preference from UserStore
 
   // Track browser permission state
   const browserPermissionState = ref<PermissionState | null>(null);
