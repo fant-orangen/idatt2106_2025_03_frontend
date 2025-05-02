@@ -15,6 +15,11 @@ const routes = [
     component: () => import('@/views/information/EnhancedInformationView.vue'),
   },
   {
+    path: '/info/scenario/:id',
+    name: 'ScenarioTheme',
+    component: () => import('@/views/information/EnhancedInformationView.vue'),
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/LoginView.vue'),
@@ -78,11 +83,6 @@ const routes = [
     name: 'FoodAndDrinks',
     component: () => import('@/views/FoodAndDrinksView.vue'),
     meta: { requiresAuth: true },
-  },
-  {
-    path: '/shelter-frontpage',
-    name: 'shelter-frontpage',
-    component: () => import('@/components/shelter/CategoryPage.vue')
   },
   {
     path: '/medicine-inventory',
@@ -154,6 +154,13 @@ const routes = [
     component: () => import('@/views/FoodAndDrinksView.vue'),
     meta: { requiresAuth: true },
   },
+  {
+    path: '/group',
+    name: 'GroupPage',
+    component: () => import('@/views/GroupPage.vue'),
+    meta: { requiresAuth: true }
+  }
+
 ]
 
 const router = createRouter({
@@ -181,8 +188,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information','NotFound', 'News',
-    'Notifications, ', 'ResetPassword'];
+  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
 
   // Allow immediate navigation if the target route is public
   if (publicRoutes.includes(to.name as string)) { //

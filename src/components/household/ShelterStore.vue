@@ -25,7 +25,7 @@
       </div>
 
       <!-- Button to view beredskapslager -->
-      <Button variant="default" class="w-full" @click="viewBeredskapslager">
+      <Button variant="default" class="w-full" @click="router.push('/food-and-drinks')">
         {{ $t('household.your-shelter-store') }}
       </Button>
     </CardContent>

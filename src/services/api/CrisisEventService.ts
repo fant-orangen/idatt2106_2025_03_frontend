@@ -23,6 +23,7 @@ function mapBackendToFrontendEvent(backendEvent: CrisisEventDto): CrisisEvent {
     latitude: backendEvent.epicenterLatitude,
     longitude: backendEvent.epicenterLongitude,
     level: level,
+    radius: backendEvent.radius || 1000, // Default to 1000 meters if null
     startTime: backendEvent.startTime,
     isActive: backendEvent.active,
     createdBy: `User ${backendEvent.createdByUser}`,
@@ -146,6 +147,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
         latitude: 63.4305, // Centered on the default map location
         longitude: 10.3951,
         level: 2, // Medium severity (orange)
+        radius: 1500, // Affected area radius in meters
         startTime: new Date().toISOString(),
         isActive: true,
         createdBy: "admin@example.com",
@@ -159,6 +161,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
         latitude: 63.4405, // Slightly north
         longitude: 10.3951,
         level: 3, // High severity (red)
+        radius: 2000, // Affected area radius in meters
         startTime: new Date().toISOString(),
         isActive: true,
         createdBy: "admin@example.com",
@@ -172,6 +175,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
         latitude: 63.4305,
         longitude: 10.4151, // Slightly east
         level: 1, // Low severity (yellow)
+        radius: 1000, // Affected area radius in meters
         startTime: new Date().toISOString(),
         isActive: true,
         createdBy: "admin@example.com",
@@ -263,4 +267,20 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return EARTH_RADIUS * c;
+}
+
+/**
+ * Fetches crisis events associated with a specific scenario theme.
+ *
+ * @param {number} scenarioThemeId - The ID of the scenario theme
+ * @returns {Promise<CrisisEventDto[]>} Array of crisis events related to the scenario theme
+ */
+export async function fetchCrisisEventsByScenarioTheme(scenarioThemeId: number): Promise<CrisisEventDto[]> {
+  try {
+    const response = await api.get<CrisisEventDto[]>(`/crisis-events/by-theme/${scenarioThemeId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch crisis events for scenario theme ${scenarioThemeId}:`, error);
+    return [];
+  }
 }

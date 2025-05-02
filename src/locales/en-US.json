@@ -9,6 +9,7 @@
   "login": {
     "login": "Login",
     "signup": "Sign Up",
+    "logout": "Logout",
     "forgot-password": "Forgot Password?",
     "re-enter": "Re-enter",
     "consent": "I agree to",
@@ -151,6 +152,8 @@
     "started": "Started",
     "updated": "Updated",
     "created_by": "Created By",
+    "scenario_theme": "Scenario Theme",
+    "view_scenario_theme": "View Scenario Theme",
     "previous": "Previous",
     "new": "New",
     "by_user": "By user {user}",
@@ -171,13 +174,16 @@
   "navigation": {
     "home": "Home",
     "language": "Language",
+    "profile": "Profile",
     "before-crisis-page": "Before a crisis",
     "activities": "Activities",
     "admin-panel": "Admin panel",
     "new-event": "New event",
     "new-POI": "New point of interest",
     "new-activity": "New activity",
-    "go-back": "Go back"
+    "go-back": "Go back",
+    "light-mode": "Lightmode",
+    "dark-mode": "Darkmode"
   },
   "time": {
     "after": "after",
@@ -447,6 +453,7 @@
     "learnMoreTopic": "Click to learn more about this topic."
   },
   "settings": {
+    "settings": "Settings",
     "title": "Settings",
     "tabs": {
       "account": "Account",
@@ -578,5 +585,30 @@
   "language": {
     "title": "Language",
     "select-language": "Select Language"
+  },
+  "group": {
+    "title": "My Groups",
+    "shared-inventory": "Shared emergency inventory",
+    "invite-household": "Invite household",
+    "switch-group": "Switch group",
+    "share-from-inventory": "Share items from your inventory",
+    "go-to-groups": "Go to your groups →"
+},
+  "scenarioThemes": {
+    "title": "Crisis Scenario Themes",
+    "noThemesFound": "No scenario themes found",
+    "loadError": "Failed to load scenario themes",
+    "viewDetails": "View Details",
+    "description": "Description",
+    "instructions": "Instructions",
+    "noDescription": "No description available",
+    "noInstructions": "No instructions available",
+    "relatedCrises": "Related Crisis Events",
+    "noRelatedEvents": "No related crisis events found",
+    "themeNotFound": "Scenario theme not found"
+  },
+  "common": {
+    "back": "Back"
   }
+
 }
