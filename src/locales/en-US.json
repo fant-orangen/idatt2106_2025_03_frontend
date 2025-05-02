@@ -9,6 +9,7 @@
   "login": {
     "login": "Login",
     "signup": "Sign Up",
+    "logout": "Logout",
     "forgot-password": "Forgot Password?",
     "re-enter": "Re-enter",
     "consent": "I agree to",
@@ -189,13 +190,16 @@
   "navigation": {
     "home": "Home",
     "language": "Language",
+    "profile": "Profile",
     "before-crisis-page": "Before a crisis",
     "activities": "Activities",
     "admin-panel": "Admin panel",
     "new-event": "New event",
     "new-POI": "New point of interest",
     "new-activity": "New activity",
-    "go-back": "Go back"
+    "go-back": "Go back",
+    "light-mode": "Lightmode",
+    "dark-mode": "Darkmode"
   },
   "time": {
     "after": "after",
@@ -465,6 +469,7 @@
     "learnMoreTopic": "Click to learn more about this topic."
   },
   "settings": {
+    "settings": "Settings",
     "title": "Settings",
     "tabs": {
       "account": "Account",
@@ -597,6 +602,14 @@
     "title": "Language",
     "select-language": "Select Language"
   },
+  "group": {
+    "title": "My Groups",
+    "shared-inventory": "Shared emergency inventory",
+    "invite-household": "Invite household",
+    "switch-group": "Switch group",
+    "share-from-inventory": "Share items from your inventory",
+    "go-to-groups": "Go to your groups →"
+},
   "scenarioThemes": {
     "title": "Crisis Scenario Themes",
     "noThemesFound": "No scenario themes found",
@@ -616,4 +629,5 @@
     "delete": "Delete",
     "confirm": "Confirm"
   }
+
 }

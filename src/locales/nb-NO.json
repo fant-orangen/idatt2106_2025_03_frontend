@@ -9,6 +9,7 @@
   "login": {
     "login": "Logg inn",
     "signup": "Registrer",
+    "logout": "Logg ut",
     "forgot-password": "Glemt passord?",
     "re-enter": "Skriv inn på nytt",
     "consent": "Jeg godtar",
@@ -190,13 +191,16 @@
   "navigation": {
     "home": "Hjem",
     "language": "Språk",
+    "profile": "Profil",
     "before-crisis-page": "Før en krise",
     "activities": "Aktiviteter",
     "admin-panel": "Admin side",
     "new-event": "Ny hendelse",
     "new-POI": "Nytt interessepunkt",
     "new-activity": "Ny aktivivtet",
-    "go-back": "Tilbake"
+    "go-back": "Tilbake",
+    "light-mode": "Lys modus",
+    "dark-mode": "Mørk modus"
   },
   "time": {
     "after": "etter",
@@ -459,6 +463,7 @@
     "learnMoreTopic": "Klikk for å lære mer om dette temaet."
   },
   "settings": {
+    "settings": "Innstillinger",
     "title": "Innstillinger",
     "tabs": {
       "account": "Konto",
@@ -590,6 +595,14 @@
     "title": "Språk",
     "select-language": "Velg språk"
   },
+  "group": {
+    "title": "Mine Grupper",
+    "shared-inventory": "Felles beredskapslager",
+    "invite-household": "Inviter husholdning",
+    "switch-group": "Bytt gruppe",
+    "share-from-inventory": "Del varer fra ditt lager",
+    "go-to-groups" : "Gå til dine grupper →"
+  },
   "scenarioThemes": {
     "title": "Krisescenario-temaer",
     "noThemesFound": "Ingen scenariotemaer funnet",
@@ -609,4 +622,5 @@
     "delete": "Slett",
     "confirm": "Bekreft"
   }
+
 }
