@@ -97,6 +97,12 @@ const routes = [
     meta: { requiresAdmin: true },
   },
   {
+    path: '/add-new-scenario-theme',
+    name: 'AddNewScenarioTheme',
+    component: () => import('@/views/AdminAddNewScenarioTheme.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
     path: '/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
