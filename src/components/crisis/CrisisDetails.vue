@@ -46,15 +46,8 @@
           </div>
 
           <div class="grid grid-cols-3 text-sm">
-            <span class="font-semibold">{{ t('crisis.created_by', 'Created By') }}</span>
-            <span class="col-span-2">{{ crisisDetails.createdByUser || 'N/A' }}</span>
-          </div>
-
-          <!-- Always show the scenario theme section, even if scenarioThemeId is missing -->
-          <div class="grid grid-cols-3 text-sm">
             <span class="font-semibold">{{ t('crisis.scenario_theme', 'Scenario Theme') }}</span>
             <span class="col-span-2">
-              <!-- If we have a scenarioThemeId, show a button to navigate to it -->
               <Button
                 v-if="crisisDetails.scenarioThemeId"
                 variant="link"
@@ -65,7 +58,6 @@
                 <ArrowRight class="ml-1 h-3 w-3" />
               </Button>
 
-              <!-- If no scenarioThemeId is available, show a button to navigate to the first scenario theme -->
               <Button
                 v-else
                 variant="link"

@@ -121,7 +121,6 @@ const fetchCrisisEvents = async () => {
 const otherEvents = computed(() => {
   if (crisisEvents.value.length <= 1) return [];
 
-  // Sort by severity and return all except the first one (main crisis)
   const sorted = [...crisisEvents.value].sort((a, b) => {
     const severityRank = { red: 3, yellow: 2, green: 1 };
     return (severityRank[b.severity] || 0) - (severityRank[a.severity] || 0);
@@ -157,7 +156,6 @@ const hasMoreEvents = computed(() => crisisEvents.value.length > maxDisplay);
 const containerClass = computed(() => {
   if (crisisEvents.value.length === 0) return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
 
-  // Use the main crisis severity to determine the container color
   if (mainCrisis.value) {
     const severity = mainCrisis.value.severity;
 
@@ -193,7 +191,6 @@ const selectCrisis = (event: CrisisEventPreviewDto) => {
   });
 };
 
-// Fetch crisis events when component is mounted
 onMounted(fetchCrisisEvents);
 </script>
 
