@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useForm } from 'vee-validate'
-import { useUserStore } from '@/stores/UserStore'
 import { useI18n } from 'vue-i18n'
 import { AxiosError } from 'axios'
 import * as z from 'zod'
@@ -27,7 +26,6 @@ const { t } = useI18n()
 
 // Reactive variables
 const isView = ref(false)
-const userStore = useUserStore()
 
 // Define the validation schema using zod
 const resetPasswordSchema = toTypedSchema(
@@ -62,7 +60,7 @@ const form = useForm({
 const handleReset = form.handleSubmit(async (values) => {
   try {
     await resetPassword(values.token, values.password)
-    toast.success(t('reset-password.updated'))
+    toast.success(t('reset-password.password-updated'))
     router.push('/login')
   } catch (error: unknown) {
     if (error instanceof AxiosError && error.response) {

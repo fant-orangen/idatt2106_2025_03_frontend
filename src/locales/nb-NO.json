@@ -36,6 +36,7 @@
     "new-password": "Nytt passord",
     "confirm-new-password": "Bekreft passord",
     "update-button": "Oppdater passord",
+    "email-sent": "E-post sendt",
     "password-updated": "Passord oppdatert",
     "password-update-failed": "Kunne ikke oppdatere passord",
     "token-required": "Verifiseringskode er påkrevd",
@@ -44,7 +45,10 @@
     "password-req-uppercase": "Passord må inneholde minst én stor bokstav",
     "password-req-number": "Passord må inneholde minst ett tall",
     "password-req-special": "Passord må inneholde minst ett spesialtegn",
-    "password-req-match": "Passordene må samsvare"
+    "password-req-match": "Passordene må samsvare",
+    "invalid-token": "Ugyldig verifiseringskode",
+    "validation-error": "Valideringsfeil",
+    "unexpected-error": "Uventet feil"
   },
   "admin": {
     "administrate": "Administrer",
@@ -115,7 +119,10 @@
     "login-failed": "Innlogging mislyktes. Vennligst sjekk legitimasjonen din.",
     "passwords-do-not-match": "Passordene stemmer ikke overens.",
     "registration-failed": "Registrering mislyktes. Vennligst prøv igjen.",
-    "no-news-available": "Ingen nyheter tilgjengelig"
+    "no-news-available": "Ingen nyheter tilgjengelig",
+    "invalid-email": "Ugyldig e-postadresse",
+    "unexpected-error": "Uventet feil - vennligst prøv igjen senere.",
+    "network-error": "Ingen nettverkstilkobling. Vennligst sjekk internettforbindelsen din."
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",

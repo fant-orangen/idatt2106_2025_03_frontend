@@ -218,3 +218,24 @@ export async function resetPassword(token: string, newPassword: string): Promise
     throw error;
   }
 }
+/**
+ * Sends a password reset email to the user.
+ *
+ * Makes a POST request to the forgot-password endpoint.
+ *
+ * @param {string} email - The user's email address
+ * @returns {Promise<void>} Promise that resolves when the email is sent successfully
+ * @throws {Error} If the request fails due to validation or network issues
+ */
+export async function sendPasswordResetEmail(email: string): Promise<void> {
+  try {
+    const payload = {
+      email,
+    };
+    await api.post('/auth/forgot-password', payload);
+    console.log('Password reset email sent successfully');
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    throw error;
+  }
+}
