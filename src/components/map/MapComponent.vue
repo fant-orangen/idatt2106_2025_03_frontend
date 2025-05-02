@@ -623,10 +623,18 @@ export default defineComponent({
         2: { base: '#fdae61', border: '#333333' },
         3: { base: '#f46d43', border: '#333333' }
       };
+      const bounds = L.latLngBounds([]);
 
       // 3) draw each active
       events.forEach(event => {
+        // Skip if event is explicitly marked as inactive
         if (event.isActive === false) return;
+
+        // Skip if required properties are missing
+        if (event.latitude === undefined || event.longitude === undefined || event.level === undefined) {
+          console.warn("Skipping crisis event with missing required properties:", event);
+          return;
+        }
 
         const lat = typeof event.latitude  === 'string' ? parseFloat(event.latitude)  : event.latitude;
         const lon = typeof event.longitude === 'string' ? parseFloat(event.longitude) : event.longitude;
@@ -666,11 +674,18 @@ export default defineComponent({
         if (map.value) {
           badge.addTo(map.value as L.Map);
           crisisLayers.value.push(badge);
+          bounds.extend([lat, lon]);
         }
       });
 
       // 4) force a refresh
       map.value.invalidateSize();
+      if (bounds.isValid()) {
+            map.value.fitBounds(bounds.pad(0.2), {
+                animate: false,
+                maxZoom: 15
+            });
+          }
     }
 
     // ADDED: Clear all crisis events from the map
