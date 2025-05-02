@@ -79,7 +79,7 @@ import type { CrisisEventChange } from '@/models/CrisisEvent.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { fetchCrisisEventChanges } from '@/services/api/CrisisEventService.ts';
+import { fetchCrisisEventChanges } from '@/services/CrisisEventService.ts';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 

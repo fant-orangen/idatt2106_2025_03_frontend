@@ -102,9 +102,9 @@ import {formatDateFull} from '@/utils/dateUtils.ts';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 
 import {
-  fetchAllCrisisEvents,
-  fetchCrisisEventById
-} from '@/services/api/CrisisEventService.ts';
+  fetchAllPreviewCrisisEvents,
+  fetchTheCrisisEventById
+} from '@/services/CrisisEventService.ts';
 
 /**
  * CrisisEventOverview component
@@ -139,7 +139,7 @@ const loadCrisisEvents = async () => {
     loading.value = true;
     error.value = null;
 
-    const response = await fetchAllCrisisEvents(page.value, size);
+    const response = await fetchAllPreviewCrisisEvents(page.value, size);
     console.log("Crisis events page:", response);
 
     crisisEvents.value.push(...response.content);
@@ -189,7 +189,7 @@ const fetchAndSelectCrisis = async (crisisId: number) => {
   try {
     loading.value = true;
     error.value = null;
-    const crisisDetails = await fetchCrisisEventById(crisisId);
+    const crisisDetails = await fetchTheCrisisEventById(crisisId);
     if (crisisDetails) {
       selectedCrisis.value = crisisDetails;
     } else {

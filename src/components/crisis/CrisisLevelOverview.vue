@@ -76,7 +76,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
-import { fetchAllCrisisEvents } from '@/services/api/CrisisEventService';
+import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 
@@ -105,7 +105,7 @@ const fetchCrisisEvents = async () => {
     loading.value = true;
     error.value = null;
 
-    const response = await fetchAllCrisisEvents(0, 4);
+    const response = await fetchAllPreviewCrisisEvents(0, 4);
     crisisEvents.value = response.content;
   } catch (err) {
     console.error('Failed to fetch crisis events:', err);
