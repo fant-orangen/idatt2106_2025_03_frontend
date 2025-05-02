@@ -32,6 +32,7 @@ export const useUserStore = defineStore('user', () => {
     firstName: '',
     lastName: '',
     phone: '',
+    locationSharingEnabled: true,
   })
 
   // Initialize from localStorage and validate token
