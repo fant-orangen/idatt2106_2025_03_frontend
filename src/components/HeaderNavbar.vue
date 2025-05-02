@@ -17,6 +17,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu'
+
 import { Button } from '@/components/ui/button'
 import { useUserStore } from '@/stores/UserStore'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
@@ -28,10 +37,10 @@ const userStore = useUserStore()
 const isMenuOpen = ref(false)
 
 type MenuLink = {
-  label: string;
-  route?: string;
-  action?: () => void;
-};
+  label: string
+  route?: string
+  action?: () => void
+}
 
 const menuLinks = computed<MenuLink[]>(() => {
   if (!userStore.loggedIn) {
@@ -39,31 +48,30 @@ const menuLinks = computed<MenuLink[]>(() => {
       { label: 'Home', route: '/' },
       { label: 'Login', route: '/login' },
       { label: 'Register', route: '/register' },
-    ];
+    ]
   } else {
     const links: MenuLink[] = [
       { label: 'Home', route: '/' },
       { label: 'Profile', route: '/profile' },
       { label: 'Settings', route: '/settings' },
-    ];
+    ]
 
     if (userStore.isAdminUser) {
-      links.push({ label: 'Admin Panel', route: '/admin-panel' });
+      links.push({ label: 'Admin Panel', route: '/admin-panel' })
     }
 
-    links.push({ label: 'Log out', action: logOut });
+    links.push({ label: 'Log out', action: logOut })
 
-    return links;
+    return links
   }
-});
-
+})
 
 function toggleMenu() {
   isMenuOpen.value = !isMenuOpen.value
 }
 
 function navigateTo(route: string): void {
-  isMenuOpen.value =false
+  isMenuOpen.value = false
   router.push(route)
 }
 
@@ -133,10 +141,7 @@ function goToPage(route: string) {
       </RouterLink>
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <Button
-            variant="ghost"
-            class="flex items-center gap-2 text-secondary-foreground hover:text-primary"
-          >
+          <Button variant="ghost" class="hover:bg-input">
             <Globe class="h-5 w-5" />
             {{ selectedLanguage }}
           </Button>
@@ -202,19 +207,15 @@ function goToPage(route: string) {
     <!-- Right Section: Desktop Navbar -->
     <div class="navbar-left hidden md:flex items-center gap-4">
       <!-- Public Links -->
-      <RouterLink
-        v-if="!userStore.loggedIn"
-        to="/login"
-        class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
-      >
-        {{ $t('login.login') }}
+      <RouterLink v-if="!userStore.loggedIn" to="/login" as-child>
+        <Button variant="ghost" class="hover:bg-input">
+          {{ $t('login.login') }}
+        </Button>
       </RouterLink>
-      <RouterLink
-        v-if="!userStore.loggedIn"
-        to="/register"
-        class="hover:text-primary border-b-2 border-transparent hover:border-primary pb-1"
-      >
-        {{ $t('login.signup') }}
+      <RouterLink v-if="!userStore.loggedIn" to="/register" as-child>
+        <Button variant="ghost" class="hover:bg-input">
+          {{ $t('login.signup') }}
+        </Button>
       </RouterLink>
       <div class="flex gap-2">
         <DropdownMenu v-if="userStore.loggedIn">
@@ -227,7 +228,7 @@ function goToPage(route: string) {
               <User class="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent class="z-10000">
+          <DropdownMenuContent class="z-10">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -253,33 +254,32 @@ function goToPage(route: string) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-      <!-- Notifications -->
-      <Popover>
-        <PopoverTrigger as="button" class="no-border">
-          <Button
-                variant="ghost"
-                size="icon"
-                class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-                >
-                <Bell class="h-5 w-5" />
-              </Button>
-            </PopoverTrigger >
-        <PopoverContent class="z-10000">
-          <NotificationPopover :notifications="topNotifications" />
-        </PopoverContent>
-      </Popover>
+        <!-- Notifications -->
+        <Popover>
+          <PopoverTrigger as="button" class="no-border">
+            <Button
+              variant="ghost"
+              size="icon"
+              class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            >
+              <Bell class="h-5 w-5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="z-10000">
+            <NotificationPopover :notifications="topNotifications" />
+          </PopoverContent>
+        </Popover>
 
-      <!-- Dark Mode Toggle -->
-      <Button
-        variant="ghost"
-        size="icon"
-        class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
-        @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
-      >
-        <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
-      </Button>
-    </div>
+        <!-- Dark Mode Toggle -->
+        <Button
+          variant="ghost"
+          size="icon"
+          class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+        >
+          <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   </div>
-
 </template>
