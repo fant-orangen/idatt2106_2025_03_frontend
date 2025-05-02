@@ -3,7 +3,8 @@
 import api from '@/services/api/AxiosInstance';
 import type { CrisisEvent } from '@/types/map'; // Frontend domain model
 import type { Page } from '@/types/Page'; // Reusable Page type
-import type { BackendCrisisEvent } from '@/models/BackendCrisisEvent'; // Import the backend model interface
+import type { BackendCrisisEvent} from '@/models/BackendCrisisEvent'; // Import the backend model interface
+import type { CrisisEventDto, CrisisEventPreviewDto, CrisisEventChange } from '@/models/CrisisEvent.ts';
 
 /**
  * Converts a backend crisis event object to the frontend CrisisEvent format.
@@ -136,6 +137,34 @@ export async function fetchAllCrisisEvents(pageable?: { page?: number; size?: nu
     };
   }
 }
+/**
+ * Fetches all crisis events from the backend API.
+ * Makes a GET request to the '/crisis-events/all/previews' endpoint.
+ * Note: This includes both active and inactive events.
+ *
+ * @param {number} page - The page number to fetch (0-based index)
+ * @param {number} size - The number of items per page
+ * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing crisis event previews
+ */
+export async function fetchAllPreviewCrisisEvents(
+  page = 0,
+  size = 10
+): Promise<Page<CrisisEventPreviewDto>> {
+  try {
+    console.log('Fetching paginated crisis events, page:', page);
+    const response = await api.get<Page<CrisisEventPreviewDto>>('/crisis-events/all/previews', {
+      params: { page, size },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log("crisis events page:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch paginated crisis events', error);
+    throw error;
+  }
+}
 
 /**
  * Fetches only the *active* crisis events from the backend API.
@@ -185,6 +214,22 @@ export async function fetchCrisisEventById(id: number): Promise<CrisisEvent | nu
     return null;
   }
 }
+/**
+ * Fetches a single crisis event by ID.
+ * Makes a GET request to the '/crisis-events/{id}' endpoint.
+ *
+ * @param {number} id - The ID of the crisis event to fetch
+ * @returns {Promise<CrisisEventDto | null>} The crisis event or null if not found
+ */
+export async function fetchTheCrisisEventById(id: number): Promise<CrisisEventDto | null> {
+  try {
+    const response = await api.get<CrisisEventDto>(`/crisis-events/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch crisis event ID ${id}:`, error);
+    throw error;
+  }
+}
 
 
 /**
@@ -221,3 +266,47 @@ export async function fetchCrisisEventsNearby(
     return [];
   }
 }
+
+/**
+ * Fetches paginated crisis event changes for a given crisis event ID.
+ *
+ * @param crisisEventId - The ID of the crisis event.
+ * @param page - The page number to fetch (0-based index).
+ * @param size - The number of items per page (default is 20).
+ * @returns A paginated response containing crisis event changes.
+ * @throws Error if the request fails.
+ */
+export async function fetchCrisisEventChanges(
+  crisisEventId: number,
+  page: number,
+  size = 5
+): Promise<Page<CrisisEventChange>> {
+  try {
+    console.log("page : ", page);
+    const response = await api.get<Page<CrisisEventChange>>(
+      `/crisis-events/${crisisEventId}/changes`,
+      { params: { page, size } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch changes for crisis ${crisisEventId}`, error);
+    throw error;
+  }
+}
+
+/**
+ * Fetches crisis events associated with a specific scenario theme.
+ *
+ * @param {number} scenarioThemeId - The ID of the scenario theme
+ * @returns {Promise<CrisisEventDto[]>} Array of crisis events related to the scenario theme
+ */
+export async function fetchCrisisEventsByScenarioTheme(scenarioThemeId: number): Promise<CrisisEventDto[]> {
+  try {
+    const response = await api.get<CrisisEventDto[]>(`/crisis-events/by-theme/${scenarioThemeId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Failed to fetch crisis events for scenario theme ${scenarioThemeId}:`, error);
+    return [];
+  }
+}
+
