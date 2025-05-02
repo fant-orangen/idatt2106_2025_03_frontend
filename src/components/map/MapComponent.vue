@@ -712,7 +712,7 @@ export default defineComponent({
 
       // Add the entire layer group to the map at once
       if (map.value && crisisLayerGroup) {
-        crisisLayerGroup.addTo(map.value);
+        crisisLayerGroup.addTo(map.value as L.Map);
       }
 
       // 4) force a refresh with a slight delay to ensure map is ready
@@ -750,8 +750,8 @@ export default defineComponent({
         try {
           if (map.value && layer) {
             // Check if the layer is still on the map
-            if (map.value.hasLayer(layer)) {
-              map.value.removeLayer(layer);
+            if (map.value.hasLayer(layer as L.Layer)) {
+              map.value.removeLayer(layer as L.Layer);
             }
           }
         } catch (error) {
