@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ThemeContent'
+  name: 'ThemeContent',
 })
 </script>
 
@@ -24,7 +24,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter
+  CardFooter,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { BookOpen, Info, AlertTriangle, ExternalLink, Phone } from 'lucide-vue-next'
@@ -34,7 +34,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetFooter
+  SheetFooter,
 } from '@/components/ui/sheet'
 import { fetchScenarioThemeById } from '@/services/api/ScenarioThemeService'
 import type { ScenarioThemeDetailsDto } from '@/models/ScenarioTheme'
@@ -67,7 +67,17 @@ function getTranslationKey(themeKey: string, type: 'title' | 'content'): string 
 
   let basePath = 'themes'
 
-  if (['pandemic', 'war', 'forestFire', 'powerOutage', 'waterShortage', 'cyberAttack', 'majorAccident'].includes(themeKey)) {
+  if (
+    [
+      'pandemic',
+      'war',
+      'forestFire',
+      'powerOutage',
+      'waterShortage',
+      'cyberAttack',
+      'majorAccident',
+    ].includes(themeKey)
+  ) {
     return `${basePath}.crisisSituations.${themeKey}.${type}`
   }
 
@@ -106,13 +116,17 @@ async function loadScenarioTheme(id: number) {
  * Watch for changes to the selected scenario ID
  * Loads the scenario theme when a new ID is selected
  */
-watch(() => props.selectedScenarioId, (newId) => {
-  if (newId) {
-    loadScenarioTheme(newId)
-  } else {
-    scenarioTheme.value = null
-  }
-}, { immediate: true })
+watch(
+  () => props.selectedScenarioId,
+  (newId) => {
+    if (newId) {
+      loadScenarioTheme(newId)
+    } else {
+      scenarioTheme.value = null
+    }
+  },
+  { immediate: true },
+)
 
 /**
  * Computed property for the title translation key
@@ -203,8 +217,6 @@ function closeEmergencyContacts() {
   </div>
 
   <div v-else-if="selectedScenarioId && scenarioTheme" class="max-w-4xl mx-auto">
-
-
     <div class="mb-4">
       <h1 class="text-2xl md:text-3xl font-bold">{{ scenarioTheme.name }}</h1>
     </div>
@@ -218,7 +230,10 @@ function closeEmergencyContacts() {
       </CardHeader>
 
       <CardContent>
-        <div v-if="scenarioTheme.description" class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary">
+        <div
+          v-if="scenarioTheme.description"
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
+        >
           {{ scenarioTheme.description }}
         </div>
         <p v-else class="text-muted-foreground italic">
@@ -236,15 +251,16 @@ function closeEmergencyContacts() {
       </CardHeader>
 
       <CardContent>
-        <div class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary" v-html="marked.parse(scenarioTheme.instructions)"></div>
+        <div
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
+          v-html="marked.parse(scenarioTheme.instructions)"
+        ></div>
       </CardContent>
     </Card>
   </div>
 
   <!-- Regular theme content -->
   <div v-else-if="selectedTheme && titleKey && renderedContent" class="max-w-4xl mx-auto">
-
-
     <div class="mb-4">
       <h1 class="text-2xl md:text-3xl font-bold">{{ $t(titleKey) }}</h1>
     </div>
@@ -256,7 +272,10 @@ function closeEmergencyContacts() {
           {{ $t('infoPage.aboutThisTheme') || 'About this theme' }}
         </CardTitle>
         <CardDescription>
-          {{ $t('infoPage.themeDescription') || 'Essential information to help you prepare and respond.' }}
+          {{
+            $t('infoPage.themeDescription') ||
+            'Essential information to help you prepare and respond.'
+          }}
         </CardDescription>
       </CardHeader>
 
@@ -280,7 +299,7 @@ function closeEmergencyContacts() {
 
       <!-- Read More Modal -->
       <Sheet :open="isReadMoreOpen" @update:open="closeReadMore">
-        <SheetContent class="overflow-y-auto">
+        <SheetContent class="overflow-y-auto z-101">
           <SheetHeader>
             <SheetTitle class="flex items-center gap-2">
               <BookOpen class="h-5 w-5 text-primary" />
@@ -295,10 +314,19 @@ function closeEmergencyContacts() {
             <h3 class="text-lg font-medium mb-4">{{ $t('infoPage.officialWebsites') }}</h3>
 
             <div v-if="themeResources && $te(`${themeResources}.websites`)">
-              <div v-for="(website, index) in $t(`${themeResources}.websites`)" :key="index" class="mb-4 p-4 border rounded-md">
+              <div
+                v-for="(website, index) in $t(`${themeResources}.websites`)"
+                :key="index"
+                class="mb-4 p-4 border rounded-md"
+              >
                 <h4 class="font-medium text-primary">{{ (website as any).name }}</h4>
                 <p class="text-sm text-muted-foreground mb-2">{{ (website as any).description }}</p>
-                <a :href="(website as any).url" target="_blank" rel="noopener noreferrer" class="text-sm flex items-center text-primary hover:underline">
+                <a
+                  :href="(website as any).url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm flex items-center text-primary hover:underline"
+                >
                   {{ (website as any).url }}
                   <ExternalLink class="ml-1 h-3 w-3" />
                 </a>
@@ -308,7 +336,12 @@ function closeEmergencyContacts() {
             <div v-else class="text-muted-foreground text-center py-4">
               <p>{{ $t('infoPage.additionalResources') }}</p>
               <div class="mt-4">
-                <a href="https://www.dsb.no/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline flex items-center justify-center">
+                <a
+                  href="https://www.dsb.no/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary hover:underline flex items-center justify-center"
+                >
                   DSB - Norwegian Directorate for Civil Protection
                   <ExternalLink class="ml-1 h-3 w-3" />
                 </a>
@@ -322,8 +355,8 @@ function closeEmergencyContacts() {
         </SheetContent>
       </Sheet>
 
-      <Sheet :open="isEmergencyContactsOpen" @update:open="closeEmergencyContacts">
-        <SheetContent class="overflow-y-auto">
+      <Sheet class="z-101" :open="isEmergencyContactsOpen" @update:open="closeEmergencyContacts">
+        <SheetContent class="overflow-y-auto z-101">
           <SheetHeader>
             <SheetTitle class="flex items-center gap-2">
               <AlertTriangle class="h-5 w-5 text-primary" />
@@ -336,7 +369,9 @@ function closeEmergencyContacts() {
 
           <div class="py-6">
             <div class="mb-6">
-              <h3 class="text-lg font-medium mb-4">{{ $t('infoPage.generalEmergencyContacts.title') }}</h3>
+              <h3 class="text-lg font-medium mb-4">
+                {{ $t('infoPage.generalEmergencyContacts.title') }}
+              </h3>
               <div class="space-y-2">
                 <div class="p-3 border rounded-md flex items-center">
                   <Phone class="h-5 w-5 text-red-500 mr-3" />
@@ -357,8 +392,16 @@ function closeEmergencyContacts() {
               </div>
             </div>
 
-            <div v-if="themeResources && $te(`${themeResources}.contacts`) && $t(`${themeResources}.contacts`).length > 0">
-              <h3 class="text-lg font-medium mb-4">{{ $t(titleKey) }} - {{ $t('infoPage.emergencyContacts') }}</h3>
+            <div
+              v-if="
+                themeResources &&
+                $te(`${themeResources}.contacts`) &&
+                $t(`${themeResources}.contacts`).length > 0
+              "
+            >
+              <h3 class="text-lg font-medium mb-4">
+                {{ $t(titleKey) }} - {{ $t('infoPage.emergencyContacts') }}
+              </h3>
               <div class="space-y-2">
                 <div
                   v-for="(contact, index) in $t(`${themeResources}.contacts`)"
@@ -370,7 +413,9 @@ function closeEmergencyContacts() {
                     <Phone class="h-4 w-4 mr-2" />
                     <span>{{ (contact as any).contact }}</span>
                   </div>
-                  <p class="text-sm text-muted-foreground mt-2">{{ (contact as any).description }}</p>
+                  <p class="text-sm text-muted-foreground mt-2">
+                    {{ (contact as any).description }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -392,12 +437,13 @@ function closeEmergencyContacts() {
   </div>
 
   <div v-else class="h-full flex flex-col items-center justify-center text-center p-4">
-
-
     <div class="mb-4 text-6xl">📚</div>
     <h2 class="text-2xl font-bold mb-2">{{ $t('infoPage.selectThemePrompt') }}</h2>
     <p class="text-muted-foreground max-w-md">
-      {{ $t('infoPage.browseThemesDescription') || 'Browse through our information resources to learn about different crisis situations and how to prepare.' }}
+      {{
+        $t('infoPage.browseThemesDescription') ||
+        'Browse through our information resources to learn about different crisis situations and how to prepare.'
+      }}
     </p>
   </div>
 </template>
