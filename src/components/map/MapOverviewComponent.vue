@@ -106,6 +106,7 @@
     <MapComponent
       :pois="convertedPois"
       :userLocation="userLocation"
+      :householdLocation="householdLocation"
       :crisisEvents="crisisEvents"
       class="absolute inset-0"
     />
@@ -119,6 +120,7 @@ import MapComponent from '@/components/map/MapComponent.vue';
 import { useGeolocation } from '@/composables/useGeolocation';
 import { useUserStore } from '@/stores/UserStore';
 import { useGeolocationStore } from '@/stores/GeolocationStore'; // Keep if needed, or remove if composable handles all interaction
+import { useHouseholdStore } from '@/stores/HouseholdStore';
 import {
   fetchPublicPois,
   fetchPoisByType,
@@ -155,6 +157,7 @@ const { t } = useI18n();
 // --- Pinia Stores and Geolocation Composable ---
 const userStore = useUserStore(); // Still needed for the composable internally
 const geolocationStore = useGeolocationStore(); // Import used for clarity or direct access if needed
+const householdStore = useHouseholdStore(); // Used to get household location
 const {
   coords: locationCoords, // Destructure coords from the composable
   error: locationError,
@@ -169,6 +172,17 @@ const {
 // --- Correctly Alias userLocation ---
 const userLocation = locationCoords; // Use the ref returned by the composable
 
+// --- Compute household location from HouseholdStore ---
+const householdLocation = computed(() => {
+  const household = householdStore.currentHousehold;
+  if (household && household.latitude && household.longitude) {
+    return {
+      latitude: typeof household.latitude === 'string' ? parseFloat(household.latitude) : household.latitude,
+      longitude: typeof household.longitude === 'string' ? parseFloat(household.longitude) : household.longitude
+    };
+  }
+  return null;
+});
 // --- Local Reactive State ---
 const allPois = ref<PoiData[]>([]);
 const pointsOfInterest = ref<PoiData[]>([]);
@@ -417,6 +431,12 @@ onMounted(async () => {
     pointsOfInterest.value = [...pois];
     console.log("Initial POIs loaded:", pointsOfInterest.value.length);
     await loadCrisisEvents();
+
+    // Fetch household data if user is logged in
+    if (userStore.loggedIn) {
+      await householdStore.fetchCurrentHousehold();
+      console.log("Household data fetched:", householdStore.currentHousehold);
+    }
   } catch (error: unknown) {
     console.error('Error loading initial POIs:', error);
     poiError.value = t('map.load-error', 'Failed to load points of interest');
