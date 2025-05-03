@@ -41,7 +41,7 @@ watch(
     <div class="flex-grow">
       <RouterView />
     </div>
-    <Footer class="z-100" />
+    <Footer class="z-99" />
     <InvitationPopup />
     <div v-if="isInitialized && !isConnected" class="connection-status">
       Disconnected from notifications

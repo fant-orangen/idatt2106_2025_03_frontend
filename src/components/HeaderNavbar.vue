@@ -16,17 +16,6 @@ import {
   X,
 } from 'lucide-vue-next'
 
-// Components
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu'
-
 import {
   DropdownMenu,
   DropdownMenuContent,
