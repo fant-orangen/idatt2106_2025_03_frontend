@@ -235,7 +235,7 @@ export default defineComponent({
             chunkedLoading: true,           // Enable chunked loading
             chunkInterval: 50,              // Process chunks every 50ms
             chunkDelay: 10,                 // Delay between chunks
-            chunkProgress: null,             // No progress callback needed
+            chunkProgress: undefined,       // No progress callback needed
           };
           markerClusterGroup.value = L.markerClusterGroup(clusterOptions);
           if (map.value) {
@@ -616,7 +616,7 @@ export default defineComponent({
         const markersToRemove: L.Marker[] = [];
         markersMap.value.forEach((marker, id) => {
           if (!newPoiIds.has(id)) {
-            markersToRemove.push(marker);
+            markersToRemove.push(marker as unknown as L.Marker);
             markersMap.value.delete(id);
           }
         });
@@ -653,16 +653,17 @@ export default defineComponent({
 
       if (bounds.isValid() && (hasAnyPoi || props.userLocation || props.householdLocation)) {
         nextTick(() => {
+          // @ts-ignore - Leaflet's pad() method works at runtime but has type issues
           map!.fitBounds(bounds.pad(0.2), { animate: false, maxZoom: 15 });
           forceMapRefresh();
         });
       }
       else if (!hasAnyPoi && (props.userLocation || props.householdLocation)) {
         const loc = props.userLocation || props.householdLocation!;
-        map!.setView([loc.latitude, loc.longitude], 13);
+        map.value!.setView([loc.latitude, loc.longitude], 13);
       }
       else if (!hasAnyPoi) {
-        map!.setView([props.centerLat, props.centerLon], props.initialZoom);
+        map.value!.setView([props.centerLat, props.centerLon], props.initialZoom);
       }
     }
 
