@@ -1,10 +1,9 @@
 <template>
-  <div class="content flex justify-center items-center w-full pt-5 flex-col gap-0 md:pt-20 md:gap-15">
+  <div
+    class="content flex justify-center items-center w-full pt-5 flex-col gap-0 md:pt-20 md:gap-15"
+  >
     <div class="crisis-status w-full px-2 md:w-auto">
-      <CrisisLevelOverview
-        :max-display="3"
-        @select-crisis="handleCrisisSelect"
-      />
+      <CrisisLevelOverview :max-display="3" @select-crisis="handleCrisisSelect" />
     </div>
     <div class="container flex flex-col gap-10 w-full max-w-7xl md:flex-row md:gap-40">
       <!-- Dynamic Buttons -->
@@ -21,8 +20,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { ref, onMounted } from 'vue'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { useRouter } from 'vue-router'
 import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
 import CrisisLevelOverview from '@/components/crisis/CrisisLevelOverview.vue'
@@ -31,7 +28,7 @@ const router = useRouter()
 const { t } = useI18n()
 const currentStatus = ref('crisis.no-crisis')
 
-const fetchCrisisLevel = "not-implemented" // Placeholder for future implementation
+const fetchCrisisLevel = 'not-implemented' // Placeholder for future implementation
 // This function will be used to fetch the crisis level from the backend
 
 const crisisComponents = ref<Record<string, any>>({})
@@ -49,14 +46,13 @@ const handleCrisisSelect = (crisisId: number) => {
   console.log('Selected crisis:', crisisId)
   router.push({
     path: '/crisis-event',
-    query: { id: crisisId.toString() }
+    query: { id: crisisId.toString() },
   })
 }
 
 onMounted(async () => {
   await loadCrisisComponents()
 })
-
 </script>
 
 <style scoped>
