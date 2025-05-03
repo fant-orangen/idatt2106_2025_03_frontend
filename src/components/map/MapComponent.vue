@@ -156,6 +156,31 @@ export default defineComponent({
       shadowSize: [41, 41],
     });
 
+    // Only cluster the POIs actually in view (plus a 50% padding)
+    function getVisiblePois(): POI[] {
+      if (!map.value) return [];
+      const bounds = map.value.getBounds().pad(0.5);
+      return props.pois.filter(poi => {
+        const lat = typeof poi.latitude === 'string'
+          ? parseFloat(poi.latitude)
+          : poi.latitude;
+        const lng = typeof poi.longitude === 'string'
+          ? parseFloat(poi.longitude)
+          : poi.longitude;
+        return bounds.contains([lat, lng]);
+      });
+    }
+
+// Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
+    let updateTimeout: number | null = null;
+    function scheduleViewportUpdate() {
+      if (updateTimeout) clearTimeout(updateTimeout);
+      updateTimeout = window.setTimeout(() => {
+        updatePOIs(getVisiblePois());
+        updateTimeout = null;
+      }, 200);
+    }
+
     // Initialize map
     onMounted(() => {
       // Fix icon paths globally
@@ -218,9 +243,7 @@ export default defineComponent({
           }
 
           // Set up map event listeners
-          map.value.on('zoomend moveend', () => {
-            forceMapRefresh();
-          });
+          map.value.on('zoomend moveend', scheduleViewportUpdate);
 
           // Add click listener for admin mode only
           if (props.adminMode) {
@@ -247,7 +270,7 @@ export default defineComponent({
 
           // Initial population of POIs
           if (props.pois && props.pois.length > 0) {
-            updatePOIs(props.pois);
+            nextTick(() => scheduleViewportUpdate());
           }
 
           // Initial user location
@@ -904,8 +927,8 @@ export default defineComponent({
     }
 
     // Watch for POI changes
-    watch(() => props.pois, (newPois: POI[]) => {
-      updatePOIs(newPois);
+    watch(() => props.pois, () => {
+      if (map.value) scheduleViewportUpdate();
     }, { deep: true, immediate: false });
 
     // Watch for user location changes
