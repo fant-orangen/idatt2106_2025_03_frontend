@@ -7,7 +7,7 @@ import type { AxiosResponse } from 'axios';
  * @param updateData - The data to update.
  */
 export async function editPoi(id: number, updateData: any): Promise<AxiosResponse> {
-  return await api.put(`/poi/${id}`, updateData, {
+  return await api.put(`/admin/poi/${id}`, updateData, {
     headers: { 'Content-Type': 'application/json' }
   });
 }
@@ -17,7 +17,7 @@ export async function editPoi(id: number, updateData: any): Promise<AxiosRespons
  * @param id - ID of the POI to delete.
  */
 export async function deletePoi(id: number): Promise<void> {
-  await api.delete(`/poi/${id}`, {
+  await api.delete(`/admin/poi/${id}`, {
     headers: { 'Content-Type': 'application/json' }
   });
 }
@@ -26,7 +26,7 @@ export async function deletePoi(id: number): Promise<void> {
  * Create a new crisis event.
  */
 export async function createEvent(eventData: any): Promise<AxiosResponse> {
-  return await api.post('/crisis-events', eventData, {
+  return await api.post('/admin/crisis-events', eventData, {
     headers: { 'Content-Type': 'application/json' }
   });
 }
@@ -35,7 +35,7 @@ export async function createEvent(eventData: any): Promise<AxiosResponse> {
  * Get all current crisis events.
  */
 export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
-  return await api.get('/crisis-events/all', {
+  return await api.get('/public/crisis-events/all', {
     headers: { 'Content-Type': 'application/json' }
   });
 }
@@ -46,7 +46,7 @@ export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
  * @param eventData - Data to update.
  */
 export async function updateCurrentEvent(id: number, eventData: any): Promise<AxiosResponse<any>> {
-  return await api.put(`/crisis-events/${id}`, eventData, {
+  return await api.put(`/admin/crisis-events/${id}`, eventData, {
     headers: { 'Content-Type': 'application/json' }
   });
 }
@@ -56,7 +56,7 @@ export async function updateCurrentEvent(id: number, eventData: any): Promise<Ax
  * Create a new POI.
  */
 export async function createPOI(poiData: any): Promise<AxiosResponse> {
-  return await api.post('/poi', poiData, {
+  return await api.post('/admin/poi', poiData, {
     headers: { 'Content-Type': 'application/json' }
   });
 }
