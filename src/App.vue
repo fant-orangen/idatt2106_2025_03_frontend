@@ -36,12 +36,12 @@ watch(
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <HeaderNavbar class="z-9999"/>
+    <HeaderNavbar class="z-100" />
     <Toaster class="" />
     <div class="flex-grow">
       <RouterView />
     </div>
-    <Footer class="z-9999" />
+    <Footer class="z-99" />
     <InvitationPopup />
     <div v-if="isInitialized && !isConnected" class="connection-status">
       Disconnected from notifications

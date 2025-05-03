@@ -493,6 +493,7 @@
     },
     "account": {
       "title": "Kontoinnstillinger",
+      "myAccount": "Min konto",
       "subtitle": "Konto",
       "description": "Gjør endringer i kontoen din her. Klikk lagre når du er ferdig.",
       "fullName": "Fullt navn",
@@ -538,7 +539,7 @@
     "date": "Dato for når hendelsen først inntraff.",
     "successfully": "Hendelsen er opprettet",
     "success-message": "Hendelsen din er lagt til i systemet.",
-    "success-added":"har blitt lagt til.",
+    "success-added": "har blitt lagt til.",
     "go-to-admin": "Gå til Admin-panelet",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
@@ -579,7 +580,7 @@
       "description": "Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?",
       "successfully": "Interessepunktet er opprettet",
       "success-message": "Interessepunktet ditt er lagt til i systemet.",
-      "success-added":"har blitt lagt til.",
+      "success-added": "har blitt lagt til.",
       "go-to-admin": "Gå til Admin-panelet",
       "description-placeholder": "Beskrivelse"
     },
@@ -623,7 +624,7 @@
     "invite-household": "Inviter husholdning",
     "switch-group": "Bytt gruppe",
     "share-from-inventory": "Del varer fra ditt lager",
-    "go-to-groups" : "Gå til dine grupper →"
+    "go-to-groups": "Gå til dine grupper →"
   },
   "scenarioThemes": {
     "title": "Krisescenario-temaer",
@@ -644,5 +645,4 @@
     "delete": "Slett",
     "confirm": "Bekreft"
   }
-
 }

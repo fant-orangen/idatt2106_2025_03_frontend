@@ -498,6 +498,7 @@
     },
     "account": {
       "title": "Account Settings",
+      "myAccount": "My Account",
       "subtitle": "Account",
       "description": "Make changes to your account here. Click save when you're done.",
       "fullName": "Full name",
@@ -630,7 +631,7 @@
     "switch-group": "Switch group",
     "share-from-inventory": "Share items from your inventory",
     "go-to-groups": "Go to your groups →"
-},
+  },
   "scenarioThemes": {
     "title": "Crisis Scenario Themes",
     "noThemesFound": "No scenario themes found",
@@ -650,5 +651,4 @@
     "delete": "Delete",
     "confirm": "Confirm"
   }
-
 }
