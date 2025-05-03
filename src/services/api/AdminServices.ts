@@ -26,6 +26,7 @@ export async function deletePoi(id: number): Promise<void> {
 
 /**
  * Create a new crisis event.
+ * 
  */
 export async function createEvent(eventData: CrisisEventDto): Promise<AxiosResponse> {
   return await api.post('/admin/crisis-events', eventData, {
@@ -35,11 +36,21 @@ export async function createEvent(eventData: CrisisEventDto): Promise<AxiosRespo
 
 /**
  * Get all current crisis events.
+ * 
+ * @param {number} page - The page number to fetch (0-based index)
+ * @param {number} size - The number of items per page
  */
-export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
-  return await api.get('/public/crisis-events/all', {
-    headers: { 'Content-Type': 'application/json' }
-  });
+export async function getCurrentEvents(page = 0, size = 20): Promise<Page<CrisisEventDto>> {
+  try {
+    const response = await api.get<Page<CrisisEventDto>>('/public/crisis-events/all', {
+        params: { page, size },
+        headers: { 'Content-Type': 'application/json' },
+      });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch paginated crisis events', error);
+    throw error;
+  }
 }
 
 /**
@@ -51,7 +62,7 @@ export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
  * @returns  {Promise<AxiosResponse<any>>} A promise resolving to the server response after the update operation.
  */
 export async function updateCurrentEvent(id: number, eventData: UpdateCrisisEventDto): Promise<AxiosResponse<any>> {
-  return await api.put(`/admin/crisis-events/${id}`, eventData, {
+  return await api.put(`/admin/crisis-events/${id}`, eventData, { //mulig denne fortsatt er bare /crisis-events/id
     headers: { 'Content-Type': 'application/json' }
   });
 }

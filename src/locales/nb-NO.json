@@ -555,7 +555,8 @@
       "description": "Beskrivelsen må være minst 10 tegn og kan ikke overstige 500 tegn.",
       "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
       "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
-      "contact-info": "Skriv inn et gyldig telefonnummer."
+      "contact-info": "Skriv inn et gyldig telefonnummer.",
+      "category": "Denne kategorien er ikke gyldig."
     },
     "scenarios": {
       "undefined": "Velg en kategori",

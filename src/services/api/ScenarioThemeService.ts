@@ -134,27 +134,11 @@ export async function deleteScenarioTheme(themeData: UpdateScenarioThemeDto): Pr
  * @param {number} size - The number of items per page
  * @returns {Promise<Page<ScenarioThemeDto>>} Paginated response containing preview of scenarios
  */
-export async function getScenarioThemePreview(
-  page: number = 0, 
-  size: number = 10
-): Promise<Page<ScenarioThemePreview>>{
+export async function getScenarioThemePreview(){
   try {
-    const response = await api.get<Page<ScenarioThemePreview>>('/scenario-themes/previews', {
-      params: {
-        page,
-        size
-      }
-    });
+    const response = await api.get('/public/scenario-themes/previews/all');
     return response.data;
   } catch (error) {
     console.error('Error fetching scenario themes:', error);
-    // Return empty page result instead of throwing error to prevent component crashes
-    return {
-      content: [],
-      totalElements: 0,
-      totalPages: 0,
-      size: size,
-      number: page
-    };
   }
 }
