@@ -234,7 +234,8 @@
     "info-about-storage": "Les mer om beredskapslageret",
     "current-situation": "Nåværende hendelser",
     "read-info-preparations": "Les mer om hvordan du kan forberede deg til en krise",
-    "info-current-crisis": "Les mer om den nåværende krisetype"
+    "info-current-crisis": "Les mer om den nåværende krisetype",
+    "info-scenario-type": "Les mer om {scenario}"
   },
   "news": {
     "title": "Nyheter",

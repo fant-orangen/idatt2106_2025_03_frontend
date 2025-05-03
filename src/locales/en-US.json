@@ -232,7 +232,8 @@
     "info-about-storage": "Read more about emergency storages",
     "current-situation": "Current situation",
     "read-info-preparations": "Read more about how you can prepare for a crisis",
-    "info-current-crisis": "Read more about the current crisis"
+    "info-current-crisis": "Read more about the current crisis",
+    "info-scenario-type": "Read more about {scenario}"
   },
   "news": {
     "title": "News",

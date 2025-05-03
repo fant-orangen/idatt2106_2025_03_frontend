@@ -27,7 +27,8 @@
             >
               <font-awesome-icon :icon="['fas', 'info-circle']" class="text-xl" />
               <span class="flex-1 text-sm leading-tight break-words whitespace-normal">
-                {{ t('info.read-info-preparations') }}
+                <!--sett inn metode for å hente scenationavn fra id(?)-->
+                {{ t('info.info-scenario-type', {scenario:"sett_inn_scenario"}) }}
               </span>
               <ArrowRight class="text-lg" />
             </Button>
@@ -110,6 +111,7 @@ function navigateToScenarioTheme(themeId) {
     params: { id: themeId.toString() }
   })
 }
+
   
   // Navigation function
   const navigateTo = (route) => {
