@@ -19,7 +19,7 @@ export async function fetchAllScenarioThemes(
   size: number = 10
 ): Promise<Page<ScenarioThemeDto>> {
   try {
-    const response = await api.get('/scenario-themes/all', {
+    const response = await api.get('/public/scenario-themes/all', {
       params: {
         page,
         size
@@ -47,7 +47,7 @@ export async function fetchAllScenarioThemes(
  */
 export async function fetchScenarioThemeById(id: number): Promise<ScenarioThemeDetailsDto | null> {
   try {
-    const response = await api.get(`/scenario-themes/${id}`);
+    const response = await api.get(`/public/scenario-themes/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching scenario theme with ID ${id}:`, error);
@@ -64,7 +64,7 @@ export async function fetchScenarioThemeById(id: number): Promise<ScenarioThemeD
 export async function fetchActiveScenarioThemes(): Promise<ScenarioThemeDto[]> {
   try {
     // This endpoint would need to be added to the backend
-    const response = await api.get('/scenario-themes/active');
+    const response = await api.get('/public/scenario-themes/active');
     return response.data;
   } catch (error) {
     console.error('Error fetching active scenario themes:', error);

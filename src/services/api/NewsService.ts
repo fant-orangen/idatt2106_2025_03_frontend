@@ -16,7 +16,7 @@ export async function fetchNewsByCrisisEvent(
   size: number = 3
 ): Promise<Page<News>> {
   try {
-    const response = await api.get(`/news/${crisisEventId}`, {
+    const response = await api.get(`/public/news/${crisisEventId}`, {
       params: {
         page,
         size
@@ -69,7 +69,7 @@ export async function fetchNewsByCrisisEvent(
  */
 export async function fetchGeneralNews(): Promise<News[]> {
   try {
-    const response = await api.get('/news/general');
+    const response = await api.get('/public/news/general');
     return response.data.content || response.data;
   } catch (error: unknown) {
     console.error('Error fetching general news:', error);

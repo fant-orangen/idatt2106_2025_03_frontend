@@ -35,7 +35,7 @@ export async function createEvent(eventData: any): Promise<AxiosResponse> {
  * Get all current crisis events.
  */
 export async function getCurrentEvents(): Promise<AxiosResponse<any>> {
-  return await api.get('/crisis-events/all', {
+  return await api.get('/public/crisis-events/all', {
     headers: { 'Content-Type': 'application/json' }
   });
 }

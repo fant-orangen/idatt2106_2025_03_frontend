@@ -25,7 +25,7 @@ import type {
  */
 export async function fetchCurrentUserId(): Promise<number> {
   try {
-    const response = await api.get<number>('/users/id')
+    const response = await api.get<number>('/public/users/id')
     return response.data
   } catch (error) {
     console.error('Failed to fetch current user ID:', error)
@@ -43,7 +43,7 @@ export async function fetchCurrentUserId(): Promise<number> {
  */
 export async function fetchUserById(userId: string | number): Promise<UserResponseDto> {
   try {
-    const response = await api.get<UserResponseDto>(`/users/${userId}`)
+    const response = await api.get<UserResponseDto>(`/public/users/${userId}`)
     return response.data
   } catch (error) {
     console.error(`Failed to fetch user profile for ID ${userId}:`, error)
