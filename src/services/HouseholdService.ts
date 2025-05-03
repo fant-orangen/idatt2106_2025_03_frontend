@@ -16,7 +16,7 @@ import type { CreateHousehold, Household, EmailInvitation, HouseholdMember, Empt
  */
 export async function getCurrentHousehold(): Promise<Household | null> {
   try {
-    const response = await api.get('/households/me');
+    const response = await api.get('/user/households/me');
     return response.data;
   } catch (error) {
     // Check if it's a 404 error (no household)
@@ -36,7 +36,7 @@ export async function getCurrentHousehold(): Promise<Household | null> {
  * @returns The joined household data
  */
 export async function joinWithToken(token: string): Promise<Household> {
-  const response = await api.post('/households/join', { token });
+  const response = await api.post('/user/households/join', { token });
   return response.data;
 }
 
@@ -46,7 +46,7 @@ export async function joinWithToken(token: string): Promise<Household> {
  * @returns The created household
  */
 export async function createHousehold(householdData: CreateHousehold): Promise<Household> {
-  const response = await api.post('/households', householdData);
+  const response = await api.post('/user/households', householdData);
   return response.data;
 }
 
@@ -56,7 +56,7 @@ export async function createHousehold(householdData: CreateHousehold): Promise<H
  * @throws Error if the user is a household admin or doesn't have a household
  */
 export async function leaveHousehold(): Promise<void> {
-  await api.post('/households/leave');
+  await api.post('/user/households/leave');
 }
 
 /**
@@ -64,7 +64,7 @@ export async function leaveHousehold(): Promise<void> {
  * @returns The generated invitation token
  */
 export async function generateInvitationToken(): Promise<string> {
-  const response = await api.post('/households/invitations/generate');
+  const response = await api.post('/user/households/invitations/generate');
   return response.data.token;
 }
 
@@ -78,7 +78,7 @@ export async function updateHousehold(
   householdId: number,
   householdData: Partial<Household>
 ): Promise<Household> {
-  const response = await api.put(`/households/${householdId}`, householdData);
+  const response = await api.put(`/user/households/${householdId}`, householdData);
   return response.data;
 }
 
@@ -87,7 +87,7 @@ export async function updateHousehold(
  * @returns Array of household members
  */
 export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
-  const response = await api.get('/households/members');
+  const response = await api.get('/user/households/members');
   return response.data;
 }
 
@@ -96,7 +96,7 @@ export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
  * @returns Array of empty household members
  */
 export async function getEmptyHouseholdMembers(): Promise<EmptyHouseholdMember[]> {
-  const response = await api.get('/households/members/empty');
+  const response = await api.get('/user/households/members/empty');
   return response.data;
 }
 
@@ -110,7 +110,7 @@ export async function removeEmptyMemberFromHousehold(
   householdId: number,
   memberId: number
 ): Promise<void> {
-  await api.delete(`/households/${householdId}/members/${memberId}`);
+  await api.delete(`/user/households/${householdId}/members/${memberId}`);
 }
 
 /**
@@ -121,7 +121,7 @@ export async function removeEmptyMemberFromHousehold(
 export async function addEmptyMember(
   memberData: Omit<EmptyHouseholdMember, 'id'>
 ): Promise<EmptyHouseholdMember> {
-  const response = await api.post('/households/members/empty', memberData);
+  const response = await api.post('/user/households/members/empty', memberData);
   return response.data;
 }
 
@@ -131,5 +131,5 @@ export async function addEmptyMember(
  * @returns Promise that resolves when the invitation is sent
  */
 export async function inviteUserByEmail(invitationData: EmailInvitation): Promise<void> {
-  await api.post('/households/invitations/email', invitationData);
+  await api.post('/user/households/invitations/email', invitationData);
 }
