@@ -559,5 +559,18 @@
   "language": {
     "title": "Language",
     "select-language": "Select Language"
+  },
+
+  "gamification": {
+    "quizCreator": {
+      "title": "Quiz Creator",
+      "creatorTitle": "Create a New Quiz",
+      "creatorDescription": "Fill in the details below to create a new quiz.",
+      "quizName": "Quiz Name",
+      "enterTitle": "Enter the quiz title",
+      "quizDescription": "Quiz Description",
+      "enterDescription": "Enter the quiz description",
+      "createQuiz": "Create Quiz"
+    }
   }
 }
