@@ -14,7 +14,7 @@ class InventoryService {
    */
   async getFoodProductTypes(page: number = 0, size: number = 20): Promise<Page<ProductType>> {
     try {
-      const response = await api.get('/inventory/product-types/food', {
+      const response = await api.get('/user/inventory/product-types/food', {
         params: {
           page,
           size
@@ -39,7 +39,7 @@ class InventoryService {
    */
   async createFoodProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
     try {
-      const response = await api.post('/inventory/product-types/food', productData);
+      const response = await api.post('/user/inventory/product-types/food', productData);
       return response.data;
     } catch (error) {
       console.error('Error creating product type:', error);
@@ -54,7 +54,7 @@ class InventoryService {
    */
   async createWaterProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
     try {
-      const response = await api.post('/inventory/product-types/water', productData);
+      const response = await api.post('/user/inventory/product-types/water', productData);
       return response.data;
     } catch (error) {
       console.error('Error creating water product type:', error);
@@ -69,7 +69,7 @@ class InventoryService {
    */
   async createMedicineProductType(productData: CreateProductTypeRequest): Promise<ProductType> {
     try {
-      const response = await api.post('/inventory/product-types/medicine', productData);
+      const response = await api.post('/user/inventory/product-types/medicine', productData);
       return response.data;
     } catch (error) {
       console.error('Error creating medicine product type:', error);
@@ -83,7 +83,7 @@ class InventoryService {
    */
   async getTotalWater(): Promise<number> {
     try {
-      const response = await api.get('/inventory/water/sum');
+      const response = await api.get('/user/inventory/water/sum');
       return response.data;
     } catch (error) {
       console.error('Error fetching total water:', error);
@@ -99,7 +99,7 @@ class InventoryService {
    */
   async getWaterProductTypes(page: number = 0, size: number = 20): Promise<Page<ProductType>> {
     try {
-      const response = await api.get('/inventory/product-types/water', {
+      const response = await api.get('/user/inventory/product-types/water', {
         params: {
           page,
           size
@@ -121,7 +121,7 @@ class InventoryService {
    */
   async getMedicineProductTypes(page: number = 0, size: number = 20): Promise<Page<ProductType>> {
     try {
-      const response = await api.get('/inventory/product-types/medicine', {
+      const response = await api.get('/user/inventory/product-types/medicine', {
         params: {
           page,
           size
@@ -144,7 +144,7 @@ class InventoryService {
    */
   async getProductBatches(productTypeId: number, page: number = 0, size: number = 20): Promise<Page<ProductBatch>> {
     try {
-      const response = await api.get(`/inventory/product-types/${productTypeId}/batches`, {
+      const response = await api.get(`/user/inventory/product-types/${productTypeId}/batches`, {
         params: {
           page,
           size
@@ -166,7 +166,7 @@ class InventoryService {
    */
   async createProductBatch(productTypeId: number, number: number, expirationTime?: string): Promise<ProductBatch> {
     try {
-      const response = await api.post('/inventory/product-batches', {
+      const response = await api.post('/user/inventory/product-batches', {
         productTypeId,
         number,
         expirationTime: expirationTime ? new Date(expirationTime).toISOString() : null
@@ -185,7 +185,7 @@ class InventoryService {
    */
   async getTotalUnitsForProductType(productTypeId: number): Promise<number> {
     try {
-      const response = await api.get(`/inventory/product-types/${productTypeId}/sum`);
+      const response = await api.get(`/user/inventory/product-types/${productTypeId}/sum`);
       return response.data;
     } catch (error) {
       console.error('Error fetching total units:', error);
@@ -199,7 +199,7 @@ class InventoryService {
    */
   async deleteProductBatch(batchId: number): Promise<void> {
     try {
-      await api.delete(`/inventory/product-batches/${batchId}`);
+      await api.delete(`/user/inventory/product-batches/${batchId}`);
     } catch (error) {
       console.error('Error deleting product batch:', error);
       throw error;
@@ -212,7 +212,7 @@ class InventoryService {
    */
   async deleteProductType(productTypeId: number): Promise<void> {
     try {
-      await api.delete(`/inventory/product-types/${productTypeId}`);
+      await api.delete(`/user/inventory/product-types/${productTypeId}`);
     } catch (error) {
       console.error('Error deleting product type:', error);
       throw error;
@@ -229,7 +229,7 @@ class InventoryService {
    */
   async searchProductTypes(search: string, category: string, page: number = 0, size: number = 20): Promise<Page<ProductType>> {
     try {
-      const response = await api.get('/inventory/product-types/search', {
+      const response = await api.get('/user/inventory/product-types/search', {
         params: {
           search,
           category,

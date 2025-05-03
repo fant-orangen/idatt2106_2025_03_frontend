@@ -17,7 +17,7 @@ import type { Invitation, InvitationResponseDto, InvitationStatus } from '@/mode
  */
 export async function fetchPendingInvitations(): Promise<Invitation[]> {
   try {
-    const response = await api.get<Invitation[]>('/invitations/pending');
+    const response = await api.get<Invitation[]>('/user/invitations/pending');
     return response.data;
   } catch (error) {
     console.error('Failed to fetch pending invitations:', error);
@@ -44,7 +44,7 @@ export async function respondToInvitation(
     status,
   };
 
-  const response = await api.post<Invitation>('/invitations/respond', payload);
+  const response = await api.post<Invitation>('/user/invitations/respond', payload);
   return response.data;
 
 }
