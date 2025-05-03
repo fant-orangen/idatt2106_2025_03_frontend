@@ -1,22 +1,21 @@
-import axios from 'axios';
+import api from '@/services/api/AxiosInstance';
 
-const API_URL = '/api/group';
 
 export default {
     async getUserGroups() {
-        return axios.get(`${API_URL}/user-groups`);
+        return api.get(`/user/user-groups`);
     },
 
     async getGroupInventory(groupId: string) {
-        return axios.get(`${API_URL}/${groupId}/inventory`);
+        return api.get(`/user/${groupId}/inventory`);
     },
 
     async getHouseholdInventory() {
-        return axios.get(`/api/inventory`);
+        return api.get(`/user/api/inventory`);
     },
 
     async shareItemToGroup(groupId: string, productId: string, batchId: string, amount: number) {
-        return axios.post(`${API_URL}/${groupId}/share`, {
+        return api.post(`/user/${groupId}/share`, {
             productId,
             batchId,
             amount,
@@ -24,6 +23,6 @@ export default {
     },
 
     async removeSharedItem(groupId: string, sharedItemId: string) {
-        return axios.delete(`${API_URL}/${groupId}/shared/${sharedItemId}`);
+        return api.delete(`/user/${groupId}/shared/${sharedItemId}`);
     }
 };

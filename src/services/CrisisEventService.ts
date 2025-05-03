@@ -113,7 +113,7 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
  */
 export async function fetchAllCrisisEvents(pageable?: { page?: number; size?: number }): Promise<Page<CrisisEvent>> {
   try {
-    const response = await api.get<Page<BackendCrisisEvent>>('/crisis-events/all', {
+    const response = await api.get<Page<BackendCrisisEvent>>('/public/crisis-events/all', {
       params: pageable,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -156,7 +156,7 @@ export async function fetchAllPreviewCrisisEvents(
 ): Promise<Page<CrisisEventPreviewDto>> {
   try {
     console.log('Fetching paginated crisis events, page:', page);
-    const response = await api.get<Page<CrisisEventPreviewDto>>('/crisis-events/all/previews', {
+    const response = await api.get<Page<CrisisEventPreviewDto>>('/public/crisis-events/all/previews', {
       params: { page, size },
       headers: {
         'Content-Type': 'application/json'
@@ -198,7 +198,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
  */
 export async function fetchCrisisEventById(id: number): Promise<CrisisEvent | null> {
   try {
-    const response = await api.get<BackendCrisisEvent>(`/crisis-events/${id}`);
+    const response = await api.get<BackendCrisisEvent>(`/public/crisis-events/${id}`);
     if (response.data) {
       const mappedEvent = mapBackendToFrontendEvent(response.data);
       // Check if mapping resulted in invalid data

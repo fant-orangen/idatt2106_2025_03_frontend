@@ -11,8 +11,6 @@ import api from '@/services/api/AxiosInstance';
 import type { NotificationMessage } from '@/models/NotificationMessage.ts'
 import type { Page } from '@/types/Page';
 
-const baseUrl = '/notifications';
-
 /**
  * Fetches notifications for a specific user
  * @param page The page number (default: 1)
@@ -20,7 +18,7 @@ const baseUrl = '/notifications';
  * @returns Page of notifications
  */
 export async function getNotifications(page: number = 1, size: number = 20): Promise<Page<NotificationMessage>> {
-  const response = await api.get(`${baseUrl}?page=${page - 1}&size=${size}`);
+  const response = await api.get(`/notifications?page=${page - 1}&size=${size}`);
   console.log(response.data);
   return {
     ...response.data,
