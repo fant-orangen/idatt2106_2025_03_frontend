@@ -174,16 +174,16 @@ function logOut() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="z-[101]">
-          <DropdownMenuLabel>{{ t('account.myAccount') }}</DropdownMenuLabel>
+          <DropdownMenuLabel>{{ t('settings.account.myAccount') }}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>
               <User class="mr-2 h-4 w-4" />
-              <span @click="goToPage('/profile')">{{ t('account.profile') }}</span>
+              <span @click="goToPage('/profile')">{{ t('navigation.profile') }}</span>
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToPage('/settings')">
               <Settings class="mr-2 h-4 w-4" />
-              <span>{{ t('account.settings') }}</span>
+              <span>{{ t('settings.settings') }}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator v-if="userStore.isAdminUser" />
             <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin-panel')">
