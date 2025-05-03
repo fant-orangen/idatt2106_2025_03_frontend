@@ -1,4 +1,8 @@
 {
+  "common": {
+    "cancel": "Cancel",
+    "remove": "Remove"
+  },
   "actions": {
     "to-reflect": "to reflect",
     "read-more": "Read more",
@@ -323,6 +327,7 @@
     "send-invitation": "Send Invitation",
     "invitation-sent": "Invitation sent successfully",
     "invitation-failed": "Failed to send invitation",
+    "invitation-sent-success": "Invitation sent successfully",
     "add-user-title": "Invite User to Household",
     "create_new": "Create New Household",
     "create_description": "Create your own household to manage your emergency preparedness.",
@@ -339,8 +344,15 @@
     "share-invitation": "Share this code with someone you want to invite to your household.",
     "users": "Users",
     "no-users": "No users in this household yet",
-    "done": "done",
-    "manage-members": "manage members",
+    "done": "Done",
+    "manage-members": "Manage members",
+    "confirm-remove-member": "Remove household member",
+    "confirm-remove-member-description": "Are you sure you want to remove this member from your household?",
+    "error-fetching-members": "Error fetching household members",
+    "member-added-success": "Member added successfully",
+    "member-added-error": "Failed to add member",
+    "member-removed-success": "Member removed successfully",
+    "member-removed-error": "Failed to remove member",
     "create": {
       "title": "Create New Household",
       "subtitle": "Set up your household for emergency preparedness",

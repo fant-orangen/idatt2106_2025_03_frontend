@@ -126,8 +126,8 @@ onMounted(() => {
 
   // Simulate fetching expiring items from backend with different timeframes
   const items = [
-    { id: 1, name: 'Canned beans', expiryDate: threeDaysLater },
-    { id: 2, name: 'Water bottles', expiryDate: fifteenDaysLater },
+    { id: 1, name: 'Food', expiryDate: threeDaysLater },
+    { id: 2, name: 'Water', expiryDate: fifteenDaysLater },
     { id: 3, name: 'Medicine', expiryDate: sixtyDaysLater },
   ];
 

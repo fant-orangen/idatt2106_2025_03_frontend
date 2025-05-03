@@ -1,35 +1,37 @@
 <template>
-  <div class="household-container">
+  <div class="household-container max-w-7xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold">{{ t('household.my-household') }}</h1>
+      <Button variant="outline" class="flex items-center gap-2" @click="goToGroupPage">
+        <UsersIcon class="h-4 w-4" />
+        <span>{{ t('group.go-to-groups') }}</span>
+      </Button>
+    </div>
+
     <!-- Show when user has no household -->
     <MemberNotInHousehold v-if="false" @household-updated="refreshHouseholdData" />
 
     <!-- Show when user has a household -->
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <HouseholdMembers @member-selected="handleMemberSelected" />
       <ShelterStore @view-beredskapslager="handleViewBeredskapslager" />
     </div>
   </div>
-
-  <!-- Navigate to groups -->
-  <button
-      @click="goToGroupPage"
-      class="ml-4 bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition"
-  >
-    {{ t('group.go-to-groups') }}
-  </button>
 </template>
 
 <script setup lang="ts">
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
-const router = useRouter()
-
+import { Button } from '@/components/ui/button';
+import { UsersIcon } from 'lucide-vue-next';
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 import HouseholdMembers from '@/components/household/HouseholdMembers.vue';
 import ShelterStore from '@/components/household/ShelterStore.vue';
 import MemberNotInHousehold from '@/components/household/MemberNotInHousehold.vue';
+
+const { t } = useI18n()
+const router = useRouter()
 
 const householdStore = useHouseholdStore();
 
@@ -68,6 +70,13 @@ onMounted(async () => {
 
 <style scoped>
 .household-container {
-  padding: 1rem;
+  min-height: calc(100vh - 64px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .household-container {
+    padding: 1rem;
+  }
 }
 </style>

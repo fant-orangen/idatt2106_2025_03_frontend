@@ -1,4 +1,8 @@
 {
+  "common": {
+    "cancel": "Avbryt",
+    "remove": "Fjern"
+  },
   "actions": {
     "to-reflect": "for å reflektere",
     "read-more": "Les mer",
@@ -325,6 +329,7 @@
     "send-invitation": "Send invitasjon",
     "invitation-sent": "Invitasjon sendt",
     "invitation-failed": "Kunne ikke sende invitasjon",
+    "invitation-sent-success": "Invitasjon sendt",
     "add-user-title": "Inviter bruker til hushold",
     "create_new": "Opprett nytt hushold",
     "create_description": "Opprett ditt eget hushold for å håndtere beredskap.",
@@ -341,8 +346,15 @@
     "share-invitation": "Del denne koden med noen du vil invitere til husholdet ditt.",
     "users": "Brukere",
     "no-users": "Ingen brukere i dette husholdet ennå",
-    "done": "ferdig",
-    "manage-members": "administrer medlemmer",
+    "done": "Ferdig",
+    "manage-members": "Administrer medlemmer",
+    "confirm-remove-member": "Fjern husholdsmedlem",
+    "confirm-remove-member-description": "Er du sikker på at du vil fjerne dette medlemmet fra husholdet ditt?",
+    "error-fetching-members": "Feil ved henting av husholdsmedlemmer",
+    "member-added-success": "Medlem lagt til",
+    "member-added-error": "Kunne ikke legge til medlem",
+    "member-removed-success": "Medlem fjernet",
+    "member-removed-error": "Kunne ikke fjerne medlem",
 
     "create": {
       "title": "Opprett nytt hushold",
