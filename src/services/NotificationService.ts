@@ -18,7 +18,7 @@ import type { Page } from '@/types/Page';
  * @returns Page of notifications
  */
 export async function getNotifications(page: number = 1, size: number = 20): Promise<Page<NotificationMessage>> {
-  const response = await api.get(`/notifications?page=${page - 1}&size=${size}`);
+  const response = await api.get(`/user/notifications?page=${page - 1}&size=${size}`);
   console.log(response.data);
   return {
     ...response.data,
