@@ -262,6 +262,8 @@
     "filter": "Filtrer POIer",
     "my-location": "Bruk min posisjon",
     "your-location": "Din posisjon",
+    "household-location": "Din husholdning",
+    "view-household": "Se husholdning",
     "getting-location": "Henter din posisjon",
     "distance": "Avstand (meter)",
     "poi-type": "POI Type",

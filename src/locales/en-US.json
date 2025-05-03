@@ -260,6 +260,8 @@
     "filter": "Filter POIs",
     "my-location": "Use my location",
     "your-location": "Your location",
+    "household-location": "Your household",
+    "view-household": "See household",
     "getting-location": "Getting Your Location",
     "distance": "Distance (meters)",
     "poi-type": "POI Type",
