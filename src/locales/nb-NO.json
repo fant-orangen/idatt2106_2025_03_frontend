@@ -642,5 +642,17 @@
     "cancel": "Avbryt",
     "delete": "Slett",
     "confirm": "Bekreft"
+  },
+  "gamification": {
+    "quizCreator": {
+      "title": "Quizskaper",
+      "creatorTitle": "Opprett en ny quiz",
+      "creatorDescription": "Fyll inn detaljene nedenfor for å opprette en ny quiz.",
+      "quizName": "Quiznavn",
+      "enterTitle": "Skriv inn quizens tittel",
+      "quizDescription": "Quizbeskrivelse",
+      "enterDescription": "Skriv inn quizens beskrivelse",
+      "createQuiz": "Opprett quiz"
+    }
   }
 }
