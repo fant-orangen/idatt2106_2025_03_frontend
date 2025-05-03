@@ -85,11 +85,6 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/shelter-frontpage',
-    name: 'shelter-frontpage',
-    component: () => import('@/components/shelter/CategoryPage.vue'),
-  },
-  {
     path: '/medicine-inventory',
     name: 'MedicineInventory',
     component: () => import('@/views/MedicineInventory.vue'),
@@ -175,9 +170,8 @@ const routes = [
     path: '/group',
     name: 'GroupPage',
     component: () => import('@/views/GroupPage.vue'),
-    meta: { requiresAuth: true }
-  }
-
+    meta: { requiresAuth: true },
+  },
   {
     path: '/games',
     name: 'Games',
