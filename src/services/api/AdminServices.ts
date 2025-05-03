@@ -73,11 +73,7 @@ export async function deactivateCurrentEvent(id: number): Promise<AxiosResponse<
 
 
 /**
- * Deactivates a current event. Sets the event to inactive in the backend API. 
- * Calls a PUT request to the '/crisis-events/deactivate/{id}' endpoint. 
- * 
- * @param id - The ID of the event chosen to be deactivated. 
- * @returns { Promise<AxiosResponse<any>> }A promise resolving to the server response after the update operation.
+ * Creates a new point of interest.
  */
 export async function createPOI(poiData: any): Promise<AxiosResponse> {
   return await api.post('/admin/poi', poiData, {
