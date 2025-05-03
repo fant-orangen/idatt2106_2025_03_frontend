@@ -55,9 +55,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import type { CreateHousehold } from '@/models/Household';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 const router = useRouter();
+const emit = defineEmits(['created']);
 
 // Form data using the CreateHousehold interface
 const householdData = ref<CreateHousehold>({
@@ -80,11 +82,15 @@ async function createNewHousehold() {
   isLoading.value = true;
 
   try {
-    await createHousehold({
+    const household = await createHousehold({
       name: householdData.value.name.trim(),
       address: householdData.value.address.trim(),
       populationCount: householdData.value.populationCount
     });
+
+    // Emit created event
+    emit('created', household);
+    toast.success(t('household.create.success'));
 
     // Redirect to household page after successful creation
     router.push('/household');

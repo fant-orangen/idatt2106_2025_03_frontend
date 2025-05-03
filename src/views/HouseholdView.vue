@@ -9,7 +9,7 @@
     </div>
 
     <!-- Show when user has no household -->
-    <MemberNotInHousehold v-if="false" @household-updated="refreshHouseholdData" />
+    <MemberNotInHousehold v-if="!hasHousehold" @household-updated="refreshHouseholdData" />
 
     <!-- Show when user has a household -->
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -20,20 +20,19 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button';
 import { UsersIcon } from 'lucide-vue-next';
-import { useHouseholdStore } from '@/stores/HouseholdStore';
 import HouseholdMembers from '@/components/household/HouseholdMembers.vue';
 import ShelterStore from '@/components/household/ShelterStore.vue';
 import MemberNotInHousehold from '@/components/household/MemberNotInHousehold.vue';
+import { getCurrentHousehold } from '@/services/HouseholdService';
 
 const { t } = useI18n()
 const router = useRouter()
-
-const householdStore = useHouseholdStore();
+const hasHousehold = ref(false);
 
 // Types
 interface HouseholdMember {
@@ -54,7 +53,12 @@ const handleViewBeredskapslager = () => {
 };
 
 const refreshHouseholdData = async () => {
-  await householdStore.fetchCurrentHousehold();
+  try {
+    const household = await getCurrentHousehold();
+    hasHousehold.value = !!household;
+  } catch (error) {
+    console.error('Error fetching household data:', error);
+  }
 };
 
 const goToGroupPage = () => {
@@ -64,7 +68,7 @@ const goToGroupPage = () => {
 
 // Fetch household data when the component mounts
 onMounted(async () => {
-  await householdStore.fetchCurrentHousehold();
+  await refreshHouseholdData();
 });
 </script>
 

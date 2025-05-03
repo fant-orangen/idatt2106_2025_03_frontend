@@ -60,25 +60,22 @@ export async function leaveHousehold(): Promise<void> {
 }
 
 /**
- * Generate an invitation token for the household
- * @returns The generated invitation token
+ * Invite a user to join the household by email
+ * @param email The email address of the user to invite
+ * @returns The invitation response containing the token and expiry
  */
-export async function generateInvitationToken(): Promise<string> {
-  const response = await api.post('/user/households/invitations/generate');
-  return response.data.token;
+export async function inviteUserToHousehold(email: string): Promise<{ token: string }> {
+  const response = await api.post('/user/households/invite', { email });
+  return response.data;
 }
 
 /**
- * Update household information
- * @param householdId The household ID
- * @param householdData The updated household data
- * @returns The updated household
+ * Switch to a different household
+ * @param householdId The household ID to switch to
+ * @returns The switched household
  */
-export async function updateHousehold(
-  householdId: number,
-  householdData: Partial<Household>
-): Promise<Household> {
-  const response = await api.put(`/user/households/${householdId}`, householdData);
+export async function switchHousehold(householdId: number): Promise<Household> {
+  const response = await api.put('/user/households/switch', { householdId });
   return response.data;
 }
 
@@ -102,15 +99,14 @@ export async function getEmptyHouseholdMembers(): Promise<EmptyHouseholdMember[]
 
 /**
  * Remove a member from the household
- * @param householdId The household ID
  * @param memberId The member ID to remove
  * @returns Promise that resolves when the member is removed
+ * @throws Error if the endpoint is not implemented on the backend
  */
-export async function removeEmptyMemberFromHousehold(
-  householdId: number,
-  memberId: number
-): Promise<void> {
-  await api.delete(`/user/households/${householdId}/members/${memberId}`);
+export async function removeEmptyMemberFromHousehold(memberId: number): Promise<void> {
+  // Note: This endpoint is not yet implemented in the backend (marked as TODO)
+  // This is a placeholder for when the backend implements it
+  throw new Error('This functionality is not yet implemented on the backend');
 }
 
 /**
@@ -128,8 +124,9 @@ export async function addEmptyMember(
 /**
  * Send an invitation to join the household by email
  * @param invitationData The invitation data including email and optional message
- * @returns Promise that resolves when the invitation is sent
+ * @returns Promise that resolves with the invitation response
  */
-export async function inviteUserByEmail(invitationData: EmailInvitation): Promise<void> {
-  await api.post('/user/households/invitations/email', invitationData);
+export async function inviteUserByEmail(invitationData: EmailInvitation): Promise<{ token: string }> {
+  const response = await api.post('/user/households/invite', { email: invitationData.email });
+  return response.data;
 }

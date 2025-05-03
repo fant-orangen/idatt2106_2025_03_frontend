@@ -35,11 +35,24 @@ export interface CreateHousehold {
 }
 
 /**
+ * Data required to join a household
+ */
+export interface HouseholdJoinRequestDto {
+  token: string;
+}
+
+/**
+ * Data required to switch households
+ */
+export interface HouseholdSwitchRequestDto {
+  householdId: number;
+}
+
+/**
  * Represents an invitation token response
  */
-export interface InvitationToken {
+export interface HouseholdInviteResponseDto {
   token: string;
-  expiresAt: string;
 }
 
 /**
@@ -47,7 +60,6 @@ export interface InvitationToken {
  */
 export interface EmailInvitation {
   email: string;
-  message?: string;
 }
 
 export type Member = HouseholdMember | EmptyHouseholdMember;

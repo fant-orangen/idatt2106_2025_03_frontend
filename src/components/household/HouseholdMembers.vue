@@ -130,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineEmits, computed } from 'vue';
+import { ref, onMounted, defineEmits } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -145,9 +145,8 @@ import {
 import AddEmptyUser from './AddEmptyUser.vue';
 import { UserIcon, XIcon, PlusIcon, MailIcon } from 'lucide-vue-next';
 import AddUser from './AddUser.vue';
-import { getHouseholdMembers, getEmptyHouseholdMembers, addEmptyMember } from '@/services/HouseholdService.ts'
-import type { HouseholdMember } from '@/models/Household.ts'
-import { useHouseholdStore } from '@/stores/HouseholdStore';
+import { getHouseholdMembers, getEmptyHouseholdMembers, addEmptyMember, removeEmptyMemberFromHousehold } from '@/services/HouseholdService.ts'
+import type { HouseholdMember, EmptyHouseholdMember } from '@/models/Household.ts'
 import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
@@ -155,21 +154,23 @@ const { t } = useI18n();
 const emit = defineEmits(['memberSelected']);
 const showAddUser = ref(false);
 const manageMode = ref(false);
-const householdStore = useHouseholdStore();
 const showInviteUser = ref(false);
-const memberToRemove = ref<HouseholdMember | null>(null);
+const memberToRemove = ref<HouseholdMember | EmptyHouseholdMember | null>(null);
+const householdMembers = ref<(HouseholdMember | EmptyHouseholdMember)[]>([]);
 
-const householdMembers = computed(() => householdStore.members as HouseholdMember[]);
-
-onMounted(async () => {
+const fetchMembers = async () => {
   try {
     const members = await getHouseholdMembers();
     const emptyMembers = await getEmptyHouseholdMembers();
-    householdStore.setMembers([...members, ...emptyMembers]);
+    householdMembers.value = [...members, ...emptyMembers];
   } catch (error) {
     console.error('Error fetching household members:', error);
     toast.error(t('household.error-fetching-members'));
   }
+};
+
+onMounted(async () => {
+  await fetchMembers();
 });
 
 const selectMember = (member: HouseholdMember) => {
@@ -194,14 +195,11 @@ const handleSaveUser = async (userData: {
 }) => {
   try {
     await addEmptyMember(userData);
-    const members = await getHouseholdMembers();
-    const emptyMembers = await getEmptyHouseholdMembers();
-    householdStore.setMembers([...members, ...emptyMembers]);
+    await fetchMembers(); // Refresh the members list
     showAddUser.value = false;
     toast.success(t('household.member-added-success'));
   } catch (error) {
     console.error('Failed to save user:', error);
-    householdStore.setError('Failed to save user');
     toast.error(t('household.member-added-error'));
   }
 };
@@ -229,7 +227,7 @@ const toggleManageMode = () => {
 };
 
 // Show confirmation dialog before removing a member
-const confirmRemoveMember = (member: HouseholdMember) => {
+const confirmRemoveMember = (member: HouseholdMember | EmptyHouseholdMember) => {
   memberToRemove.value = member;
 };
 
@@ -238,12 +236,12 @@ const executeRemoveMember = async () => {
   if (!memberToRemove.value?.id) return;
 
   try {
-    // TODO: Implement removing regular user from backend
-    householdStore.removeMember(memberToRemove.value.id);
+    // Note: This will throw an error since the backend doesn't support this yet
+    await removeEmptyMemberFromHousehold(memberToRemove.value.id);
+    await fetchMembers(); // Refresh the members list
     toast.success(t('household.member-removed-success'));
   } catch (error) {
     console.error('Failed to remove member:', error);
-    householdStore.setError('Failed to remove member');
     toast.error(t('household.member-removed-error'));
   } finally {
     memberToRemove.value = null;
