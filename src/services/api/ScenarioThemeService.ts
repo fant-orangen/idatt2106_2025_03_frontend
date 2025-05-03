@@ -80,7 +80,7 @@ export async function fetchActiveScenarioThemes(): Promise<ScenarioThemeDto[]> {
  */
 export async function createScenarioTheme(themeData: CreateScenarioThemeDto): Promise<ScenarioThemeDto> {
   try {
-    const response = await api.post('/scenario-themes', themeData);
+    const response = await api.post('/admin/scenario-themes', themeData);
     return response.data;
   } catch (error) {
     console.error('Error creating scenario theme:', error);
@@ -96,7 +96,7 @@ export async function createScenarioTheme(themeData: CreateScenarioThemeDto): Pr
  */
 export async function updateScenarioTheme(themeData: UpdateScenarioThemeDto): Promise<ScenarioThemeDto> {
   try {
-    const response = await api.patch(`/scenario-themes`, themeData);
+    const response = await api.patch(`/admin/scenario-themes`, themeData);
     return response.data;
   } catch (error) {
     console.error(`Error updating scenario theme with ID ${themeData.id}:`, error);
@@ -118,7 +118,7 @@ export async function deleteScenarioTheme(themeData: UpdateScenarioThemeDto): Pr
       status: 'archived'
     }
 
-    const response = await api.patch(`/scenario-themes`, archiveData);
+    const response = await api.patch(`/admin/scenario-themes`, archiveData);
     return response.data;
   } catch (error) {
     console.error(`Error archiving scenario theme with ID ${themeData.id}:`, error);

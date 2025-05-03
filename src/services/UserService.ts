@@ -52,109 +52,6 @@ export async function fetchUserById(userId: string | number): Promise<UserRespon
 }
 
 /**
- * Fetches a paginated list of users for administrative purposes.
- *
- * Makes a GET request to retrieve users with pagination and optional filtering.
- * Requires administrative privileges.
- *
- * @param {number} page - Page index (0-based)
- * @param {number} size - Number of users per page
- * @param {UserFilterParams} [params={}] - Optional filter/search parameters
- * @returns {Promise<PaginatedUserResponse>} Promise resolving to paginated user data
- * @throws {Error} If the request fails due to authorization issues or network errors
- */
-export async function fetchAdminUsers(
-  page: number,
-  size: number,
-  params: UserFilterParams = {},
-): Promise<PaginatedUserResponse> {
-  try {
-    // Make the GET request to the admin endpoint
-    const response = await api.get<PaginatedUserResponse>('/admin/users', {
-      params: { page, size, ...params },
-    })
-    return response.data
-  } catch (error) {
-    console.error('Failed to fetch admin users:', error)
-    throw error
-  }
-}
-
-/**
- * Updates a user's details via the administrative API.
- *
- * Makes a PUT request to modify user information. Requires administrative privileges.
- *
- * @param {number|string} id - The ID of the user to update
- * @param {AdminUserUpdatePayload} userData - The updated user data
- * @returns {Promise<BackendUser>} Promise resolving to the updated user data
- * @throws {Error} If the update fails due to validation or authorization issues
- */
-export async function updateAdminUser(
-  id: number | string,
-  userData: AdminUserUpdatePayload,
-): Promise<BackendUser> {
-  try {
-    // Make the PUT request to the admin endpoint
-    const response = await api.put<BackendUser>(`/admin/users/${id}`, userData)
-    return response.data
-  } catch (error) {
-    console.error(`Failed to update user with ID ${id}:`, error)
-    throw error
-  }
-}
-
-/**
- * Deletes a user account via the administrative API.
- *
- * Makes a DELETE request to remove a user. Requires administrative privileges.
- *
- * @param {number|string} id - The ID of the user to delete
- * @returns {Promise<void>} Promise that resolves when deletion is successful
- * @throws {Error} If deletion fails due to authorization issues or network errors
- */
-export async function deleteAdminUser(id: number | string): Promise<void> {
-  try {
-    await api.delete(`/admin/users/${id}`)
-  } catch (error) {
-    console.error(`Failed to delete user with ID ${id}:`, error)
-    throw error
-  }
-}
-
-/**
- * Fetches detailed information for a specific user by ID.
- *
- * Makes a GET request to retrieve a user's profile information.
- * Requires administrative privileges.
- *
- * @param {number|string} id - The ID of the user to fetch
- * @returns {Promise<BackendUser>} Promise resolving to the user's profile data
- * @throws {Error} If the fetch fails due to authorization issues or network errors
- */
-export async function fetchAdminUserById(id: number | string): Promise<BackendUser> {
-  try {
-    const response = await api.get<BackendUser>(`/admin/users/${id}`)
-
-    const user: BackendUser = {
-      id: response.data.id ?? id,
-      email: response.data.email ?? '',
-      displayName: response.data.displayName,
-      role: response.data.role ?? 'USER',
-      firstName: response.data.firstName ?? null,
-      lastName: response.data.lastName ?? null,
-      phone: response.data.phone ?? null,
-      createdAt: response.data.createdAt,
-      updatedAt: response.data.updatedAt || '',
-    }
-    return user
-  } catch (error) {
-    console.error(`Failed to fetch user with ID ${id}:`, error)
-    throw error
-  }
-}
-
-/**
  * Updates a single or multiple user preferences for a specific user.
  *
  * Makes a PATCH request to the backend to update preferences.
@@ -171,7 +68,7 @@ export async function updateUserPreference(
 ): Promise<void> {
   try {
     const payload = { [settingKey]: settingValue }
-    const response = await api.patch(`/users/me/preferences/update`, payload)
+    const response = await api.patch(`/user/me/preferences/update`, payload)
     console.log('Preference updated successfully:', response.data)
   } catch (error) {
     console.error('Error updating preference:', error)
@@ -188,7 +85,7 @@ export async function updateUserPreference(
  */
 export async function getUserPreferences(): Promise<UserPreferencesDto> {
   try {
-    const response = await api.get<UserPreferencesDto>('/users/me/preferences/get')
+    const response = await api.get<UserPreferencesDto>('/user/me/preferences/get')
     return response.data
   } catch (error) {
     console.error('Error fetching user preferences:', error)

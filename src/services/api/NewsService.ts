@@ -69,7 +69,6 @@ export async function fetchNewsByCrisisEvent(
  */
 export async function fetchGeneralNews(): Promise<News[]> {
   try {
-    // In a real application, this would call a different API endpoint
     const response = await api.get('/news/general');
     return response.data.content || response.data;
   } catch (error: unknown) {
