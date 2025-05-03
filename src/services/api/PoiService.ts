@@ -11,7 +11,7 @@ import type { PoiData } from '@/models/PoiData.ts';
 export async function fetchPublicPois(): Promise<PoiData[]> {
   try {
     // Make GET request to the backend endpoint defined in PoiController.java
-    const response = await api.get<PoiData[]>('/poi/public');
+    const response = await api.get<PoiData[]>('/public/poi/public');
     console.log("Fetched POIs:", response.data); // Log fetched data
     return response.data;
   } catch (error) {
@@ -30,7 +30,7 @@ export async function fetchPublicPois(): Promise<PoiData[]> {
  */
 export async function fetchPoiById(id: number): Promise<PoiData | null> {
   try {
-    const response = await api.get<PoiData>(`/poi/${id}`);
+    const response = await api.get<PoiData>(`/public/poi/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch POI with ID ${id}:`, error);
@@ -48,7 +48,7 @@ export async function fetchPoiById(id: number): Promise<PoiData | null> {
  */
 export async function fetchPoisByType(typeId: number): Promise<PoiData[]> {
   try {
-    const response = await api.get<PoiData[]>(`/poi/type/${typeId}`);
+    const response = await api.get<PoiData[]>(`/public/poi/type/${typeId}`);
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch POIs with type ID ${typeId}:`, error);
@@ -84,7 +84,7 @@ export async function fetchPoisNearby(
       params.id = typeId;
     }
 
-    const response = await api.get<PoiData[]>('/poi/type/nearby', { params });
+    const response = await api.get<PoiData[]>('/public/poi/type/nearby', { params });
     return response.data;
   } catch (error) {
     console.error('Failed to fetch nearby POIs:', error);
@@ -113,7 +113,7 @@ export async function fetchNearestPoiByType(
       longitude
     };
 
-    const response = await api.get<PoiData>(`/poi/type/nearest/${typeId}`, { params });
+    const response = await api.get<PoiData>(`/public/poi/type/nearest/${typeId}`, { params });
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch nearest POI of type ${typeId}:`, error);
