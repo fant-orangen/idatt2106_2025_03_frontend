@@ -79,7 +79,7 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('userId')
   }
 
-  function login(status: number, tokenStr: string, userEmail: string) {
+  async function login(status: number, tokenStr: string, userEmail: string) {
     if (status === 200) {
       // Extract role and userId from token
       const tokenParts = tokenStr.split('.')
@@ -97,8 +97,12 @@ export const useUserStore = defineStore('user', () => {
 
           // Update state
           token.value = tokenStr
+          console.log('Token:', token.value)
           username.value = userEmail
           isAuthenticated.value = true
+
+          // Fetch user profile
+          await fetchUserProfile()
         } catch (error) {
           console.error('Error parsing token payload:', error)
           clearAuthState()
@@ -126,6 +130,21 @@ export const useUserStore = defineStore('user', () => {
     } catch (error) {
       console.error('Registration error:', error)
       throw error
+    }
+  }
+
+  async function fetchUserProfile() {
+    console.log(` TOKEN BENIG SENT TO BACKEND IN FETCH USER PROFILE: ${token.value}`)
+
+    try {
+      const response = await api.get<UserProfile>('/users/me', {
+        headers: { Authorization: `Bearer ${token.value}` },
+      })
+      profile.value = response.data
+      localStorage.setItem('profile', JSON.stringify(response.data))
+      console.log('User profile fetched successfully:', response.data)
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
     }
   }
 
