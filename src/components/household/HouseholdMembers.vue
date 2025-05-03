@@ -1,7 +1,7 @@
 <template>
   <Card class="household-members">
     <CardHeader class="flex flex-row items-center justify-between pb-2">
-      <CardTitle>{{ $t('household.my-household') }}</CardTitle>
+      <CardTitle>{{ householdName || $t('household.members') }}</CardTitle>
       <Button
         :variant="manageMode ? 'default' : 'ghost'"
         size="sm"
@@ -130,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineEmits } from 'vue';
+import { ref, onMounted, defineEmits, defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -145,11 +145,20 @@ import {
 import AddEmptyUser from './AddEmptyUser.vue';
 import { UserIcon, XIcon, PlusIcon, MailIcon } from 'lucide-vue-next';
 import AddUser from './AddUser.vue';
-import { getHouseholdMembers, getEmptyHouseholdMembers, addEmptyMember, removeEmptyMemberFromHousehold } from '@/services/HouseholdService.ts'
+import { getHouseholdMembers, getEmptyHouseholdMembers, addEmptyMember, removeEmptyMemberFromHousehold, getCurrentHousehold } from '@/services/HouseholdService.ts'
 import type { HouseholdMember, EmptyHouseholdMember } from '@/models/Household.ts'
 import { toast } from 'vue-sonner';
+import { useHouseholdStore } from '@/stores/HouseholdStore';
 
 const { t } = useI18n();
+const householdStore = useHouseholdStore();
+
+const props = defineProps({
+  householdName: {
+    type: String,
+    default: ''
+  }
+});
 
 const emit = defineEmits(['memberSelected']);
 const showAddUser = ref(false);

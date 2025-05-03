@@ -60,6 +60,30 @@ export async function leaveHousehold(): Promise<void> {
 }
 
 /**
+ * Transfer admin role to another household member
+ * @param memberId The ID of the member to make admin
+ * @returns Promise that resolves when operation is successful
+ * @throws Error if the user is not an admin or the operation fails
+ */
+export async function transferAdminRole(memberId: number): Promise<void> {
+  await api.post(`/user/households/transfer-admin/${memberId}`);
+}
+
+/**
+ * Check if the current user is an admin of their household
+ * @returns Promise that resolves to true if the user is an admin, false otherwise
+ */
+export async function isCurrentUserHouseholdAdmin(): Promise<boolean> {
+  try {
+    const response = await api.get('/user/households/is-admin');
+    return response.data.isAdmin === true;
+  } catch (error) {
+    console.error('Error checking admin status:', error);
+    return false;
+  }
+}
+
+/**
  * Invite a user to join the household by email
  * @param email The email address of the user to invite
  * @returns The invitation response containing the token and expiry
