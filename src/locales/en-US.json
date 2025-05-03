@@ -310,6 +310,8 @@
     "beredskapslager": "Emergency Storage",
     "no-expiring-items": "No items are about to expire.",
     "days-left": "days left",
+    "water-days-left": "Water: {days} days left",
+    "food-days-left": "Food: {days} days left",
     "your-shelter-store": "Your Shelter Store",
     "invite-user": "Invite User",
     "email-address": "Email Address",

@@ -312,6 +312,8 @@
     "beredskapslager": "Beredskapslager",
     "no-expiring-items": "Ingen varer nær utløpsdato.",
     "days-left": "dager igjen",
+    "water-days-left": "Vann: {days} dager igjen",
+    "food-days-left": "Mat: {days} dager igjen",
     "your-shelter-store": "Ditt beredskapslager",
     "invite-user": "Inviter bruker",
     "email-address": "E-postadresse",

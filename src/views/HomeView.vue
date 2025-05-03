@@ -29,7 +29,7 @@ import CrisisLevelOverview from '@/components/crisis/CrisisLevelOverview.vue'
 
 const router = useRouter()
 const { t } = useI18n()
-const currentStatus = ref('crisis.no-crisis')
+const currentStatus = ref('crisis.during') // WIP
 
 const fetchCrisisLevel = "not-implemented" // Placeholder for future implementation
 // This function will be used to fetch the crisis level from the backend
@@ -39,7 +39,7 @@ const crisisComponents = ref<Record<string, any>>({})
 // Function to load components dynamically
 const loadCrisisComponents = async () => {
   crisisComponents.value = {
-    'crisis.no-crisis': (await import('@/components/homeview/NoCrisisButtons.vue')).default,
+    'crisis.no-crisis': (await import('@/components/homeview/NoCrisisButtons.vue')),
     'crisis.during': (await import('@/components/homeview/DuringCrisisButtons.vue')).default,
   }
 }
