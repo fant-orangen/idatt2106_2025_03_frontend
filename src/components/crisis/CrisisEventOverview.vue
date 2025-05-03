@@ -23,43 +23,51 @@
       </Card>
 
       <!-- Crisis Selection -->
-      <Card>
+      <Card class="flex flex-col h-full">
         <CardHeader class="pb-2">
           <CardTitle>{{ t('crisis.active_events', 'Active Events') }}</CardTitle>
         </CardHeader>
-        <CardContent class="p-0">
-          <ScrollArea className="h-[180px] px-4">
-            <div class="space-y-2 py-2">
-              <div
-                v-for="event in crisisEvents"
-                :key="event.id"
-                class="flex items-start p-3 rounded-md cursor-pointer transition-colors"
-                :class="[
-                  selectedCrisis?.id === event.id
-                    ? 'bg-muted'
-                    : 'hover:bg-muted/50'
-                ]"
-                @click="handleCrisisSelect(event)"
-              >
-                <div class="flex-1">
-                  <div class="flex items-center justify-between">
-                    <h3 class="font-medium">{{ event.name }}</h3>
-                    <Badge :class="getSeverityClass(event.severity)">
-                      {{ event.severity.toUpperCase() }}
-                    </Badge>
+        <CardContent class="p-0 flex-grow">
+          <ScrollArea className="h-[400px] px-4">
+            <InfiniteScroll
+              :isLoading="loading"
+              :hasMore="hasMore"
+              :loadingText="t('crisis.loading_more', 'Loading more events...')"
+              :endMessage="t('crisis.no_more_events', 'No more events to load')"
+              @load-more="loadCrisisEvents"
+            >
+              <div class="space-y-2 py-2">
+                <div
+                  v-for="event in crisisEvents"
+                  :key="event.id"
+                  class="flex items-start p-3 rounded-md cursor-pointer transition-colors"
+                  :class="[
+                    selectedCrisis?.id === event.id
+                      ? 'bg-muted'
+                      : 'hover:bg-muted/50'
+                  ]"
+                  @click="handleCrisisSelect(event)"
+                >
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                      <h3 class="font-medium">{{ event.name }}</h3>
+                      <Badge :class="getSeverityClass(event.severity)">
+                        {{ event.severity.toUpperCase() }}
+                      </Badge>
+                    </div>
+                    <p class="text-sm text-muted-foreground mt-1">
+                      {{ formatDateFull(event.startTime) }}
+                    </p>
                   </div>
-                  <p class="text-sm text-muted-foreground mt-1">
-                    {{ formatDateFull(event.startTime) }}
-                  </p>
                 </div>
               </div>
-            </div>
+            </InfiniteScroll>
           </ScrollArea>
         </CardContent>
       </Card>
     </div>
 
-    <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
       <CrisisDetails :crisis="selectedCrisis" />
 
       <CrisisEventHistory
@@ -88,14 +96,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import CrisisDetails from '@/components/crisis/CrisisDetails.vue';
 import CrisisEventHistory from '@/components/crisis/CrisisEventHistory.vue';
 import NewsOverview from '../news/NewsOverview.vue';
+import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { watch } from 'vue';
 import {formatDateFull} from '@/utils/dateUtils.ts';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 
 import {
-  fetchAllCrisisEvents,
-  fetchCrisisEventById
-} from '@/services/api/CrisisEventService.ts';
+  fetchAllPreviewCrisisEvents,
+  fetchTheCrisisEventById
+} from '@/services/CrisisEventService.ts';
 
 /**
  * CrisisEventOverview component
@@ -116,16 +125,41 @@ const { t } = useI18n();
 const selectedCrisis = ref<CrisisEventDto | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
+const page = ref(0);
+const size = 10;
+const hasMore = ref(true);
 
 /**
- * Fetch all crisis events when the component is mounted
+ * Loads a page of crisis events
+ */
+const loadCrisisEvents = async () => {
+  if (loading.value || !hasMore.value) return;
+
+  try {
+    loading.value = true;
+    error.value = null;
+
+    const response = await fetchAllPreviewCrisisEvents(page.value, size);
+    console.log("Crisis events page:", response);
+
+    crisisEvents.value.push(...response.content);
+    page.value++;
+    hasMore.value = page.value < response.totalPages;
+  } catch (err) {
+    console.error('Failed to fetch crisis events:', err);
+    error.value = t('crisis.error_loading_events', 'Failed to load crisis events');
+  } finally {
+    loading.value = false;
+  }
+};
+
+/**
+ * Fetch crisis events when the component is mounted
  * and select the first one by default
  */
 onMounted(async () => {
   try {
-    const events = await fetchAllCrisisEvents();
-    console.log("events: ", events);
-    crisisEvents.value = events;
+    await loadCrisisEvents();
 
     // Check if there's a crisis ID in the URL query parameter
     const crisisIdFromQuery = router.currentRoute.value.query.id;
@@ -155,7 +189,7 @@ const fetchAndSelectCrisis = async (crisisId: number) => {
   try {
     loading.value = true;
     error.value = null;
-    const crisisDetails = await fetchCrisisEventById(crisisId);
+    const crisisDetails = await fetchTheCrisisEventById(crisisId);
     if (crisisDetails) {
       selectedCrisis.value = crisisDetails;
     } else {

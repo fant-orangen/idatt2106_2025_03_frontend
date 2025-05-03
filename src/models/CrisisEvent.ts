@@ -22,8 +22,6 @@ export interface CrisisEventDto {
   startTime: string;
   /** ISO string timestamp when the crisis event was last updated */
   updatedAt: string;
-  /** User ID of the person who created this crisis event */
-  createdByUser: number;
   /** Whether the crisis event is currently active */
   active: boolean;
   /** ID of the associated scenario theme, if any */

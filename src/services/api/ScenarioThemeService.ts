@@ -1,5 +1,10 @@
+/**
+ * Service for handling scenario themes.
+ * Provides functions to fetch, create, update, and delete scenario themes.
+ */
+
 import api from '@/services/api/AxiosInstance';
-import type { ScenarioThemeDto, ScenarioThemeDetailsDto, ScenarioThemePreview } from '@/models/ScenarioTheme';
+import type { ScenarioThemeDto, ScenarioThemeDetailsDto, CreateScenarioThemeDto, UpdateScenarioThemeDto, ScenarioThemePreview } from '@/models/ScenarioTheme';
 import type { Page } from '@/types/Page';
 
 /**
@@ -14,7 +19,7 @@ export async function fetchAllScenarioThemes(
   size: number = 10
 ): Promise<Page<ScenarioThemeDto>> {
   try {
-    const response = await api.get('/scenario-themes/all', {
+    const response = await api.get('/public/scenario-themes/all', {
       params: {
         page,
         size
@@ -23,7 +28,7 @@ export async function fetchAllScenarioThemes(
     return response.data;
   } catch (error) {
     console.error('Error fetching scenario themes:', error);
-    // Return empty page result instead of throwing error to prevent component crashes
+
     return {
       content: [],
       totalElements: 0,
@@ -42,7 +47,7 @@ export async function fetchAllScenarioThemes(
  */
 export async function fetchScenarioThemeById(id: number): Promise<ScenarioThemeDetailsDto | null> {
   try {
-    const response = await api.get(`/scenario-themes/${id}`);
+    const response = await api.get(`/public/scenario-themes/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching scenario theme with ID ${id}:`, error);
@@ -59,7 +64,7 @@ export async function fetchScenarioThemeById(id: number): Promise<ScenarioThemeD
 export async function fetchActiveScenarioThemes(): Promise<ScenarioThemeDto[]> {
   try {
     // This endpoint would need to be added to the backend
-    const response = await api.get('/scenario-themes/active');
+    const response = await api.get('/public/scenario-themes/active');
     return response.data;
   } catch (error) {
     console.error('Error fetching active scenario themes:', error);
@@ -67,6 +72,59 @@ export async function fetchActiveScenarioThemes(): Promise<ScenarioThemeDto[]> {
   }
 }
 
+/**
+ * Creates a new scenario theme.
+ *
+ * @param {CreateScenarioThemeDto} themeData - The data for the new scenario theme
+ * @returns {Promise<ScenarioThemeDto>} The created scenario theme
+ */
+export async function createScenarioTheme(themeData: CreateScenarioThemeDto): Promise<ScenarioThemeDto> {
+  try {
+    const response = await api.post('/admin/scenario-themes', themeData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating scenario theme:', error);
+    throw error;
+  }
+}
+
+/**
+ * Updates an existing scenario theme.
+ *
+ * @param {UpdateScenarioThemeDto} themeData - The data to update the scenario theme with
+ * @returns {Promise<ScenarioThemeDto>} The updated scenario theme
+ */
+export async function updateScenarioTheme(themeData: UpdateScenarioThemeDto): Promise<ScenarioThemeDto> {
+  try {
+    const response = await api.patch(`/admin/scenario-themes`, themeData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating scenario theme with ID ${themeData.id}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Archives a scenario theme by setting its status to 'archived'.
+ * This performs a soft delete rather than removing the theme from the database.
+ *
+ * @param {UpdateScenarioThemeDto} themeData - The theme data to be archived
+ * @returns {Promise<ScenarioThemeDto>} The archived scenario theme
+ */
+export async function deleteScenarioTheme(themeData: UpdateScenarioThemeDto): Promise<ScenarioThemeDto> {
+  try {
+    const archiveData: UpdateScenarioThemeDto = {
+      ...themeData,
+      status: 'archived'
+    }
+
+    const response = await api.patch(`/admin/scenario-themes`, archiveData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error archiving scenario theme with ID ${themeData.id}:`, error);
+    throw error;
+  }
+}
 
 /**
  * Fetches a paginated list og scenario theme previews. 

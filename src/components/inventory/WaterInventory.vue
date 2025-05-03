@@ -15,13 +15,18 @@
       ]"
     >
       <!-- Product overview -->
-      <div class="grid grid-cols-4 items-center">
-        <div class="font-medium">
+      <div class="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-2">
+        <div class="font-medium text-base">
           <span>💧</span> {{ item?.name }}
         </div>
-        <div class="text-center">{{ getTotalAmount(item) }}</div>
-        <div class="text-right">
-          <button @click="toggleEdit(index)" class="text-sm text-primary underline">
+        <div class="text-left sm:text-left text-sm text-muted-foreground">
+          {{ getTotalAmount(item) }}
+        </div>
+        <div class="text-right sm:text-center">
+          <button
+            @click="toggleEdit(index)"
+            class="text-sm text-primary hover:underline hover:cursor-pointer"
+          >
             {{ item?.edit ? 'Lagre' : 'Rediger' }}
           </button>
         </div>
@@ -31,40 +36,46 @@
         <div
           v-for="(batch, bIndex) in item.batches"
           :key="bIndex"
-          class="grid grid-cols-5 gap-3 items-center"
+          class="flex flex-col sm:grid sm:grid-cols-5 gap-3 items-center"
         >
           <input
             v-model="batch.amount"
             type="number"
-            class="bg-input text-foreground py-2 px-3 text-center rounded-md"
+            class="bg-input text-foreground py-2 px-3 text-center rounded-md w-full"
             placeholder="Mengde"
           />
-          <div class="text-sm text-center">{{ item.unit === 'l' ? 'liter' : item.unit }}</div>
+          <div class="text-sm text-center sm:text-left">{{ item.unit === 'l' ? 'liter' : item.unit }}</div>
           <template v-if="batch.isNew">
             <input
               v-model="batch.expires"
-              class="bg-input text-foreground py-2 px-3 text-center rounded-md"
+              class="bg-input text-foreground py-2 px-3 text-center rounded-md w-full"
               placeholder="Utløp"
               :readonly="true"
             />
           </template>
           <template v-else>
-            <div class="text-sm text-center">{{ batch.expires }}</div>
+            <div class="text-sm text-center sm:text-left w-full">{{ batch.expires }}</div>
           </template>
           <button
             v-if="batch.isNew"
-            @click="() => { console.log('WaterInventory: Save batch clicked', { productIndex: index, batchIndex: bIndex, batch }); saveBatch(index, bIndex); }"
-            class="text-sm text-primary underline"
+            @click="() => { saveBatch(index, bIndex); }"
+            class="text-sm text-primary underline w-full sm:w-auto"
           >
             Lagre
           </button>
-          <button @click="() => { console.log('WaterInventory: Delete batch clicked', { productIndex: index, batchIndex: bIndex, batch }); removeBatch(index, bIndex); }" class="text-sm text-destructive underline">
+          <button
+            @click="() => { removeBatch(index, bIndex); }"
+            class="text-sm text-destructive underline w-full sm:w-auto"
+          >
             Slett
           </button>
         </div>
         <!-- Add new batch -->
-        <div class="flex justify-between items-center mt-2">
-          <button @click="addBatch(index)" class="text-sm text-accent hover:underline">
+        <div class="flex flex-col sm:flex-row justify-between items-center mt-2 gap-2">
+          <button
+            @click="addBatch(index)"
+            class="text-sm text-primary hover:underline"
+          >
             + Legg til
           </button>
           <button
@@ -77,19 +88,24 @@
         </div>
       </div>
     </div>
-    <!-- Add new product type -->
-    <div class="pt-6 space-y-2">
+    <!-- Add New Product -->
+    <div class="pt-6 space-y-4">
       <h2 class="text-lg font-semibold">Legg til</h2>
-      <div class="grid grid-cols-4 gap-4 items-center">
-        <input
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
+        <Input
           v-model="newProductName"
           placeholder="Produktnavn"
-          class="bg-input text-foreground py-2 px-3 rounded-md"
         />
-        <div class="bg-input text-foreground py-2 px-3 rounded-md text-center select-none">liter</div>
-        <button @click="addProduct" class="text-sm text-primary underline">
+        <div class="bg-input text-foreground py-2 px-3 rounded-md text-center select-none">
+          liter
+        </div>
+        <Button
+          variant="link"
+          @click="addProduct"
+          class="text-sm text-primary hover:underline"
+        >
           + Legg til
-        </button>
+        </Button>
       </div>
     </div>
     <!-- Error popup for duplicate item -->
@@ -110,11 +126,15 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { format } from 'date-fns';
 import { inventoryService } from '@/services/InventoryService';
 import { useProductStore } from '@/stores/ProductStore';
+import { useI18n } from 'vue-i18n';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const props = defineProps({
   searchText: {

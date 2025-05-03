@@ -9,6 +9,7 @@
   "login": {
     "login": "Logg inn",
     "signup": "Registrer",
+    "logout": "Logg ut",
     "forgot-password": "Glemt passord?",
     "re-enter": "Skriv inn på nytt",
     "consent": "Jeg godtar",
@@ -30,11 +31,29 @@
     "2fa-login-title": "To-trinnsverifisering",
     "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn."
   },
+  "reset-password": {
+    "title": "Tilbakestill passord",
+    "code": "Verifiseringskode",
+    "new-password": "Nytt passord",
+    "confirm-new-password": "Bekreft passord",
+    "update-button": "Oppdater passord",
+    "email-sent": "E-post sendt",
+    "password-updated": "Passord oppdatert",
+    "password-update-failed": "Kunne ikke oppdatere passord",
+    "token-required": "Verifiseringskode er påkrevd",
+    "password-req": "Passord må være minst 8 tegn, a-å, A-Å, 0-9 og spesialtegn",
+    "password-req-match": "Passordene må samsvare",
+    "invalid-token": "Ugyldig verifiseringskode",
+    "validation-error": "Valideringsfeil",
+    "unexpected-error": "Uventet feil"
+  },
   "admin": {
     "administrate": "Administrer",
     "make-new-event": "Legg til en ny hendelse",
     "make-new-POI": "Legg til et nytt interessepunkt",
     "make-new-activity": "Lag en ny aktivitet",
+    "make-new-scenario-theme": "Legg til et nytt scenariotema",
+    "edit-scenario-theme": "Rediger scenariotemaer",
     "edit-event": "Rediger en pågående hendelse",
     "super-admin": "Super Admin",
     "current-admins": "Nåværende adminbrukere",
@@ -48,6 +67,39 @@
     "are-you-sure": "Er du sikker på at du vil fortsette?",
     "give-rights": "Gi en eksisterende bruker admin rettigheter.",
     "if-continue": "Hvis du fortsetter vil du gi admin rettigheter til kontoen med denne eposten",
+    "scenario-theme-details": "Scenariotema detaljer",
+    "scenario-theme-description": "Opprett et nytt scenariotema som kan knyttes til krisehendelser",
+    "scenario-theme-name": "Temanavn",
+    "scenario-theme-name-placeholder": "Skriv inn temanavn",
+    "scenario-theme-name-description": "Et klart, konsist navn for scenariotemaet",
+    "scenario-theme-description-label": "Beskrivelse",
+    "scenario-theme-description-placeholder": "Skriv inn en detaljert beskrivelse av dette scenariotemaet",
+    "scenario-theme-description-help": "Gi en omfattende beskrivelse av hva dette scenariotemaet dekker",
+    "scenario-theme-instructions": "Instruksjoner",
+    "scenario-theme-instructions-placeholder": "Skriv inn detaljerte instruksjoner for håndtering av denne typen krise",
+    "scenario-theme-instructions-help": "Gi trinnvise instruksjoner for brukere å følge under denne typen krise",
+    "markdown-supported": "Markdown-formatering støttes",
+    "create-scenario-theme": "Opprett scenariotema",
+    "scenario-theme-created": "Scenariotema opprettet",
+    "scenario-theme-created-description": "Scenariotemaet har blitt opprettet",
+    "back-to-admin": "Tilbake til admin-panelet",
+    "scenario-theme-name-min-length": "Navn må være minst 3 tegn",
+    "scenario-theme-name-max-length": "Navn kan ikke overstige 100 tegn",
+    "scenario-theme-description-min-length": "Beskrivelse må være minst 10 tegn",
+    "scenario-theme-description-max-length": "Beskrivelse kan ikke overstige 1000 tegn",
+    "scenario-theme-instructions-min-length": "Instruksjoner må være minst 10 tegn",
+    "scenario-theme-instructions-max-length": "Instruksjoner kan ikke overstige 5000 tegn",
+    "edit-scenario-themes": "Rediger scenariotemaer",
+    "select-scenario-theme": "Velg et scenariotema å redigere",
+    "no-scenario-themes": "Ingen scenariotemaer funnet",
+    "loading-scenario-themes": "Laster scenariotemaer...",
+    "update-scenario-theme": "Oppdater scenariotema",
+    "delete-scenario-theme": "Slett scenariotema",
+    "confirm-delete-scenario-theme": "Er du sikker på at du vil slette dette scenariotemaet? Denne handlingen kan ikke angres.",
+    "scenario-theme-updated": "Scenariotema oppdatert",
+    "scenario-theme-updated-description": "Scenariotemaet har blitt oppdatert",
+    "scenario-theme-deleted": "Scenariotema slettet",
+    "scenario-theme-deleted-description": "Scenariotemaet har blitt slettet",
     "basic-info": "Grunnleggende informasjon",
     "poi-title-placeholder": "Skriv inn tittel på interessepunktet",
     "select-poi-type": "Velg hvilken type interessepunkt dette skal være",
@@ -99,7 +151,10 @@
     "login-failed": "Innlogging mislyktes. Vennligst sjekk legitimasjonen din.",
     "passwords-do-not-match": "Passordene stemmer ikke overens.",
     "registration-failed": "Registrering mislyktes. Vennligst prøv igjen.",
-    "no-news-available": "Ingen nyheter tilgjengelig"
+    "no-news-available": "Ingen nyheter tilgjengelig",
+    "invalid-email": "Ugyldig e-postadresse",
+    "unexpected-error": "Uventet feil - vennligst prøv igjen senere.",
+    "network-error": "Ingen nettverkstilkobling. Vennligst sjekk internettforbindelsen din."
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",
@@ -120,6 +175,7 @@
     "active_events": "Aktive hendelser",
     "other_events": "Andre aktive hendelser",
     "more_events": "+ {count} flere hendelser",
+    "no_more_events": "Ingen flere hendelser å laste",
     "error_loading_events": "Kunne ikke laste krisehendelser",
     "details": "Krisedetaljer",
     "status_history": "Hendelseshistorikk",
@@ -160,13 +216,16 @@
   "navigation": {
     "home": "Hjem",
     "language": "Språk",
+    "profile": "Profil",
     "before-crisis-page": "Før en krise",
     "activities": "Aktiviteter",
     "admin-panel": "Admin side",
     "new-event": "Ny hendelse",
     "new-POI": "Nytt interessepunkt",
     "new-activity": "Ny aktivivtet",
-    "go-back": "Tilbake"
+    "go-back": "Tilbake",
+    "light-mode": "Lys modus",
+    "dark-mode": "Mørk modus"
   },
   "time": {
     "after": "etter",
@@ -429,6 +488,7 @@
     "learnMoreTopic": "Klikk for å lære mer om dette temaet."
   },
   "settings": {
+    "settings": "Innstillinger",
     "title": "Innstillinger",
     "tabs": {
       "account": "Konto",
@@ -436,6 +496,7 @@
     },
     "account": {
       "title": "Kontoinnstillinger",
+      "myAccount": "Min konto",
       "subtitle": "Konto",
       "description": "Gjør endringer i kontoen din her. Klikk lagre når du er ferdig.",
       "fullName": "Fullt navn",
@@ -481,7 +542,7 @@
     "date": "Dato for når hendelsen først inntraff.",
     "successfully": "Hendelsen er opprettet",
     "success-message": "Hendelsen din er lagt til i systemet.",
-    "success-added":"har blitt lagt til.",
+    "success-added": "har blitt lagt til.",
     "go-to-admin": "Gå til Admin-panelet",
     "category": "Velg hvilken type hendelse dette er, f.eks. flom, jordskjelv eller strømbrudd...",
     "errors": {
@@ -549,7 +610,7 @@
       "description": "Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?",
       "successfully": "Interessepunktet er opprettet",
       "success-message": "Interessepunktet ditt er lagt til i systemet.",
-      "success-added":"har blitt lagt til.",
+      "success-added": "har blitt lagt til.",
       "go-to-admin": "Gå til Admin-panelet",
       "description-placeholder": "Beskrivelse"
     },
@@ -593,7 +654,7 @@
     "invite-household": "Inviter husholdning",
     "switch-group": "Bytt gruppe",
     "share-from-inventory": "Del varer fra ditt lager",
-    "go-to-groups" : "Gå til dine grupper →"
+    "go-to-groups": "Gå til dine grupper →"
   },
   "scenarioThemes": {
     "title": "Krisescenario-temaer",
@@ -609,7 +670,9 @@
     "themeNotFound": "Scenariotema ikke funnet"
   },
   "common": {
-    "back": "Tilbake"
+    "back": "Tilbake",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "confirm": "Bekreft"
   }
-
 }

@@ -87,7 +87,8 @@ export default defineComponent({
     const activeRouteMarker = ref<L.Marker | null>(null);
     const tempMarker = ref<L.Marker | null>(null);
     const markersMap = ref<Map<string | number, POIMarker>>(new Map()); // Store markers by POI ID for easier reference
-    const crisisCircles = ref<L.Circle[]>([]); // Store crisis event circles for management
+    // Store crisis event layers for management
+    const crisisLayers = ref<L.Layer[]>([]);
 
     // Translation strings with fallbacks
     const translatedStrings: TranslatedStrings = {
@@ -236,6 +237,7 @@ export default defineComponent({
     // Force map refresh
     const forceMapRefresh = (): void => {
       if (map.value) {
+        // Ensure the map container has proper dimensions
         map.value.invalidateSize({ animate: false });
 
         // Update user marker position if it exists
@@ -250,6 +252,25 @@ export default defineComponent({
           if (waypoints && waypoints.length >= 2 && waypoints[1].latLng) {
             activeRouteMarker.value.setLatLng(waypoints[1].latLng);
           }
+        }
+
+        // Refresh crisis markers positions
+        crisisLayers.value.forEach(layer => {
+          // For circle layers
+          if (layer instanceof L.Circle) {
+            const center = layer.getLatLng();
+            layer.setLatLng(center);
+          }
+          // For marker layers
+          else if (layer instanceof L.Marker) {
+            const position = layer.getLatLng();
+            layer.setLatLng(position);
+          }
+        });
+
+        // Refresh marker clusters
+        if (markerClusterGroup.value) {
+          markerClusterGroup.value.refreshClusters();
         }
       }
     };
@@ -606,109 +627,140 @@ export default defineComponent({
       }
     }
 
-    // ENHANCED: Update crisis events with better management and interactivity
     function updateCrisisEvents(events: CrisisEvent[]): void {
       if (!map.value) {
         console.warn("Cannot update crisis events: map not initialized");
         return;
       }
 
-      console.log(`Updating crisis events. Count: ${events?.length ?? 0}`);
-
-      // Clear existing crisis circles
+      // 1) clear old
       clearCrisisEvents();
 
-      // If no events, just return after clearing
-      if (!events || events.length === 0) {
-        console.log("No crisis events to display");
-        return;
-      }
+      // 2) style lookup
+      const LEVEL_STYLES: Record<number, { base: string; border: string }> = {
+        1: { base: '#a6d96a', border: '#333333' },
+        2: { base: '#fdae61', border: '#333333' },
+        3: { base: '#f46d43', border: '#333333' }
+      };
+      const bounds = L.latLngBounds([]);
 
-      // Add new crisis circles
+      // Create a layerGroup to hold all crisis elements for better management
+      const crisisLayerGroup = L.layerGroup();
+
+      // 3) draw each active
       events.forEach(event => {
-        // Skip if missing required properties
-        if (!event.latitude || !event.longitude || event.level === undefined) {
-          console.warn(`Skipping invalid crisis event:`, event);
+        // Skip if event is explicitly marked as inactive
+        if (event.isActive === false) return;
+
+        // Skip if required properties are missing
+        if (event.latitude === undefined || event.longitude === undefined || event.level === undefined) {
+          console.warn("Skipping crisis event with missing required properties:", event);
           return;
         }
 
-        // Skip if not active (if isActive property exists and is false)
-        if (event.isActive === false) {
+        const lat = typeof event.latitude  === 'string' ? parseFloat(event.latitude)  : event.latitude;
+        const lon = typeof event.longitude === 'string' ? parseFloat(event.longitude) : event.longitude;
+        if (!isFinite(lat) || !isFinite(lon)) {
+          console.warn("Skipping invalid crisis event coords:", event);
           return;
         }
+
+        const lvl = LEVEL_STYLES[event.level] ? event.level : 3;
+        const { base, border } = LEVEL_STYLES[lvl];
+        const radius = lvl * 1000;
+        const fillOpacity = 0.4;
 
         try {
-          // Calculate radius based on level
-          const radius = event.level * 1000; // 1km, 2km, or 3km based on level
-
-          // Set color based on level
-          const color = event.level === 1 ? 'yellow' :
-            event.level === 2 ? 'orange' : 'red';
-
-          // Create circle
-          const circle = L.circle([event.latitude, event.longitude], {
+          // a) main circle with pastel fill + dark border
+          const circle = L.circle([lat, lon], {
             radius,
-            color,
-            fillColor: color,
-            fillOpacity: 0.2,
-            weight: 2,
-            className: `crisis-level-${event.level}`
+            fillColor:   base,
+            fillOpacity: fillOpacity,
+            color:       border,
+            weight:      3,
+            pane: 'overlayPane', // Ensure it's in the correct pane
+            bubblingMouseEvents: false // Prevent event bubbling issues
           });
 
-          // Create popup content
-          let popupContent = `
-            <div class="crisis-popup">
-              <h3>${event.name}</h3>
-              ${event.description ? `<p>${event.description}</p>` : ''}
-              <p class="crisis-level level-${event.level}">
-                Alert Level: ${event.level}
-              </p>
-              <p class="crisis-time">
-                Started: ${new Date(event.startTime).toLocaleString()}
-              </p>
-            </div>
-          `;
+          // Add circle to the layer group
+          circle.addTo(crisisLayerGroup);
+          crisisLayers.value.push(circle);
 
-          // Add popup and tooltip
-          circle.bindPopup(popupContent);
-          circle.bindTooltip(event.name, {
-            permanent: false,
-            direction: 'top',
-            className: `crisis-tooltip level-${event.level}`
+          // b) square badge
+          const badge = L.marker([lat, lon], {
+            interactive: false,
+            icon: L.divIcon({
+              className:  'crisis-level-box',
+              html:       `<span>${lvl}</span>`,
+              iconSize:   [24, 24],
+              iconAnchor: [12, 12]
+            }),
+            pane: 'markerPane', // Ensure it's in the marker pane
+            zIndexOffset: 1000 // Keep it above other markers
           });
 
-          // Add to map and store reference
-          // Here's the fix: Cast map.value to L.Map explicitly before adding the circle
-          if (map.value) {
-            circle.addTo(map.value as L.Map);
-            crisisCircles.value.push(circle);
-          }
+          // Add badge to the layer group
+          badge.addTo(crisisLayerGroup);
+          crisisLayers.value.push(badge);
 
-          console.log(`Added crisis circle for "${event.name}" at [${event.latitude}, ${event.longitude}]`);
+          // Add point to bounds
+          bounds.extend([lat, lon]);
         } catch (error) {
-          console.error(`Error adding crisis event circle:`, error, event);
+          console.error("Error adding crisis event:", error);
         }
       });
 
-      // Force map refresh to ensure circles are properly displayed
-      forceMapRefresh();
+      // Add the entire layer group to the map at once
+      if (map.value && crisisLayerGroup) {
+        crisisLayerGroup.addTo(map.value as L.Map);
+      }
+
+      // 4) force a refresh with a slight delay to ensure map is ready
+      setTimeout(() => {
+        if (map.value) {
+          map.value.invalidateSize({ animate: false });
+
+          // Only fit bounds if we have valid crisis events
+          if (bounds.isValid() && bounds.getNorthEast().distanceTo(bounds.getSouthWest()) > 0) {
+            try {
+              map.value.fitBounds(bounds.pad(0.2), {
+                animate: false,
+                maxZoom: 15,
+                duration: 0 // No animation duration
+              });
+            } catch (error) {
+              console.error("Error fitting bounds:", error);
+            }
+          }
+
+          // Final refresh to ensure everything is positioned correctly
+          forceMapRefresh();
+        }
+      }, 100);
     }
 
-    // ADDED: Clear all crisis events from the map
+    // Clear all crisis events from the map
     function clearCrisisEvents(): void {
       if (!map.value) return;
 
-      console.log(`Clearing ${crisisCircles.value.length} crisis circles`);
+      console.log(`Clearing ${crisisLayers.value.length} crisis layers`);
 
-      // Remove each circle from the map
-      crisisCircles.value.forEach(circle => {
-        if (circle) {
-          circle.remove();
+      // Remove each layer from the map safely
+      crisisLayers.value.forEach(layer => {
+        try {
+          if (map.value && layer) {
+            // Check if the layer is still on the map
+            if (map.value.hasLayer(layer as L.Layer)) {
+              map.value.removeLayer(layer as L.Layer);
+            }
+          }
+        } catch (error) {
+          console.error("Error removing crisis layer:", error);
         }
       });
 
       // Reset the array
-      crisisCircles.value = [];
+      crisisLayers.value = [];
     }
 
     // Watch for POI changes
@@ -728,6 +780,22 @@ export default defineComponent({
       console.log("Crisis events prop changed, updating map");
       updateCrisisEvents(newEvents);
     }, { deep: true, immediate: false });
+
+    // Watch for map container resize events
+    watch(() => document.getElementById(mapContainerId)?.clientWidth, () => {
+      console.log("Map container size changed");
+      setTimeout(() => {
+        forceMapRefresh();
+      }, 100);
+    });
+
+    // Watch for map container resize events
+    watch(() => document.getElementById(mapContainerId)?.clientHeight, () => {
+      console.log("Map container height changed");
+      setTimeout(() => {
+        forceMapRefresh();
+      }, 100);
+    });
 
     // Cleanup on component unmount
     onBeforeUnmount(() => {
@@ -893,5 +961,21 @@ export default defineComponent({
 
 :deep(.leaflet-routing-container) {
   z-index: 999 !important;
+}
+
+:deep(.crisis-level-box span) {
+  display:           flex;
+  align-items:       center;
+  justify-content:   center;
+  width:             24px;
+  height:            24px;
+  background:        rgba(0, 0, 0, 0.7);
+  color:             #fff;
+  border:            2px solid #fff;
+  border-radius:     4px;         /* 0 for perfect square */
+  font-weight:       bold;
+  font-size:         0.9rem;
+  text-shadow:       0 0 1px black;
+  pointer-events:    none;
 }
 </style>

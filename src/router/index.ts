@@ -25,6 +25,12 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
   },
   {
+    path: '/reset-password/:token',
+    name: 'ResetPassword',
+    component: () => import('@/views/ResetPasswordView.vue'),
+    props: true
+  },
+  {
     path: '/notifications',
     name: 'Notifications',
     component: () => import('@/views/NotificationView.vue'),
@@ -79,11 +85,6 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/shelter-frontpage',
-    name: 'shelter-frontpage',
-    component: () => import('@/components/shelter/CategoryPage.vue')
-  },
-  {
     path: '/medicine-inventory',
     name: 'MedicineInventory',
     component: () => import('@/views/MedicineInventory.vue'),
@@ -102,6 +103,12 @@ const routes = [
     meta: { requiresAdmin: true },
   },
   {
+    path: '/add-new-scenario-theme',
+    name: 'AddNewScenarioTheme',
+    component: () => import('@/views/AdminAddNewScenarioTheme.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
     path: '/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
@@ -111,6 +118,12 @@ const routes = [
     path: '/edit-event',
     name: 'EditEvent',
     component: () => import('@/views/AdminEditEvent.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/edit-scenario-theme',
+    name: 'EditScenarioTheme',
+    component: () => import('@/views/AdminEditScenarioTheme.vue'),
     meta: { requiresAdmin: true },
   },
   {
@@ -187,7 +200,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications'];
+  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
 
   // Allow immediate navigation if the target route is public
   if (publicRoutes.includes(to.name as string)) { //

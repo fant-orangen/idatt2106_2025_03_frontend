@@ -9,6 +9,7 @@
   "login": {
     "login": "Login",
     "signup": "Sign Up",
+    "logout": "Logout",
     "forgot-password": "Forgot Password?",
     "re-enter": "Re-enter",
     "consent": "I agree to",
@@ -29,11 +30,29 @@
     "2fa-login-title": "Two-Step Verification",
     "2fa-login-description": "Enter the verification code sent to your email to complete the login process."
   },
+  "reset-password": {
+    "title": "Reset Password",
+    "code": "Verification Code",
+    "new-password": "New Password",
+    "confirm-new-password": "Confirm Password",
+    "update-button": "Update Password",
+    "email-sent": "Email sent",
+    "password-updated": "Password Updated",
+    "password-update-failed": "Failed to Update Password",
+    "token-required": "Verification code is required",
+    "password-req-req": "Password must be at least 8 characters, contain a-z, A-Z, 0-9, and special characters",
+    "password-req-match": "Passwords must match",
+    "invalid-token": "Invalid verification code",
+    "validation-error": "Validation error",
+    "unexpected-error": "Unexpected error"
+  },
   "admin": {
     "administrate": "Administrate",
     "make-new-event": "Add a new event",
     "make-new-POI": "Add a new point of interest",
     "make-new-activity": "Make a new activity",
+    "make-new-scenario-theme": "Add a new scenario theme",
+    "edit-scenario-theme": "Edit scenario themes",
     "edit-event": "Edit a current event",
     "super-admin": "Super Admin",
     "current-admins": "Current admin users",
@@ -47,6 +66,39 @@
     "are-you-sure": "Are you sure you want to continue?",
     "give-rights": "Give admin rights to an existing user.",
     "if-continue": "If you continue you will give admin rights to the account with this email address",
+    "scenario-theme-details": "Scenario Theme Details",
+    "scenario-theme-description": "Create a new scenario theme that can be associated with crisis events",
+    "scenario-theme-name": "Theme Name",
+    "scenario-theme-name-placeholder": "Enter theme name",
+    "scenario-theme-name-description": "A clear, concise name for the scenario theme",
+    "scenario-theme-description-label": "Description",
+    "scenario-theme-description-placeholder": "Enter a detailed description of this scenario theme",
+    "scenario-theme-description-help": "Provide a comprehensive description of what this scenario theme covers",
+    "scenario-theme-instructions": "Instructions",
+    "scenario-theme-instructions-placeholder": "Enter detailed instructions for handling this type of crisis",
+    "scenario-theme-instructions-help": "Provide step-by-step instructions for users to follow during this type of crisis",
+    "markdown-supported": "Markdown formatting is supported",
+    "create-scenario-theme": "Create Scenario Theme",
+    "scenario-theme-created": "Scenario Theme Created",
+    "scenario-theme-created-description": "The scenario theme has been successfully created",
+    "back-to-admin": "Back to Admin Panel",
+    "scenario-theme-name-min-length": "Name must be at least 3 characters",
+    "scenario-theme-name-max-length": "Name cannot exceed 100 characters",
+    "scenario-theme-description-min-length": "Description must be at least 10 characters",
+    "scenario-theme-description-max-length": "Description cannot exceed 1000 characters",
+    "scenario-theme-instructions-min-length": "Instructions must be at least 10 characters",
+    "scenario-theme-instructions-max-length": "Instructions cannot exceed 5000 characters",
+    "edit-scenario-themes": "Edit Scenario Themes",
+    "select-scenario-theme": "Select a scenario theme to edit",
+    "no-scenario-themes": "No scenario themes found",
+    "loading-scenario-themes": "Loading scenario themes...",
+    "update-scenario-theme": "Update Scenario Theme",
+    "delete-scenario-theme": "Delete Scenario Theme",
+    "confirm-delete-scenario-theme": "Are you sure you want to delete this scenario theme? This action cannot be undone.",
+    "scenario-theme-updated": "Scenario Theme Updated",
+    "scenario-theme-updated-description": "The scenario theme has been successfully updated",
+    "scenario-theme-deleted": "Scenario Theme Deleted",
+    "scenario-theme-deleted-description": "The scenario theme has been successfully deleted",
     "basic-info": "Basic Information",
     "poi-title-placeholder": "Enter title for the point of interest",
     "select-poi-type": "Select the type of point of interest this should be",
@@ -98,7 +150,10 @@
     "login-failed": "Login failed. Please check your credentials.",
     "passwords-do-not-match": "Passwords do not match.",
     "registration-failed": "Registration failed. Please try again.",
-    "no-news-available": "No news available"
+    "no-news-available": "No news available",
+    "invalid-email": "Invalid email address",
+    "unexpected-error": "An unexpected error occurred. Please try again later.",
+    "network-error": "Network error. Please check your internet connection."
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",
@@ -159,13 +214,16 @@
   "navigation": {
     "home": "Home",
     "language": "Language",
+    "profile": "Profile",
     "before-crisis-page": "Before a crisis",
     "activities": "Activities",
     "admin-panel": "Admin panel",
     "new-event": "New event",
     "new-POI": "New point of interest",
     "new-activity": "New activity",
-    "go-back": "Go back"
+    "go-back": "Go back",
+    "light-mode": "Lightmode",
+    "dark-mode": "Darkmode"
   },
   "time": {
     "after": "after",
@@ -435,6 +493,7 @@
     "learnMoreTopic": "Click to learn more about this topic."
   },
   "settings": {
+    "settings": "Settings",
     "title": "Settings",
     "tabs": {
       "account": "Account",
@@ -442,6 +501,7 @@
     },
     "account": {
       "title": "Account Settings",
+      "myAccount": "My Account",
       "subtitle": "Account",
       "description": "Make changes to your account here. Click save when you're done.",
       "fullName": "Full name",
@@ -601,7 +661,7 @@
     "switch-group": "Switch group",
     "share-from-inventory": "Share items from your inventory",
     "go-to-groups": "Go to your groups →"
-},
+  },
   "scenarioThemes": {
     "title": "Crisis Scenario Themes",
     "noThemesFound": "No scenario themes found",
@@ -616,7 +676,9 @@
     "themeNotFound": "Scenario theme not found"
   },
   "common": {
-    "back": "Back"
+    "back": "Back",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm"
   }
-
 }

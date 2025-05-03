@@ -28,6 +28,7 @@ export interface CrisisEvent {
   latitude: number;
   longitude: number;
   level: number;
+  radius: number;
   startTime: string;
   isActive?: boolean;
   createdBy?: string;
