@@ -207,6 +207,11 @@ function goToPage(route: string) {
     <!-- Right Section: Desktop Navbar -->
     <div class="navbar-left hidden md:flex items-center gap-4">
       <!-- Public Links -->
+      <RouterLink to="/games">
+        <Button variant="ghost" class="hover:bg-input">
+          {{ $t('gamification.games') }}
+        </Button>
+      </RouterLink>
       <RouterLink v-if="!userStore.loggedIn" to="/login" as-child>
         <Button variant="ghost" class="hover:bg-input">
           {{ $t('login.login') }}
