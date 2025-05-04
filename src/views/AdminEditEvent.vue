@@ -253,16 +253,15 @@
 
 <script setup lang="ts">
 import { updateCurrentEvent, deactivateCurrentEvent, getCurrentEvents } from '@/services/api/AdminServices'
-import type { CrisisEventDto, UpdateCrisisEventDto } from '@/models/CrisisEvent.ts';
+import type { CrisisEventDto, UpdateCrisisEventDto } from '@/models/CrisisEvent.ts'
 import { fetchTheCrisisEventById } from '@/services/CrisisEventService'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query'
 import { getScenarioThemePreview } from '@/services/api/ScenarioThemeService'
-import { type ScenarioThemePreview } from '@/models/ScenarioTheme'
-import type { Page } from '@/types/Page';
+import type { ScenarioThemePreview } from '@/models/ScenarioTheme'
 import { ref, onMounted, watch, computed, nextTick } from 'vue'
 import { toast } from 'vue-sonner'
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
-import {formatDateFull} from '@/utils/dateUtils.ts';
+import {formatDateFull} from '@/utils/dateUtils.ts'
 import { useI18n } from 'vue-i18n'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
@@ -408,7 +407,7 @@ function setUpFormSchema() {
 		})
 	);
 	form.value = useForm({ validationSchema: formSchema });
-	onSubmit.value = form.value.handleSubmit(handleFormSubmit)
+	onSubmit.value = form.value.handleSubmit(handleFormSubmit);
 }
 
 /**
@@ -447,14 +446,13 @@ async function handleFormSubmit(values: any) {
 		console.error('No event selected');
 		return;
 	}
-	//only the updated fields should be added to updatedEvent, non updated fields should stay
 	updatedEvent.value = {
-		name: selectedEvent.value.name, // only change the edited fields
+		name: selectedEvent.value.name, 
 		latitude: values.epicenterLatitude ?? selectedEvent.value.epicenterLatitude,
 		longitude: values.epicenterLongitude ?? selectedEvent.value.epicenterLongitude,
 		description: values.description ?? selectedEvent.value.description,
 		severity: values.severity ?? selectedEvent.value.severity,
-		scenarioThemeId: getScenarioId(values.category) ?? selectedEvent.value.scenarioThemeId,
+		scenarioThemeId: getScenarioId(values.category ?? '') ?? selectedEvent.value.scenarioThemeId,
 		radius: values.radius ?? selectedEvent.value.radius,
 	}
 	console.log('Oppdaterte event verdier til:', updatedEvent.value);
@@ -525,11 +523,25 @@ async function getCategories() {
 	try {
 		const response = await getScenarioThemePreview();
 		console.log('getting scenarios:', response);
-		scenarioPreviews.value = response;
-		allowedCategories.value = scenarioPreviews.value.map((s) => s.name);
-		console.log('allowedCategories: ', allowedCategories.value);
+		if (response && Array.isArray(response)) {
+			scenarioPreviews.value = response;
+			allowedCategories.value = scenarioPreviews.value.map((s) => s.name);
+			console.log('allowedCategories: ', allowedCategories.value);
+
+		} else if (response && response.content && Array.isArray(response.content)) {
+			scenarioPreviews.value = response.content;
+			allowedCategories.value = scenarioPreviews.value.map((s) => s.name);
+			console.log('allowedCategories: ', allowedCategories.value);
+
+		} else {
+			console.error('Unexpected response format for scenario themes, not an array', response);
+			scenarioPreviews.value = [];
+      allowedCategories.value = [];
+		}
 	} catch (error) {
 		console.error('Something happened when fetching categories: ', error);
+		scenarioPreviews.value = []; // saetting empty arrays to prevent potential runtime fails
+    allowedCategories.value = [];
 	}
 }
 
@@ -538,7 +550,7 @@ function getScenarioName(id: number): string {
 		console.log('Fant ikke scenariotypen...')
 		return 'undefined';
 	} else {
-		let name;
+		let name: string | undefined;
 		for (let i = 0; i < scenarioPreviews.value.length; i++) {
 			if (scenarioPreviews.value[i].id == id) {
 				name = scenarioPreviews.value[i].name;
@@ -547,15 +559,15 @@ function getScenarioName(id: number): string {
 			}
 		}
 		console.log('test',name);
-		return name ? name : 'undefined';
+		return name ? name : 'undefined'; 
 	}
 }
 
-function getScenarioId(category: string) {
+function getScenarioId(category: string): number | null {
 	if (!scenarioPreviews.value) {
 		return null;
 	}
-	let scenario = null;
+	let scenario: ScenarioThemePreview | null = null;
 	for (let i = 0; i < scenarioPreviews.value.length; i++) {
 		if (scenarioPreviews.value[i].name == category) {
 			scenario = scenarioPreviews.value[i];
