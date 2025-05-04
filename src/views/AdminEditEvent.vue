@@ -52,7 +52,7 @@
 						<div class="text-center p-4">Laster...</div>
 					</template>
 					<template #end-message>
-						<div class="text-center p-4 text-muted">Alle hendelser er lastet inn</div>
+						<div class="text-center p-4">Alle hendelser er lastet inn</div>
 					</template>
 				</InfiniteScroll>
 			</CardContent>
@@ -159,7 +159,7 @@
 								<FormControl>
 									<Select v-bind="field">
 										<SelectTrigger style="cursor: pointer;">
-											<SelectValue :placeholder="$t('add-event-info.crisis-level.' +  field.value)"/>
+											<SelectValue :class="['severity-tag', field.value]">{{ $t('add-event-info.crisis-level.' + field.value) }}</SelectValue>
 										</SelectTrigger>
 										<SelectContent>
 											<SelectGroup>
@@ -259,7 +259,7 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query'
 import { getScenarioThemePreview } from '@/services/api/ScenarioThemeService'
 import { type ScenarioThemePreview } from '@/models/ScenarioTheme'
 import type { Page } from '@/types/Page';
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, nextTick } from 'vue'
 import { toast } from 'vue-sonner'
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
 import {formatDateFull} from '@/utils/dateUtils.ts';
@@ -364,7 +364,7 @@ async function selectEvent(index: number) {
  * When the component is loaded, the events saved will be displayed automatically.
  * Awaits response from fetchAllCrisisEvents() from backend API.
  */
-onMounted(async () => {
+onMounted( () => {
 	fetchNextPage();
 	try {
 		getCategories();
@@ -391,7 +391,7 @@ function setUpFormSchema() {
 				.min(1, t('add-event-info.errors.radius'))
 				.max(10000, t('add-event-info.errors.radius'))),
 		severity: z.enum(["green", "yellow", "red"]),
-		category: z.string().refine(val => allowedCategories.value.includes(val),'add-event-info.errors.category'),
+		category: z.string().refine(val => allowedCategories.value.includes(val),'add-event-info.errors.category').optional(),
 		description: z.preprocess((val) => (val === '' ? undefined : val),
 				z.string()
 				.max(500, t('add-event-info.errors.description'))
@@ -415,12 +415,13 @@ function setUpFormSchema() {
  * Every time selectedEvent changes, like after selecting an event from the list,
  * the form will reset its values to the selected events' values.
  */
-watch(selectedEvent, (event)=> {
+watch(selectedEvent, async (event)=> {
 	if(event && form.value) {
 		if(scenarioPreviews.value.length === 0) {
 			console.warn('Scenarios not yet loaded in...');
 			return;
 		}
+		await nextTick();
 		scenarioName.value = getScenarioName(event.scenarioThemeId);
 		form.value.setValues({
 			epicenterLatitude: event.epicenterLatitude ?? '',
@@ -431,8 +432,6 @@ watch(selectedEvent, (event)=> {
 			category: scenarioName.value,
 			description: event.description ?? '',
 		});
-		
-		console.log('set values in watch')
 	} else {
 		scenarioName.value = undefined;
 	}
@@ -646,26 +645,21 @@ PErsonlig liker jeg ikke scroll i tekstbokser */
 	text-transform: uppercase;
 }
 .true {
-	width: fit-content;
 	background-color: blue;
 	color: white; /**endre fargene senere */
 }
 .false {
-	width: fit-content;
 	background-color: rgb(80, 173, 93);
 	color: white
 }
 
 .green {
-	width: fit-content;
 	background-color: var(--color-chart-2); /* should be green but is off*/
 }
 .yellow {
-	width: fit-content;
 	background-color: var(--color-chart-4); /*should be yellow on dark mode... */
 }
 .red {
-	width: fit-content;
 	background-color: var(--color-chart-1); /*should be red but is blue  */
 }
 
