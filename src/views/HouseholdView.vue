@@ -295,7 +295,7 @@ const openTransferAdminDialog = () => {
  */
 const selectMemberForAdminTransfer = async (member: any) => {
   try {
-    await promoteUserToAdmin(member.id!);
+    await promoteUserToAdmin(member.email);
     toast.success(t('household.admin-transferred-success'));
     showTransferAdminDialog.value = false;
     await refreshHouseholdData();
