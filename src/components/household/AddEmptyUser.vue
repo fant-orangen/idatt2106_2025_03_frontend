@@ -18,7 +18,7 @@
             <SelectContent>
               <SelectItem value="adult">{{ $t('household.adult') }}</SelectItem>
               <SelectItem value="child">{{ $t('household.child') }}</SelectItem>
-              <SelectItem value="pet">{{ $t('household.pet') }}</SelectItem>
+              <SelectItem value="dog">{{ $t('household.type_dog') }}</SelectItem>
             </SelectContent>
           </Select>
         </div>

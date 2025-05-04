@@ -13,16 +13,6 @@
             required
           ></Input>
         </div>
-        <!-- Personal message -->
-        <div>
-          <Label for="message">{{ $t('household.personal-message') }}</Label>
-          <Textarea
-            id="message"
-            v-model="message"
-            :placeholder="$t('household.optional-message')"
-            rows="3"
-          ></Textarea>
-        </div>
 
         <div class="flex justify-between">
           <!-- Status message -->
@@ -56,7 +46,6 @@ import { ref, defineEmits } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { inviteUserToHousehold } from '@/services/HouseholdService';
 
@@ -64,7 +53,6 @@ const { t } = useI18n();
 const emit = defineEmits(['invited', 'cancel']);
 
 const email = ref('');
-const message = ref('');
 const isLoading = ref(false);
 const status = ref('');
 const isSuccess = ref(false);
@@ -76,7 +64,6 @@ const inviteUser = async () => {
   status.value = '';
 
   try {
-    // Send invitation to the backend
     await inviteUserToHousehold(email.value);
 
     status.value = t('household.invitation-sent');
@@ -103,7 +90,6 @@ const cancel = () => {
 
 const resetForm = () => {
   email.value = '';
-  message.value = '';
 };
 </script>
 

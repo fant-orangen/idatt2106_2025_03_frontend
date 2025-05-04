@@ -73,11 +73,7 @@ const routes = [
     component: () => import('@/views/HouseholdView.vue'),
     meta: { requiresAuth: true },
   },
-  {
-    path: '/household/create',
-    name: 'CreateHousehold',
-    component: () => import('@/components/household/CreateNewHousehold.vue'),
-  },
+  // Removed CreateHousehold route as it's now handled in the Household view
   {
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
@@ -200,7 +196,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
+  const publicRoutes = ['Login', 'Register', 'Home', 'Household', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
 
   // Allow immediate navigation if the target route is public
   if (publicRoutes.includes(to.name as string)) { //
@@ -244,13 +240,13 @@ router.beforeEach(async (to, from, next) => {
 
         // If the user has no household (API returns null or 404), redirect them.
         if (!household) {
-          // Prevent an infinite redirect loop if already on the CreateHousehold page.
-          if (to.name === 'CreateHousehold') {
-            return next(false); // Block navigation
+          // Prevent an infinite redirect loop if already on the Household page.
+          if (to.name === 'Household') {
+            return next(); // Allow navigation to Household page
           }
-          console.log('User has no household, redirecting to CreateHousehold.');
-          // Redirect user to create or join a household.
-          return next({ name: 'CreateHousehold' });
+          console.log('User has no household, redirecting to Household page.');
+          // Redirect user to the Household page where they can see invitations and create options
+          return next({ name: 'Household' });
         }
 
     } catch (error) {

@@ -16,8 +16,10 @@
       <div v-if="isLoading" class="flex justify-center py-4">
         <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
-      <div v-else-if="invitations.length === 0" class="text-center py-4 text-muted-foreground">
-        {{ $t('household.no-invitations') }}
+      <div v-else-if="invitations.length === 0" class="flex flex-col items-center justify-center py-6 text-muted-foreground">
+        <MailXIcon class="h-10 w-10 mb-2 opacity-40" />
+        <p>{{ $t('household.no-invitations') }}</p>
+        <p class="text-xs mt-1">{{ $t('household.check-back-later') }}</p>
       </div>
       <div v-else class="space-y-3">
         <div
@@ -64,7 +66,7 @@ import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { RefreshCcwIcon, Loader2 } from 'lucide-vue-next';
+import { RefreshCcwIcon, Loader2, MailXIcon } from 'lucide-vue-next';
 import { fetchPendingInvitations, acceptInvitation, declineInvitation } from '@/services/InvitationService';
 import type { Invitation } from '@/models/Invitation';
 import { toast } from 'vue-sonner';
@@ -139,6 +141,7 @@ const declineInvite = async (token: string) => {
 
 // Load invitations when component mounts
 onMounted(async () => {
+  console.log('UserInvitations component mounted, refreshing invitations...');
   await refreshInvitations();
 });
 

@@ -7,27 +7,63 @@
           <UserIcon class="h-4 w-4" />
           <span>{{ t('household.transfer-admin-role') }}</span>
         </Button>
+        <DeleteHousehold v-if="isAdmin && hasHousehold" @deleted="refreshHouseholdData" />
         <Button v-if="hasHousehold" variant="outline" class="flex items-center gap-2" @click="showLeaveDialog = true">
           <LogOutIcon class="h-4 w-4" />
           <span>{{ t('household.leave-household') }}</span>
         </Button>
-        <Button variant="outline" class="flex items-center gap-2" @click="goToGroupPage">
+        <Button v-if="hasHousehold" variant="outline" class="flex items-center gap-2" @click="goToGroupPage">
           <UsersIcon class="h-4 w-4" />
           <span>{{ t('group.go-to-groups') }}</span>
         </Button>
       </div>
     </div>
 
-    <!-- Show when user has no household -->
-    <MemberNotInHousehold v-if="!hasHousehold" @household-updated="refreshHouseholdData" />
-
-    <!-- Show when user has a household -->
-    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <HouseholdMembers
-        :household-name="household?.name"
-        @member-selected="handleMemberSelected"
+    <!-- User has no household - Show pending invitations and create household option -->
+    <div v-if="!hasHousehold" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- User invitations -->
+      <UserInvitations
+        ref="userInvitationsRef"
+        @accepted="refreshHouseholdData"
+        @declined="refreshHouseholdData"
       />
-      <ShelterStore @view-beredskapslager="handleViewBeredskapslager" />
+
+      <!-- Create household options -->
+      <MemberNotInHousehold @household-updated="refreshHouseholdData" />
+    </div>
+
+    <!-- User has a household - Show household information -->
+    <div v-else>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Left column: Household members and management -->
+        <div class="space-y-6">
+          <!-- Household members -->
+          <HouseholdMembers
+            :household-name="household?.name"
+            @member-selected="handleMemberSelected"
+          />
+
+          <!-- Pending invitations (admin only) -->
+          <PendingInvitations v-if="isAdmin" ref="pendingInvitationsRef" />
+
+          <!-- User invitations (non-admin only) -->
+          <UserInvitations
+            v-if="!isAdmin"
+            ref="userInvitationsRef"
+            @accepted="refreshHouseholdData"
+            @declined="refreshHouseholdData"
+          />
+        </div>
+
+        <!-- Right column: Stats and shelter store -->
+        <div class="space-y-6">
+          <!-- Household stats -->
+          <HouseholdStats :members="allHouseholdMembers" />
+
+          <!-- Shelter store -->
+          <ShelterStore @view-beredskapslager="handleViewBeredskapslager" />
+        </div>
+      </div>
     </div>
 
     <!-- Leave Household Dialog -->
@@ -95,7 +131,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, nextTick } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button';
@@ -111,44 +147,77 @@ import { UsersIcon, LogOutIcon, UserIcon, ChevronRightIcon } from 'lucide-vue-ne
 import HouseholdMembers from '@/components/household/HouseholdMembers.vue';
 import ShelterStore from '@/components/household/ShelterStore.vue';
 import MemberNotInHousehold from '@/components/household/MemberNotInHousehold.vue';
+import UserInvitations from '@/components/household/UserInvitations.vue';
+import PendingInvitations from '@/components/household/PendingInvitations.vue';
+import HouseholdStats from '@/components/household/HouseholdStats.vue';
+import DeleteHousehold from '@/components/household/DeleteHousehold.vue';
+import { useUserStore } from '@/stores/UserStore';
 import {
   getCurrentHousehold,
   leaveHousehold,
   isCurrentUserHouseholdAdmin,
-  transferAdminRole,
-  getHouseholdMembers
+  promoteUserToAdmin,
+  getHouseholdMembers,
+  getEmptyHouseholdMembers,
+  removeEmptyMemberFromHousehold
 } from '@/services/HouseholdService';
 import { toast } from 'vue-sonner';
-import { useHouseholdStore } from '@/stores/HouseholdStore';
+// Using direct service calls instead of the store
 
 const { t } = useI18n()
 const router = useRouter()
-const householdStore = useHouseholdStore();
+const userStore = useUserStore();
+// Using direct service calls instead of the store
 const hasHousehold = ref(false);
 const household = ref<{ id: number; name: string } | null>(null);
 const isAdmin = ref(false);
 const showLeaveDialog = ref(false);
 const showTransferAdminDialog = ref(false);
+const showCreateForm = ref(false);
 const householdMembers = ref<any[]>([]);
+const emptyMembers = ref<any[]>([]);
+const userInvitationsRef = ref<InstanceType<typeof UserInvitations> | null>(null);
+const pendingInvitationsRef = ref<InstanceType<typeof PendingInvitations> | null>(null);
 
-// Types
-interface HouseholdMember {
-  id: number;
-  firstName: string;
-  lastName: string;
-}
+/**
+ * Current user from the user store.
+ */
+const currentUser = computed(() => userStore.profile);
 
-// Methods
-const handleMemberSelected = (member: HouseholdMember) => {
+/**
+ * Computed property for all household members (real + empty).
+ * @returns {Array} Combined array of regular and empty household members
+ */
+const allHouseholdMembers = computed(() => {
+  return [...householdMembers.value, ...emptyMembers.value];
+});
+
+/**
+ * Methods
+ */
+
+/**
+ * Handles when a member is selected in the HouseholdMembers component.
+ * @param {any} member - The selected household member
+ */
+const handleMemberSelected = (member: any) => {
   console.log('Selected member in parent:', member);
   // Implement member selection logic here
 };
 
+/**
+ * Handles the event when the user wants to view the beredskapslager (shelter store).
+ */
 const handleViewBeredskapslager = () => {
   console.log('View beredskapslager in parent');
   // Implement navigation to beredskapslager page
 };
 
+/**
+ * Refreshes all household data from the backend.
+ * Fetches household details, members, and updates invitation components.
+ * @async
+ */
 const refreshHouseholdData = async () => {
   try {
     const householdData = await getCurrentHousehold();
@@ -159,14 +228,29 @@ const refreshHouseholdData = async () => {
       // Check if the current user is an admin
       isAdmin.value = await isCurrentUserHouseholdAdmin();
 
-      // If admin, fetch household members for potential admin transfer
-      if (isAdmin.value) {
-        const members = await getHouseholdMembers();
-        // Filter out the current user and empty members
-        householdMembers.value = members.filter(member =>
-          member.id && member.email && member.id !== parseInt(householdStore.currentHousehold?.id?.toString() || '0')
-        );
+      // Fetch household members
+      const members = await getHouseholdMembers();
+      householdMembers.value = members;
+
+      // Fetch empty household members
+      const empty = await getEmptyHouseholdMembers();
+      emptyMembers.value = empty;
+
+      // Refresh invitations in child components
+      if (isAdmin.value && pendingInvitationsRef.value) {
+        pendingInvitationsRef.value.refreshInvitations();
+      } else if (!isAdmin.value && userInvitationsRef.value) {
+        userInvitationsRef.value.refreshInvitations();
       }
+    } else {
+      // If not in a household, refresh user invitations
+      // Use nextTick to ensure the component is mounted
+      nextTick(() => {
+        if (userInvitationsRef.value) {
+          console.log('Refreshing user invitations for user without household');
+          userInvitationsRef.value.refreshInvitations();
+        }
+      });
     }
   } catch (error) {
     console.error('Error fetching household data:', error);
@@ -174,10 +258,17 @@ const refreshHouseholdData = async () => {
   }
 };
 
+/**
+ * Navigates to the group page.
+ */
 const goToGroupPage = () => {
   router.push('/group');
 };
 
+/**
+ * Handles the user leaving their current household.
+ * @async
+ */
 const leaveCurrentHousehold = async () => {
   try {
     await leaveHousehold();
@@ -190,13 +281,21 @@ const leaveCurrentHousehold = async () => {
   }
 };
 
+/**
+ * Opens the dialog for transferring admin role to another household member.
+ */
 const openTransferAdminDialog = () => {
   showTransferAdminDialog.value = true;
 };
 
-const selectMemberForAdminTransfer = async (member: HouseholdMember) => {
+/**
+ * Promotes the selected member to admin status.
+ * @param {any} member - The member to promote to admin
+ * @async
+ */
+const selectMemberForAdminTransfer = async (member: any) => {
   try {
-    await transferAdminRole(member.id!);
+    await promoteUserToAdmin(member.id!);
     toast.success(t('household.admin-transferred-success'));
     showTransferAdminDialog.value = false;
     await refreshHouseholdData();
@@ -206,14 +305,35 @@ const selectMemberForAdminTransfer = async (member: HouseholdMember) => {
   }
 };
 
-// Computed property to determine if we should show the admin transfer button
+/**
+ * Computed property to determine if we should show the admin transfer button.
+ * Only shown if the user is an admin and is in a household.
+ */
 const showAdminTransferButton = computed(() => {
   return isAdmin.value && hasHousehold.value;
 });
 
 // Fetch household data when the component mounts
 onMounted(async () => {
+  console.log('HouseholdView mounted');
   await refreshHouseholdData();
+
+  console.log('After refreshHouseholdData - hasHousehold:', hasHousehold.value);
+  console.log('userInvitationsRef exists:', !!userInvitationsRef.value);
+
+  // Ensure user invitations are refreshed for users without a household
+  if (!hasHousehold.value) {
+    console.log('User has no household, should show invitations');
+    // Force a small delay to ensure the component is mounted
+    setTimeout(() => {
+      if (userInvitationsRef.value) {
+        console.log('Explicitly refreshing user invitations for user without household');
+        userInvitationsRef.value.refreshInvitations();
+      } else {
+        console.warn('userInvitationsRef is still null after timeout');
+      }
+    }, 500);
+  }
 });
 </script>
 
