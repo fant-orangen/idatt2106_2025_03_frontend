@@ -145,8 +145,15 @@ import {
 import AddEmptyUser from './AddEmptyUser.vue';
 import { UserIcon, XIcon, PlusIcon, MailIcon } from 'lucide-vue-next';
 import AddUser from './AddUser.vue';
-import { getHouseholdMembers, getEmptyHouseholdMembers, addEmptyMember, removeEmptyMemberFromHousehold, getCurrentHousehold } from '@/services/HouseholdService.ts'
-import type { HouseholdMember, EmptyHouseholdMember } from '@/models/Household.ts'
+import {
+  getHouseholdMembers,
+  getEmptyHouseholdMembers,
+  addEmptyMember,
+  removeEmptyMemberFromHousehold,
+  getCurrentHousehold,
+  removeMemberFromHousehold
+} from '@/services/HouseholdService.ts'
+import type { HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household.ts'
 import { toast } from 'vue-sonner';
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 
@@ -164,8 +171,8 @@ const emit = defineEmits(['memberSelected']);
 const showAddUser = ref(false);
 const manageMode = ref(false);
 const showInviteUser = ref(false);
-const memberToRemove = ref<HouseholdMember | EmptyHouseholdMember | null>(null);
-const householdMembers = ref<(HouseholdMember | EmptyHouseholdMember)[]>([]);
+const memberToRemove = ref<HouseholdMember | EmptyHouseholdMemberDto | null>(null);
+const householdMembers = ref<(HouseholdMember | EmptyHouseholdMemberDto)[]>([]);
 
 const fetchMembers = async () => {
   try {
@@ -236,18 +243,17 @@ const toggleManageMode = () => {
 };
 
 // Show confirmation dialog before removing a member
-const confirmRemoveMember = (member: HouseholdMember | EmptyHouseholdMember) => {
+const confirmRemoveMember = (member: HouseholdMember | EmptyHouseholdMemberDto) => {
   memberToRemove.value = member;
 };
 
-// Execute the actual removal after confirmation
 const executeRemoveMember = async () => {
   if (!memberToRemove.value?.id) return;
 
   try {
-    // Note: This will throw an error since the backend doesn't support this yet
     await removeEmptyMemberFromHousehold(memberToRemove.value.id);
-    await fetchMembers(); // Refresh the members list
+    await removeMemberFromHousehold(memberToRemove.value.id);
+    await fetchMembers();
     toast.success(t('household.member-removed-success'));
   } catch (error) {
     console.error('Failed to remove member:', error);

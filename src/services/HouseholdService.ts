@@ -7,7 +7,18 @@
  * @module HouseholdService
  */
 import api from '@/services/api/AxiosInstance.ts'
-import type { CreateHousehold, Household, EmailInvitation, HouseholdMember, EmptyHouseholdMember } from '@/models/Household'
+import type {
+  HouseholdCreateRequestDto,
+  Household,
+  HouseholdMember,
+  EmptyHouseholdMemberDto,
+  EmptyHouseholdMemberCreateDto,
+  HouseholdInviteRequestDto,
+  HouseholdInviteResponseDto,
+  HouseholdJoinRequestDto,
+  HouseholdSwitchRequestDto
+} from '@/models/Household'
+import type { Invitation } from '@/models/Invitation'
 
 /**
  * Fetches the current user's household
@@ -31,42 +42,156 @@ export async function getCurrentHousehold(): Promise<Household | null> {
 }
 
 /**
- * Join a household using an invitation token
- * @param token The invitation token
- * @returns The joined household data
- */
-export async function joinWithToken(token: string): Promise<Household> {
-  const response = await api.post('/user/households/join', { token });
-  return response.data;
-}
-
-/**
  * Create a new household
  * @param householdData The household data
  * @returns The created household
  */
-export async function createHousehold(householdData: CreateHousehold): Promise<Household> {
+export async function createHousehold(householdData: HouseholdCreateRequestDto): Promise<Household> {
   const response = await api.post('/user/households', householdData);
+  return response.data;
+}
+
+/**
+ * Invite a user to join the household by email (admin only)
+ * @param email The email address of the user to invite
+ * @returns The invitation response containing the token and expiry
+ * @throws Error if the user is not an admin, the invitee already has a household,
+ *         the invitee is the same as the inviter, or there's already a pending invitation for this user
+ */
+export async function inviteUserToHousehold(email: string): Promise<HouseholdInviteResponseDto> {
+  const payload: HouseholdInviteRequestDto = { email };
+  try {
+    console.log('Sending invitation to:', email);
+    const response = await api.post('/user/households/invite', payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log('Invitation response:', response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error('Error inviting user to household:', error);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Join a household using an invitation token
+ * @param token The invitation token
+ * @returns The joined household data
+ * @throws Error if the user already has a household, the token is invalid or expired
+ */
+export async function joinWithToken(token: string): Promise<Household> {
+  const payload: HouseholdJoinRequestDto = { token };
+  const response = await api.post('/user/households/join', payload);
   return response.data;
 }
 
 /**
  * Leave the current household
  * @returns Promise that resolves when operation is successful
- * @throws Error if the user is a household admin or doesn't have a household
+ * @throws Error if the user is the last household admin or doesn't have a household
  */
 export async function leaveHousehold(): Promise<void> {
   await api.post('/user/households/leave');
 }
 
 /**
- * Transfer admin role to another household member
- * @param memberId The ID of the member to make admin
+ * Get all members of the current household
+ * @returns Array of household members
+ */
+export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
+  const response = await api.get('/user/households/members');
+  return response.data;
+}
+
+/**
+ * Get all empty members of the current household
+ * @returns Array of empty household members
+ */
+export async function getEmptyHouseholdMembers(): Promise<EmptyHouseholdMemberDto[]> {
+  const response = await api.get('/user/households/members/empty');
+  return response.data;
+}
+
+/**
+ * Add an empty (placeholder) member to the household (admin only)
+ * @param memberData The member data
+ * @returns The created member
+ * @throws Error if the user is not an admin
+ */
+export async function addEmptyMember(
+  memberData: EmptyHouseholdMemberCreateDto
+): Promise<EmptyHouseholdMemberDto> {
+  const response = await api.post('/user/households/members/empty', memberData);
+  return response.data;
+}
+
+/**
+ * Remove an empty household member (admin only)
+ * @param memberId The empty member ID to remove
+ * @returns Promise that resolves when the member is removed
+ * @throws Error if the user is not an admin
+ */
+export async function removeEmptyMemberFromHousehold(memberId: number): Promise<void> {
+  await api.delete(`/user/households/members/empty/${memberId}`);
+}
+
+/**
+ * Remove a household member (admin only)
+ * @param memberId The member ID to remove
+ * @returns Promise that resolves when the member is removed
+ * @throws Error if the user is not an admin, the member is the last admin, or the operation fails
+ */
+export async function removeMemberFromHousehold(memberId: number): Promise<void> {
+  await api.delete(`/user/households/members/${memberId}`);
+}
+
+/**
+ * Decline a household invitation (deprecated - use InvitationService.declineInvitation instead)
+ * @param token The invitation token
+ * @returns Promise that resolves when operation is successful
+ * @deprecated This endpoint has been removed. Use InvitationService.declineInvitation instead.
+ */
+export async function declineHouseholdInvitation(token: string): Promise<void> {
+  console.warn('declineHouseholdInvitation is deprecated. Use InvitationService.declineInvitation instead.');
+  const payload: HouseholdJoinRequestDto = { token };
+  await api.post('/user/invitations/decline', payload);
+}
+
+/**
+ * Get pending invitations sent from the user's household
+ * @returns List of pending invitations
+ */
+export async function getPendingHouseholdInvitations(): Promise<Invitation[]> {
+  const response = await api.get('/user/households/pending-invitations');
+  return response.data;
+}
+
+/**
+ * Promote a user to household admin (admin only)
+ * @param email The email of the user to promote
  * @returns Promise that resolves when operation is successful
  * @throws Error if the user is not an admin or the operation fails
  */
-export async function transferAdminRole(memberId: number): Promise<void> {
-  await api.post(`/user/households/transfer-admin/${memberId}`);
+export async function promoteUserToAdmin(email: string): Promise<void> {
+  await api.post(`/user/households/promote-admin/${email}`);
+}
+
+/**
+ * Switch to a different household
+ * @param householdId The household ID to switch to
+ * @returns The switched household
+ * @throws Error if the user is the last admin of their current household
+ */
+export async function switchHousehold(householdId: number): Promise<Household> {
+  const payload: HouseholdSwitchRequestDto = { householdId };
+  const response = await api.put('/user/households/switch', payload);
+  return response.data;
 }
 
 /**
@@ -84,73 +209,10 @@ export async function isCurrentUserHouseholdAdmin(): Promise<boolean> {
 }
 
 /**
- * Invite a user to join the household by email
- * @param email The email address of the user to invite
- * @returns The invitation response containing the token and expiry
+ * Delete the current household (admin only)
+ * @returns Promise that resolves when operation is successful
+ * @throws Error if the user is not an admin or the operation fails
  */
-export async function inviteUserToHousehold(email: string): Promise<{ token: string }> {
-  const response = await api.post('/user/households/invite', { email });
-  return response.data;
-}
-
-/**
- * Switch to a different household
- * @param householdId The household ID to switch to
- * @returns The switched household
- */
-export async function switchHousehold(householdId: number): Promise<Household> {
-  const response = await api.put('/user/households/switch', { householdId });
-  return response.data;
-}
-
-/**
- * Get all members of the current household
- * @returns Array of household members
- */
-export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
-  const response = await api.get('/user/households/members');
-  return response.data;
-}
-
-/**
- * Get all empty members of the current household
- * @returns Array of empty household members
- */
-export async function getEmptyHouseholdMembers(): Promise<EmptyHouseholdMember[]> {
-  const response = await api.get('/user/households/members/empty');
-  return response.data;
-}
-
-/**
- * Remove a member from the household
- * @param memberId The member ID to remove
- * @returns Promise that resolves when the member is removed
- * @throws Error if the endpoint is not implemented on the backend
- */
-export async function removeEmptyMemberFromHousehold(memberId: number): Promise<void> {
-  // Note: This endpoint is not yet implemented in the backend (marked as TODO)
-  // This is a placeholder for when the backend implements it
-  throw new Error('This functionality is not yet implemented on the backend');
-}
-
-/**
- * Add an empty (placeholder) member to the household
- * @param memberData The member data
- * @returns The created member
- */
-export async function addEmptyMember(
-  memberData: Omit<EmptyHouseholdMember, 'id'>
-): Promise<EmptyHouseholdMember> {
-  const response = await api.post('/user/households/members/empty', memberData);
-  return response.data;
-}
-
-/**
- * Send an invitation to join the household by email
- * @param invitationData The invitation data including email and optional message
- * @returns Promise that resolves with the invitation response
- */
-export async function inviteUserByEmail(invitationData: EmailInvitation): Promise<{ token: string }> {
-  const response = await api.post('/user/households/invite', { email: invitationData.email });
-  return response.data;
+export async function deleteHousehold(): Promise<void> {
+  await api.delete('/user/households');
 }
