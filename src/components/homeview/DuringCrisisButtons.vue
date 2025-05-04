@@ -56,6 +56,14 @@
           {{ t('info.news') }}
           <ArrowRight class="text-lg" />
         </h2>
+        <!-- General News Section -->
+        <div class="general-news w-full px-4 md:px-0">
+          <NewsOverview
+            :page-size="5"
+            title="Latest News"
+            empty-message="No news available."
+          ></NewsOverview>
+        </div>
       </div>
     </div>
   </template>
@@ -67,6 +75,8 @@
   import { Button } from '@/components/ui/button'
   import { AlertTriangle, ArrowRight } from 'lucide-vue-next'
   import { fetchTheCrisisEventById } from '@/services/CrisisEventService'
+  import NewsOverview from '@/components/news/NewsOverview.vue'
+
 
   // Router and i18n
   const router = useRouter()
