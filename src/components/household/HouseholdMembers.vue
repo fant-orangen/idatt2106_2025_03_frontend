@@ -86,19 +86,11 @@
                 'border-primary': isSelected(member)
               }"
             >
-              <!-- Checkbox for multi-select (only in manage mode) -->
-              <div
-                v-if="manageMode"
-                class="absolute left-2.5 top-1/2 transform -translate-y-1/2 z-10"
-                @click.stop="toggleMemberSelection(member)"
-              >
-                <Checkbox :checked="isSelected(member)" class="cursor-pointer" />
-              </div>
+              <!-- Selection is indicated by border -->
 
               <!-- Member content -->
               <div
                 class="flex items-center gap-3 p-2.5 cursor-pointer transition-all duration-300"
-                :class="{ 'pl-10': manageMode }"
                 @click="manageMode ? toggleMemberSelection(member) : selectMember(member)"
               >
                 <!-- User Icon with status indicator -->
@@ -115,7 +107,7 @@
                       {{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}
                     </p>
                     <!-- Admin badge -->
-                    <Badge v-if="member.isAdmin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
+                    <Badge v-if="member.isAdmin || member.admin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
                       {{ $t('household.admin_badge') }}
                     </Badge>
                   </div>
@@ -172,19 +164,11 @@
                 'border-primary': isSelected(member)
               }"
             >
-              <!-- Checkbox for multi-select (only in manage mode) -->
-              <div
-                v-if="manageMode"
-                class="absolute left-2.5 top-1/2 transform -translate-y-1/2 z-10"
-                @click.stop="toggleMemberSelection(member)"
-              >
-                <Checkbox :checked="isSelected(member)" class="cursor-pointer" />
-              </div>
+              <!-- Selection is indicated by border -->
 
               <!-- Member content -->
               <div
                 class="flex items-center gap-3 p-2.5 cursor-pointer transition-all duration-300"
-                :class="{ 'pl-10': manageMode }"
                 @click="manageMode ? toggleMemberSelection(member) : selectMember(member)"
               >
                 <!-- Member icon based on type -->

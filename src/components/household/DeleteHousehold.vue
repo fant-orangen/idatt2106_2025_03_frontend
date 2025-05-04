@@ -1,8 +1,8 @@
 <template>
-  <Button 
-    variant="destructive" 
-    size="sm" 
-    class="flex items-center gap-1"
+  <Button
+    variant="outline"
+    size="sm"
+    class="flex items-center gap-2"
     @click="showConfirmDialog = true"
   >
     <TrashIcon class="h-4 w-4" />
@@ -17,7 +17,7 @@
           {{ $t('household.confirm_delete_description') }}
         </DialogDescription>
       </DialogHeader>
-      
+
       <div class="py-4">
         <p class="text-destructive font-medium">{{ $t('household.delete_warning') }}</p>
         <p class="mt-2 text-sm text-muted-foreground">{{ $t('household.delete_permanent') }}</p>
@@ -27,8 +27,8 @@
         <Button variant="outline" @click="showConfirmDialog = false">
           {{ $t('common.cancel') }}
         </Button>
-        <Button 
-          variant="destructive" 
+        <Button
+          variant="destructive"
           @click="handleDelete"
           :disabled="isDeleting"
         >
@@ -62,6 +62,11 @@ const emit = defineEmits(['deleted']);
 const showConfirmDialog = ref(false);
 const isDeleting = ref(false);
 
+/**
+ * Handles the household deletion process.
+ * Sends a request to the backend to delete the current household,
+ * displays appropriate success/error messages, and emits an event when done.
+ */
 const handleDelete = async () => {
   isDeleting.value = true;
   try {
@@ -69,9 +74,15 @@ const handleDelete = async () => {
     toast.success(t('household.delete_success'));
     showConfirmDialog.value = false;
     emit('deleted');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting household:', error);
-    toast.error(t('household.delete_error'));
+
+    // Check if we have a specific error message from the backend
+    if (error.response && error.response.data) {
+      toast.error(error.response.data);
+    } else {
+      toast.error(t('household.delete_error'));
+    }
   } finally {
     isDeleting.value = false;
   }

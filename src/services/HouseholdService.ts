@@ -209,9 +209,11 @@ export async function isCurrentUserHouseholdAdmin(): Promise<boolean> {
 }
 
 /**
- * Delete the current household (admin only)
- * @returns Promise that resolves when operation is successful
- * @throws Error if the user is not an admin or the operation fails
+ * Deletes the current user's household. This operation can only be performed by household admins.
+ * The backend will validate if the user is an admin and if they are allowed to delete the household.
+ *
+ * @returns Promise that resolves when the household is successfully deleted
+ * @throws Error if the user is not an admin or if there's another issue preventing deletion
  */
 export async function deleteHousehold(): Promise<void> {
   await api.delete('/user/households');
