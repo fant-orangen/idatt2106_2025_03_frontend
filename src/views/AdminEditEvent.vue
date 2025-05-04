@@ -60,8 +60,8 @@
 	</div>
 
 	<!--if user selected an event from the list: this form will show up-->
-	<div class="edit">
-		<Card v-if="selectedEvent">
+	<div>
+		<Card class="edit" v-if="selectedEvent">
 			<CardContent>
 				<!--Title of the event-->
 				<form @submit.prevent="onSubmit" >
