@@ -381,6 +381,7 @@
     "no-members-to-transfer": "Ingen medlemmer å overføre adminrollen til",
     "admin-transferred-success": "Adminrollen overført",
     "admin-transferred-error": "Kunne ikke overføre adminrollen",
+    "already-admin-error": "Denne brukeren er allerede admin",
     "error-fetching-data": "Kunne ikke hente husholddata",
     "delete_household": "Slett hushold",
     "confirm_delete_title": "Bekreft sletting av hushold",

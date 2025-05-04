@@ -115,7 +115,7 @@
                       {{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}
                     </p>
                     <!-- Admin badge -->
-                    <Badge v-if="'isAdmin' in member && member.isAdmin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground">
+                    <Badge v-if="member.isAdmin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
                       {{ $t('household.admin_badge') }}
                     </Badge>
                   </div>

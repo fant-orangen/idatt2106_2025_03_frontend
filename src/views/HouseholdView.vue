@@ -132,7 +132,7 @@
                   <UserIcon class="h-4 w-4" />
                 </div>
                 <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}</span>
-                <Badge variant="default" class="text-xs ml-1 bg-primary text-primary-foreground">
+                <Badge variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
                   {{ t('household.admin_badge') }}
                 </Badge>
               </div>
@@ -346,9 +346,20 @@ const selectMemberForAdminTransfer = async (member: any) => {
     toast.success(t('household.admin-transferred-success'));
     showTransferAdminDialog.value = false;
     await refreshHouseholdData();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error transferring admin role:', error);
-    toast.error(t('household.admin-transferred-error'));
+
+    // Check if we have a specific error message from the backend
+    if (error.response && error.response.data) {
+      // If the error is about the user already being an admin
+      if (error.response.data.includes('already an admin')) {
+        toast.error(t('household.already-admin-error'));
+      } else {
+        toast.error(error.response.data);
+      }
+    } else {
+      toast.error(t('household.admin-transferred-error'));
+    }
   }
 };
 
