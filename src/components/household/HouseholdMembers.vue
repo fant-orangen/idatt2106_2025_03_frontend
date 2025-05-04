@@ -5,14 +5,20 @@
       <div class="flex items-center gap-2">
         <Button
           v-if="isAdmin"
-          :variant="manageMode ? 'default' : 'ghost'"
+          :variant="manageMode ? 'default' : 'outline'"
           size="sm"
-          class="transition-all duration-300 ease-in-out"
+          class="transition-all duration-300 ease-in-out flex items-center gap-1.5"
           :class="{ 'bg-destructive/10 hover:bg-destructive/20 text-destructive': manageMode }"
           @click="toggleManageMode"
         >
-          <span v-if="manageMode">{{ $t('household.done') }}</span>
-          <span v-else>{{ $t('household.manage-members') }}</span>
+          <span v-if="manageMode" class="flex items-center gap-1.5">
+            <CheckIcon class="h-4 w-4" />
+            {{ $t('household.done') }}
+          </span>
+          <span v-else class="flex items-center gap-1.5">
+            <UsersIcon class="h-4 w-4" />
+            {{ $t('household.manage-members') }}
+          </span>
         </Button>
         <Button
           v-if="isAdmin && manageMode && selectedMembers.length > 0"
@@ -32,7 +38,7 @@
           <button
             class="px-3 py-2 text-sm font-medium transition-colors relative"
             :class="activeTab === 'people' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'"
-            @click="activeTab = 'people'"
+            @click="switchTab('people')"
           >
             <div class="flex items-center gap-1.5">
               <UserIcon class="h-4 w-4" />
@@ -43,7 +49,7 @@
           <button
             class="px-3 py-2 text-sm font-medium transition-colors relative"
             :class="activeTab === 'others' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground hover:text-foreground'"
-            @click="activeTab = 'others'"
+            @click="switchTab('others')"
           >
             <div class="flex items-center gap-1.5">
               <UsersIcon class="h-4 w-4" />
@@ -80,60 +86,61 @@
                 'border-primary': isSelected(member)
               }"
             >
-            <!-- Checkbox for multi-select (only in manage mode) -->
-            <div
-              v-if="manageMode"
-              class="absolute left-2.5 top-1/2 transform -translate-y-1/2 z-10"
-              @click.stop="toggleMemberSelection(member)"
-            >
-              <Checkbox :checked="isSelected(member)" />
-            </div>
-
-            <!-- Member content -->
-            <div
-              class="flex items-center gap-3 p-2.5 cursor-pointer transition-all duration-300"
-              :class="{ 'pl-10': manageMode }"
-              @click="manageMode ? toggleMemberSelection(member) : selectMember(member)"
-            >
-              <!-- User Icon with status indicator -->
-              <div class="flex-shrink-0 relative">
-                <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
-                  <UserIcon class="h-4 w-4 text-accent-foreground" />
-                </div>
-              </div>
-
-              <!-- Name and details -->
-              <div class="flex-grow min-w-0">
-                <div class="flex items-center gap-1.5">
-                  <p class="font-medium truncate">
-                    {{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}
-                  </p>
-                  <!-- Admin badge -->
-                  <Badge v-if="'isAdmin' in member && member.isAdmin" variant="outline" class="text-xs bg-primary/10 text-primary">
-                    {{ $t('household.admin_badge') }}
-                  </Badge>
-                </div>
-                <p v-if="member.email" class="text-xs text-muted-foreground truncate">
-                  {{ member.email }}
-                </p>
-              </div>
-            </div>
-
-            <!-- Remove button - absolutely positioned -->
-            <div
-              v-if="manageMode"
-              class="absolute left-0 top-0 bottom-0 flex items-center justify-center transition-all duration-300 ease-in-out"
-              :class="{ 'opacity-100': manageMode, 'opacity-0': !manageMode }"
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                class="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive-foreground ml-1"
-                @click.stop="confirmRemoveMember(member)"
+              <!-- Checkbox for multi-select (only in manage mode) -->
+              <div
+                v-if="manageMode"
+                class="absolute left-2.5 top-1/2 transform -translate-y-1/2 z-10"
+                @click.stop="toggleMemberSelection(member)"
               >
-                <XIcon class="w-4 h-4" />
-              </Button>
-            </div>
+                <Checkbox :checked="isSelected(member)" class="cursor-pointer" />
+              </div>
+
+              <!-- Member content -->
+              <div
+                class="flex items-center gap-3 p-2.5 cursor-pointer transition-all duration-300"
+                :class="{ 'pl-10': manageMode }"
+                @click="manageMode ? toggleMemberSelection(member) : selectMember(member)"
+              >
+                <!-- User Icon with status indicator -->
+                <div class="flex-shrink-0 relative">
+                  <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
+                    <UserIcon class="h-4 w-4 text-accent-foreground" />
+                  </div>
+                </div>
+
+                <!-- Name and details -->
+                <div class="flex-grow min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <p class="font-medium truncate">
+                      {{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}
+                    </p>
+                    <!-- Admin badge -->
+                    <Badge v-if="'isAdmin' in member && member.isAdmin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground">
+                      {{ $t('household.admin_badge') }}
+                    </Badge>
+                  </div>
+                  <p v-if="member.email" class="text-xs text-muted-foreground truncate">
+                    {{ member.email }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Remove button - absolutely positioned -->
+              <div
+                v-if="manageMode"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-in-out"
+                :class="{ 'opacity-100': manageMode, 'opacity-0': !manageMode }"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  class="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive-foreground"
+                  @click.stop="confirmRemoveMember(member)"
+                  title="Remove member"
+                >
+                  <TrashIcon class="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -171,7 +178,7 @@
                 class="absolute left-2.5 top-1/2 transform -translate-y-1/2 z-10"
                 @click.stop="toggleMemberSelection(member)"
               >
-                <Checkbox :checked="isSelected(member)" />
+                <Checkbox :checked="isSelected(member)" class="cursor-pointer" />
               </div>
 
               <!-- Member content -->
@@ -197,21 +204,23 @@
                   </p>
                 </div>
 
-                <!-- Remove button (visible on hover or in manage mode) -->
-                <div
-                  v-if="isAdmin"
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2 transition-opacity duration-200"
-                  :class="{ 'opacity-100': manageMode, 'opacity-0': !manageMode }"
+              </div>
+
+              <!-- Remove button (visible on hover or in manage mode) -->
+              <div
+                v-if="manageMode"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-in-out"
+                :class="{ 'opacity-100': manageMode, 'opacity-0': !manageMode }"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  class="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive-foreground"
+                  @click.stop="confirmRemoveMember(member)"
+                  title="Remove member"
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    class="h-8 w-8 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive-foreground ml-1"
-                    @click.stop="confirmRemoveMember(member)"
-                  >
-                    <XIcon class="w-4 h-4" />
-                  </Button>
-                </div>
+                  <TrashIcon class="w-4 h-4" />
+                </Button>
               </div>
             </div>
           </div>
@@ -339,7 +348,8 @@ import {
   TrashIcon,
   UsersIcon,
   BabyIcon,
-  PawPrintIcon
+  PawPrintIcon,
+  CheckIcon
 } from 'lucide-vue-next';
 import AddUser from './AddUser.vue';
 import {
@@ -489,6 +499,20 @@ const toggleAddEmptyUser = () => {
     showAddEmptyMember.value = false;
     showAddUser.value = true;
   }
+};
+
+/**
+ * Switches between tabs and closes any open forms
+ * @param {string} tab - The tab to switch to ('people' or 'others')
+ */
+const switchTab = (tab: string) => {
+  // Close any open forms when switching tabs
+  showAddUser.value = false;
+  showAddEmptyMember.value = false;
+  showInviteUser.value = false;
+
+  // Switch to the selected tab
+  activeTab.value = tab;
 };
 
 /**

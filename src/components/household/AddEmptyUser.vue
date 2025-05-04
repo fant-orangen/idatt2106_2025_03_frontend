@@ -36,8 +36,8 @@
 
         <!-- Buttons -->
         <div class="flex gap-2">
-          <Button type="submit" variant="default">{{ $t('household.save') }}</Button>
-          <Button type="button" variant="outline" @click="cancel">{{ $t('household.cancel') }}</Button>
+          <Button type="submit" variant="default">{{ $t('common.save') }}</Button>
+          <Button type="button" variant="outline" @click="cancel">{{ $t('common.cancel') }}</Button>
         </div>
       </div>
     </form>

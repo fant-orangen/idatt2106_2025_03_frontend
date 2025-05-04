@@ -1,6 +1,10 @@
 {
   "common": {
+    "back": "Back",
     "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "save": "Save",
     "remove": "Remove"
   },
   "actions": {
@@ -299,6 +303,8 @@
     "no-members-found": "No members found in the household.",
     "person": "person",
     "people": "people",
+    "other_member": "other member",
+    "other_members": "other members",
     "in-household": "in household",
     "add-empty-user": "Add household member",
     "add-empty-member": "Add household member",
@@ -339,13 +345,12 @@
     "member_added_error": "Could not add member",
     "empty_members": "Other members",
     "no_empty_members": "No other members found",
+    "no-empty-members-found": "No other members found.",
     "add_empty_member": "Add member",
     "done": "Done",
     "manage-members": "Manage members",
     "remove_selected": "Remove selected ({count})",
-    "other_member": "other member",
-    "other_members": "other members",
-    "no-empty-members-found": "No other members found",
+    "remove-selected": "Remove selected",
     "empty-member-added": "Member added",
     "invitation-sent-success": "Invitation sent",
     "error-fetching-members": "Could not fetch members",
@@ -698,11 +703,5 @@
     "relatedCrises": "Related Crisis Events",
     "noRelatedEvents": "No related crisis events found",
     "themeNotFound": "Scenario theme not found"
-  },
-  "common": {
-    "back": "Back",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "confirm": "Confirm"
   }
 }

@@ -84,7 +84,6 @@
           <Button
             variant="destructive"
             @click="leaveCurrentHousehold"
-            :disabled="isAdmin"
           >
             {{ t('household.leave-household') }}
           </Button>
@@ -102,12 +101,13 @@
           </DialogDescription>
         </DialogHeader>
         <div class="py-4">
-          <div v-if="householdMembers.length === 0" class="text-center py-4 text-muted-foreground">
+          <div v-if="nonAdminMembers.length === 0" class="text-center py-4 text-muted-foreground">
             {{ t('household.no-members-to-transfer') }}
           </div>
-          <div v-else class="space-y-2 max-h-60 overflow-y-auto">
+          <div class="space-y-2 max-h-60 overflow-y-auto">
+            <!-- Non-admin members (selectable) -->
             <div
-              v-for="member in householdMembers"
+              v-for="member in nonAdminMembers"
               :key="member.id"
               class="flex items-center justify-between p-2 border rounded-md hover:bg-accent/20 cursor-pointer"
               @click="selectMemberForAdminTransfer(member)"
@@ -119,6 +119,23 @@
                 <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}</span>
               </div>
               <ChevronRightIcon class="h-4 w-4" />
+            </div>
+
+            <!-- Admin members (not selectable) -->
+            <div
+              v-for="member in adminMembers"
+              :key="member.id"
+              class="flex items-center justify-between p-2 border rounded-md bg-muted/30 opacity-70"
+            >
+              <div class="flex items-center gap-2">
+                <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
+                  <UserIcon class="h-4 w-4" />
+                </div>
+                <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}</span>
+                <Badge variant="default" class="text-xs ml-1 bg-primary text-primary-foreground">
+                  {{ t('household.admin_badge') }}
+                </Badge>
+              </div>
             </div>
           </div>
         </div>
@@ -135,6 +152,7 @@ import { onMounted, ref, computed, nextTick } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -190,6 +208,24 @@ const currentUser = computed(() => userStore.profile);
  */
 const allHouseholdMembers = computed(() => {
   return [...householdMembers.value, ...emptyMembers.value];
+});
+
+/**
+ * Computed property for household members who are not admins.
+ * Used for the admin transfer dialog.
+ * @returns {Array} Array of household members who are not admins
+ */
+const nonAdminMembers = computed(() => {
+  return householdMembers.value.filter(member => !member.isAdmin);
+});
+
+/**
+ * Computed property for household members who are admins.
+ * Used to display admin badges in the transfer dialog.
+ * @returns {Array} Array of household members who are admins
+ */
+const adminMembers = computed(() => {
+  return householdMembers.value.filter(member => member.isAdmin);
 });
 
 /**
@@ -267,6 +303,7 @@ const goToGroupPage = () => {
 
 /**
  * Handles the user leaving their current household.
+ * Sends the request to the backend and lets the backend handle validation.
  * @async
  */
 const leaveCurrentHousehold = async () => {
@@ -275,9 +312,19 @@ const leaveCurrentHousehold = async () => {
     toast.success(t('household.leave-success'));
     showLeaveDialog.value = false;
     await refreshHouseholdData();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error leaving household:', error);
-    toast.error(t('household.leave-error'));
+    // Check if we have a specific error message from the backend
+    if (error.response && error.response.data) {
+      // If the error is about being the last admin, show a more specific message
+      if (error.response.data.includes('last admin')) {
+        toast.error(t('household.leave-last-admin-error'));
+      } else {
+        toast.error(error.response.data);
+      }
+    } else {
+      toast.error(t('household.leave-error'));
+    }
   }
 };
 
@@ -346,6 +393,23 @@ onMounted(async () => {
 @media (max-width: 768px) {
   .household-container {
     padding: 1rem;
+  }
+
+  /* Fix buttons on narrow screens */
+  .flex.items-center.justify-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .flex.gap-2 {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .flex.gap-2 > button {
+    flex: 1 1 auto;
+    min-width: 120px;
   }
 }
 </style>

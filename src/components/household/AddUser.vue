@@ -33,7 +33,7 @@
             {{ $t('household.send-invitation') }}
           </Button>
           <Button type="button" variant="outline" @click="cancel">
-            {{ $t('household.cancel') }}
+            {{ $t('common.cancel') }}
           </Button>
         </div>
       </div>

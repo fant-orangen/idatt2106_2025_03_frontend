@@ -301,6 +301,8 @@
     "no-members-found": "Ingen medlemmer funnet i husholdet.",
     "person": "person",
     "people": "personer",
+    "other_member": "annet medlem",
+    "other_members": "andre medlemmer",
     "in-household": "i husholdet",
     "add-empty-user": "Legg til husholdsmedlem",
     "add-empty-member": "Legg til husholdsmedlem",
@@ -341,13 +343,12 @@
     "member_added_error": "Kunne ikke legge til medlem",
     "empty_members": "Andre medlemmer",
     "no_empty_members": "Ingen andre medlemmer funnet",
+    "no-empty-members-found": "Ingen andre medlemmer funnet.",
     "add_empty_member": "Legg til medlem",
     "done": "Ferdig",
     "manage-members": "Administrer medlemmer",
     "remove_selected": "Fjern valgte ({count})",
-    "other_member": "annet medlem",
-    "other_members": "andre medlemmer",
-    "no-empty-members-found": "Ingen andre medlemmer funnet",
+    "remove-selected": "Fjern valgte",
     "empty-member-added": "Medlem ble lagt til",
     "invitation-sent-success": "Invitasjon sendt",
     "error-fetching-members": "Kunne ikke hente medlemmer",
@@ -771,6 +772,8 @@
     "back": "Tilbake",
     "cancel": "Avbryt",
     "delete": "Slett",
-    "confirm": "Bekreft"
+    "confirm": "Bekreft",
+    "save": "Lagre",
+    "remove": "Fjern"
   }
 }
