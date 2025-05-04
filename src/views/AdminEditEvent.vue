@@ -35,8 +35,8 @@
 				<CardTitle>{{ $t('add-event-info.titles.choose-event') }}:</CardTitle>
 			</CardHeader>
 			<CardContent class="card-content">
-				<InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="loadNextPage">
-					<div v-for="(event, index) in allEvents" :key="index" @click="selectEvent(index)"
+				<InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
+					<div v-for="(event, index) in allEvents" :key="event.id" @click="selectEvent(index)"
 						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-muted/80']">
 						
 						<div class=listOfEvents>
@@ -183,12 +183,14 @@
 							<FormControl>	
 								<Select v-bind="field">
 									<SelectTrigger style="cursor: pointer;">
-										<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/>
+									<!--<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->	
+										<SelectValue :placeholder="scenarioName"/>
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem v-for="type in scenarioPreviews" :key="type.id"
 											:value="type.name"> 
-											{{ $t('add-event-info.scenarios.' + type.name) }}
+											{{ type.name }}
+										<!--	{{ $t('add-event-info.scenarios.' + type.name) }} dette vil bare fungere dersom det er fastsatte typer i språkfilene...-->
 										</SelectItem>
 										<!--
 										<SelectGroup>
@@ -253,10 +255,10 @@
 import { updateCurrentEvent, deactivateCurrentEvent, getCurrentEvents } from '@/services/api/AdminServices'
 import type { CrisisEventDto, UpdateCrisisEventDto } from '@/models/CrisisEvent.ts';
 import { fetchTheCrisisEventById } from '@/services/CrisisEventService'
-import { useInfiniteQuery } from '@tanstack/vue-query'
-import type { Page }  from '@/types/Page'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query'
 import { getScenarioThemePreview } from '@/services/api/ScenarioThemeService'
 import { type ScenarioThemePreview } from '@/models/ScenarioTheme'
+import type { Page } from '@/types/Page';
 import { ref, onMounted, watch, computed } from 'vue'
 import { toast } from 'vue-sonner'
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
@@ -302,47 +304,55 @@ CardTitle,
 } from '@/components/ui/card'
 
 const { t } = useI18n();
-const events = ref<CrisisEventDto[]>([]);
 const selectedEvent = ref<CrisisEventDto | null>(null);
 const updatedEvent = ref<UpdateCrisisEventDto | null> (null);
 const scenarioPreviews = ref<ScenarioThemePreview[]>([]);
 const allowedCategories = ref<String[]>([]);
 const form = ref();
 const onSubmit = ref<(e?: Event) => void>();
+const scenarioName = ref<string | undefined> (undefined);
 /**
  * For pagination:
  */
+const queryClient = useQueryClient();
+const pageSize = 10;
 const {
   data,
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
-  isLoading
-} = useInfiniteQuery({
+} = useInfiniteQuery<CrisisEventDto[], Error>({
   queryKey: ['events'],
-  queryFn: ({ pageParam = 0 }) => getCurrentEvents(pageParam),
-  getNextPageParam: (last) => {
-    return last.last ? undefined : last.number + 1;
-  }
+  queryFn: async ({ pageParam = 0 }) => {
+		const pageNumber = pageParam as number;
+		const page = await getCurrentEvents(pageNumber, 10);
+		return page.content;
+	},
+  getNextPageParam: (lastPage, allPages) => {
+    return lastPage.length < pageSize ? undefined : allPages.length;
+	},
+	initialPageParam: 0
 });
-const allEvents = computed(() => data.value?.pages.flatMap(page => page.content) ?? []);
+
+const allEvents = computed<CrisisEventDto[]>(() => data.value?.pages.flat() ?? []);
+allEvents.value.forEach((event: CrisisEventDto) => { console.log(event.id)});
 
 /**
  * Saves the event the admin user chose to edit to the 'selectedEvent' variable. 
  * @param index - index of event in the 'events' array. 
  */
 async function selectEvent(index: number) {
-	if (!events.value[index]) {
+	const event = allEvents.value[index];
+	if (!event) {
 		console.log('Event doesnt exist in array from backend');
 		return;
 	}
 	try {
-		const crisisEventDetails = await fetchTheCrisisEventById(events.value[index].id);
+		const crisisEventDetails = await fetchTheCrisisEventById(event.id);
 		console.log('Crisis Event details er: ', crisisEventDetails);
 		if (crisisEventDetails) {
 			selectedEvent.value = crisisEventDetails;
 		} else {
-			console.log('Could not get the event from backend!');
 			callToast('Could not load event...');
 		}
 	} catch (error) {
@@ -355,7 +365,7 @@ async function selectEvent(index: number) {
  * Awaits response from fetchAllCrisisEvents() from backend API.
  */
 onMounted(async () => {
-	loadNextPage();
+	fetchNextPage();
 	try {
 		getCategories();
 		setUpFormSchema();
@@ -365,8 +375,6 @@ onMounted(async () => {
 });
 
 function setUpFormSchema() {
-	allowedCategories.value = scenarioPreviews.value.map((s) => s.name);
-
 	const formSchema = toTypedSchema(z.object({
 		epicenterLatitude: z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
 				.min(-90, t('add-event-info.errors.latitude'))
@@ -409,43 +417,61 @@ function setUpFormSchema() {
  */
 watch(selectedEvent, (event)=> {
 	if(event && form.value) {
+		if(scenarioPreviews.value.length === 0) {
+			console.warn('Scenarios not yet loaded in...');
+			return;
+		}
+		scenarioName.value = getScenarioName(event.scenarioThemeId);
 		form.value.setValues({
 			epicenterLatitude: event.epicenterLatitude ?? '',
 			epicenterLongitude: event.epicenterLongitude ?? '',
 			address: '',
 			radius: event.radius ?? '',
 			severity: event.severity ?? '',
-			category: getScenarioName(event.scenarioThemeId) ?? '',
+			category: scenarioName.value,
 			description: event.description ?? '',
 		});
+		
+		console.log('set values in watch')
+	} else {
+		scenarioName.value = undefined;
 	}
 });
 
 /**
- * Handles submitting the updates to the backend API. 
- * Checks if the selected event is not null. If not, then the updated fields should be 
- * saved with the new changes, and the fields unchanged should stay as they were when first fetched 
- * from the backend API. 
+ * the updated fields should be saved with the new changes,
+ * and the fields unchanged should stay as they were when first fetched 
+ * from the backend API. Then submit.
  */
 async function handleFormSubmit(values: any) {
-	try {
-		if (!selectedEvent.value) {
-			console.error('No event selected');
-			return;
-		}
-		//only the updated fields should be added to updatedEvent, non updated fields should stay
-		updatedEvent.value = {
-			name: selectedEvent.value.name, // only change the edited fields
-			latitude: values.epicenterLatitude ?? selectedEvent.value.epicenterLatitude,
-			longitude: values.epicenterLongitude ?? selectedEvent.value.epicenterLongitude,
-			description: values.description ?? selectedEvent.value.description,
-			severity: values.severity ?? selectedEvent.value.severity,
-			scenarioThemeId: getScenarioId(values.category) ?? selectedEvent.value.scenarioThemeId,
-			radius: values.radius ?? selectedEvent.value.radius,
-		};
-		if (!updatedEvent.value) return;
-		console.log('Oppdaterte event verdier:', updatedEvent.value);
+	if (!selectedEvent.value) {
+		console.error('No event selected');
+		return;
+	}
+	//only the updated fields should be added to updatedEvent, non updated fields should stay
+	updatedEvent.value = {
+		name: selectedEvent.value.name, // only change the edited fields
+		latitude: values.epicenterLatitude ?? selectedEvent.value.epicenterLatitude,
+		longitude: values.epicenterLongitude ?? selectedEvent.value.epicenterLongitude,
+		description: values.description ?? selectedEvent.value.description,
+		severity: values.severity ?? selectedEvent.value.severity,
+		scenarioThemeId: getScenarioId(values.category) ?? selectedEvent.value.scenarioThemeId,
+		radius: values.radius ?? selectedEvent.value.radius,
+	}
+	console.log('Oppdaterte event verdier til:', updatedEvent.value);
+	
+	updateSelectedEvent();
+}
 
+/**
+ * Update the selected event with the new details in backend API.
+ */
+async function updateSelectedEvent() {
+	if (!selectedEvent.value || !updatedEvent.value) {
+		console.log('No event selected or updated!');
+		return;
+	}
+	try {
 		const response = await updateCurrentEvent(selectedEvent.value.id, updatedEvent.value);
 
 		console.log('Event updated successfully!', response.data);
@@ -454,11 +480,13 @@ async function handleFormSubmit(values: any) {
 		selectedEvent.value = null; // redirects user back to the list of events
 		updatedEvent.value = null;
 
-		events.value = (await getCurrentEvents()).content;  // update the list of crisis events
+		await queryClient.invalidateQueries({queryKey: ['events']});
+	
 	} catch (error) {
-			console.error('An error occured while updating the event: ', error);
+		callToast('Failed to update event details...');
+		console.error('Failed to update event: ', error);
 	}
-};
+}
 
 /**
  * Cancels the potential changes of variables. 
@@ -476,13 +504,20 @@ function cancelUpdate() {
 * @param id 
 */
 async function deactivateEvent(id: number) {
+	if (!selectedEvent.value) {
+		console.log("didnt select any event...");
+		return;
+	}
 	try {
 		await deactivateCurrentEvent(id);
 		callToast('Hendelsen er nå satt som inaktiv!');
+		
 		selectedEvent.value = null; // redirects user back to the list of events
 		updatedEvent.value = null;
-		events.value = (await getCurrentEvents()).content; // update the list of crisis events
+
+		await queryClient.invalidateQueries({queryKey: ['events']});
 	} catch (error) {
+		callToast("Failed to deactivate event!");
 		console.error('Something happened when trying to deactivate: ', error);
 	}
 }
@@ -492,23 +527,29 @@ async function getCategories() {
 		const response = await getScenarioThemePreview();
 		console.log('getting scenarios:', response);
 		scenarioPreviews.value = response;
+		allowedCategories.value = scenarioPreviews.value.map((s) => s.name);
+		console.log('allowedCategories: ', allowedCategories.value);
 	} catch (error) {
 		console.error('Something happened when fetching categories: ', error);
 	}
 }
 
-function getScenarioName(id: number) {
+function getScenarioName(id: number): string {
 	if (!scenarioPreviews.value) {
+		console.log('Fant ikke scenariotypen...')
 		return 'undefined';
-	}
-	let scenario = null;
-	for (let i = 0; i < scenarioPreviews.value.length; i++) {
-		if (scenarioPreviews.value[i].id == id) {
-			scenario = scenarioPreviews.value[i];
-			break;
+	} else {
+		let name;
+		for (let i = 0; i < scenarioPreviews.value.length; i++) {
+			if (scenarioPreviews.value[i].id == id) {
+				name = scenarioPreviews.value[i].name;
+				console.log('henta scenario navn: ', name);
+				break;
+			}
 		}
+		console.log('test',name);
+		return name ? name : 'undefined';
 	}
-	return scenario ? scenario.name : 'undefined';
 }
 
 function getScenarioId(category: string) {
@@ -533,19 +574,6 @@ function getScenarioId(category: string) {
 function callToast (message: string) { 
 	console.log('Called toast for message: ', message);
 	toast(message);
-}
-
-/**
- * Function for fetching more pages of current events.
- */
-async function loadNextPage() {
-	if (isLoading.value || !hasNextPage.value) return;
-
-	try {
-		await fetchNextPage();
-	} catch (error) {
-		console.error("Feil ved henting av neste side", error);
-	}
 }
 </script>
 
@@ -624,7 +652,7 @@ PErsonlig liker jeg ikke scroll i tekstbokser */
 }
 .false {
 	width: fit-content;
-	background-color: grey;
+	background-color: rgb(80, 173, 93);
 	color: white
 }
 

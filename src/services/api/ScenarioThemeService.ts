@@ -136,7 +136,8 @@ export async function deleteScenarioTheme(themeData: UpdateScenarioThemeDto): Pr
  */
 export async function getScenarioThemePreview(){
   try {
-    const response = await api.get('/public/scenario-themes/previews/all');
+    const response = await api.get('/user/scenario-themes/previews/all');
+    console.log('scenarios:', response.data)
     return response.data;
   } catch (error) {
     console.error('Error fetching scenario themes:', error);
