@@ -40,10 +40,10 @@
 						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-muted/80']">
 						
 						<div class=listOfEvents>
-							<span class="severity-tag">{{ event.name }} |</span> 
+							<span class="severity-tag">{{ event.name }} </span>
 							<span :class="['severity-tag', event.severity]"> {{ $t('crisis.color.' + event.severity) }}</span> 
-							<span class="severity-tag"> | {{ formatDateFull(event.startTime) }}</span>
-							<span :class="['severity-tag', event.active]"> | {{ $t('add-event-info.active.' + event.active) }}</span>
+							<span class="severity-tag">  {{ formatDateFull(event.startTime) }}</span>
+							<span :class="['severity-tag', event.active ? 'true' : 'false']">  {{ $t('add-event-info.active.' + event.active) }}</span>
 						</div>	
 							<Separator class="my-2" />
 					</div> 
@@ -589,7 +589,7 @@ h1 {
 .page {
 display: flex;
 flex-flow: row wrap;
-justify-content: space-evenly;
+justify-content: center;
 margin: 30px;
 gap: 15px;
 }
@@ -603,13 +603,16 @@ gap: 10px;
 .events {
 	min-width: fit-content;
 	max-height: 600px;
+	border-radius: 8px;
 }
 
 .listOfEvents {
 	display: flex;
 	flex-flow: row nowrap;
 	width: 100%;
+	font-size: 1.3em;
 	gap: 3px;
+	justify-content: space-evenly;
 }
 
 .edit {
@@ -624,6 +627,7 @@ gap: 10px;
 .read-only input {
 	background-color: var(--color-muted);
 	cursor: not-allowed;
+	text-transform: capitalize;
 }
 
 .card-content > div {
@@ -642,14 +646,13 @@ PErsonlig liker jeg ikke scroll i tekstbokser */
 .severity-tag {
 	padding: 2px 10px;
 	border-radius: 8px;
-	text-transform: uppercase;
+	text-transform: capitalize;
 }
 .true {
-	background-color: blue;
-	color: white; /**endre fargene senere */
+	background-color: lightblue;/**endre fargene senere */
 }
 .false {
-	background-color: rgb(80, 173, 93);
+	background-color: grey;
 	color: white
 }
 
