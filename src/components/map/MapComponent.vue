@@ -1,5 +1,5 @@
 <template>
-  <div id="mapContainer" class="h-full w-full relative">
+  <div id="mapContainer" class="h-full w-full relative rounded-lg overflow-hidden">
     <div :id="mapContainerId" class="w-full h-full"></div>
   </div>
 </template>
