@@ -19,12 +19,12 @@
 
   <div class="grid lg:grid-cols-2 grid-cols-1 gap-8 max-w-7xl mx-auto my-8 p-5">
     <div class="p-5 bg-background rounded-lg shadow-md flex flex-col">
-      <form @submit="onSubmit" class="flex-grow flex flex-col justify-between">
-        <FormField v-slot="{ componentField, meta, errorMessage }" name="title">
+      <form @submit.prevent="onSubmit" class="flex-grow flex flex-col justify-between">
+        <FormField v-slot="{ field, meta, errorMessage }" name="title">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.title') }}</FormLabel>
             <FormControl>
-              <Input type="text" :placeholder="$t('add-event-info.titles.title')" v-bind="componentField" />
+              <Input type="text" :placeholder="$t('add-event-info.titles.title')" v-bind="field" />
             </FormControl>
             <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
             <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
@@ -37,32 +37,32 @@
         </div>
 
         <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
-          <FormField v-slot="{ componentField, meta, errorMessage }" name="latitude">
+          <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
             <FormItem class="flex-1">
               <FormLabel>{{ $t('add-event-info.titles.latitude') }}</FormLabel>
               <FormControl>
-                <Input type="number" step="0.000001" placeholder="latitude" v-bind="componentField" readonly />
+                <Input type="number" step="0.000001" placeholder="latitude" v-bind="field" readonly />
               </FormControl>
               <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField, meta, errorMessage }" name="longitude">
+          <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
             <FormItem class="flex-1">
               <FormLabel>{{ $t('add-event-info.titles.longitude') }}</FormLabel>
               <FormControl>
-                <Input type="number" step="0.000001" placeholder="longitude" v-bind="componentField" readonly />
+                <Input type="number" step="0.000001" placeholder="longitude" v-bind="field" readonly />
               </FormControl>
               <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
             </FormItem>
           </FormField>
         </div>
 
-        <FormField v-slot="{ componentField, meta, errorMessage }" name="address">
+        <FormField v-slot="{ field, meta, errorMessage }" name="address">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.address') }}</FormLabel>
             <FormControl>
-              <Input type="text" :placeholder="$t('admin.address-placeholder') || 'Eksempelveien 2'" v-bind="componentField" />
+              <Input type="text" :placeholder="$t('admin.address-placeholder') || 'Eksempelveien 2'" v-bind="field" />
             </FormControl>
             <FormDescription>{{ $t('add-event-info.coordinates') }}</FormDescription>
             <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
@@ -74,11 +74,11 @@
           <h2 class="text-xl font-semibold m-0">{{ $t('admin.basic-info') || 'Hendelsesdetaljer' }}</h2>
         </div>
 
-        <FormField v-slot="{ componentField, meta, errorMessage }" name="radius">
+        <FormField v-slot="{ field, meta, errorMessage }" name="radius">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.radius') }}</FormLabel>
             <FormControl>
-              <Input type="number" placeholder="meters" v-bind="componentField" />
+              <Input type="number" placeholder="meters" v-bind="field" />
             </FormControl>
             <FormDescription>{{ $t('add-event-info.radius') }}</FormDescription>
             <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
@@ -87,22 +87,22 @@
         <br />
 
         <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
-          <FormField v-slot="{ componentField, meta, errorMessage }" name="time">
+          <FormField v-slot="{ field, meta, errorMessage }" name="time">
             <FormItem class="flex-1">
               <FormLabel>{{ $t('add-event-info.titles.time') }}</FormLabel>
               <FormControl>
-                <Input type="time" v-bind="componentField" />
+                <Input type="time" v-bind="field" />
               </FormControl>
               <FormDescription>{{ $t('add-event-info.time') }}</FormDescription>
               <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField, meta, errorMessage }" name="date">
+          <FormField v-slot="{ field, meta, errorMessage }" name="date">
             <FormItem class="flex-1">
               <FormLabel>{{ $t('add-event-info.titles.date') }}</FormLabel>
               <FormControl>
-                <Input type="date" v-bind="componentField" />
+                <Input type="date" v-bind="field" />
               </FormControl>
               <FormDescription>{{ $t('add-event-info.date') }}</FormDescription>
               <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
@@ -111,10 +111,10 @@
         </div>
         <br />
 
-          <FormField v-slot="{ componentField, meta, errorMessage }" name="priority">
+        <FormField v-slot="{ field, meta, errorMessage }" name="priority">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.priority') }}</FormLabel>
-            <Select v-bind="componentField">
+            <Select v-bind="field">
               <FormControl>
                 <SelectTrigger style="cursor: pointer;">
                   <SelectValue :placeholder="$t('add-event-info.titles.priority') || 'Velg et krisenivå'" />
@@ -122,9 +122,9 @@
               </FormControl>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem class="severity-tag green" value="Low">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
-                  <SelectItem class="severity-tag yellow" value="Medium">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
-                  <SelectItem class="severity-tag red" value="High">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
+                  <SelectItem class="severity-tag green" value="green">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
+                  <SelectItem class="severity-tag yellow" value="yellow">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
+                  <SelectItem class="severity-tag red" value="red">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -134,50 +134,35 @@
         </FormField>
         <br>
 
-      <!--Category of event-->
-      <FormField v-slot="{ field, meta, errorMessage }" name="category">
-        <FormItem>
-          <FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
-          <FormControl>
-              
-            <Select v-bind="field">
-              <SelectTrigger style="cursor: pointer;">
-                <SelectValue :placeholder="$t('add-event-info.scenarios.undefined')"/>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>{{ $t('sidebar.themes.crisisSituations.extremeWeather.title') }}:</SelectLabel> 
-                  <SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>
-                  <SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
-                  <SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
-                  <SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
-                </SelectGroup>
-              
-                <SelectGroup>
-                  <SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}:</SelectLabel>
-                  <SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
-                  <SelectItem value="war">{{ $t('add-event-info.scenarios.war') }}</SelectItem>
-                  <SelectItem value="forest fire">{{ $t('add-event-info.scenarios.forest fire') }}</SelectItem>
-                  <SelectItem value="power outage">{{ $t('add-event-info.scenarios.power outage') }}</SelectItem>
-                  <SelectItem value="water shortage">{{ $t('add-event-info.scenarios.water shortage') }}</SelectItem>
-                  <SelectItem value="cyber attack">{{ $t('add-event-info.scenarios.cyber attack') }}</SelectItem>
-                  <SelectItem value="major accident">{{ $t('add-event-info.scenarios.major accident') }}</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </FormControl>
-          <FormDescription>{{ $t('add-event-info.category') }}</FormDescription>
-          <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
-        </FormItem>
-      </FormField>
+        <!--Category of event-->
+        <FormField v-slot="{ field, meta, errorMessage }" name="category">
+          <FormItem>
+            <FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
+            <FormControl>
+              <Select v-bind="field">
+                <SelectTrigger style="cursor: pointer;">
+                  <SelectValue :placeholder="$t('add-event-info.scenarios.undefined')"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="type in scenarioPreviews" :key="type.id"
+                    :value="type.name"> 
+                    {{ type.name }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </FormControl>
+            <FormDescription>{{ $t('add-event-info.category') }}</FormDescription>
+            <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+          </FormItem>
+        </FormField>
         
         <br />
 
-        <FormField v-slot="{ componentField, meta, errorMessage }" name="description">
+        <FormField v-slot="{ field, meta, errorMessage }" name="description">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.description') }}:</FormLabel>
             <FormControl>
-              <Textarea placeholder="..." v-bind="componentField"></Textarea>
+              <Textarea v-bind="field"></Textarea>
             </FormControl>
             <FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
             <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
@@ -253,7 +238,7 @@
  * API calls are made via the AdminServices module.
  */
 
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { createEvent } from '@/services/api/AdminServices'; // API service for creating events
 import router from '@/router/index.ts'; // Vue router instance
 import { Button } from '@/components/ui/button'; // UI Button component
@@ -264,8 +249,8 @@ import { useI18n } from 'vue-i18n'; // Internationalization library
 import { Input } from '@/components/ui/input'; // UI Input component
 import { Textarea } from '@/components/ui/textarea'; // UI Textarea component
 import { getScenarioThemePreview } from '@/services/api/ScenarioThemeService';
-import { CrisisEventDto } from '@/models/CrisisEvent'
-import { ScenarioThemePreview } from '@/models/ScenarioTheme'
+import type { CreateCrisisEventDto } from '@/models/CrisisEvent'
+import type { ScenarioThemePreview } from '@/models/ScenarioTheme'
 import {
   FormControl,
   FormDescription,
@@ -287,14 +272,12 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'; // UI Select components
 import {
   Dialog,
   DialogContent,
-  // DialogOverlay, // Typically not directly used with DialogContent
   DialogDescription,
   DialogFooter,
   DialogHeader,
@@ -336,10 +319,17 @@ const { t } = useI18n(); // i18n instance
 const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null); // Ref to the map component
 const tempMarker = ref<L.Marker | null>(null); // Ref to the temporary marker on the map
 const initialCenter: Location = { lat: 63.4305, lng: 10.3951 }; // Initial map center (Norway)
-const scenarioPreviews = ref<ScenarioThemePreview[]>([]);
+
 // Dialog state
 const isSuccessDialogOpen = ref(false); // Controls success dialog visibility
 const createdEventName = ref(''); // Stores the created event name for the dialog
+
+const scenarioPreviews = ref<ScenarioThemePreview[]>([]);
+const allowedScenarios = ref<string[]>([]);
+
+onMounted(() => {
+	getCategories();
+});
 
 /**
  * Zod schema definition for form validation.
@@ -353,12 +343,12 @@ const formSchema = toTypedSchema(
     // Latitude: optional number between -90 and 90
     latitude: z.preprocess(
       (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
-      z.number().min(-90, t('add-event-info.errors.latitude')).max(90, t('add-event-info.errors.latitude')).optional()
+      z.number().min(-90, t('add-event-info.errors.latitude')).max(90, t('add-event-info.errors.latitude'))
     ),
     // Longitude: optional number between -180 and 180
     longitude: z.preprocess(
       (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
-      z.number().min(-180, t('add-event-info.errors.longitude')).max(180, t('add-event-info.errors.longitude')).optional()
+      z.number().min(-180, t('add-event-info.errors.longitude')).max(180, t('add-event-info.errors.longitude'))
     ),
     // Address: optional string, max 100 chars
     address: z.string().max(100, t('add-event-info.errors.address')).optional(),
@@ -372,9 +362,8 @@ const formSchema = toTypedSchema(
     // Date: optional string (YYYY-MM-DD format expected)
     date: z.string().optional(),
     // Priority/Severity: required enum ('Low', 'Medium', 'High')
-    priority: z.enum(['Low', 'Medium', 'High'], { required_error: t('add-event-info.errors.priority') }),
-    category: z.enum(['pandemic','war','flood','hurricane','drought','heatwave','forest fire', 'power outage','water shortage','cyber attack','major accident'])
-    .optional(),
+    priority: z.enum(['green', 'yellow', 'red'], { required_error: t('add-event-info.errors.priority') }),
+    category: z.string().refine(val => allowedScenarios.value.includes(val),'add-event-info.errors.category').optional(),
     // Description: required string, min 10, max 500 chars
     description: z.string().min(10, t('add-event-info.errors.description')).max(500, t('add-event-info.errors.description')),
   })
@@ -550,27 +539,13 @@ watch(
 
 /**
  * Handles the form submission event triggered by VeeValidate.
- * Maps form data to the backend API structure (CreateCrisisEventDto),
+ * Maps form data to the backend API structure (CrisisEventDto),
  * calls the `createEvent` service, and manages success/error states.
  * @param {object} values - The validated form values provided by VeeValidate.
  */
 const onSubmit = form.handleSubmit(async (values) => {
   console.log('Form values on submit:', values);
   try {
-    scenarioPreviews.value = await getCategories();
-    // Map frontend priority ('Low', 'Medium', 'High') to backend severity ('green', 'yellow', 'red')
-    let severity: 'green' | 'yellow' | 'red';
-    switch (values.priority) {
-      case 'Low': severity = 'green'; break;
-      case 'Medium': severity = 'yellow'; break;
-      case 'High': severity = 'red'; break;
-      default:
-        // Should not happen due to Zod enum validation, but provides robustness
-        console.error('Invalid priority value encountered during submission:', values.priority);
-        form.setFieldError('priority', 'Ugyldig prioritet valgt.'); // Set error and return
-        return;
-    }
-
     // Combine date and time into a single ISO 8601 string for the backend
     // Zod refine ensures both date and time exist if one does
     if (!values.date || !values.time) {
@@ -582,18 +557,18 @@ const onSubmit = form.handleSubmit(async (values) => {
     // Combine date and time into ISO format (e.g., "YYYY-MM-DDTHH:MM:SS")
     const startTime = `${values.date}T${values.time}:00`; // Append seconds for potential backend requirements
 
-    // Prepare the payload matching the backend's CreateCrisisEventDto
-    const eventData = {
-      name: values.title, // Map 'title' to 'name'
-      latitude: values.latitude, // Use validated latitude
-      longitude: values.longitude, // Use validated longitude
-      address: values.address || null, // Send null if address is empty/undefined
-      // Ensure radius is passed as a number
+    /**
+     * Prepare the payload matching the backend's CreateCrisisEventDto 
+     */ 
+    const eventData: CreateCrisisEventDto = {
+      name: values.title, 
+      latitude: values.latitude, 
+      longitude: values.longitude,
       radius: typeof values.radius === 'number' ? values.radius : parseFloat(values.radius || '0'),
-      severity: values.severity, // Use the mapped lowercase severity string
-      scenarioTheme: getScenarioId(values.category),
-      description: values.description, // Use validated description
-      startTime: values.startTime // Use combined date-time string
+      severity: values.priority, 
+      scenarioThemeId: getScenarioId(values.category?? ''),
+      description: values.description, 
+      startTime: startTime,
     };
 
     console.log('Submitting Event data:', eventData);
@@ -614,39 +589,36 @@ const onSubmit = form.handleSubmit(async (values) => {
 async function getCategories() {
 	try {
 		const response = await getScenarioThemePreview();
-		console.log('getting scenarios:', response.content);
-		scenarioPreviews.value = response.content;
+		console.log('getting scenarios:', response);
+		if (response && Array.isArray(response)) {
+			scenarioPreviews.value = response;
+      allowedScenarios.value = scenarioPreviews.value.map((s) => s.name);
+		} else if (response && response.content && Array.isArray(response.content)) {
+			scenarioPreviews.value = response.content;
+      allowedScenarios.value = scenarioPreviews.value.map((s) => s.name);
+		} else {
+			console.error('Unexpected response format for scenario themes, not an array', response);
+			scenarioPreviews.value = [];
+      allowedScenarios.value = scenarioPreviews.value.map((s) => s.name);
+		}
 	} catch (error) {
 		console.error('Something happened when fetching categories: ', error);
+		scenarioPreviews.value = []; // saetting empty arrays to prevent potential runtime fails
 	}
 }
 
-function getScenarioName(id: number) {
-	if (!scenarioPreviews.value) {
-		return 'undefined';
+function getScenarioId(category: string): number | null {
+	if (!scenarioPreviews.value || category ==='') {
+		return null;
 	}
-	const scenario = null;
-	for (let i = 0; i < scenarioPreviews.value.length; i++) {
-		if (scenarioPreviews.value[i].id == id) {
-			scenario = scenarioPreviews.value[i];
-			break;
-		}
-	}
-	return scenario ? scenario.name : 'undefined';
-}
-
-function getScenarioId(category: string) {
-	if (!scenarioPreviews.value) {
-		return '';
-	}
-	const scenario = null;
+	let scenario: ScenarioThemePreview | null = null;
 	for (let i = 0; i < scenarioPreviews.value.length; i++) {
 		if (scenarioPreviews.value[i].name == category) {
 			scenario = scenarioPreviews.value[i];
 			break;
 		}
 	}
-	return scenario ? scenario.id : '';
+	return scenario ? scenario.id : null;
 }
 </script>
 
@@ -658,15 +630,12 @@ function getScenarioId(category: string) {
 }
 
 .green {
-	width: fit-content;
 	background-color: var(--color-chart-2); /* should be green but is off*/
 }
 .yellow {
-	width: fit-content;
 	background-color: var(--color-chart-4); /*should be yellow on dark mode... */
 }
 .red {
-	width: fit-content;
 	background-color: var(--color-chart-1); /*should be red but is blue  */
 }
 </style>

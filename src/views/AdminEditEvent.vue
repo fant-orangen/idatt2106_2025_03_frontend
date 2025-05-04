@@ -546,7 +546,7 @@ async function getCategories() {
 }
 
 function getScenarioName(id: number): string {
-	if (!scenarioPreviews.value) {
+	if (!scenarioPreviews.value || id === null) {
 		console.log('Fant ikke scenariotypen...')
 		return 'undefined';
 	} else {

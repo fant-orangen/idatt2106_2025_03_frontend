@@ -1,6 +1,6 @@
 import api from '@/services/api/AxiosInstance'
 import type { AxiosResponse } from 'axios' // Import AxiosResponse type
-import { type CrisisEventDto, type UpdateCrisisEventDto } from '@/models/CrisisEvent'
+import type {  CrisisEventDto, UpdateCrisisEventDto, CreateCrisisEventDto} from '@/models/CrisisEvent'
 import type { Page } from '@/types/Page.ts'
 
 /**
@@ -28,7 +28,7 @@ export async function deletePoi(id: number): Promise<void> {
  * Create a new crisis event.
  * 
  */
-export async function createEvent(eventData: CrisisEventDto): Promise<AxiosResponse> {
+export async function createEvent(eventData: CreateCrisisEventDto): Promise<AxiosResponse> {
   return await api.post('/admin/crisis-events', eventData, {
     headers: { 'Content-Type': 'application/json' }
   });
