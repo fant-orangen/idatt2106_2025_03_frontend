@@ -49,6 +49,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component PendingInvitations
+ * @description Displays and manages invitations sent by the current user to others to join their household.
+ * Provides functionality to cancel pending invitations and refresh the list.
+ * Only visible to household admins.
+ */
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -59,10 +65,18 @@ import type { Invitation } from '@/models/Invitation';
 import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
+
+/** List of pending invitations sent by the current user */
 const invitations = ref<Invitation[]>([]);
+
+/** Loading state indicator */
 const isLoading = ref(false);
 
-// Format date for display
+/**
+ * Formats a date string for display using the user's locale
+ * @param {string} dateString - ISO date string to format
+ * @returns {string} Formatted date string
+ */
 const formatDate = (dateString: string) => {
   try {
     const date = new Date(dateString);
@@ -78,7 +92,11 @@ const formatDate = (dateString: string) => {
   }
 };
 
-// Refresh invitations
+/**
+ * Refreshes the list of pending invitations from the backend
+ * @async
+ * @returns {Promise<void>}
+ */
 const refreshInvitations = async () => {
   isLoading.value = true;
   try {
@@ -92,7 +110,12 @@ const refreshInvitations = async () => {
   }
 };
 
-// Cancel invitation
+/**
+ * Cancels a pending invitation that was sent to another user
+ * @async
+ * @param {string} token - The invitation token
+ * @returns {Promise<void>}
+ */
 const cancelInvitation = async (token: string) => {
   try {
     await declineHouseholdInvitation(token);
@@ -104,7 +127,9 @@ const cancelInvitation = async (token: string) => {
   }
 };
 
-// Load invitations when component mounts
+/**
+ * Loads invitations when the component mounts
+ */
 onMounted(async () => {
   await refreshInvitations();
 });

@@ -62,6 +62,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component UserInvitations
+ * @description Displays and manages invitations received by the current user to join households.
+ * Provides functionality to accept or decline invitations, and to refresh the list of invitations.
+ * Emits events when invitations are accepted or declined.
+ */
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -72,12 +78,21 @@ import type { Invitation } from '@/models/Invitation';
 import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
+
+/** List of pending invitations for the current user */
 const invitations = ref<Invitation[]>([]);
+
+/** Loading state indicator */
 const isLoading = ref(false);
 
+/** Events emitted by this component */
 const emit = defineEmits(['accepted', 'declined', 'refreshed']);
 
-// Format date for display
+/**
+ * Formats a date string for display using the user's locale
+ * @param {string} dateString - ISO date string to format
+ * @returns {string} Formatted date string
+ */
 const formatDate = (dateString: string) => {
   try {
     const date = new Date(dateString);
@@ -93,13 +108,21 @@ const formatDate = (dateString: string) => {
   }
 };
 
-// Get inviter name for display
+/**
+ * Gets the formatted name of the user who sent the invitation
+ * @param {Invitation} invitation - The invitation object
+ * @returns {string} Formatted name and email of the inviter
+ */
 const getInviterName = (invitation: Invitation) => {
   const { inviterUser } = invitation;
   return `${inviterUser.firstName} ${inviterUser.lastName} (${inviterUser.email})`;
 };
 
-// Refresh invitations
+/**
+ * Refreshes the list of pending invitations from the backend
+ * @async
+ * @returns {Promise<void>}
+ */
 const refreshInvitations = async () => {
   isLoading.value = true;
   try {
@@ -114,7 +137,12 @@ const refreshInvitations = async () => {
   }
 };
 
-// Accept invitation
+/**
+ * Accepts an invitation to join a household
+ * @async
+ * @param {string} token - The invitation token
+ * @returns {Promise<void>}
+ */
 const acceptInvite = async (token: string) => {
   try {
     const household = await acceptInvitation(token);
@@ -126,7 +154,12 @@ const acceptInvite = async (token: string) => {
   }
 };
 
-// Decline invitation
+/**
+ * Declines an invitation to join a household
+ * @async
+ * @param {string} token - The invitation token
+ * @returns {Promise<void>}
+ */
 const declineInvite = async (token: string) => {
   try {
     await declineInvitation(token);
@@ -139,7 +172,9 @@ const declineInvite = async (token: string) => {
   }
 };
 
-// Load invitations when component mounts
+/**
+ * Loads invitations when the component mounts
+ */
 onMounted(async () => {
   console.log('UserInvitations component mounted, refreshing invitations...');
   await refreshInvitations();

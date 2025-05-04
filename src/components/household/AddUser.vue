@@ -42,6 +42,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component AddUser
+ * @description A form component for inviting users to join a household by email.
+ * Provides input field for email address and handles the invitation process.
+ * Emits events when an invitation is sent or the form is cancelled.
+ */
 import { ref, defineEmits } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Label } from '@/components/ui/label';
@@ -50,13 +56,26 @@ import { Button } from '@/components/ui/button';
 import { inviteUserToHousehold } from '@/services/HouseholdService';
 
 const { t } = useI18n();
+
+/** Events emitted by this component */
 const emit = defineEmits(['invited', 'cancel']);
 
+/** Email address input value */
 const email = ref('');
+
+/** Loading state indicator */
 const isLoading = ref(false);
+
+/** Status message to display after form submission */
 const status = ref('');
+
+/** Whether the last operation was successful */
 const isSuccess = ref(false);
 
+/**
+ * Sends an invitation to the specified email address
+ * @async
+ */
 const inviteUser = async () => {
   if (!email.value) return;
 
@@ -83,11 +102,17 @@ const inviteUser = async () => {
   }
 };
 
+/**
+ * Cancels the invitation process and resets the form
+ */
 const cancel = () => {
   emit('cancel');
   resetForm();
 };
 
+/**
+ * Resets the form fields to their initial values
+ */
 const resetForm = () => {
   email.value = '';
 };

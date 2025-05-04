@@ -308,6 +308,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component HouseholdMembers
+ * @description Displays and manages household members, including real members and empty members.
+ * Provides functionality for adding, removing, and managing household members.
+ * Supports admin operations like promoting members to admin status.
+ */
 import { ref, onMounted, defineEmits, defineProps, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -441,15 +447,12 @@ const toggleMemberSelection = (member: HouseholdMember | EmptyHouseholdMemberDto
  */
 const fetchMembers = async () => {
   try {
-    // Fetch real members
     const members = await getHouseholdMembers();
     householdMembers.value = members;
 
-    // Fetch empty members
     const emptyMembersList = await getEmptyHouseholdMembers();
     emptyMembers.value = emptyMembersList;
 
-    // Check if current user is admin
     isAdmin.value = await isCurrentUserHouseholdAdmin();
   } catch (error) {
     console.error('Error fetching household members:', error);
@@ -475,7 +478,6 @@ const selectMember = (member: HouseholdMember) => {
  * Closes other forms if opening this one.
  */
 const toggleAddEmptyUser = () => {
-  // If already showing, close it; otherwise open it and close the other form
   if (showAddUser.value) {
     showAddUser.value = false;
   } else {
@@ -580,9 +582,7 @@ const handleEmptyMemberAdded = async () => {
  */
 const toggleManageMode = () => {
   manageMode.value = !manageMode.value;
-  // Reset any pending removal when toggling mode
   memberToRemove.value = null;
-  // Clear selections when exiting manage mode
   if (!manageMode.value) {
     selectedMembers.value = [];
   }
@@ -614,13 +614,10 @@ const removeSelectedMembers = async () => {
   if (selectedMembers.value.length === 0) return;
 
   try {
-    // Process each selected member
     for (const member of selectedMembers.value) {
       if ('email' in member) {
-        // It's a real user
         await removeMemberFromHousehold(member.id);
       } else {
-        // It's an empty member
         await removeEmptyMemberFromHousehold(member.id);
       }
     }

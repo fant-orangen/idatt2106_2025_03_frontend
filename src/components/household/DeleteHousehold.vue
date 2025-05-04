@@ -41,6 +41,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component DeleteHousehold
+ * @description A component that provides functionality to delete a household.
+ * Displays a confirmation dialog before deletion and handles the API call to delete the household.
+ * Emits an event when the household is successfully deleted.
+ */
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
@@ -77,7 +83,6 @@ const handleDelete = async () => {
   } catch (error: any) {
     console.error('Error deleting household:', error);
 
-    // Check if we have a specific error message from the backend
     if (error.response && error.response.data) {
       toast.error(error.response.data);
     } else {
