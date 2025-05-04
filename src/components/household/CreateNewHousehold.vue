@@ -54,15 +54,14 @@ import { createHousehold } from '@/services/HouseholdService';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import type { CreateHousehold } from '@/models/Household';
+import type { HouseholdCreateRequestDto } from '@/models/Household';
 import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 const router = useRouter();
 const emit = defineEmits(['created']);
 
-// Form data using the CreateHousehold interface
-const householdData = ref<CreateHousehold>({
+const householdData = ref<HouseholdCreateRequestDto>({
   name: '',
   address: '',
   populationCount: 1
