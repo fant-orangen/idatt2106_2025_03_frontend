@@ -98,8 +98,7 @@ export async function createPOI(poiData: any): Promise<AxiosResponse> {
  * @returns {Promise<AxiosResponse<any>>} Server response with a list of admin users.
  */
 export async function getAdminUsers() {
-  return await api.get<Page<any>>('/super-admin/all', {
-    params: { size: 20 },
+  return await api.get('/super-admin/all', {
     headers: {
       'Content-Type': 'application/json'
     }

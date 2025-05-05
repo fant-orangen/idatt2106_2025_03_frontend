@@ -151,6 +151,11 @@ const displayedEvents = computed(() => crisisEvents.value.slice(0, maxDisplay));
 const hasMoreEvents = computed(() => crisisEvents.value.length > maxDisplay);
 
 /**
+ * Checks if there are any ongoing crises
+ */
+const hasOngoingCrises = computed(() => crisisEvents.value.length > 0)
+
+/**
  * Returns the CSS class for the container based on highest severity
  */
 const containerClass = computed(() => {

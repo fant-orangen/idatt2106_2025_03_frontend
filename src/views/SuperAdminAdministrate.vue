@@ -40,20 +40,17 @@
           <CardTitle class="text-lg font-semibold">{{ $t('admin.current-admins') }}</CardTitle>
         </CardHeader>
         <CardContent>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div
-            v-for="admin in admins"
-            :key="admin.userId"
-            class="text-sm font-medium text-primary hover:underline w-full text-left break-words"
-            >
-            <button
-                @click="openDrawer(admin)"
-                class="text-sm font-medium text-primary hover:underline w-full text-left break-words hover:cursor-pointer"
-                >
-                {{ admin.email }}
-            </button>
-            </div>
-        </div>
+          <ScrollArea class="h-full w-full rounded-md border p-4">
+             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div v-for="admin in admins" :key="admin.userId">
+                <Button variant="secondary"
+                  @click="openDrawer(admin)"
+                  class="w-full sm:w-auto">
+                  {{ admin.email }}
+                </Button>
+              </div>
+             </div>
+          </ScrollArea>
         </CardContent>
       </Card>
 
@@ -71,7 +68,7 @@
                 <FormControl>
                   <Input type="email" placeholder="name@email.com" v-bind="field" />
                 </FormControl>
-                <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+                <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
               </FormItem>
             </FormField>
 
@@ -82,7 +79,7 @@
                 <FormControl>
                   <Input type="email" placeholder="name@email.com" v-bind="field" />
                 </FormControl>
-                <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+                <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
               </FormItem>
             </FormField>
 
@@ -113,7 +110,7 @@
 
       <!-- Admin Drawer -->
       <Drawer v-model:open="isOpen">
-        <DrawerContent>
+        <DrawerContent class="z-101">
           <DrawerHeader>
             <DrawerTitle>{{ $t('admin.administrate-profile') }}</DrawerTitle>
           </DrawerHeader>
@@ -169,8 +166,10 @@ import { Label } from '@/components/ui/label'
 import { useMediaQuery } from '@vueuse/core'
 import { ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
+import type { AxiosResponse } from 'axios'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -210,7 +209,6 @@ interface Admin {
 }
 
 const admins = ref<Admin[]>([])
-const isDesktop = useMediaQuery('(min-width: 768px)')
 const isOpen = ref(false)
 const isNewAdminDialogOpen = ref(false)
 const showConfirmationDialog = ref(false)
@@ -247,9 +245,6 @@ const onSubmit = form.handleSubmit(async (values) => {
     if (!values.email) {
       return
     }
-
-    // find user with that email
-    // expecting the response to be {email, userId}
     const response = await getUserId(values.email)
     console.log('Retrieved user id from API:', response.data)
     userId.value = response.data.userId // set userId
@@ -257,8 +252,6 @@ const onSubmit = form.handleSubmit(async (values) => {
     if (userId.value !== null) {
       console.log('NEW ADMIN EMAIL: ', values.email)
       createNewAdmin(userId.value)
-
-      console.log('New admin created!')
 
       userId.value = null
       stagedEmail.value = ''
@@ -295,7 +288,7 @@ async function getAllAdmins() {
   try {
     const response = await getAdminUsers()
     console.log('Fetched admins from backend!', response.data)
-    admins.value = response.data.content
+    admins.value = response.data
   } catch (error) {
     console.error('Failed to fetch admin users from backend!')
   }
@@ -303,12 +296,21 @@ async function getAllAdmins() {
 
 async function createNewAdmin(userID: number) {
   try {
-    await addNewAdmin(userID)
-    console.log('Created new admin user!')
+    const response = await addNewAdmin(userID)
+    console.log('Created new admin user!', response.data)
     callToast('Created new admin!')
     await getAllAdmins()
-  } catch (error) {
-    console.error('Failed to create new admin', error)
+  } catch (error: any) {
+    let errorMessage = ''
+    console.warn('Failed to create new admin', error)
+    if (error?.response?.data) {
+      errorMessage = error.response.data
+    } else if(error?.data?.message) {
+      errorMessage = error.data.message
+    } else if (error?.message) {
+      errorMessage = error?.message
+    }
+    callToast(errorMessage)
   }
 }
 
@@ -338,76 +340,3 @@ const confirmNewAdmin = form.handleSubmit(() => {
   }
 })
 </script>
-
-<style scoped>
-h1 {
-  font-size: 2.3em;
-  margin: 20px;
-}
-
-.admin-page-wrapper {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.top {
-  margin: 20px;
-}
-
-.page {
-  display: flex;
-  flex-flow: column;
-  gap: 10px;
-  padding: 10px;
-  justify-content: center;
-  font-size: 1em;
-}
-
-.listOfAdmins > div {
-  width: 100%;
-  min-width: fit-content;
-  padding: 5px;
-}
-
-.listOfAdmins > div > Button {
-  min-width: 100%;
-}
-
-.grid {
-  padding: 10px;
-}
-
-.listOfAdmins {
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: var(
-    --color-muted
-  ); /*Fix this in darkmode, doesn't look like there is a gap between the buttons */
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  align-items: center;
-  max-height: 450px;
-  overflow: auto;
-}
-
-.admin-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 10px;
-  justify-content: center;
-}
-
-.admin-list-card {
-  padding: 20px;
-  min-width: 100%;
-  max-height: 450px;
-  overflow: auto;
-}
-
-.new-admin-card {
-  padding: 20px;
-}
-</style>

@@ -1,11 +1,11 @@
 <template>
-  <div id="mapContainer" class="h-full w-full relative">
+  <div id="mapContainer" class="h-full w-full relative rounded-lg overflow-hidden">
     <div :id="mapContainerId" class="w-full h-full"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { onMounted, onBeforeUnmount, watch, ref, defineComponent } from 'vue';
+import { onMounted, onBeforeUnmount, watch, ref, defineComponent, nextTick } from 'vue';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
@@ -108,6 +108,7 @@ export default defineComponent({
       closeDirections: t('map.close-directions') || 'Lukk veibeskrivelse'
     };
 
+    // Create icons once at module level for reuse
     // Custom icon for user location
     const userIcon = L.icon({
       iconUrl,
@@ -144,6 +145,42 @@ export default defineComponent({
       className: 'admin-marker-icon',
     });
 
+    // Default icon for POI markers
+    const poiIcon = L.icon({
+      iconUrl,
+      iconRetinaUrl,
+      shadowUrl,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+
+    // Only cluster the POIs actually in view (plus a 50% padding)
+    function getVisiblePois(): POI[] {
+      if (!map.value) return [];
+      const bounds = map.value.getBounds().pad(0.5);
+      return props.pois.filter(poi => {
+        const lat = typeof poi.latitude === 'string'
+          ? parseFloat(poi.latitude)
+          : poi.latitude;
+        const lng = typeof poi.longitude === 'string'
+          ? parseFloat(poi.longitude)
+          : poi.longitude;
+        return bounds.contains([lat, lng]);
+      });
+    }
+
+// Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
+    let updateTimeout: number | null = null;
+    function scheduleViewportUpdate() {
+      if (updateTimeout) clearTimeout(updateTimeout);
+      updateTimeout = window.setTimeout(() => {
+        updatePOIs(getVisiblePois());
+        updateTimeout = null;
+      }, 200);
+    }
+
     // Initialize map
     onMounted(() => {
       // Fix icon paths globally
@@ -159,9 +196,8 @@ export default defineComponent({
       });
 
       // Small delay to ensure DOM is ready
-      setTimeout(() => {
+      nextTick(() => {
         try {
-          console.log("Initializing map", mapContainerId);
 
           // Ensure container exists
           const container = document.getElementById(mapContainerId);
@@ -172,6 +208,7 @@ export default defineComponent({
 
           // Create map instance
           map.value = L.map(mapContainerId, {
+            preferCanvas: true,
             fadeAnimation: false,
             markerZoomAnimation: false,
             zoomAnimation: true
@@ -187,14 +224,18 @@ export default defineComponent({
             }
           ).addTo(map.value as L.Map);
 
-          // Create marker cluster
+          // Create marker cluster with chunked loading enabled
           const clusterOptions: L.MarkerClusterGroupOptions = {
             spiderfyOnMaxZoom: true,
-            disableClusteringAtZoom: 18,
+            disableClusteringAtZoom: 45,
             maxClusterRadius: 50,
-            removeOutsideVisibleBounds: false,
+            removeOutsideVisibleBounds: true,
             animate: false,
-            animateAddingMarkers: false
+            animateAddingMarkers: false,
+            chunkedLoading: true,           // Enable chunked loading
+            chunkInterval: 50,              // Process chunks every 50ms
+            chunkDelay: 10,                 // Delay between chunks
+            //chunkProgress: null,             // No progress callback needed
           };
           markerClusterGroup.value = L.markerClusterGroup(clusterOptions);
           if (map.value) {
@@ -202,16 +243,11 @@ export default defineComponent({
           }
 
           // Set up map event listeners
-          map.value.on('zoomend moveend', () => {
-            // console.log(`Map view changed: zoom=${map.value?.getZoom()}`);
-            forceMapRefresh();
-          });
+          map.value.on('zoomend moveend', scheduleViewportUpdate);
 
           // Add click listener for admin mode only
           if (props.adminMode) {
-            console.log("Admin mode enabled, adding click listener");
             map.value.on('click', (e: L.LeafletMouseEvent) => {
-              console.log("Map clicked at", e.latlng);
               // Emit in the format expected by AdminAddNewPOI.vue
               emit('map-clicked', { latlng: e.latlng });
             });
@@ -227,15 +263,14 @@ export default defineComponent({
           };
 
           // Initial refresh
-          setTimeout(() => {
+          nextTick(() => {
             forceMapRefresh();
-          }, 100);
+          });
 
-          console.log("Map initialization completed");
 
           // Initial population of POIs
           if (props.pois && props.pois.length > 0) {
-            updatePOIs(props.pois);
+            nextTick(() => scheduleViewportUpdate());
           }
 
           // Initial user location
@@ -255,7 +290,7 @@ export default defineComponent({
         } catch (error) {
           console.error("Error initializing map:", error);
         }
-      }, 200);
+      });
     });
 
     // Force map refresh
@@ -319,7 +354,6 @@ export default defineComponent({
         return null;
       }
 
-      console.log(`Adding marker at ${lat}, ${lng} with title '${title}'`);
       const marker = L.marker([lat, lng], {
         icon: adminIcon,
         draggable: props.adminMode,
@@ -330,7 +364,6 @@ export default defineComponent({
       if (props.adminMode) {
         marker.on('dragend', function(event) {
           const position = event.target.getLatLng();
-          console.log(`Marker moved to ${position.lat}, ${position.lng}`);
           emit('marker-moved', {
             marker: event.target,
             latlng: { lat: position.lat, lng: position.lng }
@@ -352,7 +385,6 @@ export default defineComponent({
     function removeMarker(marker: L.Marker): void {
       if (!map.value || !marker) return;
 
-      console.log("Removing marker");
       map.value.removeLayer(marker);
 
       // Remove from admin markers if applicable
@@ -370,7 +402,6 @@ export default defineComponent({
         return;
       }
 
-      // console.log(`Centering map at ${lat}, ${lng} with zoom ${zoom}`);
       map.value.setView([lat, lng], zoom);
     }
 
@@ -384,7 +415,6 @@ export default defineComponent({
 
       clearRouting(); // Clear any existing route
 
-      console.log(`Showing route to ${poiName} (${lat}, ${lng})`);
 
       // Create the routing control
       routingControl.value = L.Routing.control({
@@ -471,7 +501,6 @@ export default defineComponent({
     // Clear routing - original functionality
     function clearRouting(): void {
       if (routingControl.value && map.value) {
-        console.log("Clearing routing control");
         map.value.removeControl(routingControl.value);
         routingControl.value = null;
       }
@@ -506,30 +535,26 @@ export default defineComponent({
 
     // Update POIs on the map - core functionality used by both original and admin features
     function updatePOIs(newPois: POI[]): void {
-      if (!map.value || !markerClusterGroup.value) {
-        console.log("Map or marker cluster not ready, deferring POI update");
-        return;
-      }
+      if (!map.value || !markerClusterGroup.value) return;
 
-      console.log(`Updating POIs. Count: ${newPois?.length ?? 0}`);
 
       // Clear routing when POIs change
       clearRouting();
 
-      // Remove existing cluster group
-      markerClusterGroup.value.clearLayers();
-
-      // Reset markers map
-      markersMap.value.clear();
-
-      // Add markers to the cluster group
+      // Use diff-based updates instead of clearing all markers
+      // 1. Create a set of current POI IDs for quick lookup
+      const newPoiIds = new Set<string | number>();
+      const markersToAdd: L.Marker[] = [];
       const bounds = L.latLngBounds([]);
-      const markers: L.Marker[] = [];
 
+      // Process new POIs
       if (newPois && newPois.length > 0) {
         newPois.forEach(poi => {
-          // Skip if no coordinates
-          if (!poi.latitude || !poi.longitude) return;
+          // Skip if no coordinates or ID
+          if (!poi.latitude || !poi.longitude || !poi.id) return;
+
+          // Add to set of new IDs
+          newPoiIds.add(poi.id);
 
           // Ensure coordinates are numbers
           const lat = typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude;
@@ -540,38 +565,73 @@ export default defineComponent({
             return;
           }
 
-          // Create marker
-          const marker = L.marker([lat, lon], {
-            riseOnHover: true,
-            bubblingMouseEvents: false,
-            zIndexOffset: 100
-          });
+          // Check if marker already exists
+          const existingMarker = markersMap.value.get(poi.id);
 
-          marker.bindPopup(createPopupContent(poi));
-          marker.bindTooltip(poi.name, {
-            permanent: false,
-            direction: 'top',
-            className: 'poi-label'
-          });
+          if (existingMarker) {
+            // Update existing marker position if it changed
+            if (existingMarker.poiLat !== lat || existingMarker.poiLng !== lon) {
+              existingMarker.setLatLng([lat, lon]);
+              existingMarker.poiLat = lat;
+              existingMarker.poiLng = lon;
+            }
 
-          // Store reference to coordinates
-          const poiMarker = marker as POIMarker;
-          poiMarker.poiLat = lat;
-          poiMarker.poiLng = lon;
+            // Update popup content in case it changed
+            existingMarker.setPopupContent(createPopupContent(poi));
 
-          // Store in markers map if POI has an ID
-          if (poi.id) {
+            // Update tooltip in case name changed
+            existingMarker.setTooltipContent(poi.name);
+          } else {
+            // Create new marker with reused icon
+            const marker = L.marker([lat, lon], {
+              icon: poiIcon, // Use the pre-created icon
+              riseOnHover: true,
+              bubblingMouseEvents: false,
+              zIndexOffset: 100
+            });
+
+            marker.bindPopup(createPopupContent(poi));
+            marker.bindTooltip(poi.name, {
+              permanent: false,
+              direction: 'top',
+              className: 'poi-label'
+            });
+
+            // Store reference to coordinates
+            const poiMarker = marker as POIMarker;
+            poiMarker.poiLat = lat;
+            poiMarker.poiLng = lon;
+
+            // Store in markers map
             markersMap.value.set(poi.id, poiMarker);
+            markersToAdd.push(marker);
           }
 
-          markers.push(marker);
           bounds.extend([lat, lon]);
         });
 
-        // Add markers to cluster group
-        if (markers.length) {
-          markerClusterGroup.value.addLayers(markers);
+        // 2. Remove markers that are no longer in the POI list
+        const markersToRemove: L.Marker[] = [];
+        markersMap.value.forEach((marker, id) => {
+          if (!newPoiIds.has(id)) {
+            markersToRemove.push(marker as unknown as L.Marker);
+            markersMap.value.delete(id);
+          }
+        });
+
+        // Remove markers no longer needed
+        if (markersToRemove.length > 0) {
+          markerClusterGroup.value.removeLayers(markersToRemove);
         }
+
+        // Add new markers
+        if (markersToAdd.length > 0) {
+          markerClusterGroup.value.addLayers(markersToAdd);
+        }
+      } else {
+        // If no POIs, clear all markers
+        markerClusterGroup.value.clearLayers();
+        markersMap.value.clear();
       }
 
       // Add user location to bounds if available
@@ -587,46 +647,23 @@ export default defineComponent({
       // Force refresh
       forceMapRefresh();
 
-      // Fit bounds if we have valid bounds
-      if (bounds.isValid() && (markers.length > 0 || props.userLocation || props.householdLocation)) {
-        try {
-          // Use a short timeout to ensure the map is ready
-          setTimeout(() => {
-            if (map.value) {
-              map.value.fitBounds(bounds.pad(0.2), {
-                animate: false,
-                maxZoom: 15 // Limit how far it zooms in
-              });
-              forceMapRefresh();
-            }
-          }, 100);
-        } catch(e: unknown) {
-          console.error("Error fitting bounds:", e);
-          // Fallback to default view
-          if (map.value) {
-            map.value.setView([props.centerLat, props.centerLon], props.initialZoom);
-          }
-        }
-      } else if (markers.length === 0 && (props.userLocation || props.householdLocation)) {
-        // Center on user or household if no markers
-        if (map.value) {
-          if (props.userLocation) {
-            map.value.setView(
-              [props.userLocation.latitude, props.userLocation.longitude],
-              13
-            );
-          } else if (props.householdLocation) {
-            map.value.setView(
-              [props.householdLocation.latitude, props.householdLocation.longitude],
-              13
-            );
-          }
-        }
-      } else if (markers.length === 0) {
-        // Fallback to default view
-        if (map.value) {
-          map.value.setView([props.centerLat, props.centerLon], props.initialZoom);
-        }
+      const hasAnyPoi = markersMap.value.size > 0;
+
+      if (bounds.isValid() && (hasAnyPoi || props.userLocation || props.householdLocation)) {
+        nextTick(() => {
+          // @ts-expect-error This is valid
+          map!.fitBounds(bounds.pad(0.2), { animate: false, maxZoom: 15 });
+          forceMapRefresh();
+        });
+      }
+      else if (!hasAnyPoi && (props.userLocation || props.householdLocation)) {
+        const loc = props.userLocation || props.householdLocation!;
+          // @ts-expect-error This is valid
+        map!.setView([loc.latitude, loc.longitude], 13);
+      }
+      else if (!hasAnyPoi) {
+          // @ts-expect-error This is valid
+        map!.setView([props.centerLat, props.centerLon], props.initialZoom);
       }
     }
 
@@ -748,7 +785,7 @@ export default defineComponent({
       }
 
       // 4) force a refresh with a slight delay to ensure map is ready
-      setTimeout(() => {
+      nextTick(() => {
         if (map.value) {
           map.value.invalidateSize({ animate: false });
 
@@ -768,7 +805,7 @@ export default defineComponent({
           // Final refresh to ensure everything is positioned correctly
           forceMapRefresh();
         }
-      }, 100);
+      });
     }
 
     // Update user location - original functionality
@@ -871,7 +908,6 @@ export default defineComponent({
     function clearCrisisEvents(): void {
       if (!map.value) return;
 
-      console.log(`Clearing ${crisisLayers.value.length} crisis layers`);
 
       // Remove each layer from the map safely
       crisisLayers.value.forEach(layer => {
@@ -892,8 +928,8 @@ export default defineComponent({
     }
 
     // Watch for POI changes
-    watch(() => props.pois, (newPois: POI[]) => {
-      updatePOIs(newPois);
+    watch(() => props.pois, () => {
+      if (map.value) scheduleViewportUpdate();
     }, { deep: true, immediate: false });
 
     // Watch for user location changes
@@ -912,29 +948,25 @@ export default defineComponent({
 
     // Watch for crisis events changes
     watch(() => props.crisisEvents, (newEvents: CrisisEvent[]) => {
-      console.log("Crisis events prop changed, updating map");
       updateCrisisEvents(newEvents);
     }, { deep: true, immediate: false });
 
     // Watch for map container resize events
     watch(() => document.getElementById(mapContainerId)?.clientWidth, () => {
-      console.log("Map container size changed");
-      setTimeout(() => {
+      nextTick(() => {
         forceMapRefresh();
-      }, 100);
+      });
     });
 
     // Watch for map container resize events
     watch(() => document.getElementById(mapContainerId)?.clientHeight, () => {
-      console.log("Map container height changed");
-      setTimeout(() => {
+      nextTick(() => {
         forceMapRefresh();
-      }, 100);
+      });
     });
 
     // Cleanup on component unmount
     onBeforeUnmount(() => {
-      console.log("Map component unmounting");
 
       // Remove global functions - using type assertion to avoid TypeScript errors
       if ('showRouteFor' in window) {

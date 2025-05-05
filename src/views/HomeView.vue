@@ -10,7 +10,9 @@
       <div class="crisis-components flex flex-col px-4 md:gap-20 md:px-0">
         <component :is="crisisComponents[currentStatus]" />
       </div>
-      <div class="map flex-grow px-4 md:px-0">
+      <div
+        class="map flex-grow px-4 md:px-0 min-h-[200px] md:min-h-[300px] rounded-lg overflow-hidden"
+      >
         <MapOverviewComponent />
       </div>
     </div>
@@ -23,6 +25,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
 import CrisisLevelOverview from '@/components/crisis/CrisisLevelOverview.vue'
+import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -33,7 +36,33 @@ const fetchCrisisLevel = 'not-implemented' // Placeholder for future implementat
 
 const crisisComponents = ref<Record<string, any>>({})
 
-// Function to load components dynamically
+/**
+ * Checks for ongoing crises by fetching crisis events.
+ * Updates the `currentStatus` based on whether there are ongoing crises.
+ *
+ * @async
+ * @function checkForOngoingCrises
+ * @returns {Promise<void>} Resolves when the check is complete.
+ */
+const checkForOngoingCrises = async () => {
+  try {
+    const response = await fetchAllPreviewCrisisEvents(0, 10)
+    hasOngoingCrises.value = response.content.length > 0
+    currentStatus.value = hasOngoingCrises.value ? 'crisis.during' : 'crisis.no-crisis'
+  } catch (error) {
+    console.error('Failed to fetch crisis events:', error)
+    currentStatus.value = 'crisis.no-crisis' // Fallback to no crisis
+  }
+}
+
+/**
+ * Dynamically loads the components for different crisis states.
+ * Maps `crisis.no-crisis` and `crisis.during` to their respective components.
+ *
+ * @async
+ * @function loadCrisisComponents
+ * @returns {Promise<void>} Resolves when the components are loaded.
+ */
 const loadCrisisComponents = async () => {
   crisisComponents.value = {
     'crisis.no-crisis': (await import('@/components/homeview/NoCrisisButtons.vue')).default,
@@ -41,7 +70,13 @@ const loadCrisisComponents = async () => {
   }
 }
 
-// Handle crisis selection from the CrisisLevelOverview component
+/**
+ * Handles the selection of a crisis from the `CrisisLevelOverview` component.
+ * Navigates to the crisis event page with the selected crisis ID as a query parameter.
+ *
+ * @function handleCrisisSelect
+ * @param {number} crisisId - The ID of the selected crisis.
+ */
 const handleCrisisSelect = (crisisId: number) => {
   console.log('Selected crisis:', crisisId)
   router.push({
@@ -50,20 +85,16 @@ const handleCrisisSelect = (crisisId: number) => {
   })
 }
 
+/**
+ * Lifecycle hook that runs when the component is mounted.
+ * Loads the dynamic components and checks for ongoing crises.
+ *
+ * @async
+ * @function onMounted
+ * @returns {Promise<void>} Resolves when the setup is complete.
+ */
 onMounted(async () => {
   await loadCrisisComponents()
+  await checkForOngoingCrises()
 })
 </script>
-
-<style scoped>
-.container {
-  width: 100%;
-}
-.map {
-  /* Ensure map area expands */
-  min-height: 200px;
-  @media (min-width: 768px) {
-    min-height: 300px;
-  }
-}
-</style>
