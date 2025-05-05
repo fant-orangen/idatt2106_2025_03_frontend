@@ -1,10 +1,10 @@
 
 <template>
-  <Card>
+  <Card class="flex flex-col h-full">
     <CardHeader class="pb-2">
       <CardTitle>{{ t('crisis.details', 'Crisis Details') }}</CardTitle>
     </CardHeader>
-    <CardContent>
+    <CardContent class="flex-grow">
       <div v-if="crisisDetails" class="space-y-4">
         <h3 class="text-lg font-semibold flex items-center gap-2">
           {{ crisisDetails.name || 'Unnamed Crisis' }}
@@ -46,13 +46,29 @@
           </div>
 
           <div class="grid grid-cols-3 text-sm">
-            <span class="font-semibold">{{ t('crisis.created_by', 'Created By') }}</span>
-            <span class="col-span-2">{{ crisisDetails.createdByUser || 'N/A' }}</span>
-          </div>
+            <span class="font-semibold">{{ t('crisis.scenario_theme', 'Scenario Theme') }}</span>
+            <span class="col-span-2">
+              <Button
+                v-if="crisisDetails.scenarioThemeId"
+                variant="link"
+                class="p-0 h-auto text-sm font-normal"
+                @click="navigateToScenarioTheme(crisisDetails.scenarioThemeId)"
+              >
+                {{ t('crisis.view_scenario_theme', 'View Scenario Theme') }}
+                <ArrowRight class="ml-1 h-3 w-3" />
+              </Button>
 
-          <Badge :variant="crisisDetails.scenarioThemeId || 'default'">
-            {{ crisisDetails.severity ? crisisDetails.severity.toUpperCase() : 'UNKNOWN' }}
-          </Badge>
+              <Button
+                v-else
+                variant="link"
+                class="p-0 h-auto text-sm font-normal"
+                @click="navigateToDefaultScenarioTheme()"
+              >
+                {{ t('crisis.view_scenario_themes', 'View Scenario Themes') }}
+                <ArrowRight class="ml-1 h-3 w-3" />
+              </Button>
+            </span>
+          </div>
 
         </div>
       </div>
@@ -64,9 +80,11 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { ArrowRight } from 'lucide-vue-next';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import { getSeverityClass } from '@/utils/severityUtils';
 
@@ -124,17 +142,24 @@ const crisisDetails = computed(() => {
 });
 
 /**
- * Navigates to the scenario page with the current crisis ID
- * For now, we'll navigate to a placeholder route
+ * Navigates to the scenario theme page with the theme ID in the URL path
+ *
+ * @param {number} themeId - The ID of the scenario theme to navigate to
  */
-function navigateToScenarioPage() {
-  if (!props.crisis) return;
-
-  // For now, navigate to the crisis event view with a query parameter
-  // This can be updated later to navigate to a specific scenario page
+function navigateToScenarioTheme(themeId: number) {
   router.push({
-    name: 'CrisisEvent',
-    query: { scenarioId: props.crisis.id }
+    name: 'ScenarioTheme',
+    params: { id: themeId.toString() }
+  });
+}
+
+/**
+ * Navigates to the information page without a specific scenario theme ID
+ * This will show all available scenario themes
+ */
+function navigateToDefaultScenarioTheme() {
+  router.push({
+    name: 'Information'
   });
 }
 </script>

@@ -29,6 +29,7 @@ interface TranslatedStrings {
   contact: string;
   directions: string;
   yourLocation: string;
+  householdLocation: string;
   showDirections: string;
   closeDirections: string;
 }
@@ -65,6 +66,10 @@ export default defineComponent({
       type: Object as () => UserLocation | null,
       default: null
     },
+    householdLocation: {
+      type: Object as () => UserLocation | null,
+      default: null
+    },
     crisisEvents: {
       type: Array as () => CrisisEvent[],
       default: () => []
@@ -81,13 +86,15 @@ export default defineComponent({
     const map = ref<L.Map | null>(null);
     const markerClusterGroup = ref<L.MarkerClusterGroup | null>(null);
     const userMarker = ref<L.Marker | null>(null);
+    const householdMarker = ref<L.Marker | null>(null);
     const adminMarkers = ref<L.Marker[]>([]);
     const mapContainerId: string = 'map-' + Math.random().toString(36).substring(2, 9);
     const routingControl = ref<L.Routing.Control | null>(null);
     const activeRouteMarker = ref<L.Marker | null>(null);
     const tempMarker = ref<L.Marker | null>(null);
     const markersMap = ref<Map<string | number, POIMarker>>(new Map()); // Store markers by POI ID for easier reference
-    const crisisCircles = ref<L.Circle[]>([]); // Store crisis event circles for management
+    // Store crisis event layers for management
+    const crisisLayers = ref<L.Layer[]>([]);
 
     // Translation strings with fallbacks
     const translatedStrings: TranslatedStrings = {
@@ -96,6 +103,7 @@ export default defineComponent({
       contact: t('map.contact') || 'Kontakt',
       directions: t('map.directions') || 'Veibeskrivelse',
       yourLocation: t('map.your-location') || 'Din posisjon',
+      householdLocation: t('map.household-location') || 'Household Location',
       showDirections: t('map.show-directions') || 'Vis veibeskrivelse',
       closeDirections: t('map.close-directions') || 'Lukk veibeskrivelse'
     };
@@ -110,6 +118,18 @@ export default defineComponent({
       popupAnchor: [1, -34],
       shadowSize: [41, 41],
       className: 'user-location-icon',
+    });
+
+    // Custom icon for household location
+    const householdIcon = L.icon({
+      iconUrl,
+      iconRetinaUrl,
+      shadowUrl,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+      className: 'household-location-icon',
     });
 
     // Custom icon for admin-created markers
@@ -223,6 +243,11 @@ export default defineComponent({
             updateUserLocation(props.userLocation);
           }
 
+          // Initial household location
+          if (props.householdLocation) {
+            updateHouseholdLocation(props.householdLocation);
+          }
+
           // Initial crisis events
           if (props.crisisEvents && props.crisisEvents.length > 0) {
             updateCrisisEvents(props.crisisEvents);
@@ -236,6 +261,7 @@ export default defineComponent({
     // Force map refresh
     const forceMapRefresh = (): void => {
       if (map.value) {
+        // Ensure the map container has proper dimensions
         map.value.invalidateSize({ animate: false });
 
         // Update user marker position if it exists
@@ -244,12 +270,37 @@ export default defineComponent({
           userMarker.value.setLatLng(latLng);
         }
 
+        // Update household marker position if it exists
+        if (householdMarker.value && props.householdLocation) {
+          const latLng = L.latLng(props.householdLocation.latitude, props.householdLocation.longitude);
+          householdMarker.value.setLatLng(latLng);
+        }
+
         // Update route end marker position if it exists
         if (activeRouteMarker.value && routingControl.value) {
           const waypoints = routingControl.value.getWaypoints();
           if (waypoints && waypoints.length >= 2 && waypoints[1].latLng) {
             activeRouteMarker.value.setLatLng(waypoints[1].latLng);
           }
+        }
+
+        // Refresh crisis markers positions
+        crisisLayers.value.forEach(layer => {
+          // For circle layers
+          if (layer instanceof L.Circle) {
+            const center = layer.getLatLng();
+            layer.setLatLng(center);
+          }
+          // For marker layers
+          else if (layer instanceof L.Marker) {
+            const position = layer.getLatLng();
+            layer.setLatLng(position);
+          }
+        });
+
+        // Refresh marker clusters
+        if (markerClusterGroup.value) {
+          markerClusterGroup.value.refreshClusters();
         }
       }
     };
@@ -528,11 +579,16 @@ export default defineComponent({
         bounds.extend([props.userLocation.latitude, props.userLocation.longitude]);
       }
 
+      // Add household location to bounds if available
+      if (props.householdLocation) {
+        bounds.extend([props.householdLocation.latitude, props.householdLocation.longitude]);
+      }
+
       // Force refresh
       forceMapRefresh();
 
       // Fit bounds if we have valid bounds
-      if (bounds.isValid() && (markers.length > 0 || props.userLocation)) {
+      if (bounds.isValid() && (markers.length > 0 || props.userLocation || props.householdLocation)) {
         try {
           // Use a short timeout to ensure the map is ready
           setTimeout(() => {
@@ -551,13 +607,20 @@ export default defineComponent({
             map.value.setView([props.centerLat, props.centerLon], props.initialZoom);
           }
         }
-      } else if (markers.length === 0 && props.userLocation) {
-        // Center on user if no markers
+      } else if (markers.length === 0 && (props.userLocation || props.householdLocation)) {
+        // Center on user or household if no markers
         if (map.value) {
-          map.value.setView(
-            [props.userLocation.latitude, props.userLocation.longitude],
-            13
-          );
+          if (props.userLocation) {
+            map.value.setView(
+              [props.userLocation.latitude, props.userLocation.longitude],
+              13
+            );
+          } else if (props.householdLocation) {
+            map.value.setView(
+              [props.householdLocation.latitude, props.householdLocation.longitude],
+              13
+            );
+          }
         }
       } else if (markers.length === 0) {
         // Fallback to default view
@@ -565,6 +628,147 @@ export default defineComponent({
           map.value.setView([props.centerLat, props.centerLon], props.initialZoom);
         }
       }
+    }
+
+    function updateCrisisEvents(events: CrisisEvent[]): void {
+      if (!map.value) {
+        console.warn("Cannot update crisis events: map not initialized");
+        return;
+      }
+
+      // 1) clear old
+      clearCrisisEvents();
+
+      // 2) style lookup
+      const LEVEL_STYLES: Record<number, { base: string; border: string }> = {
+        1: { base: '#a6d96a', border: '#333333' },
+        2: { base: '#fdae61', border: '#333333' },
+        3: { base: '#f46d43', border: '#333333' }
+      };
+      const bounds = L.latLngBounds([]);
+
+      // Create a layerGroup to hold all crisis elements for better management
+      const crisisLayerGroup = L.layerGroup();
+
+      // 3) draw each active
+      events.forEach(event => {
+        // Skip if event is explicitly marked as inactive
+        if (event.isActive === false) return;
+
+        // Skip if required properties are missing
+        if (event.latitude === undefined || event.longitude === undefined || event.level === undefined) {
+          console.warn("Skipping crisis event with missing required properties:", event);
+          return;
+        }
+
+        const lat = typeof event.latitude === 'string' ? parseFloat(event.latitude) : event.latitude;
+        const lon = typeof event.longitude === 'string' ? parseFloat(event.longitude) : event.longitude;
+        if (!isFinite(lat) || !isFinite(lon)) {
+          console.warn("Skipping invalid crisis event coords:", event);
+          return;
+        }
+
+        const lvl = LEVEL_STYLES[event.level] ? event.level : 3;
+        const { base, border } = LEVEL_STYLES[lvl];
+        const radius = lvl * 1000;
+        const fillOpacity = 0.4;
+
+        try {
+          // Create popup content for crisis event
+          let popupContent = `
+  <div class="crisis-popup">
+    <h3>${event.name || 'Crisis Event'}</h3>
+    ${event.description ? `<p>${event.description}</p>` : ''}
+    <p class="crisis-level level-${lvl}">
+      Alert Level: ${lvl}
+    </p>
+    ${event.startTime ? `<p class="crisis-time">
+      Started: ${new Date(event.startTime).toLocaleString()}
+    </p>` : ''}
+    <button onclick="window.location.href='/crisis-event?id=${event.id}'" class="crisis-details-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="16"></line>
+        <line x1="8" y1="12" x2="16" y2="12"></line>
+      </svg>
+      View Crisis Details
+    </button>
+  </div>
+`;
+
+          // a) main circle with pastel fill + dark border
+          const circle = L.circle([lat, lon], {
+            radius,
+            fillColor: base,
+            fillOpacity: fillOpacity,
+            color: border,
+            weight: 3,
+            pane: 'overlayPane', // Ensure it's in the correct pane
+            bubblingMouseEvents: false // Prevent event bubbling issues
+          });
+
+          // Add popup to the circle
+          circle.bindPopup(popupContent);
+
+          // Add circle to the layer group
+          circle.addTo(crisisLayerGroup);
+          crisisLayers.value.push(circle);
+
+          // b) square badge
+          const badge = L.marker([lat, lon], {
+            interactive: true, // Make badge interactive so it can be clicked
+            icon: L.divIcon({
+              className: 'crisis-level-box',
+              html: `<span>${lvl}</span>`,
+              iconSize: [24, 24],
+              iconAnchor: [12, 12]
+            }),
+            pane: 'markerPane', // Ensure it's in the marker pane
+            zIndexOffset: 1000 // Keep it above other markers
+          });
+
+          // Add the same popup to the badge
+          badge.bindPopup(popupContent);
+
+          // Add badge to the layer group
+          badge.addTo(crisisLayerGroup);
+          crisisLayers.value.push(badge);
+
+          // Add point to bounds
+          bounds.extend([lat, lon]);
+        } catch (error) {
+          console.error("Error adding crisis event:", error);
+        }
+      });
+
+      // Add the entire layer group to the map at once
+      if (map.value && crisisLayerGroup) {
+        crisisLayerGroup.addTo(map.value as L.Map);
+      }
+
+      // 4) force a refresh with a slight delay to ensure map is ready
+      setTimeout(() => {
+        if (map.value) {
+          map.value.invalidateSize({ animate: false });
+
+          // Only fit bounds if we have valid crisis events
+          if (bounds.isValid() && bounds.getNorthEast().distanceTo(bounds.getSouthWest()) > 0) {
+            try {
+              map.value.fitBounds(bounds.pad(0.2), {
+                animate: false,
+                maxZoom: 15,
+                duration: 0 // No animation duration
+              });
+            } catch (error) {
+              console.error("Error fitting bounds:", error);
+            }
+          }
+
+          // Final refresh to ensure everything is positioned correctly
+          forceMapRefresh();
+        }
+      }, 100);
     }
 
     // Update user location - original functionality
@@ -606,109 +810,85 @@ export default defineComponent({
       }
     }
 
-    // ENHANCED: Update crisis events with better management and interactivity
-    function updateCrisisEvents(events: CrisisEvent[]): void {
-      if (!map.value) {
-        console.warn("Cannot update crisis events: map not initialized");
-        return;
+    // Update household location
+    // Update household location
+    function updateHouseholdLocation(location: UserLocation): void {
+      if (!map.value) return;
+
+      // Remove existing marker
+      if (householdMarker.value) {
+        householdMarker.value.remove();
+        householdMarker.value = null;
       }
 
-      console.log(`Updating crisis events. Count: ${events?.length ?? 0}`);
+      // Add household marker
+      if (location) {
+        // Convert coordinates to numbers if they're strings
+        const lat = typeof location.latitude === 'string' ? parseFloat(location.latitude) : location.latitude;
+        const lon = typeof location.longitude === 'string' ? parseFloat(location.longitude) : location.longitude;
 
-      // Clear existing crisis circles
-      clearCrisisEvents();
-
-      // If no events, just return after clearing
-      if (!events || events.length === 0) {
-        console.log("No crisis events to display");
-        return;
-      }
-
-      // Add new crisis circles
-      events.forEach(event => {
-        // Skip if missing required properties
-        if (!event.latitude || !event.longitude || event.level === undefined) {
-          console.warn(`Skipping invalid crisis event:`, event);
+        // Skip if coordinates are invalid
+        if (!isFinite(lat) || !isFinite(lon)) {
+          console.warn('Invalid household coordinates:', location);
           return;
         }
 
-        // Skip if not active (if isActive property exists and is false)
-        if (event.isActive === false) {
-          return;
-        }
+        // Create custom popup content with router link
+        const popupContent = `
+      <div class="household-popup">
+        <strong>${translatedStrings.householdLocation}</strong>
+        <hr>
+        <button onclick="window.location.href='/household'" class="household-link-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          ${t('map.view-household') || 'Go to Household'}
+        </button>
+      </div>
+    `;
 
-        try {
-          // Calculate radius based on level
-          const radius = event.level * 1000; // 1km, 2km, or 3km based on level
-
-          // Set color based on level
-          const color = event.level === 1 ? 'yellow' :
-            event.level === 2 ? 'orange' : 'red';
-
-          // Create circle
-          const circle = L.circle([event.latitude, event.longitude], {
-            radius,
-            color,
-            fillColor: color,
-            fillOpacity: 0.2,
-            weight: 2,
-            className: `crisis-level-${event.level}`
-          });
-
-          // Create popup content
-          let popupContent = `
-            <div class="crisis-popup">
-              <h3>${event.name}</h3>
-              ${event.description ? `<p>${event.description}</p>` : ''}
-              <p class="crisis-level level-${event.level}">
-                Alert Level: ${event.level}
-              </p>
-              <p class="crisis-time">
-                Started: ${new Date(event.startTime).toLocaleString()}
-              </p>
-            </div>
-          `;
-
-          // Add popup and tooltip
-          circle.bindPopup(popupContent);
-          circle.bindTooltip(event.name, {
-            permanent: false,
-            direction: 'top',
-            className: `crisis-tooltip level-${event.level}`
-          });
-
-          // Add to map and store reference
-          // Here's the fix: Cast map.value to L.Map explicitly before adding the circle
-          if (map.value) {
-            circle.addTo(map.value as L.Map);
-            crisisCircles.value.push(circle);
+        householdMarker.value = L.marker(
+          [lat, lon],
+          {
+            icon: householdIcon,
+            zIndexOffset: 900
           }
-
-          console.log(`Added crisis circle for "${event.name}" at [${event.latitude}, ${event.longitude}]`);
-        } catch (error) {
-          console.error(`Error adding crisis event circle:`, error, event);
-        }
-      });
-
-      // Force map refresh to ensure circles are properly displayed
-      forceMapRefresh();
+        )
+        .addTo(map.value as L.Map)
+        .bindPopup(popupContent)
+        .bindTooltip(translatedStrings.householdLocation, {
+          permanent: false,
+          direction: 'top',
+          className: 'household-location-label',
+          offset: [0, -30],
+        });
+      }
     }
 
-    // ADDED: Clear all crisis events from the map
+    // Clear all crisis events from the map
     function clearCrisisEvents(): void {
       if (!map.value) return;
 
-      console.log(`Clearing ${crisisCircles.value.length} crisis circles`);
+      console.log(`Clearing ${crisisLayers.value.length} crisis layers`);
 
-      // Remove each circle from the map
-      crisisCircles.value.forEach(circle => {
-        if (circle) {
-          circle.remove();
+      // Remove each layer from the map safely
+      crisisLayers.value.forEach(layer => {
+        try {
+          if (map.value && layer) {
+            // Check if the layer is still on the map
+            if (map.value.hasLayer(layer as L.Layer)) {
+              map.value.removeLayer(layer as L.Layer);
+            }
+          }
+        } catch (error) {
+          console.error("Error removing crisis layer:", error);
         }
       });
 
       // Reset the array
-      crisisCircles.value = [];
+      crisisLayers.value = [];
     }
 
     // Watch for POI changes
@@ -723,11 +903,34 @@ export default defineComponent({
       }
     }, { deep: true, immediate: false });
 
+    // Watch for household location changes
+    watch(() => props.householdLocation, (newLocation: UserLocation | null) => {
+      if (newLocation) {
+        updateHouseholdLocation(newLocation);
+      }
+    }, { deep: true, immediate: false });
+
     // Watch for crisis events changes
     watch(() => props.crisisEvents, (newEvents: CrisisEvent[]) => {
       console.log("Crisis events prop changed, updating map");
       updateCrisisEvents(newEvents);
     }, { deep: true, immediate: false });
+
+    // Watch for map container resize events
+    watch(() => document.getElementById(mapContainerId)?.clientWidth, () => {
+      console.log("Map container size changed");
+      setTimeout(() => {
+        forceMapRefresh();
+      }, 100);
+    });
+
+    // Watch for map container resize events
+    watch(() => document.getElementById(mapContainerId)?.clientHeight, () => {
+      console.log("Map container height changed");
+      setTimeout(() => {
+        forceMapRefresh();
+      }, 100);
+    });
 
     // Cleanup on component unmount
     onBeforeUnmount(() => {
@@ -751,6 +954,12 @@ export default defineComponent({
       if (userMarker.value) {
         userMarker.value.remove();
         userMarker.value = null;
+      }
+
+      // Remove household marker
+      if (householdMarker.value) {
+        householdMarker.value.remove();
+        householdMarker.value = null;
       }
 
       // Remove admin markers
@@ -803,6 +1012,10 @@ export default defineComponent({
 
 :deep(.user-location-icon) {
   filter: hue-rotate(210deg); /* Makes the marker blue */
+}
+
+:deep(.household-location-icon) {
+  filter: hue-rotate(300deg); /* Makes the marker purple */
 }
 
 :deep(.destination-marker) {
@@ -893,5 +1106,103 @@ export default defineComponent({
 
 :deep(.leaflet-routing-container) {
   z-index: 999 !important;
+}
+
+:deep(.crisis-level-box span) {
+  display:           flex;
+  align-items:       center;
+  justify-content:   center;
+  width:             24px;
+  height:            24px;
+  background:        rgba(0, 0, 0, 0.7);
+  color:             #fff;
+  border:            2px solid #fff;
+  border-radius:     4px;         /* 0 for perfect square */
+  font-weight:       bold;
+  font-size:         0.9rem;
+  text-shadow:       0 0 1px black;
+  pointer-events:    none;
+}
+
+:deep(.household-popup) {
+  max-width: 250px;
+}
+
+:deep(.household-link-btn) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background-color: #6366f1; /* Indigo color to distinguish from POI buttons */
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  margin-top: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+:deep(.household-link-btn:hover) {
+  background-color: #4f46e5;
+}
+:deep(.crisis-popup) {
+  max-width: 280px;
+}
+
+:deep(.crisis-popup h3) {
+  margin-top: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+:deep(.crisis-popup p) {
+  margin: 0.5rem 0;
+}
+
+:deep(.crisis-level) {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+:deep(.level-1) {
+  background-color: #a6d96a;
+  color: #333;
+}
+
+:deep(.level-2) {
+  background-color: #fdae61;
+  color: #333;
+}
+
+:deep(.level-3) {
+  background-color: #f46d43;
+  color: white;
+}
+
+:deep(.crisis-time) {
+  font-size: 0.9rem;
+  color: #555;
+}
+:deep(.crisis-details-btn) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background-color: #ef4444; /* Red color for crisis */
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  margin-top: 8px;
+  cursor: pointer;
+  width: 100%;
+}
+
+:deep(.crisis-details-btn:hover) {
+  background-color: #dc2626;
 }
 </style>

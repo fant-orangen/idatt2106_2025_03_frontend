@@ -191,7 +191,7 @@
       transform -translate-x-1/2 -translate-y-1/2
       w-full max-w-md
       max-h-[80vh] overflow-auto
-      bg-white rounded-lg p-6
+      rounded-lg p-6
       z-[1001]
     "
     >

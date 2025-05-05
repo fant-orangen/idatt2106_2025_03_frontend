@@ -7,7 +7,16 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+/**
+ * EnhancedSidebar component
+ *
+ * This component provides a hierarchical navigation sidebar for the information section.
+ * It displays both static themes and dynamic scenario themes in a collapsible tree structure.
+ * Highlights the currently selected theme or scenario.
+ *
+ * @component
+ */
+import { ref, watch } from 'vue'
 import { ChevronRight, ChevronDown } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useI18n } from 'vue-i18n'
@@ -15,46 +24,45 @@ import type { SidebarNode } from '@/views/information/EnhancedInformationView.vu
 
 const { t } = useI18n()
 
-defineProps<{
+/**
+ * Component props
+ */
+const props = defineProps<{
+  /** Hierarchical sections to display in the sidebar */
   sections: SidebarNode[]
+  /** Currently selected theme key */
   selectedTheme: string | null
+  /** Currently selected scenario ID */
+  selectedScenarioId: number | null
+  /** Whether the mobile sidebar is visible */
   showSidebarMobile: boolean
 }>()
 
+/**
+ * Component events
+ */
 const emit = defineEmits<{
+  /** Emitted when a theme is selected */
   'theme-selected': [key: string]
+  /** Emitted when the mobile sidebar toggle is clicked */
   'toggle-mobile-sidebar': []
 }>()
 
-// Track expanded sections
+/**
+ * Tracks which sections are expanded in the sidebar
+ */
 const expandedSections = ref<Record<string, boolean>>({
-  // Default to having the top-level sections expanded
   'crisisSituations': true,
-  'extremeWeather': true
+  'extremeWeather': true,
+  'scenarioThemes': true
 })
 
-// Get theme icon based on theme key
-function getThemeIcon(themeKey: string): string {
-  const iconMap: Record<string, string> = {
-    'pandemic': '🦠',
-    'war': '🛡️',
-    'flood': '🌊',
-    'hurricane': '🌪️',
-    'drought': '☀️',
-    'heatwave': '🌡️', // Changed from fire to thermometer
-    'forestFire': '🌲', // Changed from fire to tree
-    'powerOutage': '💡',
-    'waterShortage': '💧',
-    'cyberAttack': '💻',
-    'majorAccident': '⚠️',
-    'preparednessStorage': '🧰',
-    'afterCrisis': '🏡'
-  }
-
-  return iconMap[themeKey] || '📄'
-}
-
-// Style helpers for different hierarchy levels
+/**
+ * Gets the appropriate text class based on the hierarchy level
+ *
+ * @param level - The hierarchy level (0 = top level, 1 = second level, etc.)
+ * @returns CSS class string for the text
+ */
 function getTextClass(level: number): string {
   if (level === 0) {
     return 'text-lg font-bold uppercase tracking-wide'
@@ -65,34 +73,70 @@ function getTextClass(level: number): string {
   }
 }
 
+/**
+ * Gets the appropriate indentation based on the hierarchy level
+ *
+ * @param level - The hierarchy level (0 = top level, 1 = second level, etc.)
+ * @returns CSS style object with paddingLeft property
+ */
 function getIndentClass(level: number): { paddingLeft: string } {
   return { paddingLeft: `${level * 1.5}rem` }
 }
 
-function getBorderClass(level: number, isActive: boolean): string {
+/**
+ * Gets the appropriate border class based on the hierarchy level and active state
+ *
+ * @param level - The hierarchy level (0 = top level, 1 = second level, etc.)
+ * @param isActive - Whether the item is currently active/selected
+ * @returns CSS class string for the border
+ */
+function getBorderClass(level: number, isActive: boolean | undefined): string {
+  // Treat undefined as false
+  const active = isActive === true
+
   if (level === 0) {
-    return isActive ? 'border-l-4 border-primary' : 'border-l-4 border-transparent'
+    return active ? 'border-l-4 border-primary' : 'border-l-4 border-transparent'
   } else if (level === 1) {
-    return isActive ? 'border-l-3 border-primary/80' : 'border-l-3 border-transparent'
+    return active ? 'border-l-3 border-primary/80' : 'border-l-3 border-transparent'
   } else {
-    return isActive ? 'border-l-2 border-primary/60' : 'border-l-2 border-transparent'
+    return active ? 'border-l-2 border-primary/60' : 'border-l-2 border-transparent'
   }
 }
 
-// Toggle section expansion
+/**
+ * Toggles the expansion state of a section
+ *
+ * @param sectionKey - The key of the section to toggle
+ */
 function toggleSection(sectionKey: string): void {
   expandedSections.value[sectionKey] = !expandedSections.value[sectionKey]
 }
 
-// Handle theme selection
+/**
+ * Handles theme selection and emits the selected theme key
+ *
+ * @param themeKey - The key of the selected theme
+ */
 function handleThemeSelected(themeKey: string): void {
   emit('theme-selected', themeKey)
 }
 
-// Toggle mobile sidebar
+/**
+ * Toggles the visibility of the sidebar on mobile devices
+ */
 function toggleMobileSidebar(): void {
   emit('toggle-mobile-sidebar')
 }
+
+/**
+ * Watches for changes in the selected scenario ID
+ * Ensures the scenario themes section is expanded when a scenario is selected
+ */
+watch(() => props.selectedScenarioId, (newId) => {
+  if (newId) {
+    expandedSections.value['scenarioThemes'] = true;
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -160,16 +204,23 @@ function toggleMobileSidebar(): void {
                         <button
                           class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                           :class="[
-                            getBorderClass(2, selectedTheme === subChild.key),
-                            { 'bg-accent/50': selectedTheme === subChild.key }
+                            getBorderClass(2, selectedTheme === subChild.key || (subChild.isScenario && subChild.scenarioId === selectedScenarioId)),
+                            { 'bg-accent/50': selectedTheme === subChild.key || (subChild.isScenario && subChild.scenarioId === selectedScenarioId) }
                           ]"
                           :style="getIndentClass(2)"
                           @click="handleThemeSelected(subChild.key)"
                         >
                           <div class="flex items-center gap-2">
-                            <span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
-                            <span class="text-lg">{{ getThemeIcon(subChild.key) }}</span>
-                            <span :class="getTextClass(2)">{{ t(subChild.titleKey) }}</span>
+                            <span
+                              class="h-2 w-2 rounded-full"
+                              :class="{
+                                'bg-primary': subChild.isScenario && subChild.scenarioId === selectedScenarioId,
+                                'bg-muted-foreground': !(subChild.isScenario && subChild.scenarioId === selectedScenarioId)
+                              }"
+                            ></span>
+                            <span :class="[getTextClass(2), {'font-bold': subChild.isScenario && subChild.scenarioId === selectedScenarioId}]">
+                              {{ subChild.isScenario ? subChild.titleKey : t(subChild.titleKey) }}
+                            </span>
                           </div>
                         </button>
                       </li>
@@ -181,16 +232,23 @@ function toggleMobileSidebar(): void {
                     <button
                       class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                       :class="[
-                        getBorderClass(1, selectedTheme === child.key),
-                        { 'bg-accent/50': selectedTheme === child.key }
+                        getBorderClass(1, selectedTheme === child.key || (child.isScenario && child.scenarioId === selectedScenarioId)),
+                        { 'bg-accent/50': selectedTheme === child.key || (child.isScenario && child.scenarioId === selectedScenarioId) }
                       ]"
                       :style="getIndentClass(1)"
                       @click="handleThemeSelected(child.key)"
                     >
                       <div class="flex items-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-muted-foreground"></span>
-                        <span class="text-lg">{{ getThemeIcon(child.key) }}</span>
-                        <span :class="getTextClass(1)">{{ t(child.titleKey) }}</span>
+                        <span
+                          class="h-2 w-2 rounded-full"
+                          :class="{
+                            'bg-primary': child.isScenario && child.scenarioId === selectedScenarioId,
+                            'bg-muted-foreground': !(child.isScenario && child.scenarioId === selectedScenarioId)
+                          }"
+                        ></span>
+                        <span :class="[getTextClass(1), {'font-bold': child.isScenario && child.scenarioId === selectedScenarioId}]">
+                          {{ child.isScenario ? child.titleKey : t(child.titleKey) }}
+                        </span>
                       </div>
                     </button>
                   </li>
@@ -203,15 +261,16 @@ function toggleMobileSidebar(): void {
               <button
                 class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                 :class="[
-                  getBorderClass(0, selectedTheme === section.key),
-                  { 'bg-accent/50': selectedTheme === section.key }
+                  getBorderClass(0, selectedTheme === section.key || (section.isScenario && section.scenarioId === selectedScenarioId)),
+                  { 'bg-accent/50': selectedTheme === section.key || (section.isScenario && section.scenarioId === selectedScenarioId) }
                 ]"
                 :style="getIndentClass(0)"
                 @click="handleThemeSelected(section.key)"
               >
                 <div class="flex items-center gap-2">
-                  <span class="text-lg">{{ getThemeIcon(section.key) }}</span>
-                  <span :class="getTextClass(0)">{{ t(section.titleKey) }}</span>
+                  <span :class="getTextClass(0)">
+                    {{ section.isScenario ? section.titleKey : t(section.titleKey) }}
+                  </span>
                 </div>
               </button>
             </li>

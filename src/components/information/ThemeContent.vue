@@ -2,12 +2,21 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'ThemeContent'
+  name: 'ThemeContent',
 })
 </script>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+/**
+ * ThemeContent component
+ *
+ * This component displays content for both static themes and dynamic scenario themes.
+ * It handles loading scenario theme details from the backend and rendering appropriate content.
+ *
+ * @component
+ */
+import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { marked } from 'marked'
 import {
   Card,
@@ -15,7 +24,7 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter
+  CardFooter,
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { BookOpen, Info, AlertTriangle, ExternalLink, Phone } from 'lucide-vue-next'
@@ -25,36 +34,57 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetFooter
+  SheetFooter,
 } from '@/components/ui/sheet'
+import { fetchScenarioThemeById } from '@/services/api/ScenarioThemeService'
+import type { ScenarioThemeDetailsDto } from '@/models/ScenarioTheme'
 
 const props = defineProps<{
   selectedTheme: string | null
   themeIcon: string
+  selectedScenarioId: number | null
 }>()
 
-// State for modals
+const router = useRouter()
+
 const isReadMoreOpen = ref(false)
 const isEmergencyContactsOpen = ref(false)
 
-// Helper function to get translation key based on theme
+const scenarioTheme = ref<ScenarioThemeDetailsDto | null>(null)
+const loadingScenario = ref(false)
+const scenarioError = ref<string | null>(null)
+
+/**
+ * Gets the translation key for a theme based on its type
+ * Maps theme keys to their corresponding translation paths
+ *
+ * @param themeKey - The identifier for the theme
+ * @param type - Whether to get the title or content translation key
+ * @returns The translation key path or null if not found
+ */
 function getTranslationKey(themeKey: string, type: 'title' | 'content'): string | null {
   if (!themeKey) return null
 
-  // Base path for all themes
   let basePath = 'themes'
 
-  // Handle crisis situations
-  if (['pandemic', 'war', 'forestFire', 'powerOutage', 'waterShortage', 'cyberAttack', 'majorAccident'].includes(themeKey)) {
+  if (
+    [
+      'pandemic',
+      'war',
+      'forestFire',
+      'powerOutage',
+      'waterShortage',
+      'cyberAttack',
+      'majorAccident',
+    ].includes(themeKey)
+  ) {
     return `${basePath}.crisisSituations.${themeKey}.${type}`
   }
 
-  // Handle extreme weather subcategories
   if (['flood', 'hurricane', 'drought', 'heatwave'].includes(themeKey)) {
     return `${basePath}.crisisSituations.extremeWeather.${themeKey}.${type}`
   }
 
-  // Handle other top-level themes
   if (['preparednessStorage', 'afterCrisis'].includes(themeKey)) {
     return `${basePath}.${themeKey}.${type}`
   }
@@ -62,56 +92,176 @@ function getTranslationKey(themeKey: string, type: 'title' | 'content'): string 
   return null
 }
 
-// Computed properties for content
+/**
+ * Loads a scenario theme by ID
+ *
+ * @param id - The ID of the scenario theme to load
+ */
+async function loadScenarioTheme(id: number) {
+  loadingScenario.value = true
+  scenarioError.value = null
+
+  try {
+    const theme = await fetchScenarioThemeById(id)
+    scenarioTheme.value = theme
+  } catch (err) {
+    console.error(`Failed to load scenario theme with ID ${id}:`, err)
+    scenarioError.value = 'Failed to load scenario theme'
+  } finally {
+    loadingScenario.value = false
+  }
+}
+
+/**
+ * Watch for changes to the selected scenario ID
+ * Loads the scenario theme when a new ID is selected
+ */
+watch(
+  () => props.selectedScenarioId,
+  (newId) => {
+    if (newId) {
+      loadScenarioTheme(newId)
+    } else {
+      scenarioTheme.value = null
+    }
+  },
+  { immediate: true },
+)
+
+/**
+ * Computed property for the title translation key
+ * Returns null for scenario themes (which have their own title)
+ */
 const titleKey = computed(() => {
+  if (props.selectedScenarioId && scenarioTheme.value) {
+    return null
+  }
+
   if (!props.selectedTheme) return null
   return getTranslationKey(props.selectedTheme, 'title')
 })
 
+/**
+ * Computed property for the content translation key
+ * Returns null for scenario themes (which have their own content)
+ */
 const contentKey = computed(() => {
+  if (props.selectedScenarioId && scenarioTheme.value) {
+    return null
+  }
+
   if (!props.selectedTheme) return null
   return getTranslationKey(props.selectedTheme, 'content')
 })
 
+/**
+ * Computed property for the rendered content
+ * Returns null for scenario themes (handled separately in template)
+ */
 const renderedContent = computed(() => {
+  if (props.selectedScenarioId && scenarioTheme.value) {
+    return null
+  }
+
   if (contentKey.value) {
-    // Use the global $t function in the template, but we need to prepare the HTML here
-    // We'll pass the key to the template and let it handle the translation
     return contentKey.value
   }
   return null
 })
 
-// Get theme-specific resources
+/**
+ * Computed property for theme-specific resources translation key
+ */
 const themeResources = computed(() => {
   if (!props.selectedTheme) return null
 
-  // Just return the path, we'll check if it exists in the template
   return `infoPage.themeSpecificResources.${props.selectedTheme}`
 })
 
-// Modal handlers
+/**
+ * Opens the read more sheet
+ */
 function openReadMore() {
   isReadMoreOpen.value = true
 }
 
+/**
+ * Closes the read more sheet
+ */
 function closeReadMore() {
   isReadMoreOpen.value = false
 }
 
+/**
+ * Opens the emergency contacts sheet
+ */
 function openEmergencyContacts() {
   isEmergencyContactsOpen.value = true
 }
 
+/**
+ * Closes the emergency contacts sheet
+ */
 function closeEmergencyContacts() {
   isEmergencyContactsOpen.value = false
 }
 </script>
 
 <template>
-  <div v-if="selectedTheme && titleKey && renderedContent" class="max-w-4xl mx-auto">
-    <div class="mb-4 flex items-center gap-2">
-      <span class="text-3xl">{{ themeIcon }}</span>
+  <div v-if="loadingScenario" class="flex items-center justify-center h-full">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  </div>
+
+  <div v-else-if="scenarioError" class="bg-destructive/10 p-4 rounded-md text-destructive mb-6">
+    {{ scenarioError }}
+  </div>
+
+  <div v-else-if="selectedScenarioId && scenarioTheme" class="max-w-4xl mx-auto">
+    <div class="mb-4">
+      <h1 class="text-2xl md:text-3xl font-bold">{{ scenarioTheme.name }}</h1>
+    </div>
+
+    <Card class="mb-6 shadow-md">
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <Info class="h-5 w-5 text-primary" />
+          {{ $t('scenarioThemes.description') }}
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div
+          v-if="scenarioTheme.description"
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
+        >
+          {{ scenarioTheme.description }}
+        </div>
+        <p v-else class="text-muted-foreground italic">
+          {{ $t('scenarioThemes.noDescription') }}
+        </p>
+      </CardContent>
+    </Card>
+
+    <Card v-if="scenarioTheme.instructions" class="mb-6 shadow-md">
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <BookOpen class="h-5 w-5 text-primary" />
+          {{ $t('scenarioThemes.instructions') }}
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
+          v-html="marked.parse(scenarioTheme.instructions)"
+        ></div>
+      </CardContent>
+    </Card>
+  </div>
+
+  <!-- Regular theme content -->
+  <div v-else-if="selectedTheme && titleKey && renderedContent" class="max-w-4xl mx-auto">
+    <div class="mb-4">
       <h1 class="text-2xl md:text-3xl font-bold">{{ $t(titleKey) }}</h1>
     </div>
 
@@ -122,12 +272,14 @@ function closeEmergencyContacts() {
           {{ $t('infoPage.aboutThisTheme') || 'About this theme' }}
         </CardTitle>
         <CardDescription>
-          {{ $t('infoPage.themeDescription') || 'Essential information to help you prepare and respond.' }}
+          {{
+            $t('infoPage.themeDescription') ||
+            'Essential information to help you prepare and respond.'
+          }}
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <!-- Content with improved typography -->
         <div
           class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
           v-html="marked.parse($t(renderedContent))"
@@ -147,7 +299,7 @@ function closeEmergencyContacts() {
 
       <!-- Read More Modal -->
       <Sheet :open="isReadMoreOpen" @update:open="closeReadMore">
-        <SheetContent class="overflow-y-auto">
+        <SheetContent class="overflow-y-auto z-101">
           <SheetHeader>
             <SheetTitle class="flex items-center gap-2">
               <BookOpen class="h-5 w-5 text-primary" />
@@ -161,23 +313,35 @@ function closeEmergencyContacts() {
           <div class="py-6">
             <h3 class="text-lg font-medium mb-4">{{ $t('infoPage.officialWebsites') }}</h3>
 
-            <!-- Theme-specific websites -->
             <div v-if="themeResources && $te(`${themeResources}.websites`)">
-              <div v-for="(website, index) in $t(`${themeResources}.websites`)" :key="index" class="mb-4 p-4 border rounded-md">
+              <div
+                v-for="(website, index) in $t(`${themeResources}.websites`)"
+                :key="index"
+                class="mb-4 p-4 border rounded-md"
+              >
                 <h4 class="font-medium text-primary">{{ (website as any).name }}</h4>
                 <p class="text-sm text-muted-foreground mb-2">{{ (website as any).description }}</p>
-                <a :href="(website as any).url" target="_blank" rel="noopener noreferrer" class="text-sm flex items-center text-primary hover:underline">
+                <a
+                  :href="(website as any).url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm flex items-center text-primary hover:underline"
+                >
                   {{ (website as any).url }}
                   <ExternalLink class="ml-1 h-3 w-3" />
                 </a>
               </div>
             </div>
 
-            <!-- If no theme-specific resources -->
             <div v-else class="text-muted-foreground text-center py-4">
               <p>{{ $t('infoPage.additionalResources') }}</p>
               <div class="mt-4">
-                <a href="https://www.dsb.no/" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline flex items-center justify-center">
+                <a
+                  href="https://www.dsb.no/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary hover:underline flex items-center justify-center"
+                >
                   DSB - Norwegian Directorate for Civil Protection
                   <ExternalLink class="ml-1 h-3 w-3" />
                 </a>
@@ -191,9 +355,8 @@ function closeEmergencyContacts() {
         </SheetContent>
       </Sheet>
 
-      <!-- Emergency Contacts Modal -->
-      <Sheet :open="isEmergencyContactsOpen" @update:open="closeEmergencyContacts">
-        <SheetContent class="overflow-y-auto">
+      <Sheet class="z-101" :open="isEmergencyContactsOpen" @update:open="closeEmergencyContacts">
+        <SheetContent class="overflow-y-auto z-101">
           <SheetHeader>
             <SheetTitle class="flex items-center gap-2">
               <AlertTriangle class="h-5 w-5 text-primary" />
@@ -205,9 +368,10 @@ function closeEmergencyContacts() {
           </SheetHeader>
 
           <div class="py-6">
-            <!-- General emergency contacts -->
             <div class="mb-6">
-              <h3 class="text-lg font-medium mb-4">{{ $t('infoPage.generalEmergencyContacts.title') }}</h3>
+              <h3 class="text-lg font-medium mb-4">
+                {{ $t('infoPage.generalEmergencyContacts.title') }}
+              </h3>
               <div class="space-y-2">
                 <div class="p-3 border rounded-md flex items-center">
                   <Phone class="h-5 w-5 text-red-500 mr-3" />
@@ -228,9 +392,16 @@ function closeEmergencyContacts() {
               </div>
             </div>
 
-            <!-- Theme-specific contacts -->
-            <div v-if="themeResources && $te(`${themeResources}.contacts`) && $t(`${themeResources}.contacts`).length > 0">
-              <h3 class="text-lg font-medium mb-4">{{ $t(titleKey) }} - {{ $t('infoPage.emergencyContacts') }}</h3>
+            <div
+              v-if="
+                themeResources &&
+                $te(`${themeResources}.contacts`) &&
+                $t(`${themeResources}.contacts`).length > 0
+              "
+            >
+              <h3 class="text-lg font-medium mb-4">
+                {{ $t(titleKey) }} - {{ $t('infoPage.emergencyContacts') }}
+              </h3>
               <div class="space-y-2">
                 <div
                   v-for="(contact, index) in $t(`${themeResources}.contacts`)"
@@ -242,7 +413,9 @@ function closeEmergencyContacts() {
                     <Phone class="h-4 w-4 mr-2" />
                     <span>{{ (contact as any).contact }}</span>
                   </div>
-                  <p class="text-sm text-muted-foreground mt-2">{{ (contact as any).description }}</p>
+                  <p class="text-sm text-muted-foreground mt-2">
+                    {{ (contact as any).description }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -255,8 +428,7 @@ function closeEmergencyContacts() {
       </Sheet>
     </Card>
 
-    <!-- Related themes section -->
-    <div class="mt-8">
+    <div v-if="!selectedScenarioId" class="mt-8">
       <h2 class="text-xl font-bold mb-4">{{ $t('infoPage.relatedThemes') || 'Related themes' }}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <slot name="related-themes"></slot>
@@ -264,12 +436,14 @@ function closeEmergencyContacts() {
     </div>
   </div>
 
-  <!-- Empty state when no theme is selected -->
   <div v-else class="h-full flex flex-col items-center justify-center text-center p-4">
     <div class="mb-4 text-6xl">📚</div>
     <h2 class="text-2xl font-bold mb-2">{{ $t('infoPage.selectThemePrompt') }}</h2>
     <p class="text-muted-foreground max-w-md">
-      {{ $t('infoPage.browseThemesDescription') || 'Browse through our information resources to learn about different crisis situations and how to prepare.' }}
+      {{
+        $t('infoPage.browseThemesDescription') ||
+        'Browse through our information resources to learn about different crisis situations and how to prepare.'
+      }}
     </p>
   </div>
 </template>

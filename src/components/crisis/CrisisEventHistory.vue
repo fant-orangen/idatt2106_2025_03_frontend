@@ -1,11 +1,11 @@
 
 
 <template>
-  <Card>
+  <Card class="flex flex-col h-full">
     <CardHeader class="pb-2">
       <CardTitle>{{ t('crisis.status_history', 'Event History') }}</CardTitle>
     </CardHeader>
-    <CardContent>
+    <CardContent class="flex-grow">
       <div v-if="error" class="text-center py-4 text-red-500">
         {{ error }}
       </div>
@@ -79,7 +79,7 @@ import type { CrisisEventChange } from '@/models/CrisisEvent.ts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { fetchCrisisEventChanges } from '@/services/api/CrisisEventService.ts';
+import { fetchCrisisEventChanges } from '@/services/CrisisEventService.ts';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 
