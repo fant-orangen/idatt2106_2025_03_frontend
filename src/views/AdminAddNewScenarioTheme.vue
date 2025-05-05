@@ -52,19 +52,57 @@
               </FormItem>
             </FormField>
 
-            <!-- Instructions field -->
-            <FormField v-slot="{ field, meta, errorMessage }" name="instructions">
+            <!-- Before Crisis Instructions field -->
+            <FormField v-slot="{ field, meta, errorMessage }" name="before">
               <FormItem>
-                <FormLabel>{{ $t('admin.scenario-theme-instructions') }}</FormLabel>
+                <FormLabel>{{ $t('admin.scenario-theme-before-instructions') }}</FormLabel>
                 <FormControl>
                   <Textarea
                     v-bind="field"
-                    :placeholder="$t('admin.scenario-theme-instructions-placeholder')"
-                    class="min-h-[200px]"
+                    :placeholder="$t('admin.scenario-theme-before-instructions-placeholder')"
+                    class="min-h-[150px]"
                   />
                 </FormControl>
                 <FormDescription>
-                  {{ $t('admin.scenario-theme-instructions-help') }}
+                  {{ $t('admin.scenario-theme-before-instructions-help') }}
+                  <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
+                </FormDescription>
+                <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
+
+            <!-- During Crisis Instructions field -->
+            <FormField v-slot="{ field, meta, errorMessage }" name="under">
+              <FormItem>
+                <FormLabel>{{ $t('admin.scenario-theme-under-instructions') }}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    v-bind="field"
+                    :placeholder="$t('admin.scenario-theme-under-instructions-placeholder')"
+                    class="min-h-[150px]"
+                  />
+                </FormControl>
+                <FormDescription>
+                  {{ $t('admin.scenario-theme-under-instructions-help') }}
+                  <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
+                </FormDescription>
+                <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
+
+            <!-- After Crisis Instructions field -->
+            <FormField v-slot="{ field, meta, errorMessage }" name="after">
+              <FormItem>
+                <FormLabel>{{ $t('admin.scenario-theme-after-instructions') }}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    v-bind="field"
+                    :placeholder="$t('admin.scenario-theme-after-instructions-placeholder')"
+                    class="min-h-[150px]"
+                  />
+                </FormControl>
+                <FormDescription>
+                  {{ $t('admin.scenario-theme-after-instructions-help') }}
                   <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
                 </FormDescription>
                 <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
@@ -177,9 +215,15 @@ const formSchema = toTypedSchema(
     description: z.string()
       .min(10, { message: t('admin.scenario-theme-description-min-length') })
       .max(1000, { message: t('admin.scenario-theme-description-max-length') }),
-    instructions: z.string()
-      .min(10, { message: t('admin.scenario-theme-instructions-min-length') })
-      .max(5000, { message: t('admin.scenario-theme-instructions-max-length') })
+    before: z.string()
+      .min(10, { message: t('admin.scenario-theme-before-instructions-min-length') })
+      .max(5000, { message: t('admin.scenario-theme-before-instructions-max-length') }),
+    under: z.string()
+      .min(10, { message: t('admin.scenario-theme-under-instructions-min-length') })
+      .max(5000, { message: t('admin.scenario-theme-under-instructions-max-length') }),
+    after: z.string()
+      .min(10, { message: t('admin.scenario-theme-after-instructions-min-length') })
+      .max(5000, { message: t('admin.scenario-theme-after-instructions-max-length') })
   })
 )
 
@@ -191,7 +235,9 @@ const form = useForm({
   initialValues: {
     name: '',
     description: '',
-    instructions: ''
+    before: '',
+    under: '',
+    after: ''
   }
 })
 
@@ -206,7 +252,9 @@ const onSubmit = form.handleSubmit(async (values) => {
     const themeData: CreateScenarioThemeDto = {
       name: values.name,
       description: values.description,
-      instructions: values.instructions
+      before: values.before,
+      under: values.under,
+      after: values.after
     }
 
     await createScenarioTheme(themeData)
