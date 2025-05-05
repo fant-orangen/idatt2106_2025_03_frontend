@@ -42,7 +42,7 @@
           >
             <div class="flex items-center gap-1.5">
               <UserIcon class="h-4 w-4" />
-              <span>{{ $t('household.people') }}</span>
+              <span>{{ $t('household.users') }}</span>
               <Badge variant="secondary" size="sm" class="ml-1">{{ realMembers.length }}</Badge>
             </div>
           </button>
@@ -66,7 +66,7 @@
         <div class="mb-2 text-sm text-muted-foreground flex items-center gap-1">
           <UserIcon class="h-3.5 w-3.5" />
           <span>
-            {{ realMembers.length }} {{ realMembers.length === 1 ? $t('household.person') : $t('household.people') }} {{ $t('household.in-household') }}
+            {{ realMembers.length }} {{ realMembers.length === 1 ? $t('household.user') : $t('household.users') }} {{ $t('household.in-household') }}
           </span>
         </div>
 
