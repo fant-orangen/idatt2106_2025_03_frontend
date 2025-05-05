@@ -109,6 +109,7 @@
       {{ poiError || locationStatusMessage || 'An error occurred' }}
     </div>
     <MapComponent
+      ref="mapComponentRef"
       :pois="convertedPois"
       :userLocation="userLocation"
       :householdLocation="householdLocation"
@@ -118,7 +119,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 // import { storeToRefs } from 'pinia'; // Removed if only profile was destructured and not used
 import MapComponent from '@/components/map/MapComponent.vue';
@@ -170,6 +171,8 @@ const {
   getCurrentLocation,
   canShareLocation,
 } = useGeolocation()
+
+const mapComponentRef = ref<InstanceType<typeof MapComponent> | null>(null);
 
 // --- Correctly Alias userLocation ---
 const userLocation = locationCoords // Use the ref returned by the composable
@@ -276,6 +279,14 @@ async function fetchUserLocation(): Promise<boolean> {
   if (fetchedLocation) {
     console.log('Location fetch successful via composable:', fetchedLocation)
     // Optional: startWatching();
+    await nextTick();
+    if (mapComponentRef.value && userLocation.value) {
+      mapComponentRef.value.centerMap(
+        userLocation.value.latitude,
+        userLocation.value.longitude,
+        15 // Set a suitable zoom level, e.g., 15
+      );
+    }
     return true
   } else {
     console.error(
@@ -376,6 +387,11 @@ async function findNearestShelter() {
     if (nearest) {
       pointsOfInterest.value = [nearest]
       console.log('Nearest shelter found:', nearest)
+
+      await nextTick();
+      if (mapComponentRef.value) {
+        mapComponentRef.value.fitBoundsToUserAndPoi();
+      }
     } else {
       pointsOfInterest.value = []
       poiError.value = t('map.find-error', 'Could not find nearest shelter')

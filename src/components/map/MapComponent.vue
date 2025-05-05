@@ -336,11 +336,26 @@ export default defineComponent({
           householdMarker.value.setLatLng(latLng);
         }
 
-        // Update route end marker position if it exists
-        if (activeRouteMarker.value && routingControl.value) {
-          const waypoints = routingControl.value.getWaypoints();
-          if (waypoints && waypoints.length >= 2 && waypoints[1].latLng) {
-            activeRouteMarker.value.setLatLng(waypoints[1].latLng);
+        if (activeRouteMarker.value) {
+          // Access the coordinates stored on the marker itself
+          const destLat = (activeRouteMarker.value as any).destinationLat;
+          const destLng = (activeRouteMarker.value as any).destinationLng;
+
+          // Check if the stored coordinates are valid numbers
+          if (typeof destLat === 'number' && typeof destLng === 'number' && isFinite(destLat) && isFinite(destLng)) {
+            const correctLatLng = L.latLng(destLat, destLng);
+            // Ensure the marker's position is always set to the correct destination
+            activeRouteMarker.value.setLatLng(correctLatLng);
+          } else {
+            // Optional Fallback (less reliable during rapid zoom):
+            // If stored coords are missing, try getting from waypoints, but be aware it might be stale.
+            console.warn("Stored destination coordinates missing on activeRouteMarker. Falling back to routingControl waypoints.");
+            if (routingControl.value) {
+              const waypoints = routingControl.value.getWaypoints();
+              if (waypoints && waypoints.length >= 2 && waypoints[1].latLng) {
+                activeRouteMarker.value.setLatLng(waypoints[1].latLng);
+              }
+            }
           }
         }
 
@@ -567,8 +582,7 @@ export default defineComponent({
         return;
       }
 
-      // Clear any active route when POIs are updated
-      clearRouting();
+
 
       const newPoiIds = new Set<string | number>();
       const markersToAdd: L.Marker[] = [];
@@ -692,11 +706,6 @@ export default defineComponent({
       // Force a map refresh to ensure visuals are updated correctly
       // This invalidates size and redraws, but DOES NOT change zoom/center
       forceMapRefresh();
-
-      // --- REMOVED THE fitBounds LOGIC ---
-      // The block that called map.value.fitBounds(...) has been removed
-      // to prevent the map view from jumping after user interaction or prop updates.
-      // Manual centering/fitting can be handled elsewhere if needed (e.g., on initial load only).
 
       console.log(`updatePOIs finished. Markers in map: ${markersMap.value.size}`);
     }
@@ -961,6 +970,36 @@ export default defineComponent({
       crisisLayers.value = [];
     }
 
+    function fitBoundsToUserAndPoi(): void {
+      if (!map.value || !props.userLocation || !props.pois || props.pois.length === 0) {
+        console.warn("Cannot fit bounds: map, user location, or POI data missing.");
+        return;
+      }
+
+      const userLatLng = L.latLng(props.userLocation.latitude, props.userLocation.longitude);
+      const poi = props.pois[0]; // Assume the first (and likely only) POI is the target
+
+      // Validate POI coordinates
+      const poiLat = typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude;
+      const poiLng = typeof poi.longitude === 'string' ? parseFloat(poi.longitude) : poi.longitude;
+
+      if (!isFinite(poiLat) || !isFinite(poiLng)) {
+        console.warn(`Cannot fit bounds: Invalid coordinates for POI: ${poi.name || poi.id}`);
+        return;
+      }
+
+      const poiLatLng = L.latLng(poiLat, poiLng);
+
+      const bounds = L.latLngBounds(userLatLng, poiLatLng);
+
+      // Add some padding to the bounds so markers aren't right at the edge
+      map.value.fitBounds(bounds.pad(0.15), { // Adjust padding as needed (0.1 = 10%)
+        animate: true,
+        duration: 0.5 // Optional animation
+      });
+      console.log("Fitted map bounds to user and POI:", poi.name);
+    }
+
     // Watch for POI changes
     watch(() => props.pois, () => {
       if (map.value) scheduleViewportUpdate();
@@ -1057,6 +1096,7 @@ export default defineComponent({
       removeMarker,
       centerMap,
       forceMapRefresh,
+      fitBoundsToUserAndPoi,
       tempMarker
     };
   }
