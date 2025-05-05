@@ -11,6 +11,19 @@
       />
       {{ isFilterMenuVisible ? t('map.hide-filter') : t('map.show-filter') }}
     </Button>
+
+    <div class="flex flex-wrap gap-2 mb-4">
+      <Button @click="showPois = !showPois" :variant="showPois ? 'primary' : 'outline'">
+        {{ showPois ? 'Hide POIs' : 'Show POIs' }}
+      </Button>
+      <Button @click="showCrisis = !showCrisis" :variant="showCrisis ? 'primary' : 'outline'">
+        {{ showCrisis ? 'Hide Crisis' : 'Show Crisis' }}
+      </Button>
+      <Button @click="showMeetingPlaces = !showMeetingPlaces"
+              :variant="showMeetingPlaces ? 'primary' : 'outline'">
+        {{ showMeetingPlaces ? 'Hide Meeting Places' : 'Show Meeting Places' }}
+      </Button>
+    </div>
   </div>
 
   <Card v-if="isFilterMenuVisible" class="mb-8 filter-card relative z-20">
@@ -109,11 +122,14 @@
       {{ poiError || locationStatusMessage || 'An error occurred' }}
     </div>
     <MapComponent
-      ref="mapComponentRef"
-      :pois="convertedPois"
+      :pois="showPois ? convertedPois : []"
+      :crisisEvents="showCrisis ? crisisEvents : []"
+      :meetingPlaces="showMeetingPlaces ? meetingPlaces : []"
+      :showPois="showPois"
+      :showCrisis="showCrisis"
+      :showMeetingPlaces="showMeetingPlaces"
       :userLocation="userLocation"
       :householdLocation="householdLocation"
-      :crisisEvents="crisisEvents"
       class="absolute inset-0"
     />
   </div>
@@ -127,6 +143,8 @@ import { useGeolocation } from '@/composables/useGeolocation';
 import { useUserStore } from '@/stores/UserStore';
 import { useGeolocationStore } from '@/stores/GeolocationStore'; // Keep if needed, or remove if composable handles all interaction
 import { useHouseholdStore } from '@/stores/HouseholdStore';
+import type { MeetingPlaceDto } from '@/types/meetingPlace'
+import { fetchMeetingPlacesNearby } from '@/services/api/meetingPlaceService'
 
 import {
   fetchPublicPois,
@@ -198,8 +216,15 @@ const isLoadingCrisisEvents = ref(false)
 
 // Filter state
 const selectedPoiType = ref<number | null>(null)
-const distanceInMeters = ref(1000)
+const distanceInMeters = ref(10000)
 const isFilterMenuVisible = ref(false)
+
+const showPois          = ref(true)
+const showCrisis        = ref(true)
+const showMeetingPlaces = ref(false)
+
+const meetingPlaces     = ref<MeetingPlaceDto[]>([])
+const isLoadingMeetings = ref(false)
 
 // --- Computed Properties ---
 // (Keep existing computed properties: convertedPois, poiTypes, locationStatusMessage)
@@ -458,6 +483,29 @@ watch(distanceInMeters, (val: number | string) => {
   else if (numVal > 5000000) distanceInMeters.value = 5000000
   else if (typeof val === 'string') distanceInMeters.value = numVal
 })
+
+watch(
+  [ () => showMeetingPlaces.value, () => userLocation.value ],
+  async ([show, loc]) => {
+    if (show && loc) {
+      isLoadingMeetings.value = true
+      try {
+        meetingPlaces.value = await fetchMeetingPlacesNearby(
+          loc.latitude,
+          loc.longitude,
+          distanceInMeters.value / 1000  // if your API expects km
+
+        )
+        console.log('Fetched meetingPlaces:', meetingPlaces.value)
+      } finally {
+        isLoadingMeetings.value = false
+      }
+    } else {
+      meetingPlaces.value = []
+    }
+  },
+  { immediate: true }
+)
 
 // --- Lifecycle Hooks ---
 onMounted(async () => {

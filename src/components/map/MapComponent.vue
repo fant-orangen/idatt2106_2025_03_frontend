@@ -14,6 +14,7 @@ import 'leaflet.markercluster';
 import 'leaflet-routing-machine';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import { useI18n } from 'vue-i18n';
+import type { MeetingPlaceDto } from '@/types/meetingPlace'
 
 // Import shared types
 import type { POI, UserLocation, CrisisEvent, MarkerMovedEvent, MarkerAddedEvent, MarkerRemovedEvent, POIMarker } from '@/types/map';
@@ -33,6 +34,7 @@ import policestationIconUrl from '@/assets/mapicons/policestation.svg';
 import shelterIconUrl from '@/assets/mapicons/shelter.svg';
 import waterpointIconUrl from '@/assets/mapicons/waterpoint.svg';
 import defaultPoiIconUrl from '@/assets/mapicons/home.svg';
+
 
 interface TranslatedStrings {
   address: string;
@@ -89,7 +91,9 @@ export default defineComponent({
     adminMode: {
       type: Boolean,
       default: false
-    }
+    },
+    meetingPlaces:     { type: Array as () => MeetingPlaceDto[], default: () => [] },
+    showMeetingPlaces: { type: Boolean, default: false },
   },
   emits: ['map-clicked', 'marker-added', 'marker-removed', 'marker-moved'],
   setup(props, { emit }) {
@@ -106,6 +110,8 @@ export default defineComponent({
     const markersMap = ref<Map<string | number, POIMarker>>(new Map()); // Store markers by POI ID for easier reference
     // Store crisis event layers for management
     const crisisLayers = ref<L.Layer[]>([]);
+    const meetingLayer   = ref<L.MarkerClusterGroup|null>(null)
+    const meetingMarkers = ref<Map<number,L.Marker>>(new Map())
 
     const MIN_ZOOM_FOR_POIS = 10;
 
@@ -151,7 +157,7 @@ export default defineComponent({
       'gas station': gasstationIconUrl,
       'grocery store': grocerystoreIconUrl,
       'hospital': hospitalIconUrl,
-      'meeting point': meetingpointIconUrl, // Example key, adjust if needed
+      'meeting point': meetingpointIconUrl,
       'pharmacy': pharmacyIconUrl,
       'police station': policestationIconUrl,
       'shelter': shelterIconUrl,
@@ -196,6 +202,47 @@ export default defineComponent({
           : poi.longitude;
         return bounds.contains([lat, lng]);
       });
+    }
+
+    function getMeetingIcon(): L.DivIcon {
+      return L.divIcon({
+        html: `<img src="${meetingpointIconUrl}" style="width:32px;height:32px" />`,
+        iconSize: [32,32],
+        iconAnchor: [16,32],
+        className: 'meetingpoint-icon'
+      })
+    }
+
+    function updateMeetingPlaces(list: MeetingPlaceDto[]) {
+      console.log('Drawing meeting places:', list)
+      if (!meetingLayer.value) return;
+      const keep = new Set(list.map(mp => mp.id));
+      const toAdd: L.Marker[] = [];
+
+      // 1) add/update
+      for (const mp of list) {
+        const existing = meetingMarkers.value.get(mp.id);
+        if (existing) {
+          existing.setLatLng([mp.latitude, mp.longitude]);
+          existing.setPopupContent(`<strong>${mp.name}</strong><br/>${mp.description||''}`);
+        } else {
+          const m = L.marker([mp.latitude, mp.longitude], { icon: getMeetingIcon() })
+          .bindPopup(`<strong>${mp.name}</strong><br/>${mp.description||''}`);
+          meetingMarkers.value.set(mp.id, m);
+          toAdd.push(m);
+        }
+      }
+
+      // 2) remove stale
+      for (const [id, marker] of meetingMarkers.value) {
+        if (!keep.has(id)) {
+          meetingLayer.value.removeLayer(marker);
+          meetingMarkers.value.delete(id);
+        }
+      }
+
+      // 3) bulk‐add new
+      if (toAdd.length) meetingLayer.value.addLayers(toAdd);
     }
 
 // Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
@@ -296,6 +343,9 @@ export default defineComponent({
           if (map.value) {
             map.value.addLayer(markerClusterGroup.value as unknown as L.Layer);
           }
+
+          meetingLayer.value = L.markerClusterGroup({ chunkedLoading: true });
+          map.value!.addLayer(meetingLayer.value);
 
           // Set up map event listeners
           map.value.on('zoomend moveend', scheduleViewportUpdate);
@@ -1072,6 +1122,17 @@ export default defineComponent({
         forceMapRefresh();
       });
     });
+
+    watch(() => props.showMeetingPlaces, show => {
+      if (!meetingLayer.value) return;
+      if (show) updateMeetingPlaces(props.meetingPlaces);
+      else      meetingLayer.value.clearLayers();
+    });
+
+// react to data changes
+    watch(() => props.meetingPlaces, list => {
+      if (props.showMeetingPlaces) updateMeetingPlaces(list);
+    }, { deep:true });
 
     // Cleanup on component unmount
     onBeforeUnmount(() => {
