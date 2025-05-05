@@ -112,8 +112,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import type { MeetingPlace, CreateMeetingPlaceRequest } from '@/models/MeetingPlace'
-import meetingPlaceService from '@/services/MeetingPlaceService'
+import type { MeetingPlace, CreateMeetingPlaceDto } from '@/models/MeetingPlace'
+import { meetingPlaceService } from '@/services/MeetingPlaceService'
 import * as z from 'zod'
 import {
 	Breadcrumb,
@@ -149,66 +149,180 @@ CardTitle,
 
 const { t } = useI18n();
 
+/**
+ * For pagination in list of meeting points:
+ */
+const queryClient = useQueryClient();
+const pageSize = 10;
+const {
+  data,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useInfiniteQuery<CrisisEventDto[], Error>({
+  queryKey: ['allMPts'],
+  queryFn: async ({ pageParam = 0 }) => {
+		const pageNumber = pageParam as number;
+		const page = await getPreviewMeetingPlaces(pageNumber, 10);
+		return page.content;
+	},
+  getNextPageParam: (lastPage, allPages) => {
+    return lastPage.length < pageSize ? undefined : allPages.length;
+	},
+	initialPageParam: 0
+});
+
+
+const form = ref();
+const onSubmit = ref<(e?: Event) => void>();
 const selectedMP = ref<MeetingPlace | null>(null);
-const allMPts = computed<MeetingPlace[]>(() => data)
+const newMeetingPoint = ref<CreateMeetingPlaceDto | null>(null);
+const allMPts = computed<MeetingPlace[]>(() => data.value?.pages.flat() ?? []);
+allMPts.value.forEach((event: MeetingPlace) => { console.log(event.id)});
 
-async function getAllMeetingPoints() {
+watch(selectedMP, async (meetingPoint) => {
+  if (meetingPoint && form.value) {
+    // await nexttick();
+    form.value.setValues({
+      title: meetingPoint.name,
+      latitude: meetingPoint.latitude,
+      longitude: meetingPoint.longitude,
+      address: meetingPoint.address,
+    })
+  }
+});
+
+onMounted(() => {
+  fetchNextPage();
   try {
-
+    setUpForm();
   } catch (error) {
+    console.error('Kunne ikke sette opp form skjema...', error);
+  }
+})
 
+function setUpForm() {
+  const formSchema = toTypedSchema(
+    z.object({
+      name: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
+      latitude: z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
+				.min(-90, t('add-event-info.errors.latitude'))
+				.max(90, t('add-event-info.errors.latitude'))),
+      longitude: z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
+				.min(-180, t('add-event-info.errors.longitude'))
+				.max(180, t('add-event-info.errors.longitude'))),
+      address: z.string()
+				.max(100, t('add-event-info.errors.address'))
+				.optional(),
+  }).refine((data) => {
+			if ((data.epicenterLatitude === undefined || isNaN(data.epicenterLatitude)) || (data.epicenterLongitude === undefined || isNaN(data.epicenterLongitude))) {
+					return !!data.address && data.address.length > 0;
+			}
+			return true;
+		}, {
+			message: t('add-event-info.errors.position-missing'),
+			path: ['address'],
+		})
+	);
+	form.value = useForm({ validationSchema: formSchema });
+	onSubmit.value = form.value.handleSubmit(handleFormSubmit);
+}
+
+async function handleFormSubmit(values: any) {
+  if (!selectedMP.value) {
+    console.error('No meeting point selected...');
+    return;
+  }
+  newMeetingPoint.value = {
+    name: values.title,
+    latitude: values.latitude,
+    longitude: values.longitude,
+    address: values.address ?? '',
+  }
+}
+/**
+ * Fetch details about a specific meeting point from the backend API
+ * @param id 
+ */
+async function fetchMeetingPointDetails(id: number) {
+  let mpExists: boolean = false
+	for (let i = 0; i < allMPts.length; i++) {
+    if (allMPts.value[i].id === id) {
+      mpExists = true;
+      break;
+	  }
+  }
+  if (mpExists) {
+    try {
+      const meetingPointResponse = await getAMeetingPlace(id);
+      console.log('MP details er: ', meetingPointResponse);
+      
+      if (meetingPointResponse) {
+        selectedMP.value = meetingPointResponse;
+      } else {
+        callToast('Could not load meeting point...');
+      }
+    } catch (error) {
+      console.error('Failed to select MP', error);
+    }
   }
 }
 
-async function selectMeetingPoint(id: number) {
-	if (!event) {
-		console.log('Event doesnt exist in array from backend');
-		return;
-	}
-	try {
-		const crisisEventDetails = await fetchCrisisEventById(event.id);
-		console.log('Crisis Event details er: ', crisisEventDetails);
-		if (crisisEventDetails) {
-			selectedEvent.value = crisisEventDetails;
-		} else {
-			callToast('Could not load event...');
-		}
-	} catch (error) {
-		console.error('Failed to select event', error);
-	}
-}
-
+/**
+ * Create a new meeting point 
+ * @param data 
+ */
 async function createNewMP(data: CreateMeetingPlaceRequest) {
   try {
     const response = await meetingPlaceService.createMeetingPlace(data)
     console.log('Creating new meeting place ...')
     callToast(response.data);
+    // send a dialogue message that a new mp was created other than the toast maybe??
+    selectedMP.value = null;
+    updatedMP.value = null;
   } catch (error) {
     console.error('Could not create new meeting place', error)
   }
 }
 
+/**
+ * Archive (deactivate) a meeting point.
+ * @param id 
+ */
 async function archiveMP(id: number) {
   try {
     const response = await meetingPlaceService.archiveMeetingPlace(id)
     console.log('Putting meeting place in archive ...')
     callToast(response.data);
+
+    selectedMP.value = null;
+    updatedMP.value = null;
   } catch (error) {
     console.error('Could not create new meeting place', error)
   }
 }
 
+/**
+ * Activate a meeting point
+ * @param id 
+ */
 async function activateMP(id: number) {
   try {
     const response = await meetingPlaceService.activateMeetingPlace(id)
     console.log('Activating the meeting place ...')
     callToast(response.data);
+    
+    selectedMP.value = null;
+    updatedMP.value = null;
   } catch (error) {
     console.error('Could not create new meeting place', error)
   }
 }
 
-
+function cancelUpdate() {
+	selectedMP.value = null;
+	form.value?.resetForm();
+}
 
 /**
 * Pop-up functionality.
