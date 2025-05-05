@@ -121,7 +121,7 @@
 
               </div>
 
-              <!-- Empty member content (no profile popup) -->
+              <!-- Empty member content -->
               <div
                 v-else
                 class="flex items-center gap-3 p-2.5 cursor-pointer transition-all duration-300"
@@ -133,19 +133,6 @@
                     <UserIcon class="h-4 w-4 text-accent-foreground" />
                   </div>
                 </div>
-
-                <!-- Name and details -->
-                <div class="flex-grow min-w-0">
-                  <div class="flex items-center gap-1.5">
-                    <p class="font-medium truncate">
-                      {{ 'name' in member ? member.name : '' }}
-                    </p>
-                  </div>
-                  <p class="text-xs text-muted-foreground truncate">
-                    {{ member.type }}
-                  </p>
-                </div>
-
               </div>
 
               <!-- Remove button - absolutely positioned -->
