@@ -11,7 +11,8 @@ import type {
   UserResponseDto,
   UserPreferencesDto,
   ExtendedUserProfile,
-  UpdateExtendedUserProfile
+  UpdateExtendedUserProfile,
+  UserBasicInfoDto
 } from '@/models/User'
 
 /**
@@ -135,4 +136,20 @@ export async function getUserProfile(): Promise<ExtendedUserProfile> {
 export async function updateUserProfile(profileData: Partial<UpdateExtendedUserProfile>): Promise<ExtendedUserProfile> {
   const response = await api.put('/user/me', profileData)
   return response.data
+}
+
+/**
+ * Fetches basic information about another user
+ * @param userId The ID of the user to fetch
+ * @returns Basic user information including name, email, and household
+ */
+export async function getUserBasicInfo(userId: number): Promise<UserBasicInfoDto> {
+  try {
+    const response = await api.get(`/user/${userId}/basic-info`)
+    console.log('Basic info fetched successfully:', response.data)
+    return response.data
+  } catch (error) {
+    console.error(`Failed to fetch basic info for user ID ${userId}:`, error)
+    throw error
+  }
 }

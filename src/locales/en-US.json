@@ -251,6 +251,11 @@
     "light-mode": "Lightmode",
     "dark-mode": "Darkmode"
   },
+  "user-profile": {
+    "title": "User Profile",
+    "description": "View user information",
+    "close": "Close"
+  },
   "time": {
     "after": "after",
     "before": "before",

@@ -121,6 +121,21 @@ export interface UserProfile {
 }
 
 /**
+ * Interface representing basic user information for display in profile popups.
+ * Maps to the backend UserBasicInfoDto class.
+ *
+ * @interface UserBasicInfoDto
+ */
+export interface UserBasicInfoDto {
+  firstName: string
+  lastName: string
+  email: string
+  householdName: string
+  emailVerified: boolean
+}
+
+
+/**
  * Interface for user profile data
  */
 export interface ExtendedUserProfile {

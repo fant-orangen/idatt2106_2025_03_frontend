@@ -248,6 +248,11 @@
     "light-mode": "Lys modus",
     "dark-mode": "Mørk modus"
   },
+  "user-profile": {
+    "title": "Brukerprofil",
+    "description": "Se brukerinformasjon",
+    "close": "Lukk"
+  },
   "time": {
     "after": "etter",
     "before": "før",

@@ -91,8 +91,11 @@
               <!-- Member content -->
               <div
                 class="flex items-center gap-3 p-2.5 cursor-pointer transition-all duration-300"
-                @click="manageMode ? toggleMemberSelection(member) : selectMember(member)"
+                @click.stop="manageMode ? toggleMemberSelection(member) : selectMember(member)"
+                v-if="'email' in member"
+                v-user-profile="{ userId: member.id }"
               >
+                <!-- Real user content -->
                 <!-- User Icon with status indicator -->
                 <div class="flex-shrink-0 relative">
                   <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
@@ -115,6 +118,34 @@
                     {{ member.email }}
                   </p>
                 </div>
+
+              </div>
+
+              <!-- Empty member content (no profile popup) -->
+              <div
+                v-else
+                class="flex items-center gap-3 p-2.5 cursor-pointer transition-all duration-300"
+                @click.stop="manageMode ? toggleMemberSelection(member) : selectMember(member)"
+              >
+                <!-- User Icon with status indicator -->
+                <div class="flex-shrink-0 relative">
+                  <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
+                    <UserIcon class="h-4 w-4 text-accent-foreground" />
+                  </div>
+                </div>
+
+                <!-- Name and details -->
+                <div class="flex-grow min-w-0">
+                  <div class="flex items-center gap-1.5">
+                    <p class="font-medium truncate">
+                      {{ 'name' in member ? member.name : '' }}
+                    </p>
+                  </div>
+                  <p class="text-xs text-muted-foreground truncate">
+                    {{ member.type }}
+                  </p>
+                </div>
+
               </div>
 
               <!-- Remove button - absolutely positioned -->
@@ -309,6 +340,7 @@
  */
 import { ref, onMounted, defineEmits, defineProps, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { userProfilePopup } from '@/composables/userProfilePopup.ts';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -349,8 +381,8 @@ import { toast } from 'vue-sonner';
 import { useUserStore } from '@/stores/UserStore';
 
 const { t } = useI18n();
-// No longer using the household store, using direct service calls instead
 const userStore = useUserStore();
+const vUserProfile = userProfilePopup;
 
 const props = defineProps({
   householdName: {
