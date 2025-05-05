@@ -168,6 +168,11 @@
     "crisis-status": "Krisestatus",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
     "no-crisis": "Ingen pågående krise",
+    "color": {
+      "green": "grønn",
+      "yellow": "gul",
+      "red": "rød"
+    },
     "no_active_crisis": "Ingen aktive krisehendelser",
     "title": "Krisehendelser",
     "map_view": "Kartvisning",
@@ -266,6 +271,8 @@
     "filter": "Filtrer POIer",
     "my-location": "Bruk min posisjon",
     "your-location": "Din posisjon",
+    "household-location": "Din husholdning",
+    "view-household": "Se husholdning",
     "getting-location": "Henter din posisjon",
     "distance": "Avstand (meter)",
     "poi-type": "POI Type",
@@ -524,7 +531,7 @@
         "powerOutage": "Strømbrudd",
         "waterShortage": "Vannmangel",
         "cyberAttack": "Cyberangrep",
-        "majorAccident": "Storulykke"
+        "majorAccident": "Stor ulykke"
       },
       "preparednessStorage": "Beredskapslager",
       "afterCrisis": "Etter en krise"
@@ -671,6 +678,7 @@
     "success-message": "Hendelsen din er lagt til i systemet.",
     "success-added": "har blitt lagt til.",
     "go-to-admin": "Gå til Admin-panelet",
+    "category": "Velg hvilken type hendelse dette er, f.eks. flom, jordskjelv eller strømbrudd...",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
       "latitude": "Breddegraden må være mellom -90 og 90.",
@@ -681,7 +689,22 @@
       "description": "Beskrivelsen må være minst 10 tegn og kan ikke overstige 500 tegn.",
       "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
       "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
-      "contact-info": "Skriv inn et gyldig telefonnummer."
+      "contact-info": "Skriv inn et gyldig telefonnummer.",
+      "category": "Denne kategorien er ikke gyldig."
+    },
+    "scenarios": {
+      "undefined": "Velg en kategori",
+      "flood": "Flom",
+      "hurricane": "Orkan",
+      "drought":"Tørke",
+      "heatwave":"Hetebølge",
+      "pandemic":"Pandemi",
+      "war":"Krig",
+      "forest fire": "Skogbrann",
+      "power outage": "Strømbrudd",
+      "water shortage": "Vannmangel",
+      "cyber attack": "Cyber angrep",
+      "major accident": "Stor ulykke"
     },
     "titles": {
       "address": "Adresse",
@@ -694,12 +717,24 @@
       "submit": "Lagre",
       "time": "Tidspunkt",
       "date": "Dato",
-      "choose-event": "Velg en hendelse"
+      "choose-event": "Velg en hendelse",
+      "deactivate": "Deaktiver hendelse",
+      "active": "Aktiv status",
+      "category": "Kategori"
     },
     "crisis-level": {
+      "undefined":"Velg et krisenivå",
       "low": "Lav",
       "medium": "Middels",
-      "high": "Høy"
+      "high": "Høy",
+      "green": "Lav",
+      "yellow": "Middels",
+      "red": "Høy"
+    },
+    "active": {
+      "true": "aktiv",
+      "false": "inaktiv",
+      "description": "For å endre statusen på hendelsen må du deaktivere den!"
     }
   },
   "add-POI-info": {

@@ -63,3 +63,10 @@ export interface UpdateScenarioThemeDto {
   /** Updated status of the scenario theme (optional) */
   status?: 'active' | 'archived';
 }
+
+export interface ScenarioThemePreview {
+  /** Unique identifier for the scenario theme to update */
+  id: number;
+  /**Name of the scenario theme */
+  name: string;
+}

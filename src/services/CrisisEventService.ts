@@ -227,7 +227,7 @@ export async function fetchCrisisEventById(id: number): Promise<CrisisEvent | nu
  */
 export async function fetchTheCrisisEventById(id: number): Promise<CrisisEventDto | null> {
   try {
-    const response = await api.get<CrisisEventDto>(`/crisis-events/${id}`);
+    const response = await api.get<CrisisEventDto>(`user/crisis-events/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch crisis event ID ${id}:`, error);

@@ -5,6 +5,12 @@
 		<Breadcrumb>
 		  <BreadcrumbList>
 			<BreadcrumbItem>
+				<BreadcrumbLink href="/">
+				{{ $t('navigation.home') }}
+				</BreadcrumbLink>
+			</BreadcrumbItem>
+			<BreadcrumbSeparator/>
+			<BreadcrumbItem>
 			  <BreadcrumbLink href="/admin-panel">
 				{{ $t('navigation.admin-panel') }}
 			  </BreadcrumbLink>
@@ -108,6 +114,7 @@
 	BreadcrumbItem,
 	BreadcrumbLink,
 	BreadcrumbList,
+	BreadcrumbSeparator
   } from '@/components/ui/breadcrumb'
   import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
 
