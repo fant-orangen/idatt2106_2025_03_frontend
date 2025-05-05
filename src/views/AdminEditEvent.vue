@@ -2,20 +2,20 @@
 <div style="margin: 20px;">
 <Breadcrumb>
 	<BreadcrumbList>
-					<BreadcrumbItem>
+		<BreadcrumbItem>
 			<BreadcrumbLink href="/">
 			{{ $t('navigation.home') }}
 			</BreadcrumbLink>
 		</BreadcrumbItem>
 		<BreadcrumbSeparator/>
 		<BreadcrumbItem>
-			<BreadcrumbLink href="/admin-panel">
+			<BreadcrumbLink href="/admin/admin-panel">
 			{{ $t('navigation.admin-panel') }}
 			</BreadcrumbLink>
 		</BreadcrumbItem>
 		<BreadcrumbSeparator/>
 		<BreadcrumbItem>
-			<BreadcrumbPage href="/edit-event">{{ $t('admin.edit-event') }}</BreadcrumbPage>
+			<BreadcrumbPage href="/admin/edit-event">{{ $t('admin.edit-event') }}</BreadcrumbPage>
 		</BreadcrumbItem>
 	</BreadcrumbList>
 </Breadcrumb>
