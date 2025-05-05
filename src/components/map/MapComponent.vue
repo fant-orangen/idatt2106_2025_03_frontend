@@ -107,6 +107,8 @@ export default defineComponent({
     // Store crisis event layers for management
     const crisisLayers = ref<L.Layer[]>([]);
 
+    const MIN_ZOOM_FOR_POIS = 10;
+
     // Translation strings with fallbacks
     const translatedStrings: TranslatedStrings = {
       address: t('map.address') || 'Adresse',
@@ -198,7 +200,35 @@ export default defineComponent({
 
 // Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
     let updateTimeout: number | null = null;
+
+
     function scheduleViewportUpdate() {
+      if (!map.value || !markerClusterGroup.value) return;
+
+      const zoom = map.value.getZoom();
+      const tooFar = zoom < MIN_ZOOM_FOR_POIS;
+
+      // if zoomed out too far, hide everything _and_ dump the pending debounce
+      if (tooFar) {
+        // 1) cancel the pending update
+        if (updateTimeout) {
+          clearTimeout(updateTimeout);
+          updateTimeout = null;
+        }
+
+        // 2) hide the layer (or clear it if you prefer)
+        if (map.value.hasLayer(markerClusterGroup.value)) {
+          map.value.removeLayer(markerClusterGroup.value);
+        }
+
+        return;
+      }
+
+      // zoom is fine → show layer (if it was hidden) and debounce an update
+      if (!map.value.hasLayer(markerClusterGroup.value)) {
+        map.value.addLayer(markerClusterGroup.value);
+      }
+
       if (updateTimeout) clearTimeout(updateTimeout);
       updateTimeout = window.setTimeout(() => {
         updatePOIs(getVisiblePois());
@@ -576,6 +606,11 @@ export default defineComponent({
     // Update POIs on the map - core functionality used by both original and admin features
     // Update POIs on the map - using SVG Icons and without fitBounds
     function updatePOIs(newPois: POI[]): void {
+
+      if (!map.value || map.value.getZoom() < MIN_ZOOM_FOR_POIS) {
+        markerClusterGroup.value?.clearLayers();
+        return;
+      }
       // Ensure map and cluster group are initialized
       if (!map.value || !markerClusterGroup.value) {
         console.warn("Map or marker cluster group not ready for POI update.");
