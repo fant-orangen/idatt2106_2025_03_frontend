@@ -13,16 +13,6 @@
             required
           ></Input>
         </div>
-        <!-- Personal message -->
-        <div>
-          <Label for="message">{{ $t('household.personal-message') }}</Label>
-          <Textarea
-            id="message"
-            v-model="message"
-            :placeholder="$t('household.optional-message')"
-            rows="3"
-          ></Textarea>
-        </div>
 
         <div class="flex justify-between">
           <!-- Status message -->
@@ -43,7 +33,7 @@
             {{ $t('household.send-invitation') }}
           </Button>
           <Button type="button" variant="outline" @click="cancel">
-            {{ $t('household.cancel') }}
+            {{ $t('common.cancel') }}
           </Button>
         </div>
       </div>
@@ -52,23 +42,40 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component AddUser
+ * @description A form component for inviting users to join a household by email.
+ * Provides input field for email address and handles the invitation process.
+ * Emits events when an invitation is sent or the form is cancelled.
+ */
 import { ref, defineEmits } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { inviteUserByEmail } from '@/services/HouseholdService';
+import { inviteUserToHousehold } from '@/services/HouseholdService';
 
 const { t } = useI18n();
+
+/** Events emitted by this component */
 const emit = defineEmits(['invited', 'cancel']);
 
+/** Email address input value */
 const email = ref('');
-const message = ref('');
+
+/** Loading state indicator */
 const isLoading = ref(false);
+
+/** Status message to display after form submission */
 const status = ref('');
+
+/** Whether the last operation was successful */
 const isSuccess = ref(false);
 
+/**
+ * Sends an invitation to the specified email address
+ * @async
+ */
 const inviteUser = async () => {
   if (!email.value) return;
 
@@ -76,11 +83,7 @@ const inviteUser = async () => {
   status.value = '';
 
   try {
-    // Send invitation to the backend
-    await inviteUserByEmail({
-      email: email.value,
-      message: message.value || undefined
-    });
+    await inviteUserToHousehold(email.value);
 
     status.value = t('household.invitation-sent');
     isSuccess.value = true;
@@ -99,14 +102,19 @@ const inviteUser = async () => {
   }
 };
 
+/**
+ * Cancels the invitation process and resets the form
+ */
 const cancel = () => {
   emit('cancel');
   resetForm();
 };
 
+/**
+ * Resets the form fields to their initial values
+ */
 const resetForm = () => {
   email.value = '';
-  message.value = '';
 };
 </script>
 

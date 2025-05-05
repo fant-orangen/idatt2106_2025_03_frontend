@@ -191,43 +191,15 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
 }
 
 /**
- * Fetches a specific crisis event by its ID.
- *
- * @param {number} id - The ID of the crisis event to fetch.
- * @returns {Promise<CrisisEvent | null>} The crisis event formatted for the frontend, or null if not found/error.
- */
-export async function fetchCrisisEventById(id: number): Promise<CrisisEvent | null> {
-  try {
-    const response = await api.get<BackendCrisisEvent>(`/public/crisis-events/${id}`);
-    if (response.data) {
-      const mappedEvent = mapBackendToFrontendEvent(response.data);
-      // Check if mapping resulted in invalid data
-      if (isNaN(mappedEvent.latitude) || isNaN(mappedEvent.longitude) || isNaN(mappedEvent.radius)) {
-        console.error(`Mapping resulted in invalid data for event ID ${id}`);
-        return null;
-      }
-      return mappedEvent;
-    }
-    return null;
-  } catch (error: any) {
-    if (error.response && error.response.status === 404) {
-      console.warn(`Crisis event with ID ${id} not found (404).`);
-      return null;
-    }
-    console.error(`Error fetching crisis event with ID ${id}:`, error);
-    return null;
-  }
-}
-/**
  * Fetches a single crisis event by ID.
  * Makes a GET request to the '/crisis-events/{id}' endpoint.
  *
  * @param {number} id - The ID of the crisis event to fetch
  * @returns {Promise<CrisisEventDto | null>} The crisis event or null if not found
  */
-export async function fetchTheCrisisEventById(id: number): Promise<CrisisEventDto | null> {
+export async function fetchCrisisEventById(id: number): Promise<CrisisEventDto | null> {
   try {
-    const response = await api.get<CrisisEventDto>(`/crisis-events/${id}`);
+    const response = await api.get<CrisisEventDto>(`/public/crisis-events/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch crisis event ID ${id}:`, error);
@@ -288,7 +260,7 @@ export async function fetchCrisisEventChanges(
   try {
     console.log("page : ", page);
     const response = await api.get<Page<CrisisEventChange>>(
-      `/crisis-events/${crisisEventId}/changes`,
+      `/public/crisis-events/${crisisEventId}/changes`,
       { params: { page, size } }
     );
     return response.data;

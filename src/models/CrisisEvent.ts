@@ -28,6 +28,23 @@ export interface CrisisEventDto {
   scenarioThemeId: number;
 }
 
+export interface UpdateCrisisEventDto {
+  /** Name/title of the crisis event */
+  name: string;
+  /** Optional detailed description of the crisis event */
+  description?: string;
+  /** Severity level of the crisis (green=low, yellow=medium, red=high) */
+  severity: 'green' | 'yellow' | 'red';
+  /** Latitude coordinate of the crisis epicenter */
+  latitude: number;
+  /** Longitude coordinate of the crisis epicenter */
+  longitude: number;
+  /** Radius of the affected area in meters */
+  radius: number | null;
+  /**ID of associated scenario theme */
+  scenarioThemeId: number;
+}
+
 /**
  * Represents a change made to a crisis event.
  * Used for tracking the history of modifications to crisis events.
@@ -64,4 +81,23 @@ export interface CrisisEventPreviewDto {
   severity: 'green' | 'yellow' | 'red';
   /** ISO string timestamp when the crisis event started */
   startTime: string;
+}
+
+export interface CreateCrisisEventDto {
+  /** Name/title of the crisis event */
+  name: string;
+  /** Optional detailed description of the crisis event */
+  description?: string;
+  /** Severity level of the crisis (green=low, yellow=medium, red=high) */
+  severity: 'green' | 'yellow' | 'red';
+  /** Latitude coordinate of the crisis epicenter */
+  latitude: number;
+  /** Longitude coordinate of the crisis epicenter */
+  longitude: number;
+  /** Radius of the affected area in meters */
+  radius: number | null;
+  /** ISO string timestamp when the crisis event started */
+  startTime: string;
+  /** ID of the associated scenario theme, if any */
+  scenarioThemeId: number | null;
 }

@@ -4,7 +4,7 @@
  */
 
 import api from '@/services/api/AxiosInstance';
-import type { ScenarioThemeDto, ScenarioThemeDetailsDto, CreateScenarioThemeDto, UpdateScenarioThemeDto } from '@/models/ScenarioTheme';
+import type { ScenarioThemeDto, ScenarioThemeDetailsDto, CreateScenarioThemeDto, UpdateScenarioThemeDto, ScenarioThemePreview } from '@/models/ScenarioTheme';
 import type { Page } from '@/types/Page';
 
 /**
@@ -123,5 +123,23 @@ export async function deleteScenarioTheme(themeData: UpdateScenarioThemeDto): Pr
   } catch (error) {
     console.error(`Error archiving scenario theme with ID ${themeData.id}:`, error);
     throw error;
+  }
+}
+
+/**
+ * Fetches a paginated list og scenario theme previews. 
+ * Used when creating or editing an event when only the name and id of the scenario is needed.
+ * 
+ * @param {number} page - The page number to fetch (0-based index)
+ * @param {number} size - The number of items per page
+ * @returns {Promise<Page<ScenarioThemeDto>>} Paginated response containing preview of scenarios
+ */
+export async function getScenarioThemePreview(){
+  try {
+    const response = await api.get('/user/scenario-themes/previews/all');
+    console.log('scenarios:', response.data)
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching scenario themes:', error);
   }
 }

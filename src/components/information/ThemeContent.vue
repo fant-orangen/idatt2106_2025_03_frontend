@@ -242,20 +242,65 @@ function closeEmergencyContacts() {
       </CardContent>
     </Card>
 
-    <Card v-if="scenarioTheme.instructions" class="mb-6 shadow-md">
+refactor:     <!-- Before Crisis Instructions -->
+    <Card v-if="scenarioTheme.before" class="mb-6 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <BookOpen class="h-5 w-5 text-primary" />
-          {{ $t('scenarioThemes.instructions') }}
+          {{ $t('scenarioThemes.before') }}
         </CardTitle>
       </CardHeader>
 
       <CardContent>
         <div
           class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
-          v-html="marked.parse(scenarioTheme.instructions)"
+          v-html="marked.parse(scenarioTheme.before)"
         ></div>
       </CardContent>
+    </Card>
+
+    <!-- During Crisis Instructions -->
+    <Card v-if="scenarioTheme.under" class="mb-6 shadow-md">
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <AlertTriangle class="h-5 w-5 text-primary" />
+          {{ $t('scenarioThemes.under') }}
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
+          v-html="marked.parse(scenarioTheme.under)"
+        ></div>
+      </CardContent>
+    </Card>
+
+    <!-- After Crisis Instructions -->
+    <Card v-if="scenarioTheme.after" class="mb-6 shadow-md">
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <BookOpen class="h-5 w-5 text-primary" />
+          {{ $t('scenarioThemes.after') }}
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
+          v-html="marked.parse(scenarioTheme.after)"
+        ></div>
+      </CardContent>
+    </Card>
+
+    <!-- Legacy Instructions (for backward compatibility) -->
+    <Card v-if="!scenarioTheme.before && !scenarioTheme.under && !scenarioTheme.after" class="mb-6 shadow-md">
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <BookOpen class="h-5 w-5 text-primary" />
+          {{ $t('scenarioThemes.instructions') }}
+        </CardTitle>
+      </CardHeader>
     </Card>
   </div>
 

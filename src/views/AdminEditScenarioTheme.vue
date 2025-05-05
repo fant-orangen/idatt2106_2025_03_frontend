@@ -85,19 +85,57 @@
               </FormItem>
             </FormField>
 
-            <!-- Instructions field -->
-            <FormField v-slot="{ field, meta, errorMessage }" name="instructions">
+            <!-- Before Crisis Instructions field -->
+            <FormField v-slot="{ field, meta, errorMessage }" name="before">
               <FormItem>
-                <FormLabel>{{ $t('admin.scenario-theme-instructions') }}</FormLabel>
+                <FormLabel>{{ $t('admin.scenario-theme-before') }}</FormLabel>
                 <FormControl>
                   <Textarea
                     v-bind="field"
-                    :placeholder="$t('admin.scenario-theme-instructions-placeholder')"
-                    class="min-h-[200px]"
+                    :placeholder="$t('admin.scenario-theme-before-placeholder')"
+                    class="min-h-[150px]"
                   />
                 </FormControl>
                 <FormDescription>
-                  {{ $t('admin.scenario-theme-instructions-help') }}
+                  {{ $t('admin.scenario-theme-before-help') }}
+                  <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
+                </FormDescription>
+                <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
+
+            <!-- During Crisis Instructions field -->
+            <FormField v-slot="{ field, meta, errorMessage }" name="under">
+              <FormItem>
+                <FormLabel>{{ $t('admin.scenario-theme-under') }}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    v-bind="field"
+                    :placeholder="$t('admin.scenario-theme-under-placeholder')"
+                    class="min-h-[150px]"
+                  />
+                </FormControl>
+                <FormDescription>
+                  {{ $t('admin.scenario-theme-under-help') }}
+                  <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
+                </FormDescription>
+                <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
+
+            <!-- After Crisis Instructions field -->
+            <FormField v-slot="{ field, meta, errorMessage }" name="after">
+              <FormItem>
+                <FormLabel>{{ $t('admin.scenario-theme-after') }}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    v-bind="field"
+                    :placeholder="$t('admin.scenario-theme-after-placeholder')"
+                    class="min-h-[150px]"
+                  />
+                </FormControl>
+                <FormDescription>
+                  {{ $t('admin.scenario-theme-after-help') }}
                   <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
                 </FormDescription>
                 <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
@@ -269,9 +307,15 @@ const formSchema = toTypedSchema(
     description: z.string()
       .min(10, { message: t('admin.scenario-theme-description-min-length') })
       .max(1000, { message: t('admin.scenario-theme-description-max-length') }),
-    instructions: z.string()
-      .min(10, { message: t('admin.scenario-theme-instructions-min-length') })
-      .max(5000, { message: t('admin.scenario-theme-instructions-max-length') })
+    before: z.string()
+      .min(10, { message: t('admin.scenario-theme-before-instructions-min-length') })
+      .max(5000, { message: t('admin.scenario-theme-before-instructions-max-length') }),
+    under: z.string()
+      .min(10, { message: t('admin.scenario-theme-under-instructions-min-length') })
+      .max(5000, { message: t('admin.scenario-theme-under-instructions-max-length') }),
+    after: z.string()
+      .min(10, { message: t('admin.scenario-theme-after-instructions-min-length') })
+      .max(5000, { message: t('admin.scenario-theme-after-instructions-max-length') })
   })
 )
 
@@ -281,7 +325,9 @@ const form = useForm({
   initialValues: {
     name: '',
     description: '',
-    instructions: ''
+    before: '',
+    under: '',
+    after: ''
   }
 })
 
@@ -308,7 +354,9 @@ function selectTheme(theme: ScenarioThemeDto) {
       form.setValues({
         name: themeDetails.name,
         description: themeDetails.description || '',
-        instructions: themeDetails.instructions || ''
+        before: themeDetails.before || '',
+        under: themeDetails.under || '',
+        after: themeDetails.after || ''
       })
     }
   }).catch(error => {
@@ -333,7 +381,9 @@ const onSubmit = form.handleSubmit(async (values) => {
       id: selectedTheme.value.id,
       name: values.name,
       description: values.description,
-      instructions: values.instructions
+      before: values.before,
+      under: values.under,
+      after: values.after
     }
 
     await updateScenarioTheme(themeData)
@@ -364,7 +414,9 @@ async function deleteTheme() {
       id: selectedTheme.value.id,
       name: currentValues.name,
       description: currentValues.description,
-      instructions: currentValues.instructions
+      before: currentValues.before,
+      under: currentValues.under,
+      after: currentValues.after
     }
 
     await deleteScenarioThemeApi(themeData);

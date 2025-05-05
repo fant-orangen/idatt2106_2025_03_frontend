@@ -8,9 +8,13 @@ export interface News {
   title: string;
   content: string;
   publishedAt: string | Date;
-  createdByUserId: number;
+  createdById: number;
+  createdByName: string;
+  crisisEventId: number;
+  crisisEventName: string;
   createdAt: string | Date;
   updatedAt: string | Date;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 }
 
 /**
