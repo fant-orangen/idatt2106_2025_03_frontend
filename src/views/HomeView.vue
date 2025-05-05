@@ -29,12 +29,19 @@ import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService'
 const router = useRouter()
 const { t } = useI18n()
 
-// Starte for ongoing crises and dynamic components
+// State for ongoing crises and dynamic components
 const hasOngoingCrises = ref(false)
 const currentStatus = ref('crisis.no-crisis') // Default to no crisis
 const crisisComponents = ref<Record<string, any>>({})
 
-// Function to check for ongoing crises
+/**
+ * Checks for ongoing crises by fetching crisis events.
+ * Updates the `currentStatus` based on whether there are ongoing crises.
+ *
+ * @async
+ * @function checkForOngoingCrises
+ * @returns {Promise<void>} Resolves when the check is complete.
+ */
 const checkForOngoingCrises = async () => {
   try {
     const response = await fetchAllPreviewCrisisEvents(0, 10)
@@ -46,8 +53,14 @@ const checkForOngoingCrises = async () => {
   }
 }
 
-
-// Function to load components dynamically
+/**
+ * Dynamically loads the components for different crisis states.
+ * Maps `crisis.no-crisis` and `crisis.during` to their respective components.
+ *
+ * @async
+ * @function loadCrisisComponents
+ * @returns {Promise<void>} Resolves when the components are loaded.
+ */
 const loadCrisisComponents = async () => {
   crisisComponents.value = {
     'crisis.no-crisis': (await import('@/components/homeview/NoCrisisButtons.vue')).default,
@@ -55,7 +68,13 @@ const loadCrisisComponents = async () => {
   }
 }
 
-// Handle crisis selection from the CrisisLevelOverview component
+/**
+ * Handles the selection of a crisis from the `CrisisLevelOverview` component.
+ * Navigates to the crisis event page with the selected crisis ID as a query parameter.
+ *
+ * @function handleCrisisSelect
+ * @param {number} crisisId - The ID of the selected crisis.
+ */
 const handleCrisisSelect = (crisisId: number) => {
   console.log('Selected crisis:', crisisId)
   router.push({
@@ -64,12 +83,16 @@ const handleCrisisSelect = (crisisId: number) => {
   })
 }
 
-// On component mount, load components and check for ongoing crises
+/**
+ * Lifecycle hook that runs when the component is mounted.
+ * Loads the dynamic components and checks for ongoing crises.
+ *
+ * @async
+ * @function onMounted
+ * @returns {Promise<void>} Resolves when the setup is complete.
+ */
 onMounted(async () => {
   await loadCrisisComponents()
   await checkForOngoingCrises()
 })
-
 </script>
-
-
