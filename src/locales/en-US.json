@@ -659,7 +659,18 @@
       "enterTitle": "Enter the quiz title",
       "quizDescription": "Quiz Description",
       "enterDescription": "Enter the quiz description",
-      "createQuiz": "Create Quiz"
+      "createQuiz": "Create Quiz",
+      "addOption": "Add Option",
+      "option": "Option",
+      "enterOption": "Enter option",
+      "addQuestionButton": "Add Question",
+      "addQuestion": "Add Question",
+      "addQuestionDescription": "Add a question and its options to the quiz.",
+      "previewTitle": "Quiz Preview",
+      "previewDescription": "Review the quiz before publishing.",
+      "optionLabel": "Option Label",
+      "optionText": "Option Text",
+      "correct": "Correct?"
     }
   }
 }

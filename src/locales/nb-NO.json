@@ -652,7 +652,18 @@
       "enterTitle": "Skriv inn quizens tittel",
       "quizDescription": "Quizbeskrivelse",
       "enterDescription": "Skriv inn quizens beskrivelse",
-      "createQuiz": "Opprett quiz"
+      "createQuiz": "Opprett quiz",
+      "addOption": "Legg til alternativ",
+      "option": "Alternativ",
+      "enterOption": "Skriv inn alternativ",
+      "addQuestionButton": "Legg til spørsmål",
+      "addQuestion": "Legg til spørsmål",
+      "addQuestionDescription": "Legg til et spørsmål og dets alternativer i quizen.",
+      "previewTitle": "Forhåndsvisning av quiz",
+      "previewDescription": "Se gjennom quizen før publisering.",
+      "optionLabel": "Alternativ-etikett",
+      "optionText": "Alternativtekst",
+      "correct": "Riktig?"
     }
   }
 }
