@@ -104,10 +104,10 @@
                 <div class="flex-grow min-w-0">
                   <div class="flex items-center gap-1.5">
                     <p class="font-medium truncate">
-                      {{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}
+                      {{ 'firstName' in member ? `${member.firstName} ${member.lastName}` : ('name' in member ? (member as any).name : (member as any).email || '') }}
                     </p>
                     <!-- Admin badge -->
-                    <Badge v-if="member.isAdmin || member.admin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
+                    <Badge v-if="'isAdmin' in member && member.isAdmin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
                       {{ $t('household.admin_badge') }}
                     </Badge>
                   </div>
@@ -264,7 +264,7 @@
           </DialogHeader>
           <div class="py-4">
             <p class="font-medium">
-              {{ memberToRemove?.firstName ? `${memberToRemove.firstName} ${memberToRemove.lastName}` : memberToRemove?.name }}
+              {{ memberToRemove && 'firstName' in memberToRemove ? `${memberToRemove.firstName} ${memberToRemove.lastName}` : (memberToRemove && 'name' in memberToRemove ? (memberToRemove as any).name : (memberToRemove as any)?.email || '') }}
             </p>
           </div>
           <DialogFooter>
@@ -466,9 +466,9 @@ onMounted(async () => {
 
 /**
  * Handles member selection and emits the selected member to parent components.
- * @param {HouseholdMember} member - The member that was selected
+ * @param {HouseholdMember | EmptyHouseholdMemberDto} member - The member that was selected
  */
-const selectMember = (member: HouseholdMember) => {
+const selectMember = (member: HouseholdMember | EmptyHouseholdMemberDto) => {
   console.log('Selected member:', member);
   emit('memberSelected', member);
 };
