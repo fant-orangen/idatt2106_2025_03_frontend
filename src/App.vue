@@ -2,7 +2,6 @@
 import HeaderNavbar from './components/HeaderNavbar.vue'
 import Footer from './components/Footer.vue'
 import { Toaster } from './components/ui/sonner'
-import InvitationPopup from './components/invitation/InvitationPopup.vue'
 import { RouterView } from 'vue-router'
 import { useWebSocket } from '@/composables/useWebSocket'
 import { useUserStore } from '@/stores/UserStore'
@@ -42,9 +41,5 @@ watch(
       <RouterView />
     </div>
     <Footer class="z-99" />
-    <InvitationPopup />
-    <div v-if="isInitialized && !isConnected" class="connection-status">
-      Disconnected from notifications
-    </div>
   </div>
 </template>
