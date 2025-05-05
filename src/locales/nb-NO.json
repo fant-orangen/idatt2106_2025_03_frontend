@@ -265,7 +265,8 @@
     "info-about-storage": "Les mer om beredskapslageret",
     "current-situation": "Nåværende hendelser",
     "read-info-preparations": "Les mer om hvordan du kan forberede deg til en krise",
-    "info-current-crisis": "Les mer om den nåværende krisetype"
+    "info-current-crisis": "Les mer om den nåværende krisetype",
+    "info-scenario-type": "Les mer om {scenario}"
   },
   "news": {
     "title": "Nyheter",
@@ -350,6 +351,8 @@
     "beredskapslager": "Beredskapslager",
     "no-expiring-items": "Ingen varer nær utløpsdato.",
     "days-left": "dager igjen",
+    "water-days-left": "Vann: {days} dager igjen",
+    "food-days-left": "Mat: {days} dager igjen",
     "your-shelter-store": "Ditt beredskapslager",
     "invite-user": "Inviter bruker",
     "email-address": "E-postadresse",
