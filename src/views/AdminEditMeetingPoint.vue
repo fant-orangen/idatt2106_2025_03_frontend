@@ -1,142 +1,182 @@
 <template>
-  <div class="p-5">
-    <Breadcrumb>
-		  <BreadcrumbList>
-			<BreadcrumbItem>
-				<BreadcrumbLink href="/">
-				{{ $t('navigation.home') }}
-				</BreadcrumbLink>
-			</BreadcrumbItem>
-			<BreadcrumbSeparator/>
-			<BreadcrumbItem>
-			  <BreadcrumbLink href="/admin/admin-panel">
-				{{ $t('navigation.admin-panel') }}
-			  </BreadcrumbLink>
-			</BreadcrumbItem>
-      <BreadcrumbSeparator/>
-			<BreadcrumbItem>
-			  <BreadcrumbLink href="/admin/meeting-point">
-				{{ $t('navigation.meeting-point') }}
-			  </BreadcrumbLink>
-			</BreadcrumbItem>
-		  </BreadcrumbList>
-		</Breadcrumb>
+<div class="p-5">
+  <Breadcrumb>
+    <BreadcrumbList>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/">
+      {{ $t('navigation.home') }}
+      </BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator/>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/admin/admin-panel">
+      {{ $t('navigation.admin-panel') }}
+      </BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator/>
+    <BreadcrumbItem>
+      <BreadcrumbLink href="/admin/meeting-point">
+      {{ $t('navigation.meeting-point') }}
+      </BreadcrumbLink>
+    </BreadcrumbItem>
+    </BreadcrumbList>
+  </Breadcrumb>
 
-    <h1>{{$t('admin.meeting-point')}}</h1>
+  <h1 class="text-3xl p-5">{{$t('admin.meeting-point')}}</h1>
+
+
+  <div class="grid grid-cols-3 gap-5">
+    <!--Overview of all meeting points-->
+    <Card>
+      <CardHeader>
+        <CardTitle>Current meeting places to find: </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <!--
+        <Combobox by="id">
+          <ComboboxAnchor>
+            <div class="relative w-full max-w-sm items-center">
+              <ComboboxInput class="pl-9" :display-value="(val) => val?.label ?? ''" placeholder="Søk etter møteplass..." />
+              <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
+                <Search class="size-4 text-muted-foreground" />
+              </span>
+            </div>
+          </ComboboxAnchor>
+
+          <ComboboxList>
+            <ComboboxEmpty>
+              Finner ikke møteplassen.
+            </ComboboxEmpty>
+
+            <ComboboxGroup>
+              <ScrollArea class="h-48" @scroll.passive="fetchNextPage" ref="scrollRef">
+                <ComboboxItem v-for="meetingPoint in allMPts"
+                  :key="meetingPoint.id" :value="meetingPoint.id" @click="fetchMeetingPointDetails(meetingPoint.id)">
+                  {{ meetingPoint.name }}
+                  
+                  <ComboboxItemIndicator>
+                    <Check :class="cn('ml-auto h-4 w-4')" />
+                  </ComboboxItemIndicator>
+                </ComboboxItem>
+
+                <div v-if="isFetchingNextPage" class="p-2 text-center text-muted">
+                  Loading more...
+                </div>
+              </ScrollArea>
+
+            </ComboboxGroup>
+          </ComboboxList>
+        </Combobox>-->
+
+        <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
+          <div v-for="meetingPoint in allMPts" 
+          :key="meetingPoint.id" 
+          @click="selectMeetingPoint(meetingPoint.id)"
+          class="h-full w-full rounded-md border p-2">
+            <div class="cursor-pointer">
+              <span>{{ meetingPoint.name }} |🍄</span>
+            </div>
+          </div>
+        </InfiniteScroll>
+      </CardContent>
+      
+      <CardFooter>
+        <template #loading>
+          <div class="text-center p-4">Laster...</div>
+        </template>
+        <template #end-message>
+          <div class="text-center p-4">Alle hendelser er lastet inn</div>
+        </template>
+      </CardFooter>
+    </Card>
+
+    <!--Form to create new meeting point -->
+    <Card>
+      <CardHeader>
+        <CardTitle>Lag en ny møteplass</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form @submit.prevent="onSubmit" class="flex flex-col gap-5">
+          <!-- Name of meeting place: -->
+          <FormField v-slot="{ field, meta, errorMessage }" name="title">
+            <FormItem>
+              <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
+              <FormControl>
+                <Input type="text" v-bind="field" />
+              </FormControl>
+              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+              <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
+            </FormItem>
+          </FormField>
+
+          <div class="flex flex-col gap-2">
+            <!--Latitude field-->
+            <div class="flex flex-row gap-3 justify-evenly">
+              <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
+                <FormItem>
+                  <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
+                  <FormControl>
+                    <Input class="w-[100px]" type="number" step="any" v-bind="field" />
+                  </FormControl>
+                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                </FormItem>
+              </FormField>
+
+              <!--Longitude field-->
+              <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
+                <FormItem>
+                  <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
+                  <FormControl>
+                    <Input class="w-[100px]" type="number" step="any" v-bind="field" />
+                  </FormControl>
+                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                </FormItem>
+              </FormField>
+
+              <!--Address field-->
+              <FormField v-slot="{ field, meta, errorMessage }" name="address">
+                <FormItem>
+                  <FormLabel>{{$t('add-event-info.titles.address')}}</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
+                  </FormControl>
+                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                </FormItem>
+              </FormField>
+            </div>
+            <p class="text-muted-foreground text-sm">{{$t('add-event-info.coordinates')}}</p>
+          </div>
+
+          <div class="flex flex-row gap-5">
+            <Button>{{$t('add-event-info.titles.submit')}}</Button>
+            <Button type="button" variant="secondary" @click="cancelUpdate()"> Cancel</Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+
+    <Card>
+      <CardHeader>
+        <CardTitle>Map</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>MAp <3</p>
+      </CardContent>
+      <CardFooter>
+        Card Footer
+      </CardFooter>
+    </Card>
   </div>
-
-  <Card v-if="!selectedMP">
-    <CardHeader>
-      <CardTitle>Card Title</CardTitle>
-      <CardDescription>Card Description</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
-        <div v-for="meetingPoint in allMPts" 
-        :key="meetingPoint.id" 
-        @click="fetchMeetingPointDetails(meetingPoint.id)">
-          
-        </div>
-      </InfiniteScroll>
-    </CardContent>
-    
-    <CardFooter>
-      <template #loading>
-        <div class="text-center p-4">Laster...</div>
-      </template>
-      <template #end-message>
-        <div class="text-center p-4">Alle hendelser er lastet inn</div>
-      </template>
-    </CardFooter>
-  </Card>
-
-  <!--Form to create new meeting point -->
-  <Card v-if="selectedMP" class="">
-    <CardHeader>
-      <CardTitle></CardTitle>
-      <CardDescription>Card Description</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <form @submit.prevent="onSubmit" >
-        <FormField name="title">
-          <FormItem>
-            <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
-            <FormControl>
-              <Input type="text" v-model="selectedMP.name" readonly disabled />
-            </FormControl>
-            <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
-          </FormItem>
-        </FormField>
-						
-        <br>
-        <div class="container">
-          <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
-            <FormItem>
-              <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
-              <FormControl>
-                <Input class="w-[100px]" type="number" step="any" v-bind="field" />
-              </FormControl>
-              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-            </FormItem>
-          </FormField>
-
-          <!--Longitude field-->
-          <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
-            <FormItem>
-              <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
-              <FormControl>
-                <Input class="w-[100px]" type="number" step="any" v-bind="field" />
-              </FormControl>
-              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-            </FormItem>
-          </FormField>
-
-          <!--Address field-->
-          <FormField v-slot="{ field, meta, errorMessage }" name="address">
-            <FormItem>
-              <FormLabel>{{$t('add-event-info.titles.address')}}</FormLabel>
-              <FormControl>
-                <Input type="text" placeholder="Eksempelveien 2" v-bind="field" />
-              </FormControl>
-              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-            </FormItem>
-          </FormField>
-        </div>
-        <p class="text-muted-foreground text-sm">{{ $t('add-event-info.coordinates') }}</p>
-        <br>
-        <!--Description of meeting point-->
-        <FormField v-slot="{ field, meta, errorMessage }" name="description">
-            <FormItem>
-                <FormLabel>{{$t('add-event-info.titles.description')}}:</FormLabel>
-                <FormControl>
-                  <Textarea
-                    class="descriptionArea"
-                    v-bind="field">
-                  </Textarea>
-                </FormControl>
-                <FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
-                <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
-            </FormItem>
-        </FormField>
-        <br>
-        <div class="buttons">
-          <Button>{{$t('add-event-info.titles.submit')}}</Button>
-          <Button type="button" variant="destructive" @click="deactivateEvent(selectedEvent.id)">{{$t('add-event-info.titles.deactivate')}}</Button>
-        </div>
-      </form>
-    </CardContent>
-  </Card>
+</div>
 </template>
 
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
 import { ref, onMounted, watch, computed, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Separator } from '@/components/ui/separator'
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -159,11 +199,22 @@ import {
 	FormMessage
 } from '@/components/ui/form'
 import {
-Card,
-CardContent,
-CardHeader,
-CardTitle,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
 } from '@/components/ui/card'
+import { 
+  Combobox, 
+  ComboboxAnchor, 
+  ComboboxEmpty, 
+  ComboboxGroup, 
+  ComboboxInput, 
+  ComboboxItem, 
+  ComboboxItemIndicator, 
+  ComboboxList 
+} from '@/components/ui/combobox'
 
 const { t } = useI18n();
 
@@ -194,6 +245,7 @@ const {
 const form = ref();
 const onSubmit = ref<(e?: Event) => void>();
 const selectedMP = ref<MeetingPlace | null>(null);
+const selectedMeetingPoint = ref<MeetingPlacePreviewDto | null>(null);
 const newMeetingPoint = ref<CreateMeetingPlaceDto | null>(null);
 const allMPts = computed<MeetingPlacePreviewDto[]>(() => data.value?.pages.flat() ?? []);
 
@@ -262,7 +314,7 @@ async function handleFormSubmit(values: any) {
 }
 
 /**
- * Fetch details about a specific meeting point from the backend API
+ * Fetch details about a specific meeting point from the backend API. This might not be needed actually...
  * @param id 
  */
 async function fetchMeetingPointDetails(id: number) {
@@ -287,6 +339,16 @@ async function fetchMeetingPointDetails(id: number) {
       console.error('Failed to select MP', error);
     }
   }
+}
+
+function selectMeetingPoint(id: number) {
+	for (let i = 0; i < allMPts.value.length; i++) {
+    if (allMPts.value[i].id === id) {
+      selectedMeetingPoint.value = allMPts.value[i]
+      break;
+	  }
+  }
+  console.log('selected meeting point: ', selectedMeetingPoint.value)
 }
 
 /**
@@ -343,7 +405,6 @@ async function activateMP(id: number) {
 }
 
 function cancelUpdate() {
-	selectedMP.value = null;
 	form.value?.resetForm();
 }
 
@@ -357,11 +418,3 @@ function callToast (message: string) {
 	toast(message);
 }
 </script>
-
-<style scoped>
-  h1 {
-    margin: 10px;
-    font-size: 2em;
-  }
-
-</style>

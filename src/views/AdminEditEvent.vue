@@ -47,15 +47,16 @@
 						</div>
 							<Separator class="my-2" />
 					</div>
-
-					<template #loading>
-						<div class="text-center p-4">Laster...</div>
-					</template>
-					<template #end-message>
-						<div class="text-center p-4">Alle hendelser er lastet inn</div>
-					</template>
 				</InfiniteScroll>
 			</CardContent>
+			<CardFooter>
+        <template #loading>
+          <div class="text-center p-4">Laster...</div>
+        </template>
+        <template #end-message>
+          <div class="text-center p-4">Alle hendelser er lastet inn</div>
+        </template>
+      </CardFooter>
 		</Card>
 	</div>
 
