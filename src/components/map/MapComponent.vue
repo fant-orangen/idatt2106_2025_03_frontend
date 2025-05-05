@@ -23,6 +23,17 @@ import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
+import firestationIconUrl from '@/assets/mapicons/firestation.svg';
+import gasstationIconUrl from '@/assets/mapicons/gasstation.svg';
+import grocerystoreIconUrl from '@/assets/mapicons/grocerystore.svg';
+import hospitalIconUrl from '@/assets/mapicons/hospital.svg';
+import meetingpointIconUrl from '@/assets/mapicons/meetingpoint.svg';
+import pharmacyIconUrl from '@/assets/mapicons/pharmacy.svg';
+import policestationIconUrl from '@/assets/mapicons/policestation.svg';
+import shelterIconUrl from '@/assets/mapicons/shelter.svg';
+import waterpointIconUrl from '@/assets/mapicons/waterpoint.svg';
+import defaultPoiIconUrl from '@/assets/mapicons/home.svg';
+
 interface TranslatedStrings {
   address: string;
   openingHours: string;
@@ -108,53 +119,67 @@ export default defineComponent({
       closeDirections: t('map.close-directions') || 'Lukk veibeskrivelse'
     };
 
-    // Create icons once at module level for reuse
-    // Custom icon for user location
+    // --- Icon Definitions ---
+
+    // User Location Icon (still uses default PNGs, styled blue)
     const userIcon = L.icon({
-      iconUrl,
-      iconRetinaUrl,
-      shadowUrl,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
+      iconUrl, iconRetinaUrl, shadowUrl,
+      iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41],
       className: 'user-location-icon',
     });
 
-    // Custom icon for household location
+    // Household Location Icon (still uses default PNGs, styled purple)
     const householdIcon = L.icon({
-      iconUrl,
-      iconRetinaUrl,
-      shadowUrl,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
+      iconUrl, iconRetinaUrl, shadowUrl,
+      iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41],
       className: 'household-location-icon',
     });
 
-    // Custom icon for admin-created markers
+    // Admin-created Marker Icon (still uses default PNGs, styled green)
     const adminIcon = L.icon({
-      iconUrl,
-      iconRetinaUrl,
-      shadowUrl,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
+      iconUrl, iconRetinaUrl, shadowUrl,
+      iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41],
       className: 'admin-marker-icon',
     });
 
-    // Default icon for POI markers
-    const poiIcon = L.icon({
-      iconUrl,
-      iconRetinaUrl,
-      shadowUrl,
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    });
+    // --- SVG Icon Handling for POIs ---
+    const poiIconUrls: Record<string, string> = {
+      // *** Adjust these lowercase keys to match your actual poiTypeName values ***
+      'fire station': firestationIconUrl,
+      'gas station': gasstationIconUrl,
+      'grocery store': grocerystoreIconUrl,
+      'hospital': hospitalIconUrl,
+      'meeting point': meetingpointIconUrl, // Example key, adjust if needed
+      'pharmacy': pharmacyIconUrl,
+      'police station': policestationIconUrl,
+      'shelter': shelterIconUrl,
+      'water point': waterpointIconUrl, // Example key, adjust if needed
+      // 'home': homeIconUrl, // Add if 'Home' is a POI type
+      // Add other type mappings here...
+    };
+    // Use the imported default SVG as fallback
+    const defaultIconUrlForPoi = defaultPoiIconUrl;
+
+    function getPoiIcon(poiTypeName: string): L.DivIcon {
+      const typeKey = poiTypeName ? poiTypeName.toLowerCase() : 'default';
+      const iconUrlToUse = poiIconUrls[typeKey] || defaultIconUrlForPoi; // Fallback
+
+      // --- Adjust these values to fit your SVG icons' natural size and desired anchor ---
+      const iconWidth = 32; // Example width in pixels
+      const iconHeight = 32; // Example height in pixels
+      const iconAnchorX = iconWidth / 2; // Center horizontally
+      const iconAnchorY = iconHeight;    // Bottom vertically (typical for pins)
+      // --------------------------------------------------------------------------------
+
+      return L.divIcon({
+        html: `<img src="${iconUrlToUse}" alt="${poiTypeName}" style="width: ${iconWidth}px; height: ${iconHeight}px; display: block;">`,
+        iconSize: [iconWidth, iconHeight],
+        iconAnchor: [iconAnchorX, iconAnchorY],
+        popupAnchor: [0, -iconAnchorY + 5], // Adjust popup anchor if needed
+        className: 'poi-svg-icon' // Class for custom styling
+      });
+    }
+    // --- End SVG Icon Handling ---
 
     // Only cluster the POIs actually in view (plus a 50% padding)
     function getVisiblePois(): POI[] {
