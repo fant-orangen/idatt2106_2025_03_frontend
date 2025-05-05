@@ -559,137 +559,146 @@ export default defineComponent({
     }
 
     // Update POIs on the map - core functionality used by both original and admin features
+    // Update POIs on the map - using SVG Icons and without fitBounds
     function updatePOIs(newPois: POI[]): void {
+      // Ensure map and cluster group are initialized
       if (!map.value || !markerClusterGroup.value) {
+        console.warn("Map or marker cluster group not ready for POI update.");
         return;
       }
 
-
-      // Clear routing when POIs change
+      // Clear any active route when POIs are updated
       clearRouting();
 
-      // Use diff-based updates instead of clearing all markers
-      // 1. Create a set of current POI IDs for quick lookup
       const newPoiIds = new Set<string | number>();
       const markersToAdd: L.Marker[] = [];
+      // Bounds calculation is kept in case you need it elsewhere, but not used for fitBounds here
       const bounds = L.latLngBounds([]);
 
-      // Process new POIs
+      // Process the list of POIs provided (should be the full list from props)
       if (newPois && newPois.length > 0) {
         newPois.forEach(poi => {
-          // Skip if no coordinates or ID
-          if (!poi.latitude || !poi.longitude || !poi.id) return;
+          // Basic validation for essential POI data
+          if (poi.latitude === undefined || poi.longitude === undefined || poi.id === undefined) {
+            console.warn(`POI missing essential data (id, lat, or lon):`, poi);
+            return; // Skip this POI
+          }
+          newPoiIds.add(poi.id); // Track IDs of POIs in the current props
 
-          // Add to set of new IDs
-          newPoiIds.add(poi.id);
-
-          // Ensure coordinates are numbers
+          // Ensure coordinates are valid numbers
           const lat = typeof poi.latitude === 'string' ? parseFloat(poi.latitude) : poi.latitude;
           const lon = typeof poi.longitude === 'string' ? parseFloat(poi.longitude) : poi.longitude;
 
           if (!isFinite(lat) || !isFinite(lon)) {
-            console.warn(`Invalid coordinates for POI: ${poi.name}`, lat, lon);
-            return;
+            console.warn(`Invalid coordinates for POI: ${poi.name || poi.id}`, lat, lon);
+            return; // Skip this POI
           }
 
-          // Check if marker already exists
-          const existingMarker = markersMap.value.get(poi.id);
+          // Determine POI type for icon selection, default if missing
+          const currentPoiTypeName = poi.poiTypeName || 'default';
+          if (!poi.poiTypeName) {
+            console.warn(`POI ${poi.id || poi.name} is missing poiTypeName. Using default icon.`);
+          }
+
+          // Check if a marker for this POI already exists in our map
+          const existingMarker = markersMap.value.get(poi.id) as POIMarker | undefined; // Type assertion for clarity
 
           if (existingMarker) {
-            // Update existing marker position if it changed
+            // --- Update Existing Marker ---
+            // 1. Update position if latitude or longitude changed
             if (existingMarker.poiLat !== lat || existingMarker.poiLng !== lon) {
               existingMarker.setLatLng([lat, lon]);
+              // Update stored coordinates on the marker object
               existingMarker.poiLat = lat;
               existingMarker.poiLng = lon;
             }
-
-            // Update popup content in case it changed
+            // 2. Update popup content (always update in case details changed)
             existingMarker.setPopupContent(createPopupContent(poi));
-
-            // Update tooltip in case name changed
+            // 3. Update tooltip content (always update in case name changed)
             existingMarker.setTooltipContent(poi.name);
+            // 4. Update icon *only if the POI type changed*
+            if (existingMarker.poiTypeName !== currentPoiTypeName) {
+              existingMarker.setIcon(getPoiIcon(currentPoiTypeName));
+              existingMarker.poiTypeName = currentPoiTypeName; // Update stored type
+            }
           } else {
-            // Create new marker with reused icon
+            // --- Create New Marker ---
             const marker = L.marker([lat, lon], {
-              icon: poiIcon, // Use the pre-created icon
+              icon: getPoiIcon(currentPoiTypeName), // Use the SVG icon function
               riseOnHover: true,
-              bubblingMouseEvents: false,
-              zIndexOffset: 100
+              bubblingMouseEvents: false, // Prevent events from bubbling up to the map (optional)
+              zIndexOffset: 100 // Ensure POIs are generally below user/household markers
             });
 
+            // Bind popup and tooltip
             marker.bindPopup(createPopupContent(poi));
-            marker.bindTooltip(poi.name, {
-              permanent: false,
-              direction: 'top',
-              className: 'poi-label'
-            });
+            marker.bindTooltip(poi.name, { permanent: false, direction: 'top', className: 'poi-label' });
 
-            // Store reference to coordinates
-            const poiMarker = marker as POIMarker;
+            // Store custom properties directly on the marker object
+            const poiMarker = marker as POIMarker; // Assert type
             poiMarker.poiLat = lat;
             poiMarker.poiLng = lon;
+            poiMarker.poiTypeName = currentPoiTypeName; // Store type name for future comparisons
 
-            // Store in markers map
+            // Add to our internal map and the list to be added to the cluster group
             markersMap.value.set(poi.id, poiMarker);
-            markersToAdd.push(marker);
+            markersToAdd.push(poiMarker); // Add the typed marker
           }
-
+          // Extend bounds (still useful for potential manual centering logic elsewhere)
           bounds.extend([lat, lon]);
         });
 
-        // 2. Remove markers that are no longer in the POI list
+        // --- Remove Old Markers ---
+        // Identify markers in our internal map that are NOT in the new POI list
         const markersToRemove: L.Marker[] = [];
         markersMap.value.forEach((marker, id) => {
           if (!newPoiIds.has(id)) {
-            markersToRemove.push(marker as unknown as L.Marker);
-            markersMap.value.delete(id);
+            // Found a marker for a POI that's no longer in the props
+            markersToRemove.push(marker as L.Marker); // Add to removal list
+            markersMap.value.delete(id); // Remove from our internal map
           }
         });
 
-        // Remove markers no longer needed
+        // Perform bulk add/remove operations on the cluster group for efficiency
         if (markersToRemove.length > 0) {
           markerClusterGroup.value.removeLayers(markersToRemove);
+          console.log(`Removed ${markersToRemove.length} old POI markers.`);
         }
-
-        // Add new markers
         if (markersToAdd.length > 0) {
           markerClusterGroup.value.addLayers(markersToAdd);
+          console.log(`Added ${markersToAdd.length} new POI markers.`);
         }
+
       } else {
-        // If no POIs, clear all markers
+        // If the newPois list is empty, clear everything
+        console.log("Received empty POI list, clearing all markers.");
         markerClusterGroup.value.clearLayers();
         markersMap.value.clear();
       }
 
-      // Add user location to bounds if available
+      // Extend bounds with user/household locations if they exist
       if (props.userLocation) {
         bounds.extend([props.userLocation.latitude, props.userLocation.longitude]);
       }
-
-      // Add household location to bounds if available
       if (props.householdLocation) {
-        bounds.extend([props.householdLocation.latitude, props.householdLocation.longitude]);
+        // Ensure household coordinates are valid before extending bounds
+        const hhLat = typeof props.householdLocation.latitude === 'string' ? parseFloat(props.householdLocation.latitude) : props.householdLocation.latitude;
+        const hhLon = typeof props.householdLocation.longitude === 'string' ? parseFloat(props.householdLocation.longitude) : props.householdLocation.longitude;
+        if (isFinite(hhLat) && isFinite(hhLon)) {
+          bounds.extend([hhLat, hhLon]);
+        }
       }
 
-      // Force refresh
+      // Force a map refresh to ensure visuals are updated correctly
+      // This invalidates size and redraws, but DOES NOT change zoom/center
       forceMapRefresh();
 
-      const hasAnyPoi = markersMap.value.size > 0;
+      // --- REMOVED THE fitBounds LOGIC ---
+      // The block that called map.value.fitBounds(...) has been removed
+      // to prevent the map view from jumping after user interaction or prop updates.
+      // Manual centering/fitting can be handled elsewhere if needed (e.g., on initial load only).
 
-      if (bounds.isValid() && (hasAnyPoi || props.userLocation || props.householdLocation)) {
-        nextTick(() => {
-          // @ts-ignore - Leaflet's pad() method works at runtime but has type issues
-          map!.fitBounds(bounds.pad(0.2), { animate: false, maxZoom: 15 });
-          forceMapRefresh();
-        });
-      }
-      else if (!hasAnyPoi && (props.userLocation || props.householdLocation)) {
-        const loc = props.userLocation || props.householdLocation!;
-        map.value!.setView([loc.latitude, loc.longitude], 13);
-      }
-      else if (!hasAnyPoi) {
-        map.value!.setView([props.centerLat, props.centerLon], props.initialZoom);
-      }
+      console.log(`updatePOIs finished. Markers in map: ${markersMap.value.size}`);
     }
 
     function updateCrisisEvents(events: CrisisEvent[]): void {
