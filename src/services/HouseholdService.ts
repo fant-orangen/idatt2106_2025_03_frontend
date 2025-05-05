@@ -216,5 +216,11 @@ export async function isCurrentUserHouseholdAdmin(): Promise<boolean> {
  * @throws Error if the user is not an admin or if there's another issue preventing deletion
  */
 export async function deleteHousehold(): Promise<void> {
-  await api.delete('/user/households');
+  try {
+    const response = await api.delete('/user/households');
+    console.log('Household deleted successfully:', response.data);
+  } catch (error) {
+    console.error('Error deleting household:', error);
+    throw error;
+  }
 }
