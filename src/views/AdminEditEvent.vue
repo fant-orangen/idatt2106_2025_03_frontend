@@ -38,15 +38,15 @@
 				<InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
 					<div v-for="(event, index) in allEvents" :key="event.id" @click="selectEvent(index)"
 						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-muted/80']">
-						
+
 						<div class=listOfEvents>
 							<span class="severity-tag">{{ event.name }} </span>
-							<span :class="['severity-tag', event.severity]"> {{ $t('crisis.color.' + event.severity) }}</span> 
+							<span :class="['severity-tag', event.severity]"> {{ $t('crisis.color.' + event.severity) }}</span>
 							<span class="severity-tag">  {{ formatDateFull(event.startTime) }}</span>
 							<span :class="['severity-tag', event.active ? 'true' : 'false']">  {{ $t('add-event-info.active.' + event.active) }}</span>
-						</div>	
+						</div>
 							<Separator class="my-2" />
-					</div> 
+					</div>
 
 					<template #loading>
 						<div class="text-center p-4">Laster...</div>
@@ -86,7 +86,7 @@
 							</FormItem>
 						</FormField>
 					</div>
-						
+
 					<br>
 					<div class="container">
 						<FormField v-slot="{ field, meta, errorMessage }" name="epicenterLatitude">
@@ -180,27 +180,27 @@
 					<FormField v-slot="{ field, meta, errorMessage }" name="category">
 						<FormItem>
 							<FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
-							<FormControl>	
+							<FormControl>
 								<Select v-bind="field">
 									<SelectTrigger style="cursor: pointer;">
-									<!--<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->	
+									<!--<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->
 										<SelectValue :placeholder="scenarioName"/>
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem v-for="type in scenarioPreviews" :key="type.id"
-											:value="type.name"> 
+											:value="type.name">
 											{{ type.name }}
 										<!--	{{ $t('add-event-info.scenarios.' + type.name) }} dette vil bare fungere dersom det er fastsatte typer i språkfilene...-->
 										</SelectItem>
 										<!--
 										<SelectGroup>
-											<SelectLabel>{{ $t('sidebar.themes.crisisSituations.extremeWeather.title') }}:</SelectLabel> 
+											<SelectLabel>{{ $t('sidebar.themes.crisisSituations.extremeWeather.title') }}:</SelectLabel>
 											<SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>
 											<SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
 											<SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
 											<SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
 										</SelectGroup>
-											
+
 										<SelectGroup>
 											<SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}:</SelectLabel>
 											<SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
@@ -226,7 +226,7 @@
 									<FormLabel>{{$t('add-event-info.titles.description')}}:</FormLabel>
 									<FormControl>
 										<Textarea
-											class="descriptionArea" 
+											class="descriptionArea"
 											v-bind="field">
 										</Textarea>
 									</FormControl>
@@ -254,7 +254,7 @@
 <script setup lang="ts">
 import { updateCurrentEvent, deactivateCurrentEvent, getCurrentEvents } from '@/services/api/AdminServices'
 import type { CrisisEventDto, UpdateCrisisEventDto } from '@/models/CrisisEvent.ts'
-import { fetchTheCrisisEventById } from '@/services/CrisisEventService'
+import { fetchCrisisEventById } from '@/services/CrisisEventService'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query'
 import { getScenarioThemePreview } from '@/services/api/ScenarioThemeService'
 import type { ScenarioThemePreview } from '@/models/ScenarioTheme'
@@ -337,8 +337,8 @@ const allEvents = computed<CrisisEventDto[]>(() => data.value?.pages.flat() ?? [
 allEvents.value.forEach((event: CrisisEventDto) => { console.log(event.id)});
 
 /**
- * Saves the event the admin user chose to edit to the 'selectedEvent' variable. 
- * @param index - index of event in the 'events' array. 
+ * Saves the event the admin user chose to edit to the 'selectedEvent' variable.
+ * @param index - index of event in the 'events' array.
  */
 async function selectEvent(index: number) {
 	const event = allEvents.value[index];
@@ -347,7 +347,7 @@ async function selectEvent(index: number) {
 		return;
 	}
 	try {
-		const crisisEventDetails = await fetchTheCrisisEventById(event.id);
+		const crisisEventDetails = await fetchCrisisEventById(event.id);
 		console.log('Crisis Event details er: ', crisisEventDetails);
 		if (crisisEventDetails) {
 			selectedEvent.value = crisisEventDetails;
@@ -395,7 +395,7 @@ function setUpFormSchema() {
 				z.string()
 				.max(500, t('add-event-info.errors.description'))
 				.optional()
-		),  
+		),
 		}).refine((data) => {
 			if ((data.epicenterLatitude === undefined || isNaN(data.epicenterLatitude)) || (data.epicenterLongitude === undefined || isNaN(data.epicenterLongitude))) {
 					return !!data.address && data.address.length > 0;
@@ -438,7 +438,7 @@ watch(selectedEvent, async (event)=> {
 
 /**
  * the updated fields should be saved with the new changes,
- * and the fields unchanged should stay as they were when first fetched 
+ * and the fields unchanged should stay as they were when first fetched
  * from the backend API. Then submit.
  */
 async function handleFormSubmit(values: any) {
@@ -447,7 +447,7 @@ async function handleFormSubmit(values: any) {
 		return;
 	}
 	updatedEvent.value = {
-		name: selectedEvent.value.name, 
+		name: selectedEvent.value.name,
 		latitude: values.epicenterLatitude ?? selectedEvent.value.epicenterLatitude,
 		longitude: values.epicenterLongitude ?? selectedEvent.value.epicenterLongitude,
 		description: values.description ?? selectedEvent.value.description,
@@ -456,7 +456,7 @@ async function handleFormSubmit(values: any) {
 		radius: values.radius ?? selectedEvent.value.radius,
 	}
 	console.log('Oppdaterte event verdier til:', updatedEvent.value);
-	
+
 	updateSelectedEvent();
 }
 
@@ -473,12 +473,12 @@ async function updateSelectedEvent() {
 
 		console.log('Event updated successfully!', response.data);
 		callToast('Updated the event with your new values!');
-		
+
 		selectedEvent.value = null; // redirects user back to the list of events
 		updatedEvent.value = null;
 
 		await queryClient.invalidateQueries({queryKey: ['events']});
-	
+
 	} catch (error) {
 		callToast('Failed to update event details...');
 		console.error('Failed to update event: ', error);
@@ -486,7 +486,7 @@ async function updateSelectedEvent() {
 }
 
 /**
- * Cancels the potential changes of variables. 
+ * Cancels the potential changes of variables.
  * Being used in 'Go back' button.
  */
 function cancelUpdate() {
@@ -496,9 +496,9 @@ function cancelUpdate() {
 }
 
 /**
-* Deactivates the event by setting the 'active' attribute in backend API to 'false'. 
-* Shows up in the form as 'inactive' if false, or 'active' if true. 
-* @param id 
+* Deactivates the event by setting the 'active' attribute in backend API to 'false'.
+* Shows up in the form as 'inactive' if false, or 'active' if true.
+* @param id
 */
 async function deactivateEvent(id: number) {
 	if (!selectedEvent.value) {
@@ -508,7 +508,7 @@ async function deactivateEvent(id: number) {
 	try {
 		await deactivateCurrentEvent(id);
 		callToast('Hendelsen er nå satt som inaktiv!');
-		
+
 		selectedEvent.value = null; // redirects user back to the list of events
 		updatedEvent.value = null;
 
@@ -559,7 +559,7 @@ function getScenarioName(id: number): string {
 			}
 		}
 		console.log('test',name);
-		return name ? name : 'undefined'; 
+		return name ? name : 'undefined';
 	}
 }
 
@@ -578,11 +578,11 @@ function getScenarioId(category: string): number | null {
 }
 
 /**
-* Pop-up functionality. 
-* Takes in a message to show the user that some action has happened. 
-* @param message 
+* Pop-up functionality.
+* Takes in a message to show the user that some action has happened.
+* @param message
 */
-function callToast (message: string) { 
+function callToast (message: string) {
 	console.log('Called toast for message: ', message);
 	toast(message);
 }
@@ -651,9 +651,9 @@ gap: 10px;
 
 .descriptionArea {
 	min-height: 100px;
-	overflow: auto; 
+	overflow: auto;
 }
-/* scroll i textboks eller er det bedre at den bare utvider seg? 
+/* scroll i textboks eller er det bedre at den bare utvider seg?
 PErsonlig liker jeg ikke scroll i tekstbokser */
 .severity-tag {
 	padding: 2px 10px;

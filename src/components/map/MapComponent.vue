@@ -535,9 +535,7 @@ export default defineComponent({
 
     // Update POIs on the map - core functionality used by both original and admin features
     function updatePOIs(newPois: POI[]): void {
-      if (!map.value || !markerClusterGroup.value) {
-        return;
-      }
+      if (!map.value || !markerClusterGroup.value) return;
 
 
       // Clear routing when POIs change
@@ -616,8 +614,7 @@ export default defineComponent({
         const markersToRemove: L.Marker[] = [];
         markersMap.value.forEach((marker, id) => {
           if (!newPoiIds.has(id)) {
-          // @ts-expect-error This is valid
-            markersToRemove.push(marker);
+            markersToRemove.push(marker as unknown as L.Marker);
             markersMap.value.delete(id);
           }
         });
