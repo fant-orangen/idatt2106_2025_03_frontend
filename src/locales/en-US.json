@@ -5,7 +5,9 @@
     "delete": "Delete",
     "confirm": "Confirm",
     "save": "Save",
-    "remove": "Remove"
+    "remove": "Remove",
+    "saving": "Saving...",
+    "not-provided": "Not provided"
   },
   "actions": {
     "to-reflect": "to reflect",
@@ -180,7 +182,8 @@
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",
-    "login-successful": "Login successful!"
+    "login-successful": "Login successful!",
+    "profile-updated": "Profile updated successfully"
   },
   "crisis": {
     "crisis-status": "Crisis Status",
@@ -273,8 +276,10 @@
   },
   "reflect": {
     "reflection": "Reflect after crisis",
+    "your-reflections": "Your Reflections",
     "need-help-q": "Do you need help?",
-    "what-2-do-after-crisis": "What should you do after a crisis?"
+    "what-2-do-after-crisis": "What should you do after a crisis?",
+    "no-reflections": "No reflections yet"
   },
   "map": {
     "defibrillator": "Defibrillator",
@@ -579,6 +584,10 @@
       "account": "Account",
       "notifications": "Notifications"
     },
+    "notifications": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
     "account": {
       "title": "Account Settings",
       "myAccount": "My Account",
@@ -595,7 +604,9 @@
       "email": {
         "email": "Email",
         "subtitle": "Email Settings",
-        "description": "Update your email address here. After saving, you'll be logged out."
+        "description": "Update your email address here. After saving, you'll be logged out.",
+        "verified": "Email verified",
+        "not-verified": "Email not verified"
       },
       "security": {
         "title": "Account Security",
@@ -608,6 +619,11 @@
         "description": "Permanently delete your account and all associated data. This action is irreversible and cannot be undone.",
         "button": "Delete Account"
       }
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "description": "Update your personal information and profile details.",
+      "address-privacy": "Your address is not visible to other users."
     },
     "notifications": {
       "title": "Notifications Settings",

@@ -9,29 +9,10 @@
 import api from '@/services/api/AxiosInstance.ts'
 import type {
   UserResponseDto,
-  BackendUser,
-  PaginatedUserResponse,
-  UserFilterParams,
-  AdminUserUpdatePayload,
   UserPreferencesDto,
+  ExtendedUserProfile,
+  UpdateExtendedUserProfile
 } from '@/models/User'
-
-/**
- * Fetches the currently authenticated user's ID from the server.
- * This ID comes from the JWT token on the backend.
- *
- * @returns A promise resolving to the user's ID
- * @throws Error if the request fails
- */
-export async function fetchCurrentUserId(): Promise<number> {
-  try {
-    const response = await api.get<number>('/public/users/id')
-    return response.data
-  } catch (error) {
-    console.error('Failed to fetch current user ID:', error)
-    throw error
-  }
-}
 
 /**
  * Fetches public user information by user ID.
@@ -135,4 +116,23 @@ export async function sendPasswordResetEmail(email: string): Promise<void> {
     console.error('Error sending password reset email:', error);
     throw error;
   }
+}
+
+/**
+ * Fetches the current user's profile
+ * @returns The user profile data
+ */
+export async function getUserProfile(): Promise<ExtendedUserProfile> {
+  const response = await api.get('/user/me')
+  return response.data
+}
+
+/**
+ * Updates the user's profile information
+ * @param profileData The updated profile data
+ * @returns The updated user profile
+ */
+export async function updateUserProfile(profileData: Partial<UpdateExtendedUserProfile>): Promise<ExtendedUserProfile> {
+  const response = await api.put('/user/me', profileData)
+  return response.data
 }

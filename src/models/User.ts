@@ -121,6 +121,34 @@ export interface UserProfile {
 }
 
 /**
+ * Interface for user profile data
+ */
+export interface ExtendedUserProfile {
+  id: number | null
+  email: string
+  firstName: string
+  lastName: string
+  homeAddress: string
+  homeLatitude: number | null
+  homeLongitude: number | null
+  locationSharingEnabled: boolean
+  emailVerified: boolean
+  householdId: number | null
+  householdName: string
+}
+
+/**
+ * Interface for user profile data
+ */
+export interface UpdateExtendedUserProfile {
+  firstName: string
+  lastName: string
+  homeAddress: string
+  homeLatitude: number | null
+  homeLongitude: number | null
+}
+
+/**
  * Interface representing user preferences.
  *
  * Contains settings related to user experience and security.
