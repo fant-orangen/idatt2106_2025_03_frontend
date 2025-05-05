@@ -564,10 +564,10 @@
       "undefined": "Velg en kategori",
       "flood": "Flom",
       "hurricane": "Orkan",
-      "drought":"Tørke",
-      "heatwave":"Hetebølge",
-      "pandemic":"Pandemi",
-      "war":"Krig",
+      "drought": "Tørke",
+      "heatwave": "Hetebølge",
+      "pandemic": "Pandemi",
+      "war": "Krig",
       "forest fire": "Skogbrann",
       "power outage": "Strømbrudd",
       "water shortage": "Vannmangel",
@@ -591,7 +591,7 @@
       "category": "Kategori"
     },
     "crisis-level": {
-      "undefined":"Velg et krisenivå",
+      "undefined": "Velg et krisenivå",
       "low": "Lav",
       "medium": "Middels",
       "high": "Høy",
@@ -698,7 +698,15 @@
       "previewDescription": "Se gjennom quizen før publisering.",
       "optionLabel": "Alternativ-etikett",
       "optionText": "Alternativtekst",
-      "correct": "Riktig?"
+      "correct": "Riktig?",
+      "questionText": "Spørsmålstekst",
+      "enterQuestion": "Skriv inn spørsmålsteksten",
+      "maxOptions": "Du kan bare legge til opptil 5 alternativer.",
+      "questionValidationError": "Vennligst oppgi et gyldig spørsmål og velg riktig alternativ.",
+      "questionAdded": "Spørsmål lagt til!",
+      "questionCreationError": "En feil oppstod under oppretting av spørsmål eller alternativer.",
+      "fetchError": "Kunne ikke hente spørsmål og svar.",
+      "noQuestions": "Ingen spørsmål er lagt til ennå."
     }
   }
 }

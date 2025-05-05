@@ -568,10 +568,10 @@
       "undefined": "Select a category",
       "flood": "Flood",
       "hurricane": "Hurricane",
-      "drought":"Drought",
-      "heatwave":"Heatwave",
-      "pandemic":"Pandemic",
-      "war":"War",
+      "drought": "Drought",
+      "heatwave": "Heatwave",
+      "pandemic": "Pandemic",
+      "war": "War",
       "forest fire": "Forest fire",
       "power outage": "Power outage",
       "water shortage": "Water shortage",
@@ -595,7 +595,7 @@
       "category": "Category"
     },
     "crisis-level": {
-      "undefined":"Select a crisis level",
+      "undefined": "Select a crisis level",
       "low": "Low",
       "medium": "Medium",
       "high": "High",
@@ -704,7 +704,15 @@
       "previewDescription": "Review the quiz before publishing.",
       "optionLabel": "Option Label",
       "optionText": "Option Text",
-      "correct": "Correct?"
+      "correct": "Correct?",
+      "questionText": "Question Text",
+      "enterQuestion": "Enter the question text",
+      "maxOptions": "You can only add up to 5 options.",
+      "questionValidationError": "Please provide a valid question and select the correct option.",
+      "questionAdded": "Question added successfully!",
+      "questionCreationError": "An error occurred while creating the question or answers.",
+      "fetchError": "Failed to fetch questions and answers.",
+      "noQuestions": "No questions have been added yet."
     }
   }
 }
