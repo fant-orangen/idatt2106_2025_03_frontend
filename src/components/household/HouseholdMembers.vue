@@ -232,18 +232,11 @@
         <p>{{ $t('household.admin_only') }}</p>
       </div>
 
-      <!-- Add empty user form -->
-      <AddEmptyUser
-        v-if="showAddUser"
-        @save="handleSaveUser"
-        @cancel="showAddUser = false"
-      />
-
       <!-- Add empty member form -->
       <AddEmptyMember
-        v-if="showAddEmptyMember"
+        v-if="showAddEmptyMember || showAddUser"
         @added="handleEmptyMemberAdded"
-        @cancel="showAddEmptyMember = false"
+        @cancel="closeAddForms"
       />
 
       <!-- Invite user form -->
@@ -328,7 +321,6 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
-import AddEmptyUser from './AddEmptyUser.vue';
 import AddEmptyMember from './AddEmptyMember.vue';
 import {
   UserIcon,
@@ -488,6 +480,14 @@ const toggleAddEmptyUser = () => {
 };
 
 /**
+ * Closes all add forms.
+ */
+const closeAddForms = () => {
+  showAddUser.value = false;
+  showAddEmptyMember.value = false;
+};
+
+/**
  * Switches between tabs and closes any open forms
  * @param {string} tab - The tab to switch to ('people' or 'others')
  */
@@ -516,29 +516,7 @@ const toggleAddEmptyMember = () => {
   }
 };
 
-/**
- * Handles saving a new empty user to the household.
- * @async
- * @param {Object} userData - The data for the new empty user
- * @param {string} userData.name - The name of the empty user
- * @param {string} userData.type - The type of the empty user
- * @param {string} userData.description - The description of the empty user
- */
-const handleSaveUser = async (userData: {
-  name: string;
-  type: string;
-  description: string;
-}) => {
-  try {
-    await addEmptyMember(userData);
-    await fetchMembers(); // Refresh the members list
-    showAddUser.value = false;
-    toast.success(t('household.member-added-success'));
-  } catch (error) {
-    console.error('Failed to save user:', error);
-    toast.error(t('household.member-added-error'));
-  }
-};
+
 
 /**
  * Toggles the visibility of the invite user form.
@@ -571,7 +549,7 @@ const handleUserInvited = (userData: { email: string }) => {
  * @async
  */
 const handleEmptyMemberAdded = async () => {
-  showAddEmptyMember.value = false;
+  closeAddForms();
   await fetchMembers();
   toast.success(t('household.empty-member-added'));
 };
