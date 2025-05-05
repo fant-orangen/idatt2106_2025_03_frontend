@@ -25,7 +25,33 @@
     <h1>{{$t('admin.meeting-point')}}</h1>
   </div>
 
-  <Card class="">
+  <Card v-if="!selectedMP">
+    <CardHeader>
+      <CardTitle>Card Title</CardTitle>
+      <CardDescription>Card Description</CardDescription>
+    </CardHeader>
+    <CardContent>
+      <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
+        <div v-for="meetingPoint in allMPts" 
+        :key="meetingPoint.id" 
+        @click="fetchMeetingPointDetails(meetingPoint.id)">
+          
+        </div>
+      </InfiniteScroll>
+    </CardContent>
+    
+    <CardFooter>
+      <template #loading>
+        <div class="text-center p-4">Laster...</div>
+      </template>
+      <template #end-message>
+        <div class="text-center p-4">Alle hendelser er lastet inn</div>
+      </template>
+    </CardFooter>
+  </Card>
+
+  <!--Form to create new meeting point -->
+  <Card v-if="selectedMP" class="">
     <CardHeader>
       <CardTitle></CardTitle>
       <CardDescription>Card Description</CardDescription>
@@ -36,7 +62,7 @@
           <FormItem>
             <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
             <FormControl>
-              <Input type="text" v-model="selectedEvent.name" readonly disabled />
+              <Input type="text" v-model="selectedMP.name" readonly disabled />
             </FormControl>
             <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
           </FormItem>
@@ -107,12 +133,14 @@ import { toast } from 'vue-sonner'
 import { ref, onMounted, watch, computed, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Separator } from '@/components/ui/separator'
+import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import type { MeetingPlace, CreateMeetingPlaceDto } from '@/models/MeetingPlace'
+import type { MeetingPlace, CreateMeetingPlaceDto, MeetingPlacePreviewDto } from '@/models/MeetingPlace'
 import { meetingPlaceService } from '@/services/MeetingPlaceService'
 import * as z from 'zod'
 import {
@@ -120,7 +148,6 @@ import {
 	BreadcrumbItem,
 	BreadcrumbLink,
 	BreadcrumbList,
-	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
 import {
@@ -131,15 +158,6 @@ import {
 	FormLabel,
 	FormMessage
 } from '@/components/ui/form'
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-	SelectLabel,
-} from '@/components/ui/select'
 import {
 Card,
 CardContent,
@@ -159,11 +177,11 @@ const {
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
-} = useInfiniteQuery<CrisisEventDto[], Error>({
+} = useInfiniteQuery<MeetingPlacePreviewDto[], Error>({
   queryKey: ['allMPts'],
   queryFn: async ({ pageParam = 0 }) => {
 		const pageNumber = pageParam as number;
-		const page = await getPreviewMeetingPlaces(pageNumber, 10);
+		const page = await meetingPlaceService.getPreviewMeetingPlaces(pageNumber, 10);
 		return page.content;
 	},
   getNextPageParam: (lastPage, allPages) => {
@@ -177,8 +195,9 @@ const form = ref();
 const onSubmit = ref<(e?: Event) => void>();
 const selectedMP = ref<MeetingPlace | null>(null);
 const newMeetingPoint = ref<CreateMeetingPlaceDto | null>(null);
-const allMPts = computed<MeetingPlace[]>(() => data.value?.pages.flat() ?? []);
-allMPts.value.forEach((event: MeetingPlace) => { console.log(event.id)});
+const allMPts = computed<MeetingPlacePreviewDto[]>(() => data.value?.pages.flat() ?? []);
+
+allMPts.value.forEach((event: MeetingPlacePreviewDto) => { console.log(event.id)});
 
 watch(selectedMP, async (meetingPoint) => {
   if (meetingPoint && form.value) {
@@ -214,8 +233,8 @@ function setUpForm() {
       address: z.string()
 				.max(100, t('add-event-info.errors.address'))
 				.optional(),
-  }).refine((data) => {
-			if ((data.epicenterLatitude === undefined || isNaN(data.epicenterLatitude)) || (data.epicenterLongitude === undefined || isNaN(data.epicenterLongitude))) {
+    }).refine((data) => {
+			if ((data.latitude === undefined || isNaN(data.latitude)) || (data.longitude === undefined || isNaN(data.longitude))) {
 					return !!data.address && data.address.length > 0;
 			}
 			return true;
@@ -239,14 +258,16 @@ async function handleFormSubmit(values: any) {
     longitude: values.longitude,
     address: values.address ?? '',
   }
+  createNewMP(newMeetingPoint.value);
 }
+
 /**
  * Fetch details about a specific meeting point from the backend API
  * @param id 
  */
 async function fetchMeetingPointDetails(id: number) {
   let mpExists: boolean = false
-	for (let i = 0; i < allMPts.length; i++) {
+	for (let i = 0; i < allMPts.value.length; i++) {
     if (allMPts.value[i].id === id) {
       mpExists = true;
       break;
@@ -254,7 +275,7 @@ async function fetchMeetingPointDetails(id: number) {
   }
   if (mpExists) {
     try {
-      const meetingPointResponse = await getAMeetingPlace(id);
+      const meetingPointResponse = await meetingPlaceService.getAMeetingPlace(id);
       console.log('MP details er: ', meetingPointResponse);
       
       if (meetingPointResponse) {
@@ -272,14 +293,15 @@ async function fetchMeetingPointDetails(id: number) {
  * Create a new meeting point 
  * @param data 
  */
-async function createNewMP(data: CreateMeetingPlaceRequest) {
+async function createNewMP(data: CreateMeetingPlaceDto) {
   try {
     const response = await meetingPlaceService.createMeetingPlace(data)
-    console.log('Creating new meeting place ...')
-    callToast(response.data);
+    console.log('Creating new meeting place ...', response)
+    callToast('Created a new meeting place successfully!');
     // send a dialogue message that a new mp was created other than the toast maybe??
     selectedMP.value = null;
-    updatedMP.value = null;
+
+    await queryClient.invalidateQueries({queryKey: ['allMPts']});
   } catch (error) {
     console.error('Could not create new meeting place', error)
   }
@@ -292,11 +314,12 @@ async function createNewMP(data: CreateMeetingPlaceRequest) {
 async function archiveMP(id: number) {
   try {
     const response = await meetingPlaceService.archiveMeetingPlace(id)
-    console.log('Putting meeting place in archive ...')
-    callToast(response.data);
+    console.log('Putting meeting place in archive ...', response)
+    callToast('Archived the meeting point: ');
 
     selectedMP.value = null;
-    updatedMP.value = null;
+
+    await queryClient.invalidateQueries({queryKey: ['allMPts']});
   } catch (error) {
     console.error('Could not create new meeting place', error)
   }
@@ -309,11 +332,11 @@ async function archiveMP(id: number) {
 async function activateMP(id: number) {
   try {
     const response = await meetingPlaceService.activateMeetingPlace(id)
-    console.log('Activating the meeting place ...')
-    callToast(response.data);
+    console.log('Activating the meeting place ...', response)
+    callToast('Activated the meeting point!');
     
     selectedMP.value = null;
-    updatedMP.value = null;
+    await queryClient.invalidateQueries({queryKey: ['allMPts']});
   } catch (error) {
     console.error('Could not create new meeting place', error)
   }

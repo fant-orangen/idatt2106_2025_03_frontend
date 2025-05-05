@@ -1,5 +1,5 @@
 import type { Page } from '@/types/Page';
-import type { MeetingPlace, CreateMeetingPlaceRequest, MeetingPlacePreviewDto } from '../models/MeetingPlace';
+import type { MeetingPlace, CreateMeetingPlaceDto, MeetingPlacePreviewDto } from '../models/MeetingPlace';
 import api from './api/AxiosInstance';
 
 class MeetingPlaceService {
@@ -8,7 +8,7 @@ class MeetingPlaceService {
      * @param createDto The meeting place data to create
      * @returns Promise containing the created meeting place
      */
-    async createMeetingPlace(createDto: CreateMeetingPlaceRequest): Promise<MeetingPlace> {
+    async createMeetingPlace(createDto: CreateMeetingPlaceDto): Promise<MeetingPlace> {
         try {
             const response = await api.post('/admin/meeting-places', createDto);
             return response.data;
