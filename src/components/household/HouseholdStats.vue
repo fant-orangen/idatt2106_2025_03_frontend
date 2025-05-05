@@ -11,7 +11,7 @@
             <UsersIcon class="h-5 w-5 text-primary" />
             <span>{{ $t('household.total_members') }}</span>
           </div>
-          <Badge variant="outline" class="text-lg">{{ totalMembers }}</Badge>
+          <Badge variant="outline" class="text-lg dark:bg-white dark:text-black">{{ totalMembers }}</Badge>
         </div>
 
         <!-- People -->
@@ -20,7 +20,7 @@
             <UserIcon class="h-5 w-5 text-blue-500" />
             <span>{{ $t('household.adults') }}</span>
           </div>
-          <Badge variant="outline" class="bg-blue-50 dark:bg-blue-950">{{ adultCount }}</Badge>
+          <Badge variant="outline" class="bg-blue-300 dark:text-black">{{ adultCount }}</Badge>
         </div>
 
         <!-- Children -->
@@ -29,7 +29,7 @@
             <BabyIcon class="h-5 w-5 text-green-500" />
             <span>{{ $t('household.children') }}</span>
           </div>
-          <Badge variant="outline" class="bg-green-50 dark:bg-green-950">{{ childCount }}</Badge>
+          <Badge variant="outline" class="bg-green-300 dark:text-black">{{ childCount }}</Badge>
         </div>
 
         <!-- Pets -->
@@ -38,7 +38,7 @@
             <PawPrintIcon class="h-5 w-5 text-amber-500" />
             <span>{{ $t('household.pets') }}</span>
           </div>
-          <Badge variant="outline" class="bg-amber-50 dark:bg-amber-950">{{ petCount }}</Badge>
+          <Badge variant="outline" class="bg-amber-300 dark:text-black">{{ petCount }}</Badge>
         </div>
       </div>
     </CardContent>

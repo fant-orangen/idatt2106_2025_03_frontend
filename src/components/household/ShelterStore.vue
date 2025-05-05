@@ -117,11 +117,11 @@ const getPriority = (days: number): Priority => {
 const getItemClasses = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'bg-red-50 border border-red-200';
+      return 'bg-red-50 border border-red-200 dark:text-red-900 dark:bg-red-100';
     case Priority.MEDIUM:
-      return 'bg-orange-50 border border-orange-200';
+      return 'bg-orange-50 border border-orange-200 dark:text-orange-900 dark:bg-orange-100';
     case Priority.LOW:
-      return 'bg-yellow-50 border border-yellow-200';
+      return 'bg-yellow-50 border border-yellow-200 dark:text-yellow-900 dark:bg-yellow-100';
     default:
       return '';
   }
