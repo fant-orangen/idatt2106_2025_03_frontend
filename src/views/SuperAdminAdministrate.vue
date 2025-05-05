@@ -167,7 +167,7 @@ import { toast } from 'vue-sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useMediaQuery } from '@vueuse/core'
-import { ref, onMounted, markRaw } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
@@ -187,7 +187,6 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from '@/components/ui/drawer'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import {
@@ -296,7 +295,7 @@ async function getAllAdmins() {
   try {
     const response = await getAdminUsers()
     console.log('Fetched admins from backend!', response.data)
-    admins.value = response.data
+    admins.value = response.data.content
   } catch (error) {
     console.error('Failed to fetch admin users from backend!')
   }
