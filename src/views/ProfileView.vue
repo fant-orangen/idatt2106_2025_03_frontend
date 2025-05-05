@@ -53,35 +53,34 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container mx-auto py-10 px-4">
-    <div class="flex flex-col space-y-6 max-w-3xl mx-auto">
-      <h1 class="text-3xl font-bold">{{ t('navigation.profile') }}</h1>
+  <h1 class="text-4xl font-bold text-foreground flex justify-center mb-6 mt-10">
+    {{ t('navigation.profile') }}
+  </h1>
+  <div class="page-content flex flex-col items-center mt-10 mb-20 w-full">
+    <!-- Tabs for toggling between profile and reflections -->
+    <Tabs default-value="profile" class="w-full max-w-2/3">
+      <TabsList class="grid grid-cols-2 w-2/3 mx-auto mb-4">
+        <TabsTrigger value="profile">{{ t('navigation.profile') }}</TabsTrigger>
+        <TabsTrigger value="reflections">{{ t('reflect.your-reflections') }}</TabsTrigger>
+      </TabsList>
 
-      <!-- Tabs for toggling between profile and reflections -->
-      <Tabs default-value="profile" class="w-full">
-        <TabsList class="grid grid-cols-2 w-full mb-4">
-          <TabsTrigger value="profile">{{ t('navigation.profile') }}</TabsTrigger>
-          <TabsTrigger value="reflections">{{ t('reflect.your-reflections') }}</TabsTrigger>
-        </TabsList>
+      <!-- Profile Content -->
+      <TabsContent value="profile" class="transition-all duration-300 ease-in-out">
+        <UserProfileInfo :profile="profile" />
+      </TabsContent>
 
-        <!-- Profile Content -->
-        <TabsContent value="profile" class="transition-all duration-300 ease-in-out">
-          <UserProfileInfo :profile="profile" />
-        </TabsContent>
-
-        <!-- Reflections Content -->
-        <TabsContent value="reflections" class="transition-all duration-300 ease-in-out">
-          <Card>
-            <CardHeader>
-              <CardTitle>{{ t('reflect.reflection') }}</CardTitle>
-              <CardDescription>{{ t('reflect.what-2-do-after-crisis') }}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <UserReflections />
-            </CardContent>
-          </Card>
-        </TabsContent>
+      <!-- Reflections Content -->
+      <TabsContent value="reflections" class="transition-all duration-300 ease-in-out">
+        <Card>
+          <CardHeader>
+            <CardTitle>{{ t('reflect.reflection') }}</CardTitle>
+            <CardDescription>{{ t('reflect.what-2-do-after-crisis') }}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UserReflections />
+          </CardContent>
+        </Card>
+      </TabsContent>
       </Tabs>
-    </div>
   </div>
 </template>

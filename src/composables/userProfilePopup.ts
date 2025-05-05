@@ -86,7 +86,7 @@ const userProfileDirective = {
       return
     }
 
-    const clickHandler = (event) => {
+    const clickHandler = (event: MouseEvent) => {
       event.stopPropagation()
       createPopup(userId, el)
     }
