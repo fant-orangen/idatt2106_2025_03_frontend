@@ -497,6 +497,7 @@
   "settings": {
     "settings": "Settings",
     "title": "Settings",
+    "cancel": "Cancel changes",
     "tabs": {
       "account": "Account",
       "notifications": "Notifications"
@@ -507,13 +508,17 @@
       "subtitle": "Account",
       "description": "Make changes to your account here. Click save when you're done.",
       "fullName": "Full name",
-      "email": "E-mail",
-      "saveChanges": "Save changes",
+      "save-changes": "Save changes",
       "password": {
         "title": "Password",
         "description": "Change your password here. After saving, you'll be logged out.",
         "current": "Current password",
         "new": "New password"
+      },
+      "email": {
+        "email": "Email",
+        "subtitle": "Email Settings",
+        "description": "Update your email address here. After saving, you'll be logged out."
       },
       "security": {
         "title": "Account Security",
@@ -536,7 +541,7 @@
         "system": "System Notifications",
         "systemDescription": "Receive notifications about critical crisis events to stay informed and prepared."
       },
-      "saveChanges": "Save Changes"
+      "save-changes": "Save Changes"
     }
   },
   "add-event-info": {
