@@ -1311,4 +1311,28 @@ export default defineComponent({
 :deep(.crisis-details-btn:hover) {
   background-color: #dc2626;
 }
+
+:deep(.marker-cluster-small div),
+:deep(.marker-cluster-medium div),
+:deep(.marker-cluster-large div) {
+  /* Set the background of the inner circle to grey */
+  /* Adjust the alpha (0.7) for transparency if desired */
+  background-color: rgba(100, 100, 100, 0.7); /* Medium grey */
+}
+
+/* Optional: Style the outer ring/border if needed */
+:deep(.marker-cluster-small),
+:deep(.marker-cluster-medium),
+:deep(.marker-cluster-large) {
+  /* The default CSS uses the outer element's background as a border */
+  background-color: rgba(150, 150, 150, 0.5); /* Lighter grey for the 'border' */
+}
+
+/* Ensure text color is readable on grey */
+:deep(.marker-cluster div) {
+  color: #fff; /* White text */
+  text-align: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
 </style>
