@@ -163,6 +163,11 @@
     "crisis-status": "Crisis Status",
     "more-crisis-info": "Read more about your current crisis situation",
     "no-crisis": "No ongoing crisis",
+    "color": {
+      "green": "green",
+      "yellow": "yellow",
+      "red": "red"
+    },
     "no_active_crisis": "No active crisis events",
     "title": "Crisis Events",
     "map_view": "Map View",
@@ -260,6 +265,8 @@
     "filter": "Filter POIs",
     "my-location": "Use my location",
     "your-location": "Your location",
+    "household-location": "Your household",
+    "view-household": "See household",
     "getting-location": "Getting Your Location",
     "distance": "Distance (meters)",
     "poi-type": "POI Type",
@@ -544,6 +551,7 @@
     "success-message": "Your event has been added to the system.",
     "success-added": "had been added.",
     "go-to-admin": "Go to Admin Panel",
+    "category": "Choose what type of event it is, f.ex. flod, earthquake or power outage...",
     "errors": {
       "title": "The title must be at least 2 characters long and cannot exceed 50 characters.",
       "latitude": "The latitude must be between -90 and 90.",
@@ -556,6 +564,20 @@
       "address": "The address needs to have at least 2 characters and cannot exceed 100 characters.",
       "contact-info": "Make sure to write a valid phone number."
     },
+    "scenarios": {
+      "undefined": "Select a category",
+      "flood": "Flood",
+      "hurricane": "Hurricane",
+      "drought":"Drought",
+      "heatwave":"Heatwave",
+      "pandemic":"Pandemic",
+      "war":"War",
+      "forest fire": "Forest fire",
+      "power outage": "Power outage",
+      "water shortage": "Water shortage",
+      "cyber attack": "Cyber attack",
+      "major accident": "Big accident"
+    },
     "titles": {
       "address": "Address",
       "title": "Title",
@@ -567,12 +589,24 @@
       "submit": "Submit",
       "time": "Time",
       "date": "Date",
-      "choose-event": "Choose an event"
+      "choose-event": "Choose an event",
+      "deactivate": "Deactivate event",
+      "active": "Active status",
+      "category": "Category"
     },
     "crisis-level": {
+      "undefined":"Select a crisis level",
       "low": "Low",
       "medium": "Medium",
-      "high": "High"
+      "high": "High",
+      "green": "Low",
+      "yellow": "Medium",
+      "red": "High"
+    },
+    "active": {
+      "true": "active",
+      "false": "inactive",
+      "description": "Deactivate the event to change the status to inactive!"
     }
   },
   "add-POI-info": {
