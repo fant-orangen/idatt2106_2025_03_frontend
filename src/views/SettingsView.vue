@@ -76,8 +76,7 @@ function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string
   userStore
     .updatePassword(oldPasswordInput, newPasswordInput)
     .then(() => {
-      toast(t('settings.account.password.success'), {
-        type: 'success',
+      toast.success(t('settings.account.password.success'), {
         description: t('settings.account.password.successDescription'),
       })
       // Reset the password fields
@@ -88,8 +87,7 @@ function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string
     })
     .catch((error) => {
       console.error('Error updating password:', error)
-      toast(t('settings.account.password.error'), {
-        type: 'error',
+      toast.error(t('settings.account.password.error'), {
         description: t('settings.account.password.errorDescription'),
       })
     })
@@ -99,8 +97,7 @@ function handleUpdateEmail(newEmailInput: string, passwordInput: string) {
   userStore
     .updateEmail(newEmailInput, passwordInput)
     .then(() => {
-      toast(t('settings.account.email.success'), {
-        type: 'success',
+      toast.success(t('settings.account.email.success'), {
         description: t('settings.account.email.successDescription'),
       })
       // Reset the email fields
@@ -111,8 +108,7 @@ function handleUpdateEmail(newEmailInput: string, passwordInput: string) {
     })
     .catch((error) => {
       console.error('Error updating email:', error)
-      toast(t('settings.account.email.error'), {
-        type: 'error',
+      toast.error(t('settings.account.email.error'), {
         description: t('settings.account.email.errorDescription'),
       })
     })
