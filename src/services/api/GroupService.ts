@@ -69,8 +69,9 @@ class GroupService {
   ): Promise<Page<ProductType>> {
     try {
       const response = await api.get('/user/groups/inventory/product-types', {
-        data: request,
         params: {
+          groupId: request.groupId,
+          category: request.category,
           page,
           size
         }
@@ -149,3 +150,30 @@ class GroupService {
 }
 
 export const groupService = new GroupService();
+
+// TODO: remove this when everything is set up
+export default {
+  async getUserGroups() {
+      return api.get(`/user/user-groups`);
+  },
+
+  async getGroupInventory(groupId: string) {
+      return api.get(`/user/${groupId}/inventory`);
+  },
+
+  async getHouseholdInventory() {
+      return api.get(`/user/api/inventory`);
+  },
+
+  async shareItemToGroup(groupId: string, productId: string, batchId: string, amount: number) {
+      return api.post(`/user/${groupId}/share`, {
+          productId,
+          batchId,
+          amount,
+      });
+  },
+
+  async removeSharedItem(groupId: string, sharedItemId: string) {
+      return api.delete(`/user/${groupId}/shared/${sharedItemId}`);
+  }
+};

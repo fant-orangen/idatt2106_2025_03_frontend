@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import GroupService from '@/services/api/GroupService';
+import { groupService } from '@/services/api/GroupService';
 const emit = defineEmits(['close', 'shared']);
 
 // --- Types ---
@@ -26,7 +26,7 @@ const amount = ref(1);
 
 // --- Get inventory ---
 onMounted(async () => {
-  const res = await GroupService.getHouseholdInventory();
+  const res = await groupService.getHouseholdInventory();
   inventory.value = res.data; // Må ha denne strukturen!
 });
 
@@ -48,10 +48,10 @@ const canShare = computed(() =>
 
 // --- Share ---
 async function handleShare() {
-  const groupId = await GroupService.getUserGroups().then(res => res.data?.[0]?.groupId);
+  const groupId = await groupService.getUserGroups().then(res => res.data?.[0]?.groupId);
   if (!groupId) return;
 
-  await GroupService.shareItemToGroup(groupId, selectedProductId.value, selectedBatchId.value, amount.value);
+  await groupService.shareItemToGroup(groupId, selectedProductId.value, selectedBatchId.value, amount.value);
   emit('shared');
   emit('close');
 }

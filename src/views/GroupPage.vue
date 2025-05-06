@@ -37,84 +37,69 @@
         </button>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        <div
-            v-for="item in sharedInventory"
-            :key="item.id"
-            class="bg-card border border-border p-4 rounded-lg shadow-sm"
-        >
-          <div class="font-semibold">{{ item.productName }}</div>
-          <div class="text-muted-foreground text-sm">
-            {{ item.amount }} stk – delt av {{ item.sharedBy }}
-          </div>
-        </div>
+      <!-- Inventory Search Bar -->
+      <div class="bg-muted rounded-lg shadow-md p-4 mb-6">
+        <InventorySearchBar
+            class="mb-6"
+            @update:search="searchText = $event"
+        />
       </div>
 
-      <!-- Direct to inventory -->
-      <router-link
-          to="/inventory"
-          class="inline-block bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition"
-      >
-        {{ t('group.share-from-inventory') }}
-      </router-link>
-
-      <!-- Modal for sharing (currently unused, but kept) -->
-
-      <ShareItemModal
-          v-if="isShareModalOpen"
-          @close="isShareModalOpen = false"
-          @shared="refreshGroupInventory"
-      />
+      <!-- Group Inventory -->
+      <div v-if="currentGroupId" class="bg-card rounded-lg shadow-md p-6">
+        <GroupInventory
+            :group-id="currentGroupId"
+            :search-text="searchText"
+        />
+      </div>
     </main>
   </div>
 </template>
 
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import GroupService from '@/services/api/GroupService';
-import ShareItemModal from '@/views/ShareItemModal.vue';
+import { ref, onMounted, computed } from 'vue';
+import { groupService } from '@/services/api/GroupService';
+import { useGroupStore } from '@/stores/GroupStore';
 import { useI18n } from 'vue-i18n'
+import InventorySearchBar from '@/components/inventory/InventorySearchBar.vue';
+import GroupInventory from '@/components/group/GroupInventory.vue';
+
 const { t } = useI18n();
+const groupStore = useGroupStore();
 
 interface Household {
-  id: string;
+  id: number;
   name: string;
-  groupId: string;
-}
-
-interface SharedItem {
-  id: string;
-  productName: string;
-  amount: number;
-  sharedBy: string;
+  groupId: number;
 }
 
 const households = ref<Household[]>([]);
-const sharedInventory = ref<SharedItem[]>([]);
-const isShareModalOpen = ref(false);
+const searchText = ref('');
+const currentGroupId = computed(() => groupStore.currentGroupId);
 
 onMounted(async () => {
-  households.value = await GroupService.getUserGroups().then(res => res.data);
-  await refreshGroupInventory();
+  const response = await groupService.getCurrentUserGroups();
+  if (response?.content?.length > 0) {
+    households.value = response.content.map(group => ({
+      id: group.id,
+      name: group.name,
+      groupId: group.id
+    }));
+    // Set the first group as current
+    if (households.value[0]) {
+      groupStore.setCurrentGroup(households.value[0].groupId);
+    }
+  }
 });
 
-function openShareModal() {
-  isShareModalOpen.value = true;
-}
-
-async function refreshGroupInventory() {
-  const currentGroupId = households.value[0]?.groupId;
-  if (currentGroupId) {
-    sharedInventory.value = await GroupService.getGroupInventory(currentGroupId).then(res => res.data);
-  }
-}
-
 function inviteHousehold() {
-  // TODO, temporarily no backend logic
+  // TODO: Implement household invitation
+  console.log('Invite household not implemented');
 }
 
 function switchGroup() {
-  // TODO, temporarily no backend logic
+  // TODO: Implement group switching
+  console.log('Switch group not implemented');
 }
 </script>
