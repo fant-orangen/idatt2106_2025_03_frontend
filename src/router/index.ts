@@ -129,16 +129,6 @@ const routes = [
     meta: { requiresSuperAdmin: true },
   },
   {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('@/views/404NotFoundView.vue'),
-  },
-  {
-    path: '/medicine-inventory',
-    name: 'MedicineInventory',
-    component: () => import('@/views/MedicineInventory.vue'),
-  },
-  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/ProfileView.vue'),
@@ -176,38 +166,45 @@ const routes = [
   },
   // Gamification routes
   {
-    path: '/games/quiz/overview',
+    path: '/quizzes',
     name: 'QuizOverview',
     component: () => import('@/views/gamification/QuizOverviewView.vue'),
   },
   {
-    path: '/games/quiz/:id',
+    path: '/quizzes/:id',
     name: 'Quiz',
     component: () => import('@/views/gamification/QuizView.vue'),
+    props: true,
   },
   {
-    path: '/games/quiz/history',
+    path: '/quizzes/history',
     name: 'QuizHistory',
     component: () => import('@/views/gamification/QuizHistoryView.vue'),
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/games/quiz/new-quiz',
+    path: '/quizzes/admin/new-quiz',
     name: 'DefineQuiz',
-    component: () => import('@/views/gamification/admin/DefineQuiz.vue'),
+    component: () => import('@/views/gamification/admin/DefineQuizView.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/admin/games/quiz/edit-quiz/:id',
+    path: '/quizzes/admin/edit-quiz/:id',
     name: 'EditQuiz',
     component: () => import('@/views/gamification/admin/EditQuizView.vue'),
     meta: { requiresAdmin: true },
+    props: true,
   },
   {
     path: '/admin/meeting-point',
     name: 'MeetingPointPage',
     component: () => import('@/views/AdminEditMeetingPoint.vue'),
     meta: { requiresAdmin: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/404NotFoundView.vue'),
   },
 ]
 
