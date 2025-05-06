@@ -60,7 +60,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatDateFull } from '@/utils/dateUtils.ts'
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
-import { fetchNewsByCrisisEvent, fetchPaginatedNewsByCrisisEvent } from '@/services/api/NewsService'
+import { fetchNewsByCrisisEvent, fetchPaginatedNewsByCrisisEvent, fetchNewsDigest } from '@/services/api/NewsService'
 
 /**
  * NewsOverview component
