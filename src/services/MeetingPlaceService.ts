@@ -87,7 +87,7 @@ class MeetingPlaceService {
         }
     }
 
-    async getAMeetingPlace(id: number) {
+    async getAMeetingPlace(id: number): Promise<MeetingPlacePreviewDto> {
         try {
             const response = await api.get('/public/meeting-places/' + id);
             return response.data;
