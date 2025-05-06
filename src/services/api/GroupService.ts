@@ -151,6 +151,21 @@ class GroupService {
   }
 
   /**
+   * Check if a product batch is contributed to any group by the current user's household
+   * @param productBatchId The ID of the product batch to check
+   * @returns Promise containing a boolean indicating if the batch is contributed
+   */
+  async isContributedToGroup(productBatchId: number): Promise<boolean> {
+    try {
+      const response = await api.get(`/user/groups/inventory/${productBatchId}/contributed`);
+      return response.data;
+    } catch (error) {
+      console.error('Error checking if batch is contributed:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Search for product types that have at least one batch contributed to the specified group by the current user's household.
    * @param groupId The ID of the group to search within
    * @param search The search term to filter product types by name

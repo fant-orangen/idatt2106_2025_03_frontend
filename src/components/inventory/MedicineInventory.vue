@@ -94,10 +94,10 @@
         variant="secondary"
         size="sm"
         @click="addBatchToGroup(batch.id)"
-        :disabled="!selectedGroupId || addingBatchToGroup"
+        :disabled="!selectedGroupId || addingBatchToGroup || batch.isContributed"
         class="text-xs w-full md:w-auto"
       >
-        Del
+        {{ batch.isContributed ? 'Allerede delt' : 'Del' }}
       </Button>
     </div>
 
@@ -179,7 +179,6 @@ import { format } from 'date-fns'
 import { inventoryService } from '@/services/InventoryService'
 import { groupService } from '@/services/api/GroupService'
 import { useProductStore } from '@/stores/ProductStore'
-import { useI18n } from 'vue-i18n'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -223,15 +222,6 @@ const fetchGroups = async () => {
   }
 }
 
-const showNotification = (title, description, duration = 3000) => {
-  toastTitle.value = title
-  toastDescription.value = description
-  showToast.value = true
-  setTimeout(() => {
-    showToast.value = false
-  }, duration)
-}
-
 const addBatchToGroup = async (batchId) => {
   if (!selectedGroupId.value || !batchId) return
 
@@ -241,6 +231,15 @@ const addBatchToGroup = async (batchId) => {
       batchId: batchId,
       groupId: selectedGroupId.value
     })
+
+    // Find the item containing this batch and reload its states
+    const item = items.value.find(item =>
+      item.batches.some(batch => batch.id === batchId)
+    )
+    if (item) {
+      await loadBatchStates(item)
+    }
+
     toast('Suksess!', {
       description: 'Produktet ble lagt til i gruppen.',
       duration: 3000
@@ -340,19 +339,7 @@ const toggleEdit = async (index) => {
   const item = items.value[index]
   item.edit = !item.edit
   if (item.edit) {
-    try {
-      const response = await inventoryService.getProductBatches(item.id)
-      if (response && response.content) {
-        item.batches = response.content.map((batch) => ({
-          id: batch.id,
-          amount: batch.number.toString(),
-          expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : '',
-        }))
-        productStore.addBatchIds(item.name, item.batches)
-      }
-    } catch {
-      item.batches = []
-    }
+    await loadBatchStates(item)
   } else {
     const productId = productStore.getProductId(item.name)
     if (productId) {
@@ -363,6 +350,36 @@ const toggleEdit = async (index) => {
         }
       }
     }
+  }
+}
+
+// New function to load batch states
+const loadBatchStates = async (item) => {
+  try {
+    const response = await inventoryService.getProductBatches(item.id)
+    if (response && response.content) {
+      // First map the basic batch info
+      item.batches = response.content.map((batch) => ({
+        id: batch.id,
+        amount: batch.number.toString(),
+        expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : '',
+        isContributed: false // Add this field
+      }))
+
+      // Then check each batch's contribution status
+      await Promise.all(item.batches.map(async (batch) => {
+        try {
+          batch.isContributed = await groupService.isContributedToGroup(batch.id)
+        } catch (error) {
+          console.error('Error checking batch contribution status:', error)
+          batch.isContributed = false
+        }
+      }))
+
+      productStore.addBatchIds(item.name, item.batches)
+    }
+  } catch {
+    item.batches = []
   }
 }
 
@@ -403,19 +420,11 @@ const saveBatch = async (productIndex, batchIndex) => {
   await inventoryService.createProductBatch(
     productId,
     Number(batch.amount),
-    batch.expires || undefined,
+    batch.expires || undefined
   )
-  // Fetch updated batches after adding
-  const response = await inventoryService.getProductBatches(productId)
-  if (response && response.content) {
-    product.batches = response.content.map((batch) => ({
-      id: batch.id,
-      amount: batch.number.toString(),
-      expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : '',
-    }))
-    productStore.addBatchIds(product.name, product.batches)
-  }
-  batch.isNew = false
+
+  // Reload all batch states after adding
+  await loadBatchStates(product)
   await updateTotalUnits(product.id)
 }
 
