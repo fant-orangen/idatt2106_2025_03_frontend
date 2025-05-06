@@ -23,6 +23,7 @@ const { t } = useI18n()
 const userStore = useUserStore()
 const successMessage = ref('')
 const errorMessage = ref('')
+const isView = ref(false)
 
 /* global grecaptcha */
 
