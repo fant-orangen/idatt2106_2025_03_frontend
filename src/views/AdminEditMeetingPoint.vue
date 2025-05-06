@@ -32,50 +32,27 @@
         <CardTitle>Current meeting places to find: </CardTitle>
       </CardHeader>
       <CardContent>
-        <!--
-        <Combobox by="id">
-          <ComboboxAnchor>
-            <div class="relative w-full max-w-sm items-center">
-              <ComboboxInput class="pl-9" :display-value="(val) => val?.label ?? ''" placeholder="Søk etter møteplass..." />
-              <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
-                <Search class="size-4 text-muted-foreground" />
-              </span>
-            </div>
-          </ComboboxAnchor>
-
-          <ComboboxList>
-            <ComboboxEmpty>
-              Finner ikke møteplassen.
-            </ComboboxEmpty>
-
-            <ComboboxGroup>
-              <ScrollArea class="h-48" @scroll.passive="fetchNextPage" ref="scrollRef">
-                <ComboboxItem v-for="meetingPoint in allMPts"
-                  :key="meetingPoint.id" :value="meetingPoint.id" @click="fetchMeetingPointDetails(meetingPoint.id)">
-                  {{ meetingPoint.name }}
-                  
-                  <ComboboxItemIndicator>
-                    <Check :class="cn('ml-auto h-4 w-4')" />
-                  </ComboboxItemIndicator>
-                </ComboboxItem>
-
-                <div v-if="isFetchingNextPage" class="p-2 text-center text-muted">
-                  Loading more...
-                </div>
-              </ScrollArea>
-
-            </ComboboxGroup>
-          </ComboboxList>
-        </Combobox>-->
-
+        <!--Search field-->
+        <div class="relative mb-4 w-full max-w-sm">
+          <Input v-model="searchQuery" type="text" placeholder="Søk etter en møteplass..."
+            class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" />
+          
+            <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
+            <Search class="size-4 text-muted-foreground" />
+          </span>
+        </div>
         <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
-          <div v-for="meetingPoint in allMPts" 
-          :key="meetingPoint.id" 
-          @click="selectMeetingPoint(meetingPoint.id)"
-          class="h-full w-full rounded-md border p-2">
-            <div class="cursor-pointer">
-              <span>{{ meetingPoint.name }} |🍄</span>
+          <div v-for="meetingPoint in filteredMPts" 
+            :key="meetingPoint.id" 
+            @click="selectMeetingPoint(meetingPoint.id)"
+            class="h-full w-full rounded-md border p-2 cursor-pointer hover:bg-muted transition-colors m-2 min-w-fit">
+            <div class="cursor-pointer min-w-fit">
+              <MapPinCheckInside />
+              <span>{{ meetingPoint.name }}</span>
             </div>
+          </div>
+          <div v-if="!filteredMPts.length" class="p-2 text-center text-muted">
+            Fant ingen resultater...
           </div>
         </InfiniteScroll>
       </CardContent>
@@ -98,7 +75,7 @@
       <CardContent>
         <form @submit.prevent="onSubmit" class="flex flex-col gap-5">
           <!-- Name of meeting place: -->
-          <FormField v-slot="{ field, meta, errorMessage }" name="title">
+          <FormField v-slot="{ field, meta, errorMessage }" name="name">
             <FormItem>
               <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
               <FormControl>
@@ -111,7 +88,7 @@
 
           <div class="flex flex-col gap-2">
             <!--Latitude field-->
-            <div class="flex flex-row gap-3 justify-evenly">
+            <div class="flex flex-row flex-wrap gap-3 justify-evenly">
               <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
                 <FormItem>
                   <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
@@ -147,7 +124,7 @@
             <p class="text-muted-foreground text-sm">{{$t('add-event-info.coordinates')}}</p>
           </div>
 
-          <div class="flex flex-row gap-5">
+          <div class="flex flex-row flex-wrap gap-5">
             <Button>{{$t('add-event-info.titles.submit')}}</Button>
             <Button type="button" variant="secondary" @click="cancelUpdate()"> Cancel</Button>
           </div>
@@ -166,13 +143,32 @@
         Card Footer
       </CardFooter>
     </Card>
+
   </div>
+  <!--Handle meeting point drawer -->
+  <Drawer v-model:open="isOpen" v-if="selectedMeetingPoint">
+    <DrawerContent class="z-101">
+      <DrawerHeader class="flex flex-column gap-3">
+        <DrawerTitle class="flex flex-row flex-wrap gap-3">
+          <MapPinCheckInside />
+          {{selectedMeetingPoint.name}}
+        </DrawerTitle>
+        <DrawerDescription>Håndter møteplassen:</DrawerDescription>
+      </DrawerHeader>
+      <DrawerFooter>
+        <DrawerClose class="flex flex-row flex-wrap gap-5 justify-center">
+          <Button @click="activateMP(selectedMeetingPoint.id)" variant="outline">Aktiver møteplass</Button>
+          <Button @click="archiveMP(selectedMeetingPoint.id)" variant="destructive">Arkiver møteplass</Button>
+        </DrawerClose>
+      </DrawerFooter>
+    </DrawerContent>
+  </Drawer>
 </div>
 </template>
 
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
-import { ref, onMounted, watch, computed, nextTick } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query'
@@ -183,6 +179,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import type { MeetingPlace, CreateMeetingPlaceDto, MeetingPlacePreviewDto } from '@/models/MeetingPlace'
 import { meetingPlaceService } from '@/services/MeetingPlaceService'
 import * as z from 'zod'
+import { Search, MapPinCheckInside } from 'lucide-vue-next';
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -205,16 +202,15 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card'
-import { 
-  Combobox, 
-  ComboboxAnchor, 
-  ComboboxEmpty, 
-  ComboboxGroup, 
-  ComboboxInput, 
-  ComboboxItem, 
-  ComboboxItemIndicator, 
-  ComboboxList 
-} from '@/components/ui/combobox'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from '@/components/ui/drawer'
 
 const { t } = useI18n();
 
@@ -242,103 +238,61 @@ const {
 });
 
 
-const form = ref();
-const onSubmit = ref<(e?: Event) => void>();
+const isOpen = ref(false);
 const selectedMP = ref<MeetingPlace | null>(null);
 const selectedMeetingPoint = ref<MeetingPlacePreviewDto | null>(null);
 const newMeetingPoint = ref<CreateMeetingPlaceDto | null>(null);
 const allMPts = computed<MeetingPlacePreviewDto[]>(() => data.value?.pages.flat() ?? []);
+const searchQuery = ref('');
 
 allMPts.value.forEach((event: MeetingPlacePreviewDto) => { console.log(event.id)});
 
-watch(selectedMP, async (meetingPoint) => {
-  if (meetingPoint && form.value) {
-    // await nexttick();
-    form.value.setValues({
-      title: meetingPoint.name,
-      latitude: meetingPoint.latitude,
-      longitude: meetingPoint.longitude,
-      address: meetingPoint.address,
-    })
-  }
-});
-
 onMounted(() => {
-  fetchNextPage();
-  try {
-    setUpForm();
-  } catch (error) {
-    console.error('Kunne ikke sette opp form skjema...', error);
-  }
+  fetchNextPage;
 })
 
-function setUpForm() {
-  const formSchema = toTypedSchema(
-    z.object({
-      name: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
-      latitude: z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
-				.min(-90, t('add-event-info.errors.latitude'))
-				.max(90, t('add-event-info.errors.latitude'))),
-      longitude: z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
-				.min(-180, t('add-event-info.errors.longitude'))
-				.max(180, t('add-event-info.errors.longitude'))),
-      address: z.string()
-				.max(100, t('add-event-info.errors.address'))
-				.optional(),
-    }).refine((data) => {
-			if ((data.latitude === undefined || isNaN(data.latitude)) || (data.longitude === undefined || isNaN(data.longitude))) {
-					return !!data.address && data.address.length > 0;
-			}
-			return true;
-		}, {
-			message: t('add-event-info.errors.position-missing'),
-			path: ['address'],
-		})
-	);
-	form.value = useForm({ validationSchema: formSchema });
-	onSubmit.value = form.value.handleSubmit(handleFormSubmit);
-}
+const filteredMPts = computed(() => {
+  return allMPts.value.filter(mp => mp.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+});
+
+
+const formSchema = toTypedSchema(
+  z.object({
+    name: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
+    latitude: z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
+      .min(-90, t('add-event-info.errors.latitude'))
+      .max(90, t('add-event-info.errors.latitude'))),
+    longitude: z.preprocess((val) => val === '' ? undefined : Number(val), z.number()
+      .min(-180, t('add-event-info.errors.longitude'))
+      .max(180, t('add-event-info.errors.longitude'))),
+    address: z.string()
+      .max(100, t('add-event-info.errors.address'))
+      .optional(),
+  }).refine((data) => {
+    if ((data.latitude === undefined || isNaN(data.latitude)) || (data.longitude === undefined || isNaN(data.longitude))) {
+        return !!data.address && data.address.length > 0;
+    }
+    return true;
+  }, {
+    message: t('add-event-info.errors.position-missing'),
+    path: ['address'],
+  })
+);
+
+
+const form = useForm({
+  validationSchema: formSchema
+});
+const onSubmit = form.handleSubmit(handleFormSubmit);
 
 async function handleFormSubmit(values: any) {
-  if (!selectedMP.value) {
-    console.error('No meeting point selected...');
-    return;
-  }
   newMeetingPoint.value = {
-    name: values.title,
+    name: values.name,
     latitude: values.latitude,
     longitude: values.longitude,
     address: values.address ?? '',
   }
   createNewMP(newMeetingPoint.value);
-}
-
-/**
- * Fetch details about a specific meeting point from the backend API. This might not be needed actually...
- * @param id 
- */
-async function fetchMeetingPointDetails(id: number) {
-  let mpExists: boolean = false
-	for (let i = 0; i < allMPts.value.length; i++) {
-    if (allMPts.value[i].id === id) {
-      mpExists = true;
-      break;
-	  }
-  }
-  if (mpExists) {
-    try {
-      const meetingPointResponse = await meetingPlaceService.getAMeetingPlace(id);
-      console.log('MP details er: ', meetingPointResponse);
-      
-      if (meetingPointResponse) {
-        selectedMP.value = meetingPointResponse;
-      } else {
-        callToast('Could not load meeting point...');
-      }
-    } catch (error) {
-      console.error('Failed to select MP', error);
-    }
-  }
 }
 
 function selectMeetingPoint(id: number) {
@@ -348,6 +302,7 @@ function selectMeetingPoint(id: number) {
       break;
 	  }
   }
+  isOpen.value = true
   console.log('selected meeting point: ', selectedMeetingPoint.value)
 }
 
