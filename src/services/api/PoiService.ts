@@ -1,6 +1,30 @@
 import api from '@/services/api/AxiosInstance.ts';
 import type { PoiData } from '@/models/PoiData.ts';
 
+import axios from 'axios';
+
+const API_BASE = '/api/poi';
+
+export async function getPoiById(id: number) {
+  const response = await axios.get(`${API_BASE}/${id}`, {
+    withCredentials: true // viktig for å sende cookie/session info
+  });
+  return response.data;
+}
+
+export async function getAllPoiTypes() {
+  const response = await axios.get(`${API_BASE}/types`, {
+    withCredentials: true
+  });
+  return response.data;
+}
+
+export async function updatePoi(id: number, data: any) {
+  await axios.put(`${API_BASE}/${id}`, data, {
+    withCredentials: true // kreves for å sende innlogget bruker (admin)
+  });
+}
+
 /**
  * Fetches all public Points of Interest (POIs) from the backend.
  * Corresponds to the /api/poi/public endpoint.
