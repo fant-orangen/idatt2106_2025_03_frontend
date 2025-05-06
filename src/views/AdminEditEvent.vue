@@ -37,7 +37,7 @@
 			<CardContent class="card-content">
 				<InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
 					<div v-for="(event, index) in allEvents" :key="event.id" @click="selectEvent(index)"
-						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-muted/80']">
+						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-bray-200', 'dark:hover:bg-bray-700']">
 
 						<div class=listOfEvents>
 							<span class="severity-tag">{{ event.name }} </span>
