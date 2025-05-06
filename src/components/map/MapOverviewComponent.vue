@@ -1,10 +1,25 @@
 <template>
-  <div class="filter-toggle flex flex-col justify-end gap-4 mb-4 md:flex-row relative z-20">
-    <Button @click="findNearestShelter" variant="destructive" class="w-full md:w-auto">
+  <div class="filter-toggle flex flex-wrap items-center gap-3 mb-4 relative z-20">
+    <!-- Location button styled consistently with other buttons -->
+    <Button
+      @click="fetchUserLocation"
+      :disabled="isLoadingLocation"
+      variant="outline"
+      class="flex items-center"
+    >
+      <font-awesome-icon :icon="['fas', 'location-dot']" class="mr-2" />
+      {{ isLoadingLocation
+      ? t('map.getting-location')
+      : t('map.my-location', 'Use my location')
+      }}
+    </Button>
+
+    <Button @click="findNearestShelter" variant="destructive" class="flex items-center">
       <font-awesome-icon :icon="['fas', 'house-chimney']" class="mr-2" />
       {{ t('map.nearest-shelter') }}
     </Button>
-    <Button @click="isFilterMenuVisible = !isFilterMenuVisible" class="w-full md:w-auto">
+
+    <Button @click="isFilterMenuVisible = !isFilterMenuVisible" class="flex items-center">
       <font-awesome-icon
         :icon="['fas', isFilterMenuVisible ? 'chevron-up' : 'chevron-down']"
         class="mr-2"
@@ -12,18 +27,40 @@
       {{ isFilterMenuVisible ? t('map.hide-filter') : t('map.show-filter') }}
     </Button>
 
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap gap-3">
       <Button @click="showPois = !showPois" :variant="showPois ? 'primary' : 'outline'">
         {{ showPois ? 'Hide POIs' : 'Show POIs' }}
       </Button>
       <Button @click="showCrisis = !showCrisis" :variant="showCrisis ? 'primary' : 'outline'">
         {{ showCrisis ? 'Hide Crisis' : 'Show Crisis' }}
       </Button>
-      <Button @click="showMeetingPlaces = !showMeetingPlaces"
-              :variant="showMeetingPlaces ? 'primary' : 'outline'">
+      <!-- Deactivate "Show Meeting Places" when position is not shared -->
+      <Button
+        @click="toggleMeetingPlaces"
+        :variant="showMeetingPlaces ? 'primary' : 'outline'"
+        :disabled="!userLocation"
+        :class="!userLocation ? 'opacity-60 cursor-not-allowed' : ''"
+      >
         {{ showMeetingPlaces ? 'Hide Meeting Places' : 'Show Meeting Places' }}
       </Button>
     </div>
+  </div>
+
+  <!-- Location status message outside filter card -->
+  <div v-if="locationStatusMessage" class="mb-4">
+    <p
+      class="text-sm py-2 px-4 rounded-md"
+      :class="{
+        'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400': !!locationError,
+        'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400': !locationError && userLocation,
+        'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400': !locationError && !userLocation
+      }"
+    >
+      {{ locationStatusMessage }}
+      <span v-if="userLocation" class="font-medium">
+        Lat: {{ userLocation.latitude.toFixed(4) }}, Lon: {{ userLocation.longitude.toFixed(4) }}
+      </span>
+    </p>
   </div>
 
   <Card v-if="isFilterMenuVisible" class="mb-8 filter-card relative z-20">
@@ -31,33 +68,8 @@
       <CardTitle>{{ t('map.filter') }}</CardTitle>
     </CardHeader>
     <CardContent>
-      <div class="grid grid-cols-1 gap-4 items-end md:grid-cols-3">
-        <div>
-          <Button
-            @click="fetchUserLocation"
-            :disabled="isLoadingLocation"
-            class="w-full"
-          >
-            {{ isLoadingLocation
-            ? t('map.getting-location')
-            : (locationError || (!userLocation && locationStatus))
-              ? t('map.retry-location', 'Retry My Location')
-              : t('map.my-location', 'My Location')
-            }}
-          </Button>
-          <p
-            v-if="locationStatusMessage"
-            class="text-sm mt-1"
-            :class="{ 'text-red-500': !!locationError }"
-          >
-            {{ locationStatusMessage }}
-          </p>
-          <p v-if="userLocation" class="text-sm text-green-600 mt-1">
-            Lat: {{ userLocation.latitude.toFixed(4) }}, Lon:
-            {{ userLocation.longitude.toFixed(4) }}
-          </p>
-        </div>
-
+      <div class="grid grid-cols-1 gap-4 items-end md:grid-cols-2">
+        <!-- Remove "Use My Location" from here since we've moved it outside -->
         <div>
           <label for="distance" class="text-sm font-medium block mb-1">
             {{ t('map.distance') }}
@@ -68,7 +80,7 @@
             v-model.number="distanceInMeters"
             :disabled="!userLocation"
             min="100"
-            max="5000000"
+            max="5000"
             step="100"
             class="w-full"
           />
@@ -147,11 +159,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-// import { storeToRefs } from 'pinia'; // Removed if only profile was destructured and not used
 import MapComponent from '@/components/map/MapComponent.vue';
 import { useGeolocation } from '@/composables/useGeolocation';
 import { useUserStore } from '@/stores/UserStore';
-import { useGeolocationStore } from '@/stores/GeolocationStore'; // Keep if needed, or remove if composable handles all interaction
+import { useGeolocationStore } from '@/stores/GeolocationStore';
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 import type { MeetingPlaceDto } from '@/types/meetingPlace'
 import { fetchMeetingPlacesNearby } from '@/services/api/meetingPlaceService'
@@ -178,9 +189,10 @@ import {
 } from '@/components/ui/select'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faHouseChimney, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons'
+import { faHouseChimney, faChevronUp, faChevronDown, faLocationDot } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faHouseChimney, faChevronUp, faChevronDown)
+// Add the location-dot icon
+library.add(faHouseChimney, faChevronUp, faChevronDown, faLocationDot)
 
 const { t } = useI18n()
 
@@ -198,7 +210,6 @@ const {
   stopWatching,
   getCurrentLocation,
   canShareLocation,
-  // Get resetBrowserPermissionState if available in your composable
   resetBrowserPermissionState,
 } = useGeolocation()
 
@@ -229,7 +240,7 @@ const isLoadingCrisisEvents = ref(false)
 
 // Filter state
 const selectedPoiType = ref<number | null>(null)
-const distanceInMeters = ref(5000000)
+const distanceInMeters = ref(5000)
 const isFilterMenuVisible = ref(false)
 
 const showPois          = ref(true)
@@ -238,6 +249,20 @@ const showMeetingPlaces = ref(false)
 
 const meetingPlaces     = ref<MeetingPlaceDto[]>([])
 const isLoadingMeetings = ref(false)
+
+// --- Custom method to toggle meeting places ---
+function toggleMeetingPlaces() {
+  // Only allow toggling if user location is available
+  if (userLocation.value) {
+    showMeetingPlaces.value = !showMeetingPlaces.value;
+  } else {
+    // Optionally show a notification that location is required
+    poiError.value = t('map.location-needed-for-meetings', 'Location sharing is required to show meeting places');
+    setTimeout(() => {
+      poiError.value = null;
+    }, 3000);
+  }
+}
 
 // --- Computed Properties ---
 // Convert displayed PoiData to POI objects for the MapComponent
@@ -276,11 +301,8 @@ const locationStatusMessage = computed(() => {
   // Unsupported case
   if (locationStatus.value === 'Not Supported') return t('map.location-unavailable');
 
-  // NEW: Only show the permission error when actually trying to use location
-  // Don't show it initially after logout when the user hasn't tried yet
+  // Only show the permission error when actually trying to use location
   if (!canShareLocation.value && !isLoadingLocation.value && !locationError.value && locationStatus.value) {
-    // We only show this message if the user has actually tried to use location
-    // after the page load or after logout
     const userPrefDisabled = userStore.profile?.locationSharingEnabled === false;
     const reasonKey = userPrefDisabled
       ? 'map.status.disabled-by-user'
@@ -307,6 +329,9 @@ function handleLocationReset() {
 
   // Clear any error states in this component
   poiError.value = null;
+
+  // Make sure meeting places are hidden when location is reset
+  showMeetingPlaces.value = false;
 }
 
 // --- Methods ---
@@ -342,8 +367,7 @@ async function fetchUserLocation(): Promise<boolean> {
   handleLocationReset();
 
   // Set a flag to indicate this is a user-initiated location request
-  // This could be stored in the geolocation store if needed
-  geolocationStore.setLocationStatus('Requested'); // Add this action to your store
+  geolocationStore.setLocationStatus('Requested');
 
   console.log('Attempting to get current location...');
   const fetchedLocation = await getCurrentLocation();
@@ -387,7 +411,8 @@ async function applyFilters() {
     distance: distanceInMeters.value,
   })
   poiError.value = null
-  const currentLocation = userLocation.value // Uses the aliased reactive ref
+  showPois.value = true
+  const currentLocation = userLocation.value
   const hasType = selectedPoiType.value !== null
   const hasLocationFilter = currentLocation !== null && distanceInMeters.value > 0
 
@@ -431,7 +456,8 @@ async function applyFilters() {
 async function findNearestShelter() {
   console.log('Finding nearest shelter')
   poiError.value = null
-  let currentLocation = userLocation.value // Uses the aliased reactive ref
+  showPois.value = true
+  let currentLocation = userLocation.value
   if (!currentLocation) {
     const success = await fetchUserLocation()
     if (!success) {
@@ -480,7 +506,8 @@ async function findNearestShelter() {
 async function findNearestPoi() {
   console.log('Finding nearest POI of selected type')
   poiError.value = null
-  let currentLocation = userLocation.value // Uses the aliased reactive ref
+  showPois.value = true
+  let currentLocation = userLocation.value
   if (!currentLocation) {
     const success = await fetchUserLocation()
     if (!success) {
@@ -527,7 +554,7 @@ watch(distanceInMeters, (val: number | string) => {
     return
   }
   if (numVal < 100) distanceInMeters.value = 100
-  else if (numVal > 5000000) distanceInMeters.value = 5000000
+  else if (numVal > 5000) distanceInMeters.value = 5000
   else if (typeof val === 'string') distanceInMeters.value = numVal
 })
 
@@ -542,10 +569,16 @@ watch(() => userStore.loggedIn, (isLoggedIn, wasLoggedIn) => {
   }
 }, { immediate: true });
 
+// Watch for user location changes
 watch(userLocation, (loc) => {
   if (loc && mapComponentRef.value) {
     // e.g. zoom level 15 when you share your location
     mapComponentRef.value.centerMap(loc.latitude, loc.longitude, 15);
+  }
+
+  // If location is reset/removed, make sure meeting places are hidden
+  if (!loc) {
+    showMeetingPlaces.value = false;
   }
 });
 
@@ -608,3 +641,10 @@ onBeforeUnmount(() => {
   stopWatching() // Ensure watcher is stopped
 })
 </script>
+
+<style scoped>
+/* Add some styling for disabled buttons */
+.cursor-not-allowed {
+  pointer-events: none;
+}
+</style>
