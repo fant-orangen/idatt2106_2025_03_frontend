@@ -157,31 +157,43 @@
     </CardContent>
   </Card>
 
-  <div class="relative z-0 overflow-visible h-[50em]">
-    <div
-      v-if="isLoadingPois || isLoadingCrisisEvents || isLoadingLocation"
-      class="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-black/80 z-10"
-    >
-      {{ t('map.loading') || 'Loading...' }}
+  <!-- Map and Legend container -->
+  <div class="flex flex-col">
+    <!-- Map area -->
+    <div class="relative z-0 overflow-visible h-[50em] md:h-[60vh] w-full">
+      <div
+        v-if="isLoadingPois || isLoadingCrisisEvents || isLoadingLocation"
+        class="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-black/80 z-10"
+      >
+        {{ t('map.loading') || 'Loading...' }}
+      </div>
+      <div
+        v-else-if="poiError || locationError"
+        class="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-black/80 z-10 text-red-600"
+      >
+        {{ poiError || locationStatusMessage || 'An error occurred' }}
+      </div>
+
+      <MapComponent
+        ref="mapComponentRef"
+        :pois="showPois ? convertedPois : []"
+        :crisisEvents="showCrisis ? crisisEvents : []"
+        :meetingPlaces="showMeetingPlaces ? meetingPlaces : []"
+        :showPois="showPois"
+        :showCrisis="showCrisis"
+        :showMeetingPlaces="showMeetingPlaces"
+        :userLocation="userLocation"
+        :householdLocation="householdLocation"
+        class="absolute inset-0"
+      />
     </div>
-    <div
-      v-else-if="poiError || locationError"
-      class="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-black/80 z-10 text-red-600"
-    >
-      {{ poiError || locationStatusMessage || 'An error occurred' }}
-    </div>
-    <MapComponent
-      ref="mapComponentRef"
-      :pois="showPois ? convertedPois : []"
-      :crisisEvents="showCrisis ? crisisEvents : []"
-      :meetingPlaces="showMeetingPlaces ? meetingPlaces : []"
-      :showPois="showPois"
-      :showCrisis="showCrisis"
-      :showMeetingPlaces="showMeetingPlaces"
-      :userLocation="userLocation"
-      :householdLocation="householdLocation"
-      class="absolute inset-0"
-    />
+
+    <!-- Legend underneath the map -->
+      <MapLegend
+        class="mt-4"
+        :items="legendItems"
+        :title="t('map.legend','Legend')"
+      />
   </div>
 </template>
 <script setup lang="ts">
@@ -194,6 +206,7 @@ import { useGeolocationStore } from '@/stores/GeolocationStore';
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 import type { MeetingPlaceDto } from '@/types/meetingPlace'
 import { fetchMeetingPlacesNearby } from '@/services/api/meetingPlaceService'
+import markerIconUrl        from 'leaflet/dist/images/marker-icon.png'
 
 import {
   fetchPublicPois,
@@ -220,6 +233,20 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faHouseChimney, faChevronUp, faChevronDown, faLocationDot } from '@fortawesome/free-solid-svg-icons'
 
+import MapLegend from './MapLegend.vue'
+
+// also import your POI icon URLs:
+import firestationIconUrl   from '@/assets/mapicons/firestation.svg'
+import gasstationIconUrl     from '@/assets/mapicons/gasstation.svg'
+import grocerystoreIconUrl   from '@/assets/mapicons/grocerystore.svg'
+import hospitalIconUrl       from '@/assets/mapicons/hospital.svg'
+import meetingpointIconUrl   from '@/assets/mapicons/meetingpoint.svg'
+import pharmacyIconUrl       from '@/assets/mapicons/pharmacy.svg'
+import policestationIconUrl  from '@/assets/mapicons/policestation.svg'
+import shelterIconUrl        from '@/assets/mapicons/shelter.svg'
+import waterpointIconUrl     from '@/assets/mapicons/waterpoint.svg'
+import defaultPoiIconUrl     from '@/assets/mapicons/home.svg'
+
 // Add the location-dot icon
 library.add(faHouseChimney, faChevronUp, faChevronDown, faLocationDot)
 
@@ -241,6 +268,28 @@ const {
   canShareLocation,
   resetBrowserPermissionState,
 } = useGeolocation()
+
+const legendItems = [
+  { icon: markerIconUrl, label: t('map.legend.user-location',    'Your Location'),    extraClass: 'user-location-icon' },
+  {
+    icon: markerIconUrl,
+    label: t('map.legend.household-location','Home Location'),
+    extraClass: 'filter hue-rotate-300'
+  },
+  { iconClass: 'bg-yellow-400', label: t('map.legend.crisis-level-1','Crisis Level 1') },
+  { iconClass: 'bg-orange-400', label: t('map.legend.crisis-level-2','Crisis Level 2') },
+  { iconClass: 'bg-red-400',    label: t('map.legend.crisis-level-3','Crisis Level 3') },
+  { icon: firestationIconUrl,   label: t('map.legend.fire-station',   'Fire Station') },
+  { icon: policestationIconUrl,  label: t('map.legend.police-station', 'Police Station') },
+  { icon: hospitalIconUrl,       label: t('map.legend.hospital',       'Hospital') },
+  { icon: pharmacyIconUrl,       label: t('map.legend.pharmacy',       'Pharmacy') },
+  { icon: gasstationIconUrl,     label: t('map.legend.gas-station',    'Gas Station') },
+  { icon: grocerystoreIconUrl,   label: t('map.legend.grocery-store',  'Grocery Store') },
+  { icon: waterpointIconUrl,     label: t('map.legend.water-point',    'Water Point') },
+  { icon: meetingpointIconUrl,   label: t('map.legend.meeting-point',  'Meeting Point') },
+  { icon: shelterIconUrl,        label: t('map.legend.shelter',        'Shelter') },
+  { icon: defaultPoiIconUrl,     label: t('map.legend.default',        'Other') },
+]
 
 const mapComponentRef = ref<InstanceType<typeof MapComponent> | null>(null);
 

@@ -60,14 +60,21 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.container {
-  width: 100%;
-}
 .map {
   /* Ensure map area expands */
   min-height: 200px;
+  position: relative; /* Add this for proper positioning context */
   @media (min-width: 768px) {
     min-height: 300px;
+  }
+}
+
+/* Add these styles to ensure the legend appears properly in HomeView */
+:deep(.map-legend-custom) {
+  /* Ensure this style penetrates into child components */
+  @media (min-width: 768px) {
+    right: 1rem;
+    top: 1rem;
   }
 }
 </style>

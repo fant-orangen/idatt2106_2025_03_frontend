@@ -1233,15 +1233,15 @@ export default defineComponent({
 /* Make sure the map container fills its parent */
 
 :deep(.admin-marker-icon) {
-  filter: hue-rotate(90deg); /* Makes the marker green */
+  filter: hue-rotate(90deg);
 }
 
 :deep(.user-location-icon) {
-  filter: hue-rotate(210deg); /* Makes the marker blue */
+  filter: hue-rotate(0deg); /* Makes the marker blue */
 }
 
 :deep(.household-location-icon) {
-  filter: hue-rotate(300deg); /* Makes the marker purple */
+  filter: hue-rotate(300deg);
 }
 
 :deep(.destination-marker) {
