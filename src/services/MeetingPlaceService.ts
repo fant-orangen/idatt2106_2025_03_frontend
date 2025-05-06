@@ -1,4 +1,5 @@
-import type { MeetingPlace, CreateMeetingPlaceRequest } from '../models/MeetingPlace';
+import type { Page } from '@/types/Page';
+import type { MeetingPlace, CreateMeetingPlaceDto, MeetingPlacePreviewDto } from '../models/MeetingPlace';
 import api from './api/AxiosInstance';
 
 class MeetingPlaceService {
@@ -7,7 +8,7 @@ class MeetingPlaceService {
      * @param createDto The meeting place data to create
      * @returns Promise containing the created meeting place
      */
-    async createMeetingPlace(createDto: CreateMeetingPlaceRequest): Promise<MeetingPlace> {
+    async createMeetingPlace(createDto: CreateMeetingPlaceDto): Promise<MeetingPlace> {
         try {
             const response = await api.post('/admin/meeting-places', createDto);
             return response.data;
@@ -70,6 +71,28 @@ class MeetingPlaceService {
             return response.data;
         } catch (error) {
             console.error('Error fetching nearby meeting places:', error);
+            throw error;
+        }
+    }
+
+    async getPreviewMeetingPlaces(page = 0, size = 10) {
+        try {
+            const response = await api.get<Page<MeetingPlacePreviewDto>>('/public/meeting-places/all/previews', {
+                params: {page, size}
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching previews of meeting places: ', error);
+            throw error;
+        }
+    }
+
+    async getAMeetingPlace(id: number): Promise<MeetingPlacePreviewDto> {
+        try {
+            const response = await api.get('/public/meeting-places/' + id);
+            return response.data;
+        } catch (error) {
+            console.error('could not get the specific MP from API:', error)
             throw error;
         }
     }

@@ -149,6 +149,15 @@ onMounted(loadMoreNews);
   font-weight: 500;
 }
 
+/* Container for news content */
+.news-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  height: calc(100vh - 120px);
+  width: 100%;
+  position: relative;
+}
+
 /* Timeline styling */
 .timeline {
   position: relative;

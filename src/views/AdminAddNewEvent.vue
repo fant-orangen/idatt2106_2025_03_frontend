@@ -3,13 +3,19 @@
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin-panel">
+          <BreadcrumbItem>
+          <BreadcrumbLink href="/">
+            {{ $t('navigation.home') }}
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+          <BreadcrumbLink href="/admin/admin-panel">
             {{ $t('navigation.admin-panel') }}
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage href="/add-new-event">{{ $t('navigation.new-event') }}</BreadcrumbPage>
+          <BreadcrumbPage href="/admin/add-new-event">{{ $t('navigation.new-event') }}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
