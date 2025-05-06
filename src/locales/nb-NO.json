@@ -325,7 +325,8 @@
     "reflections": "Refleksjoner",
     "reflection-for-crisis": "Refleksjon for krise:",
     "selected-crisis": "Valgt krise",
-    "unknown-crisis": "Ukjent krise"
+    "unknown-crisis": "Ukjent krise",
+    "view-reflections": "Se refleksjoner"
   },
   "map": {
     "defibrillator": "Hjertestarter",

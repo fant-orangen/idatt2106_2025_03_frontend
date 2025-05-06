@@ -173,6 +173,12 @@ const routes = [
     name: 'GroupPage',
     component: () => import('@/views/GroupPage.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/reflections',
+    name: 'Reflections',
+    component: () => import('@/views/ReflectionsView.vue'),
+    meta: { requiresAuth: true }
   }
 
 ]
