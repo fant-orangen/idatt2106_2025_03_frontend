@@ -16,3 +16,16 @@ export interface CreateMeetingPlaceRequest {
     name: string;
     address: string;
 }
+
+export interface MeetingPlacePreviewDto {
+    id: number;
+    name: string;
+    status: string;
+}
+
+export interface CreateMeetingPlaceDto {
+    name: string;
+    latitude: number;
+    longitude: number;
+    address?: string;
+}

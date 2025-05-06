@@ -35,60 +35,67 @@
 
 			<Button
 			  v-if="userStore.isSuperAdminUser"
-			  @click="router.push('/handle-admins')"
+			  @click="router.push('/admin/handle-admins')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.edit-admin') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
-			  @click="router.push('/add-new-event')"
+			  @click="router.push('/admin/add-new-event')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.make-new-event') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
-			  @click="router.push('/add-new-POI')"
+			  @click="router.push('/admin/add-new-POI')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.make-new-POI') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
-			  @click="router.push('/add-new-scenario-theme')"
+			  @click="router.push('/admin/add-new-scenario-theme')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.make-new-scenario-theme') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
-			  @click="router.push('/add-new-activity')"
+			  @click="router.push('/admin/add-new-activity')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.make-new-activity') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
-			  @click="router.push('/edit-event')"
+			  @click="router.push('/admin/edit-event')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.edit-event') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
-			  @click="router.push('/edit-scenario-theme')"
+			  @click="router.push('/admin/edit-scenario-theme')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.edit-scenario-theme') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
-			<Button @click="router.push('/edit-poi')"
+			<Button @click="router.push('/admin/edit-poi')"
 			class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
-            {{ $t('admin.edit-POI') }}
-            <font-awesome-icon icon="fa-solid fa-arrow-right" />
-          </Button>
+				{{ $t('admin.edit-POI') }}
+				<font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
+			<Button
+			  @click="router.push('/admin/meeting-point')"
+			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+			>
+			  {{ $t('admin.meeting-point') }}
+			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
 		  </div>
 
 		  <!-- Map Section -->
