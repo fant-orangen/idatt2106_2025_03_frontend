@@ -815,7 +815,25 @@
       "questionAdded": "Question added successfully!",
       "questionCreationError": "An error occurred while creating the question or answers.",
       "fetchError": "Failed to fetch questions and answers.",
-      "noQuestions": "No questions have been added yet."
+      "noQuestions": "No questions have been added yet.",
+      "saveQuestionButton": "Save Question",
+      "cancelButton": "Cancel",
+      "deleteQuestion": "Delete Question",
+      "editQuestion": "Edit Question",
+      "editQuestionDescription": "Edit the question and its options.",
+      "questionUpdated": "Question updated successfully",
+      "questionUpdatedDescription": "The question and its answers have been updated.",
+      "updateError": "Failed to update question",
+      "updateErrorDescription": "An error occurred while updating the question.",
+      "questionAddedDescription": "The question and its answers have been added.",
+      "questionCreationErrorDescription": "An error occurred while creating the question.",
+      "questionDeleted": "Question deleted successfully",
+      "questionDeletedDescription": "The question has been removed.",
+      "deleteError": "Failed to delete question",
+      "deleteErrorDescription": "An error occurred while deleting the question.",
+      "fetchErrorDescription": "An error occurred while fetching the questions.",
+      "questionValidationErrorDescription": "Please provide a valid question and at least one correct answer.",
+      "maxOptionsDescription": "You cannot add more than 5 options."
     }
   }
 }

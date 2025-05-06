@@ -866,7 +866,25 @@
       "questionAdded": "Spørsmål lagt til!",
       "questionCreationError": "En feil oppstod under oppretting av spørsmål eller alternativer.",
       "fetchError": "Kunne ikke hente spørsmål og svar.",
-      "noQuestions": "Ingen spørsmål er lagt til ennå."
+      "noQuestions": "Ingen spørsmål er lagt til ennå.",
+      "saveQuestionButton": "Lagre spørsmål",
+      "cancelButton": "Avbryt",
+      "deleteQuestion": "Slett spørsmål",
+      "editQuestion": "Rediger spørsmål",
+      "editQuestionDescription": "Rediger spørsmål og alternativer.",
+      "questionUpdated": "Spørsmål oppdatert",
+      "questionUpdatedDescription": "Spørsmålet og svarene har blitt oppdatert.",
+      "updateError": "Kunne ikke oppdatere spørsmål",
+      "updateErrorDescription": "En feil oppstod under oppdatering av spørsmålet.",
+      "questionAddedDescription": "Spørsmålet og svarene har blitt lagt til.",
+      "questionCreationErrorDescription": "En feil oppstod under oppretting av spørsmålet.",
+      "questionDeleted": "Spørsmål slettet",
+      "questionDeletedDescription": "Spørsmålet har blitt fjernet.",
+      "deleteError": "Kunne ikke slette spørsmål",
+      "deleteErrorDescription": "En feil oppstod under sletting av spørsmålet.",
+      "fetchErrorDescription": "En feil oppstod under henting av spørsmålene.",
+      "questionValidationErrorDescription": "Vennligst oppgi et gyldig spørsmål og minst ett riktig svar.",
+      "maxOptionsDescription": "Du kan ikke legge til mer enn 5 alternativer."
     }
   }
 }
