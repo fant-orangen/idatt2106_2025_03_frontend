@@ -174,10 +174,34 @@ const routes = [
     component: () => import('@/views/GroupPage.vue'),
     meta: { requiresAuth: true },
   },
+  // Gamification routes
   {
-    path: '/games',
-    name: 'Games',
-    component: () => import('@/views/gamification/GamificationView.vue'),
+    path: '/games/quiz/overview',
+    name: 'QuizOverview',
+    component: () => import('@/views/gamification/QuizOverviewView.vue'),
+  },
+  {
+    path: '/games/quiz/:id',
+    name: 'Quiz',
+    component: () => import('@/views/gamification/QuizView.vue'),
+  },
+  {
+    path: '/games/quiz/history',
+    name: 'QuizHistory',
+    component: () => import('@/views/gamification/QuizHistoryView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/games/quiz/new-quiz',
+    name: 'DefineQuiz',
+    component: () => import('@/views/gamification/admin/DefineQuiz.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/admin/games/quiz/edit-quiz/:id',
+    name: 'EditQuiz',
+    component: () => import('@/views/gamification/admin/EditQuizView.vue'),
+    meta: { requiresAdmin: true },
   },
   {
     path: '/admin/meeting-point',
