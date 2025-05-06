@@ -51,7 +51,7 @@
                   <div class="flex-1">
                     <div class="flex items-center justify-between">
                       <h3 class="font-medium">{{ event.name }}</h3>
-                      <Badge :class="getSeverityClass(event.severity)">
+                      <Badge :style="{ backgroundColor: getSeverityColor(event.severity) }">
                         {{ event.severity.toUpperCase() }}
                       </Badge>
                     </div>
