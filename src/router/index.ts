@@ -139,6 +139,12 @@ const routes = [
     component: () => import('@/views/MedicineInventory.vue'),
   },
   {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/ProfileView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/edit-POI',
     name: 'AdminEditPOI',
     component: () => import('@/views/AdminEditPOI.vue'),

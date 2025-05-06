@@ -1,7 +1,8 @@
 {
   "common": {
     "cancel": "Avbryt",
-    "remove": "Fjern"
+    "remove": "Fjern",
+    "saving": "Lagrer..."
   },
   "actions": {
     "to-reflect": "for å reflektere",
@@ -177,7 +178,8 @@
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",
-    "login-successful": "Innlogging vellykket!"
+    "login-successful": "Innlogging vellykket!",
+    "profile-updated": "Profil oppdatert"
   },
   "crisis": {
     "crisis-status": "Krisestatus",
@@ -246,6 +248,11 @@
     "light-mode": "Lys modus",
     "dark-mode": "Mørk modus"
   },
+  "user-profile": {
+    "title": "Brukerprofil",
+    "description": "Se brukerinformasjon",
+    "close": "Lukk"
+  },
   "time": {
     "after": "etter",
     "before": "før",
@@ -272,8 +279,10 @@
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",
+    "your-reflections": "Dine refleksjoner",
     "need-help-q": "Trenger du hjelp?",
-    "what-2-do-after-crisis": "Hva bør du gjøre etter en krise?"
+    "what-2-do-after-crisis": "Hva bør du gjøre etter en krise?",
+    "no-reflections": "Ingen refleksjoner ennå"
   },
   "map": {
     "defibrillator": "Hjertestarter",
@@ -647,6 +656,10 @@
       "account": "Konto",
       "notifications": "Varslinger"
     },
+    "notifications": {
+      "enabled": "Aktivert",
+      "disabled": "Deaktivert"
+    },
     "account": {
       "title": "Kontoinnstillinger",
       "myAccount": "Min konto",
@@ -663,7 +676,9 @@
       "email": {
         "email": "E-post",
         "subtitle": "E-postinnstillinger",
-        "description": "Oppdater e-postadressen din her. Etter lagring vil du bli logget ut."
+        "description": "Oppdater e-postadressen din her. Etter lagring vil du bli logget ut.",
+        "verified": "E-post verifisert",
+        "not-verified": "E-post ikke verifisert"
       },
       "security": {
         "title": "Kontosikkerhet",
@@ -676,6 +691,11 @@
         "description": "Slett kontoen din og alle tilknyttede data permanent. Denne handlingen er irreversibel og kan ikke angres.",
         "button": "Slett konto"
       }
+    },
+    "profile": {
+      "title": "Profilinnstillinger",
+      "description": "Oppdater din personlige informasjon og profildetaljer.",
+      "address-privacy": "Adressen din er ikke synlig for andre brukere."
     },
     "notifications": {
       "title": "Varslingsinnstillinger",
@@ -836,6 +856,8 @@
     "delete": "Slett",
     "confirm": "Bekreft",
     "save": "Lagre",
-    "remove": "Fjern"
+    "remove": "Fjern",
+    "saving": "Lagrer...",
+    "not-provided": "Ikke oppgitt"
   }
 }
