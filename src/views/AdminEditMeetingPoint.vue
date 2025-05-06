@@ -360,7 +360,7 @@ async function activateMP(id: number) {
 }
 
 function cancelUpdate() {
-	form.value?.resetForm();
+	form.resetForm();
 }
 
 /**
