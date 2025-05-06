@@ -1,26 +1,32 @@
 import api from '@/services/api/AxiosInstance.ts';
-import type { PoiData } from '@/models/PoiData.ts';
+import type { PoiData, PoiPreviewDto } from '@/models/PoiData.ts';
 
-import axios from 'axios';
+import type {Page} from "@/types/Page.ts";
 
-const API_BASE = '/api/poi';
+export async function fetchPoiPreviews(page = 0, size = 10, sort = 'id,asc'): Promise<Page<PoiPreviewDto>> {
+  const response = await api.get<Page<PoiPreviewDto>>('/public/poi/previews', {
+    params: { page, size, sort }
+  })
+    console.log('poi list:', response.data)
+  return response.data
+}
+export async function deletePoi(id: number): Promise<void> {
+  await api.delete(`/admin/poi/${id}`, {
+    withCredentials: true
+  });
+}
 
-export async function getPoiById(id: number) {
-  const response = await axios.get(`${API_BASE}/${id}`, {
+
+
+export async function getPoiById(id: number): Promise<PoiData | null> {
+  const response = await api.get<PoiData>(`/public/poi/${id}`, {
     withCredentials: true // viktig for å sende cookie/session info
   });
   return response.data;
 }
 
-export async function getAllPoiTypes() {
-  const response = await axios.get(`${API_BASE}/types`, {
-    withCredentials: true
-  });
-  return response.data;
-}
-
 export async function updatePoi(id: number, data: any) {
-  await axios.put(`${API_BASE}/${id}`, data, {
+  await api.put(`/admin/poi/${id}`, data, {
     withCredentials: true // kreves for å sende innlogget bruker (admin)
   });
 }
