@@ -216,33 +216,21 @@ export default defineComponent({
     function updateMeetingPlaces(list: MeetingPlaceDto[]) {
       console.log('Drawing meeting places:', list)
       if (!meetingLayer.value) return;
-      const keep = new Set(list.map(mp => mp.id));
-      const toAdd: L.Marker[] = [];
 
-      // 1) add/update
+      // Clear all existing markers
+      meetingLayer.value.clearLayers();
+      meetingMarkers.value.clear();
+
+      // Add all markers fresh
+      const markers: L.Marker[] = [];
       for (const mp of list) {
-        const existing = meetingMarkers.value.get(mp.id);
-        if (existing) {
-          existing.setLatLng([mp.latitude, mp.longitude]);
-          existing.setPopupContent(`<strong>${mp.name}</strong><br/>${mp.description||''}`);
-        } else {
-          const m = L.marker([mp.latitude, mp.longitude], { icon: getMeetingIcon() })
-          .bindPopup(`<strong>${mp.name}</strong><br/>${mp.description||''}`);
-          meetingMarkers.value.set(mp.id, m);
-          toAdd.push(m);
-        }
+        const marker = L.marker([mp.latitude, mp.longitude], { icon: getMeetingIcon() })
+        .bindPopup(`<strong>${mp.name}</strong><br/>${mp.description||''}`);
+        meetingMarkers.value.set(mp.id, marker);
+        markers.push(marker);
       }
 
-      // 2) remove stale
-      for (const [id, marker] of meetingMarkers.value) {
-        if (!keep.has(id)) {
-          meetingLayer.value.removeLayer(marker);
-          meetingMarkers.value.delete(id);
-        }
-      }
-
-      // 3) bulk‐add new
-      if (toAdd.length) meetingLayer.value.addLayers(toAdd);
+      if (markers.length) meetingLayer.value.addLayers(markers);
     }
 
 // Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering

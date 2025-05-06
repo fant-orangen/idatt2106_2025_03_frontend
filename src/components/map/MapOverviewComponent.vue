@@ -216,7 +216,7 @@ const isLoadingCrisisEvents = ref(false)
 
 // Filter state
 const selectedPoiType = ref<number | null>(null)
-const distanceInMeters = ref(10000)
+const distanceInMeters = ref(5000000)
 const isFilterMenuVisible = ref(false)
 
 const showPois          = ref(true)
