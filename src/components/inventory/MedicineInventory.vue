@@ -31,10 +31,27 @@
 
   <!-- Batch Editing -->
   <div v-if="item.edit" class="space-y-4 mt-4">
+    <!-- Group selector -->
+    <div class="border-b pb-4 mb-4">
+      <h3 class="text-sm font-medium mb-2">Del med gruppe:</h3>
+      <div class="flex gap-2 items-center">
+        <Select v-model="selectedGroupId" class="w-full sm:w-64">
+          <SelectTrigger>
+            <SelectValue :placeholder="groups.length > 0 ? 'Velg en gruppe' : 'Ingen grupper funnet'" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="group in groups" :key="group.id" :value="group.id">
+              {{ group.name }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+
     <div
       v-for="(batch, bIndex) in item.batches"
       :key="bIndex"
-      class="flex flex-col md:grid md:grid-cols-5 gap-3 items-center"
+      class="flex flex-col md:grid md:grid-cols-6 gap-3 items-center"
     >
       <Input
         v-model="batch.amount"
@@ -71,6 +88,17 @@
       >
         Delete
       </Button>
+
+      <Button
+        v-if="!batch.isNew"
+        variant="secondary"
+        size="sm"
+        @click="addBatchToGroup(batch.id)"
+        :disabled="!selectedGroupId || addingBatchToGroup"
+        class="text-xs w-full md:w-auto"
+      >
+        Del
+      </Button>
     </div>
 
           <!-- Add New Batch -->
@@ -100,7 +128,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
           <Input
             v-model="newProductName"
-            :placeholder="Produktnavn"
+            placeholder="Produktnavn"
           />
           <Select v-model="newProductUnit">
             <SelectTrigger>
@@ -149,6 +177,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { format } from 'date-fns'
 import { inventoryService } from '@/services/InventoryService'
+import { groupService } from '@/services/api/GroupService'
 import { useProductStore } from '@/stores/ProductStore'
 import { useI18n } from 'vue-i18n'
 import { Input } from '@/components/ui/input'
@@ -160,6 +189,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
+import { toast } from 'vue-sonner'
 
 const props = defineProps({
   searchText: {
@@ -176,6 +206,62 @@ const newProductName = ref('')
 const newProductUnit = ref('')
 const showExistsModal = ref(false)
 const isLoading = ref(true)
+
+// Group-related state
+const groups = ref([])
+const selectedGroupId = ref(null)
+const addingBatchToGroup = ref(false)
+
+const fetchGroups = async () => {
+  try {
+    const response = await groupService.getCurrentUserGroups()
+    if (response?.content) {
+      groups.value = response.content
+    }
+  } catch (error) {
+    console.error('Error fetching groups:', error)
+  }
+}
+
+const showNotification = (title, description, duration = 3000) => {
+  toastTitle.value = title
+  toastDescription.value = description
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+  }, duration)
+}
+
+const addBatchToGroup = async (batchId) => {
+  if (!selectedGroupId.value || !batchId) return
+
+  addingBatchToGroup.value = true
+  try {
+    await groupService.addBatchToGroup({
+      batchId: batchId,
+      groupId: selectedGroupId.value
+    })
+    toast('Suksess!', {
+      description: 'Produktet ble lagt til i gruppen.',
+      duration: 3000
+    })
+  } catch (error) {
+    console.error('Error adding batch to group:', error)
+    if (error.message) {
+      toast('Feil', {
+        description: error.message,
+        duration: 5000
+      })
+    } else {
+      toast('Feil', {
+        description: 'Det oppstod en feil ved deling av produkt med gruppen.',
+        duration: 5000
+      })
+    }
+  } finally {
+    addingBatchToGroup.value = false
+  }
+}
 
 const fetchProductTypes = async () => {
   try {
@@ -206,7 +292,10 @@ const fetchProductTypes = async () => {
   }
 }
 
-onMounted(fetchProductTypes)
+onMounted(() => {
+  fetchProductTypes()
+  fetchGroups()
+})
 
 let searchTimeout
 watch(
