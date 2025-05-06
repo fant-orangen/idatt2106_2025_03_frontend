@@ -28,21 +28,35 @@
     </Button>
 
     <div class="flex flex-wrap gap-3">
-      <Button @click="showPois = !showPois" :variant="showPois ? 'primary' : 'outline'">
-        {{ showPois ? 'Hide POIs' : 'Show POIs' }}
-      </Button>
-      <Button @click="showCrisis = !showCrisis" :variant="showCrisis ? 'primary' : 'outline'">
-        {{ showCrisis ? 'Hide Crisis' : 'Show Crisis' }}
-      </Button>
+      <div class="flex items-center gap-2">
+
+        <label class="text-sm font-medium cursor-pointer">
+          {{ t('map.show-pois', 'POIs') }}
+        </label>
+        <Switch v-model="showPois" />
+      </div>
+
+      <div class="flex items-center gap-2">
+        <label class="text-sm font-medium cursor-pointer">
+          {{ t('map.show-crisis', 'Krise') }}
+        </label>
+        <Switch v-model="showCrisis" />
+      </div>
       <!-- Deactivate "Show Meeting Places" when position is not shared -->
-      <Button
-        @click="toggleMeetingPlaces"
-        :variant="showMeetingPlaces ? 'primary' : 'outline'"
-        :disabled="!userLocation"
-        :class="!userLocation ? 'opacity-60 cursor-not-allowed' : ''"
-      >
-        {{ showMeetingPlaces ? 'Hide Meeting Places' : 'Show Meeting Places' }}
-      </Button>
+      <div class="flex items-center gap-2">
+
+        <label
+          class="text-sm font-medium cursor-pointer"
+          :class="!userLocation ? 'opacity-50' : ''"
+        >
+          {{ t('map.show-meeting-places', 'Møteplasser') }}
+        </label>
+        <Switch
+          v-model="showMeetingPlaces"
+          :disabled="!userLocation"
+          @update:modelValue="handleMeetingPlacesToggle"
+        />
+      </div>
     </div>
   </div>
 
@@ -187,6 +201,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faHouseChimney, faChevronUp, faChevronDown, faLocationDot } from '@fortawesome/free-solid-svg-icons'
@@ -251,12 +266,9 @@ const meetingPlaces     = ref<MeetingPlaceDto[]>([])
 const isLoadingMeetings = ref(false)
 
 // --- Custom method to toggle meeting places ---
-function toggleMeetingPlaces() {
-  // Only allow toggling if user location is available
-  if (userLocation.value) {
-    showMeetingPlaces.value = !showMeetingPlaces.value;
-  } else {
-    // Optionally show a notification that location is required
+function handleMeetingPlacesToggle(value) {
+  if (!userLocation.value && value) {
+    // If trying to enable meeting places without location, show error
     poiError.value = t('map.location-needed-for-meetings', 'Location sharing is required to show meeting places');
     setTimeout(() => {
       poiError.value = null;
