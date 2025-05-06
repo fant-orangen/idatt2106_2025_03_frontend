@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { Progress } from '../ui/progress'
-import { Button } from '../ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import { Progress } from '@/components/ui/progress'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { ref } from 'vue'
 import { Check, X } from 'lucide-vue-next'
 
