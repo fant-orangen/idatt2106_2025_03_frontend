@@ -218,7 +218,7 @@ export default defineComponent({
 
           L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
             { maxZoom: 19, attribution: '© OSM © CartoDB', noWrap: false })
-          .addTo(map.value);
+          .addTo(map.value as unknown as L.Map);
 
           const clusterOptions: L.MarkerClusterGroupOptions = {
             spiderfyOnMaxZoom: true, disableClusteringAtZoom: 45, maxClusterRadius: 50,
@@ -226,7 +226,7 @@ export default defineComponent({
             chunkedLoading: true, chunkInterval: 50, chunkDelay: 10, chunkProgress: undefined,
           };
           markerClusterGroup.value = L.markerClusterGroup(clusterOptions);
-          map.value.addLayer(markerClusterGroup.value);
+          map.value.addLayer(markerClusterGroup.value as unknown as L.Layer);
 
           map.value.on('zoomend moveend', scheduleViewportUpdate);
 
@@ -272,7 +272,7 @@ export default defineComponent({
 
     function addMarker(lat: number, lng: number, title: string = 'New Marker'): L.Marker | null {
       if (!map.value) return null;
-      const marker = L.marker([lat, lng], { icon: adminIcon, draggable: props.adminMode, title }).addTo(map.value);
+      const marker = L.marker([lat, lng], { icon: adminIcon, draggable: props.adminMode, title }).addTo(map.value as unknown as L.Map);
       if (props.adminMode) {
         marker.on('dragend', function(event) {
           const position = event.target.getLatLng();
@@ -317,7 +317,7 @@ export default defineComponent({
         addWaypoints: false, fitSelectedRoutes: true, showAlternatives: true, useZoomParameter: true,
         draggableWaypoints: false,
         createMarker: () => null,
-      }).addTo(map.value);
+      }).addTo(map.value as unknown as L.Map);
 
       routingControl.value.on('routesfound', () => {
         if (!routingControl.value) return;
@@ -335,7 +335,7 @@ export default defineComponent({
       activeRouteMarker.value = L.marker([lat, lng], {
         icon: L.divIcon({ className: 'destination-marker', html: '<div class="destination-marker-inner"></div>', iconSize: [20, 20], iconAnchor: [10, 10] }),
         zIndexOffset: 1000
-      }).addTo(map.value);
+      }).addTo(map.value as unknown as L.Map);
       if (activeRouteMarker.value) { (activeRouteMarker.value as any).destinationLat = lat; (activeRouteMarker.value as any).destinationLng = lng; }
     }
 
@@ -480,7 +480,7 @@ export default defineComponent({
         } catch (error) { console.error("Error adding crisis event:", error); }
       });
 
-      if (map.value && crisisLayerGroup) crisisLayerGroup.addTo(map.value);
+      if (map.value && crisisLayerGroup) crisisLayerGroup.addTo(map.value as unknown as L.Map);
 
       nextTick(() => {
         if (map.value) {
@@ -499,7 +499,7 @@ export default defineComponent({
       if (userMarker.value) userMarker.value.remove();
       if (location) {
         userMarker.value = L.marker([location.latitude, location.longitude], { icon: userIcon, zIndexOffset: 1000 })
-        .addTo(map.value)
+        .addTo(map.value as unknown as L.Map)
         .bindPopup(`<strong>${translatedStrings.yourLocation}</strong>`)
         .bindTooltip(translatedStrings.yourLocation, { permanent: false, direction: 'top', className: 'user-location-label', offset: [0, -30] });
         if (routingControl.value) {
@@ -521,7 +521,7 @@ export default defineComponent({
         if (!isFinite(lat) || !isFinite(lon)) { console.warn('Invalid household coordinates:', location); return; }
         const popupContent = `<div class="household-popup"><strong>${translatedStrings.householdLocation}</strong><hr><button onclick="window.location.href='/household'" class="household-link-btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>${t('map.view-household') || 'Go to Household'}</button></div>`;
         householdMarker.value = L.marker([lat, lon], { icon: householdIcon, zIndexOffset: 900 })
-        .addTo(map.value)
+        .addTo(map.value as unknown as L.Map)
         .bindPopup(popupContent)
         .bindTooltip(translatedStrings.householdLocation, { permanent: false, direction: 'top', className: 'household-location-label', offset: [0, -30] });
       }
@@ -530,7 +530,7 @@ export default defineComponent({
     function clearCrisisEvents(): void {
       if (!map.value) return;
       crisisLayers.value.forEach(layer => {
-        try { if (map.value && layer && map.value.hasLayer(layer)) map.value.removeLayer(layer); }
+        try { if (map.value && layer && map.value.hasLayer(layer as L.Layer)) map.value.removeLayer(layer as L.Layer); }
         catch (error) { console.error("Error removing crisis layer:", error); }
       });
       crisisLayers.value = [];

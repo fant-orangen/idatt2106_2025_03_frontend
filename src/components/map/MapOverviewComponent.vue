@@ -205,7 +205,7 @@ import { useUserStore } from '@/stores/UserStore';
 import { useGeolocationStore } from '@/stores/GeolocationStore';
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 import type { MeetingPlaceDto } from '@/types/meetingPlace'
-import { fetchMeetingPlacesNearby } from '@/services/api/meetingPlaceService'
+import { fetchMeetingPlacesNearby } from '@/services/api/MeetingPlaceService'
 import markerIconUrl        from 'leaflet/dist/images/marker-icon.png'
 
 import {
@@ -329,7 +329,7 @@ const meetingPlaces     = ref<MeetingPlaceDto[]>([])
 const isLoadingMeetings = ref(false)
 
 // --- Custom method to toggle meeting places ---
-function handleMeetingPlacesToggle(value) {
+function handleMeetingPlacesToggle(value: boolean) {
   if (!userLocation.value && value) {
     // If trying to enable meeting places without location, show error
     poiError.value = t('map.location-needed-for-meetings', 'Location sharing is required to show meeting places');

@@ -121,7 +121,7 @@ export default defineComponent({
     const crisisLayers = ref<L.Layer[]>([]);
     const crisisRenderer = L.canvas({ padding: 0.5 });
     const meetingLayer   = ref<L.MarkerClusterGroup|null>(null)
-    const meetingMarkers = ref<Map<number,L.Marker>>(new Map())
+    const meetingMarkers = ref<Map<string | number, L.Marker>>(new Map())
 
     const MIN_ZOOM_FOR_POIS = 10;
 
@@ -265,16 +265,16 @@ export default defineComponent({
         }
 
         // 2) hide the layer (or clear it if you prefer)
-        if (map.value.hasLayer(markerClusterGroup.value)) {
-          map.value.removeLayer(markerClusterGroup.value);
+        if (map.value.hasLayer(markerClusterGroup.value as unknown as L.Layer)) {
+          map.value.removeLayer(markerClusterGroup.value as unknown as L.Layer);
         }
 
         return;
       }
 
       // zoom is fine → show layer (if it was hidden) and debounce an update
-      if (!map.value.hasLayer(markerClusterGroup.value)) {
-        map.value.addLayer(markerClusterGroup.value);
+      if (!map.value.hasLayer(markerClusterGroup.value as unknown as L.Layer)) {
+        map.value.addLayer(markerClusterGroup.value as unknown as L.Layer);
       }
 
       if (updateTimeout) clearTimeout(updateTimeout);
@@ -348,7 +348,7 @@ export default defineComponent({
           }
 
           meetingLayer.value = L.markerClusterGroup({ chunkedLoading: true });
-          map.value!.addLayer(meetingLayer.value);
+          map.value!.addLayer(meetingLayer.value as unknown as L.Layer);
 
           // Set up map event listeners
           map.value.on('zoomend moveend', scheduleViewportUpdate);
@@ -757,7 +757,7 @@ export default defineComponent({
         markersMap.value.forEach((marker, id) => {
           if (!newPoiIds.has(id)) {
             // Found a marker for a POI that's no longer in the props
-            markersToRemove.push(marker as L.Marker); // Add to removal list
+            markersToRemove.push(marker as unknown as L.Marker); // Add to removal list
             markersMap.value.delete(id); // Remove from our internal map
           }
         });
@@ -1101,7 +1101,7 @@ export default defineComponent({
         // re-add and re-populate on show
         scheduleViewportUpdate();
       } else {
-        map.value.removeLayer(markerClusterGroup.value);
+        map.value.removeLayer(markerClusterGroup.value as unknown as L.Layer);
       }
     }, { immediate: true });
 

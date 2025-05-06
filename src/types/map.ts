@@ -54,6 +54,7 @@ export interface MarkerRemovedEvent {
 export interface POIMarker extends L.Marker {
   poiLat: number;
   poiLng: number;
+  poiTypeName: string;
 }
 
 // Make TypeScript recognize these Leaflet extensions
