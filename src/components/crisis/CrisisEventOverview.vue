@@ -6,7 +6,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Map Area -->
-      <Card class="lg:col-span-2">
+      <Card class="lg:col-span-2 z-50">
         <CardHeader class="pb-2">
           <CardTitle>{{ t('crisis.map_view', 'Map View') }}</CardTitle>
         </CardHeader>
