@@ -43,19 +43,33 @@
         <Switch v-model="showCrisis" />
       </div>
       <!-- Deactivate "Show Meeting Places" when position is not shared -->
-      <div class="flex items-center gap-2">
-
+      <div class="flex items-center gap-2 relative group">
         <label
-          class="text-sm font-medium cursor-pointer"
-          :class="!userLocation ? 'opacity-50' : ''"
+          class="text-sm font-medium cursor-pointer flex items-center"
+          :class="!userLocation ? 'opacity-70' : ''"
         >
           {{ t('map.show-meeting-places', 'Møteplasser') }}
+          <font-awesome-icon
+            v-if="!userLocation"
+            :icon="['fas', 'location-crosshairs']"
+            class="ml-1.5 text-gray-400 dark:text-gray-500"
+          />
         </label>
         <Switch
           v-model="showMeetingPlaces"
           :disabled="!userLocation"
           @update:modelValue="handleMeetingPlacesToggle"
         />
+
+        <!-- Tooltip that appears on hover -->
+        <div
+          v-if="!userLocation"
+          class="absolute left-0 bottom-full mb-2 bg-black/90 text-white text-xs px-2 py-1 rounded shadow-lg max-w-xs
+          opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+        >
+          {{ t('map.location-needed-tooltip', 'Aktiver posisjon først for å vise møteplasser') }}
+          <div class="absolute w-2 h-2 bg-black/90 transform rotate-45 left-4 -bottom-1"></div>
+        </div>
       </div>
     </div>
   </div>
