@@ -16,11 +16,11 @@ import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useUserStore } from '@/stores/UserStore'
-import {
+import type {
   QuizAnswerAdminResponse,
   CreateQuizQuestionRequest,
   CreateQuizAnswerRequest,
-} from '@/types/Quiz.ts'
+} from '@/models/Quiz.ts'
 
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
