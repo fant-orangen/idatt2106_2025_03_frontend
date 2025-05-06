@@ -8,11 +8,13 @@
       <!-- Scrollbar for list of groups -->
       <ul class="space-y-3 overflow-y-auto pr-1 flex-1">
         <li
-            v-for="household in households"
-            :key="household.id"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground hover:opacity-90 transition"
+            v-for="group in groups"
+            :key="group.id"
+            class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground hover:opacity-90 transition cursor-pointer"
+            :class="{ 'bg-opacity-80': currentGroupId === group.groupId }"
+            @click="switchToGroup(group.groupId)"
         >
-          <span class="i-heroicons-home w-5 h-5" /> {{ household.name }}
+          <span class="i-heroicons-home w-5 h-5" /> {{ group.name }}
         </li>
       </ul>
 
@@ -68,30 +70,34 @@ import GroupInventory from '@/components/group/GroupInventory.vue';
 const { t } = useI18n();
 const groupStore = useGroupStore();
 
-interface Household {
+interface Group {
   id: number;
   name: string;
   groupId: number;
 }
 
-const households = ref<Household[]>([]);
+const groups = ref<Group[]>([]);
 const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
 
 onMounted(async () => {
   const response = await groupService.getCurrentUserGroups();
   if (response?.content?.length > 0) {
-    households.value = response.content.map(group => ({
+    groups.value = response.content.map(group => ({
       id: group.id,
       name: group.name,
       groupId: group.id
     }));
     // Set the first group as current
-    if (households.value[0]) {
-      groupStore.setCurrentGroup(households.value[0].groupId);
+    if (groups.value[0]) {
+      switchToGroup(groups.value[0].groupId);
     }
   }
 });
+
+function switchToGroup(groupId: number) {
+  groupStore.setCurrentGroup(groupId);
+}
 
 function inviteHousehold() {
   // TODO: Implement household invitation
