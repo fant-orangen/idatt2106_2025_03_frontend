@@ -131,6 +131,7 @@
       {{ poiError || locationStatusMessage || 'An error occurred' }}
     </div>
     <MapComponent
+      ref="mapComponentRef"
       :pois="showPois ? convertedPois : []"
       :crisisEvents="showCrisis ? crisisEvents : []"
       :meetingPlaces="showMeetingPlaces ? meetingPlaces : []"
@@ -540,6 +541,13 @@ watch(() => userStore.loggedIn, (isLoggedIn, wasLoggedIn) => {
     handleLocationReset();
   }
 }, { immediate: true });
+
+watch(userLocation, (loc) => {
+  if (loc && mapComponentRef.value) {
+    // e.g. zoom level 15 when you share your location
+    mapComponentRef.value.centerMap(loc.latitude, loc.longitude, 15);
+  }
+});
 
 watch(
   [ () => showMeetingPlaces.value, () => userLocation.value ],

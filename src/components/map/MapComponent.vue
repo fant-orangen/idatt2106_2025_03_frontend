@@ -92,6 +92,15 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+
+    showPois: {
+      type: Boolean,
+      default: true
+              },
+    showCrisis: {
+      type: Boolean,
+      default: true
+    },
     meetingPlaces:     { type: Array as () => MeetingPlaceDto[], default: () => [] },
     showMeetingPlaces: { type: Boolean, default: false },
   },
@@ -110,6 +119,7 @@ export default defineComponent({
     const markersMap = ref<Map<string | number, POIMarker>>(new Map()); // Store markers by POI ID for easier reference
     // Store crisis event layers for management
     const crisisLayers = ref<L.Layer[]>([]);
+    const crisisRenderer = L.canvas({ padding: 0.5 });
     const meetingLayer   = ref<L.MarkerClusterGroup|null>(null)
     const meetingMarkers = ref<Map<number,L.Marker>>(new Map())
 
@@ -288,6 +298,8 @@ export default defineComponent({
         shadowUrl
       });
 
+
+
       // Small delay to ensure DOM is ready
       nextTick(() => {
         try {
@@ -303,7 +315,7 @@ export default defineComponent({
           map.value = L.map(mapContainerId, {
             preferCanvas: true,
             fadeAnimation: false,
-            markerZoomAnimation: false,
+            // markerZoomAnimation: true,
             zoomAnimation: true
           }).setView([props.centerLat, props.centerLon], props.initialZoom);
 
@@ -387,6 +399,7 @@ export default defineComponent({
           console.error("Error initializing map:", error);
         }
       });
+
     });
 
     // Force map refresh
@@ -786,7 +799,7 @@ export default defineComponent({
       console.log(`updatePOIs finished. Markers in map: ${markersMap.value.size}`);
     }
 
-    function updateCrisisEvents(events: CrisisEvent[]): void {
+    function updateCrisisEvents(events: CrisisEvent[], fit: boolean = true): void {
       if (!map.value) {
         console.warn("Cannot update crisis events: map not initialized");
         return;
@@ -855,14 +868,15 @@ export default defineComponent({
 
           // a) main circle with pastel fill + dark border
           const circle = L.circle([lat, lon], {
-            radius,
-            fillColor: base,
-            fillOpacity: fillOpacity,
-            color: border,
-            weight: 3,
-            pane: 'overlayPane', // Ensure it's in the correct pane
-            bubblingMouseEvents: false // Prevent event bubbling issues
-          });
+                      renderer: crisisRenderer, // ← use our shared canvas renderer
+                      radius,
+                      fillColor: base,
+                      fillOpacity: 0.4,
+                      color: border,
+                      weight: 2,               // slight weight reduction for performance
+                      pane: 'overlayPane',
+                      bubblingMouseEvents: false
+                  });
 
           // Add popup to the circle
           circle.bindPopup(popupContent);
@@ -880,7 +894,7 @@ export default defineComponent({
               iconSize: [24, 24],
               iconAnchor: [12, 12]
             }),
-            pane: 'markerPane', // Ensure it's in the marker pane
+            pane: 'overlayPane', // Ensure it's in the marker pane
             zIndexOffset: 1000 // Keep it above other markers
           });
 
@@ -909,7 +923,7 @@ export default defineComponent({
           map.value.invalidateSize({ animate: false });
 
           // Only fit bounds if we have valid crisis events
-          if (bounds.isValid() && bounds.getNorthEast().distanceTo(bounds.getSouthWest()) > 0) {
+          if (fit && bounds.isValid() && bounds.getNorthEast().distanceTo(bounds.getSouthWest()) > 0) {
             try {
               map.value.fitBounds(bounds.pad(0.2), {
                 animate: false,
@@ -1081,6 +1095,24 @@ export default defineComponent({
       if (map.value) scheduleViewportUpdate();
     }, { deep: true, immediate: false });
 
+    watch(() => props.showPois, (visible) => {
+      if (!markerClusterGroup.value || !map.value) return;
+      if (visible) {
+        // re-add and re-populate on show
+        scheduleViewportUpdate();
+      } else {
+        map.value.removeLayer(markerClusterGroup.value);
+      }
+    }, { immediate: true });
+
+    watch(() => props.showCrisis, (visible) => {
+      if (visible) {
+        updateCrisisEvents(props.crisisEvents, false);
+      } else {
+        clearCrisisEvents();
+      }
+    }, { immediate: true });
+
     // Watch for user location changes
     watch(() => props.userLocation, (newLocation: UserLocation | null) => {
       if (newLocation) {
@@ -1097,8 +1129,9 @@ export default defineComponent({
 
     // Watch for crisis events changes
     watch(() => props.crisisEvents, (newEvents: CrisisEvent[]) => {
-      updateCrisisEvents(newEvents);
-    }, { deep: true, immediate: false });
+        // redraw crisis‐layers but never auto‐fit on a prop swap
+          if (props.showCrisis) updateCrisisEvents(newEvents, /* fit = */ false);
+      }, { deep: true, immediate: false });
 
     // Watch for map container resize events
     watch(() => document.getElementById(mapContainerId)?.clientWidth, () => {
@@ -1421,5 +1454,40 @@ export default defineComponent({
   text-align: center;
   border-radius: 50%;
   font-weight: bold;
+}
+
+:deep(.crisis-level-box) {
+  /* ensure the 24×24 div is always perfectly centered on the lat/lng point */
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+:deep(.user-location-icon),
+:deep(.household-location-icon),
+:deep(.admin-marker-icon) {
+  will-change: transform;
+}
+/* make all marker icons pixel-perfectly bottom-centered */
+:deep(.leaflet-marker-icon) {
+  transform: translate(-50%, -100%);
+  will-change: transform;
+}
+
+/* do the same for your custom CSS-class icons */
+:deep(.user-location-icon),
+:deep(.household-location-icon),
+:deep(.admin-marker-icon),
+:deep(.poi-svg-icon) {
+  transform-origin: bottom center;
+  will-change: transform;
+}
+
+/* shadows don’t need to jump around on zoom either */
+:deep(.leaflet-marker-shadow) {
+  will-change: opacity, transform;
+}
+:deep(.leaflet-overlay-pane canvas) {
+  /* hint GPU-acceleration and keep the canvas pixel-sharp */
+  will-change: transform;
 }
 </style>
