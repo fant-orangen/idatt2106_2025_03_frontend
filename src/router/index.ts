@@ -175,11 +175,18 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/reflections',
+    name: 'Reflections',
+    component: () => import('@/views/ReflectionsView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/admin/meeting-point',
     name: 'MeetingPointPage',
     component: () => import('@/views/AdminEditMeetingPoint.vue'),
     meta: { requiresAdmin: true},
   }
+
 ]
 
 const router = createRouter({

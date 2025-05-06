@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu,
   X,
+  BookOpen,
 } from 'lucide-vue-next'
 
 import {
@@ -91,6 +92,7 @@ const menuLinks = computed<MenuLink[]>(() => {
     const links: MenuLink[] = [
       { label: t('navigation.home'), route: '/' },
       { label: t('navigation.profile'), route: '/profile' },
+      { label: t('reflect.reflections'), route: '/reflections' },
       { label: t('settings.settings'), route: '/settings' },
       { label: t('notifications.notifications'), route: '/notifications' },
     ]
@@ -180,6 +182,10 @@ function logOut() {
             <DropdownMenuItem>
               <User class="mr-2 h-4 w-4" />
               <span @click="goToPage('/profile')">{{ t('navigation.profile') }}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/reflections')">
+              <BookOpen class="mr-2 h-4 w-4" />
+              <span>{{ t('reflect.reflections') }}</span>
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToPage('/settings')">
               <Settings class="mr-2 h-4 w-4" />
