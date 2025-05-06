@@ -37,7 +37,7 @@ export async function getMyReflections(page: number = 0, size: number = 10): Pro
  * @param {number} size - The number of items per page
  * @returns {Promise<Page<ReflectionResponseDto>>} Promise resolving to a page of shared reflections
  */
-export async function getSharedReflections(page: number = 0, size: number = 10): Promise<Page<ReflectionResponseDto>> {
+export async function getSharedReflections(page: number = 0, size: number = 5): Promise<Page<ReflectionResponseDto>> {
   try {
     const response = await api.get<Page<ReflectionResponseDto>>(`/user/reflections/shared`, {
       params: { page, size }
@@ -58,9 +58,8 @@ export async function getSharedReflections(page: number = 0, size: number = 10):
  * @returns {Promise<Page<ReflectionResponseDto>>} Promise resolving to a page of household reflections
  */
 export async function getHouseholdReflections(
-  householdId: number,
   page: number = 0,
-  size: number = 10
+  size: number = 5
 ): Promise<Page<ReflectionResponseDto>> {
   try {
     const response = await api.get<Page<ReflectionResponseDto>>(`/user/reflections/household`, {
@@ -68,7 +67,7 @@ export async function getHouseholdReflections(
     })
     return response.data
   } catch (error) {
-    console.error(`Error fetching household reflections for household ${householdId}:`, error)
+    console.error(`Error fetching household reflections for household:`, error)
     throw error
   }
 }
@@ -82,17 +81,16 @@ export async function getHouseholdReflections(
  * @returns {Promise<Page<ReflectionResponseDto>>} Promise resolving to a page of group reflections
  */
 export async function getGroupReflections(
-  groupId: number,
   page: number = 0,
-  size: number = 10
+  size: number = 5
 ): Promise<Page<ReflectionResponseDto>> {
   try {
-    const response = await api.get<Page<ReflectionResponseDto>>(`/user/reflections/group/${groupId}`, {
+    const response = await api.get<Page<ReflectionResponseDto>>(`/user/reflections/groups`, {
       params: { page, size }
     })
     return response.data
   } catch (error) {
-    console.error(`Error fetching group reflections for group ${groupId}:`, error)
+    console.error(`Error fetching group reflections for groups`, error)
     throw error
   }
 }
@@ -105,9 +103,7 @@ export async function getGroupReflections(
  */
 export async function createReflection(reflectionData: CreateReflectionDto): Promise<ReflectionResponseDto> {
   try {
-    console.log('Reflection data:', reflectionData);
     const response = await api.post<ReflectionResponseDto>('/user/reflections', reflectionData)
-    console.log('Reflection created:', response.data);
     return response.data
   } catch (error) {
     console.error('Error creating reflection:', error)
