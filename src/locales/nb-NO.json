@@ -1,4 +1,17 @@
 {
+  "common": {
+    "back": "Tilbake",
+    "cancel": "Avbryt",
+    "delete": "Slett",
+    "confirm": "Bekreft",
+    "save": "Lagre",
+    "remove": "Fjern",
+    "saving": "Lagrer...",
+    "not-provided":"Ikke oppgitt",
+    "loading": "Loading",
+    "not-found": "Fant ingenting",
+    "all-is-loaded": "Alt er lastet inn"
+  },
   "actions": {
     "to-reflect": "for å reflektere",
     "read-more": "Les mer",
@@ -55,6 +68,8 @@
     "make-new-scenario-theme": "Legg til et nytt scenariotema",
     "edit-scenario-theme": "Rediger scenariotemaer",
     "edit-event": "Rediger en pågående hendelse",
+    "edit-mp": "Håndter møteplassen",
+    "create-mp": "Lag en ny møteplass",
     "super-admin": "Super Admin",
     "current-admins": "Nåværende adminbrukere",
     "edit-admin": "Håndter adminbrukere",
@@ -78,6 +93,15 @@
     "scenario-theme-instructions": "Instruksjoner",
     "scenario-theme-instructions-placeholder": "Skriv inn detaljerte instruksjoner for håndtering av denne typen krise",
     "scenario-theme-instructions-help": "Gi trinnvise instruksjoner for brukere å følge under denne typen krise",
+    "scenario-theme-before": "Instruksjoner før krise",
+    "scenario-theme-before-placeholder": "Skriv inn detaljerte instruksjoner for forberedelse før denne typen krise",
+    "scenario-theme-before-help": "Gi trinnvise instruksjoner for brukere å følge før denne typen krise",
+    "scenario-theme-under": "Instruksjoner under krise",
+    "scenario-theme-under-placeholder": "Skriv inn detaljerte instruksjoner for håndtering av denne typen krise mens den pågår",
+    "scenario-theme-under-help": "Gi trinnvise instruksjoner for brukere å følge under denne typen krise",
+    "scenario-theme-after": "Instruksjoner etter krise",
+    "scenario-theme-after-placeholder": "Skriv inn detaljerte instruksjoner for gjenoppretting etter denne typen krise",
+    "scenario-theme-after-help": "Gi trinnvise instruksjoner for brukere å følge etter denne typen krise",
     "markdown-supported": "Markdown-formatering støttes",
     "create-scenario-theme": "Opprett scenariotema",
     "scenario-theme-created": "Scenariotema opprettet",
@@ -89,6 +113,12 @@
     "scenario-theme-description-max-length": "Beskrivelse kan ikke overstige 1000 tegn",
     "scenario-theme-instructions-min-length": "Instruksjoner må være minst 10 tegn",
     "scenario-theme-instructions-max-length": "Instruksjoner kan ikke overstige 5000 tegn",
+    "scenario-theme-before-instructions-min-length": "Før-krise instruksjoner må være minst 10 tegn",
+    "scenario-theme-before-instructions-max-length": "Før-krise instruksjoner kan ikke overstige 5000 tegn",
+    "scenario-theme-under-instructions-min-length": "Under-krise instruksjoner må være minst 10 tegn",
+    "scenario-theme-under-instructions-max-length": "Under-krise instruksjoner kan ikke overstige 5000 tegn",
+    "scenario-theme-after-instructions-min-length": "Etter-krise instruksjoner må være minst 10 tegn",
+    "scenario-theme-after-instructions-max-length": "Etter-krise instruksjoner kan ikke overstige 5000 tegn",
     "edit-scenario-themes": "Rediger scenariotemaer",
     "select-scenario-theme": "Velg et scenariotema å redigere",
     "no-scenario-themes": "Ingen scenariotemaer funnet",
@@ -134,7 +164,9 @@
     "search-error": "Feil ved søk etter adresse.",
     "map-reset": "Kart tilbakestilt.",
     "edit-POI": "Rediger interessepunkt",
-    "poi-details": "Interessepunkt-detaljer"
+    "poi-details": "Interessepunkt-detaljer",
+    "meeting-places": "Møteplasser",
+    "meeting-point": "Håndter møteplasser"
   },
   "notifications": {
     "notification": "Varsling",
@@ -158,12 +190,18 @@
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",
-    "login-successful": "Innlogging vellykket!"
+    "login-successful": "Innlogging vellykket!",
+    "profile-updated": "Profil oppdatert"
   },
   "crisis": {
     "crisis-status": "Krisestatus",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
     "no-crisis": "Ingen pågående krise",
+    "color": {
+      "green": "grønn",
+      "yellow": "gul",
+      "red": "rød"
+    },
     "no_active_crisis": "Ingen aktive krisehendelser",
     "title": "Krisehendelser",
     "map_view": "Kartvisning",
@@ -216,11 +254,17 @@
     "activities": "Aktiviteter",
     "admin-panel": "Admin side",
     "new-event": "Ny hendelse",
+    "meeting-point": "Møteplasser",
     "new-POI": "Nytt interessepunkt",
     "new-activity": "Ny aktivivtet",
     "go-back": "Tilbake",
     "light-mode": "Lys modus",
     "dark-mode": "Mørk modus"
+  },
+  "user-profile": {
+    "title": "Brukerprofil",
+    "description": "Se brukerinformasjon",
+    "close": "Lukk"
   },
   "time": {
     "after": "etter",
@@ -234,7 +278,8 @@
     "info-about-storage": "Les mer om beredskapslageret",
     "current-situation": "Nåværende hendelser",
     "read-info-preparations": "Les mer om hvordan du kan forberede deg til en krise",
-    "info-current-crisis": "Les mer om den nåværende krisetype"
+    "info-current-crisis": "Les mer om den nåværende krisetype",
+    "info-scenario-type": "Les mer om {scenario}"
   },
   "news": {
     "title": "Nyheter",
@@ -247,8 +292,10 @@
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",
+    "your-reflections": "Dine refleksjoner",
     "need-help-q": "Trenger du hjelp?",
-    "what-2-do-after-crisis": "Hva bør du gjøre etter en krise?"
+    "what-2-do-after-crisis": "Hva bør du gjøre etter en krise?",
+    "no-reflections": "Ingen refleksjoner ennå"
   },
   "map": {
     "defibrillator": "Hjertestarter",
@@ -295,18 +342,21 @@
   },
   "household": {
     "my-household": "Mitt hushold",
+    "members": "Medlemmer",
     "no-members-found": "Ingen medlemmer funnet i husholdet.",
     "person": "person",
     "people": "personer",
+    "other_member": "annet medlem",
+    "other_members": "andre medlemmer",
     "in-household": "i husholdet",
     "add-empty-user": "Legg til husholdsmedlem",
+    "add-empty-member": "Legg til husholdsmedlem",
     "name": "Navn",
     "enter-name": "Skriv inn navn",
     "type": "Type",
     "select-type": "Velg type",
     "adult": "Voksen",
     "child": "Barn",
-    "pet": "Kjæledyr",
     "description": "Beskrivelse",
     "additional-info": "Tilleggsinformasjon",
     "save": "Lagre",
@@ -314,9 +364,117 @@
     "beredskapslager": "Beredskapslager",
     "no-expiring-items": "Ingen varer nær utløpsdato.",
     "days-left": "dager igjen",
+    "water-days-left": "Vann: {days} dager igjen",
+    "food-days-left": "Mat: {days} dager igjen",
     "your-shelter-store": "Ditt beredskapslager",
     "invite-user": "Inviter bruker",
     "email-address": "E-postadresse",
+    "stats": "Statistikk",
+    "total_members": "Totalt antall medlemmer",
+    "adults": "Voksne",
+    "children": "Barn",
+    "pets": "Kjæledyr",
+    "admin_badge": "Admin",
+    "admin_only": "Kun for administratorer",
+    "member_name": "Navn på medlem",
+    "member_name_placeholder": "Skriv inn navn på medlem",
+    "member_type": "Type medlem",
+    "select_member_type": "Velg type medlem",
+    "type_adult": "Voksen",
+    "type_child": "Barn",
+    "type_dog": "Hund",
+    "type_pet": "Kjæledyr",
+    "description_placeholder": "Tilleggsinformasjon om medlemmet",
+    "required_fields": "Alle påkrevde felt må fylles ut",
+    "member_added_success": "Medlem ble lagt til",
+    "member_added_error": "Kunne ikke legge til medlem",
+    "empty_members": "Andre medlemmer",
+    "no_empty_members": "Ingen andre medlemmer funnet",
+    "no-empty-members-found": "Ingen andre medlemmer funnet.",
+    "add_empty_member": "Legg til medlem",
+    "done": "Ferdig",
+    "manage-members": "Administrer medlemmer",
+    "remove_selected": "Fjern valgte ({count})",
+    "remove-selected": "Fjern valgte",
+    "empty-member-added": "Medlem ble lagt til",
+    "invitation-sent-success": "Invitasjon sendt",
+    "error-fetching-members": "Kunne ikke hente medlemmer",
+    "pending-invitations": "Ventende invitasjoner",
+    "no-pending-invitations": "Ingen ventende invitasjoner",
+    "cancel-invitation": "Avbryt invitasjon",
+    "your-invitations": "Dine invitasjoner",
+    "check-back-later": "Sjekk tilbake senere for nye invitasjoner",
+    "other": "Annet",
+    "others": "Andre",
+    "member-removed-success": "Medlem fjernet",
+    "member-removed-error": "Kunne ikke fjerne medlem",
+    "members-removed-success": "{count} medlemmer fjernet",
+    "members-removed-error": "Kunne ikke fjerne medlemmer",
+    "confirm-remove-member": "Bekreft fjerning av medlem",
+    "confirm-remove-member-description": "Er du sikker på at du vil fjerne dette medlemmet fra husholdet?",
+    "confirm-remove-multiple-title": "Bekreft fjerning av medlemmer",
+    "confirm-remove-multiple-description": "Er du sikker på at du vil fjerne {count} medlemmer fra husholdet?",
+    "remove-selected": "Fjern valgte",
+    "leave-household": "Forlat hushold",
+    "transfer-admin-role": "Overfør adminrolle",
+    "leave-confirm-title": "Bekreft at du vil forlate husholdet",
+    "leave-confirm": "Er du sikker på at du vil forlate dette husholdet?",
+    "leave-admin-warning": "Du er administrator for dette husholdet. Du må overføre adminrollen før du kan forlate husholdet.",
+    "transfer-admin-first": "Overfør adminrollen til et annet medlem først.",
+    "leave-success": "Du har forlatt husholdet",
+    "leave-error": "Kunne ikke forlate husholdet",
+    "transfer-admin-title": "Overfør adminrolle",
+    "transfer-admin-description": "Velg et medlem som skal få adminrettigheter for husholdet.",
+    "no-members-to-transfer": "Ingen medlemmer å overføre adminrollen til",
+    "admin-transferred-success": "Adminrollen overført",
+    "admin-transferred-error": "Kunne ikke overføre adminrollen",
+    "already-admin-error": "Denne brukeren er allerede admin",
+    "error-fetching-data": "Kunne ikke hente husholddata",
+    "delete_household": "Slett hushold",
+    "confirm_delete_title": "Bekreft sletting av hushold",
+    "confirm_delete_description": "Er du sikker på at du vil slette dette husholdet?",
+    "delete_warning": "Dette vil slette husholdet permanent for alle medlemmer.",
+    "delete_permanent": "Denne handlingen kan ikke angres.",
+    "confirm_delete": "Slett hushold",
+    "delete_success": "Husholdet er slettet",
+    "delete_error": "Kunne ikke slette husholdet",
+    "create": {
+      "title": "Opprett nytt hushold",
+      "description": "Opprett et nytt hushold for å administrere medlemmer og ressurser.",
+      "nameLabel": "Husholdnavn",
+      "namePlaceholder": "Skriv inn husholdnavn",
+      "locationLabel": "Adresse",
+      "locationPlaceholder": "Skriv inn adresse",
+      "submitButton": "Opprett hushold",
+      "success": "Hushold opprettet",
+      "errors": {
+        "nameRequired": "Husholdnavn er påkrevd",
+        "generic": "Kunne ikke opprette hushold"
+      }
+    },
+    "join": {
+      "title": "Bli med i et hushold",
+      "subtitle": "Skriv inn invitasjonskoden du har mottatt",
+      "tokenLabel": "Invitasjonskode",
+      "tokenPlaceholder": "Skriv inn invitasjonskode",
+      "submitButton": "Bli med",
+      "success": "Du er nå medlem av husholdet",
+      "errors": {
+        "generic": "Kunne ikke bli med i husholdet"
+      }
+    },
+    "invitation-from": "Invitasjon fra {name}",
+    "invitation-expires": "Utløper {date}",
+    "decline": "Avslå",
+    "accept": "Godta",
+    "invitation-accepted": "Invitasjon godtatt",
+    "invitation-declined": "Invitasjon avslått",
+    "error-accepting-invitation": "Kunne ikke godta invitasjon",
+    "error-declining-invitation": "Kunne ikke avslå invitasjon",
+    "error-fetching-invitations": "Kunne ikke hente invitasjoner",
+    "no-invitations": "Ingen ventende invitasjoner",
+    "refresh-invitations": "Oppdater invitasjoner",
+    "created-success": "Hushold opprettet",
     "enter-email": "Skriv inn e-postadresse",
     "access-level": "Tilgangsnivå",
     "select-access-level": "Velg tilgangsnivå",
@@ -327,6 +485,7 @@
     "send-invitation": "Send invitasjon",
     "invitation-sent": "Invitasjon sendt",
     "invitation-failed": "Kunne ikke sende invitasjon",
+    "invitation-sent-success": "Invitasjon sendt",
     "add-user-title": "Inviter bruker til hushold",
     "create_new": "Opprett nytt hushold",
     "create_description": "Opprett ditt eget hushold for å håndtere beredskap.",
@@ -335,16 +494,34 @@
     "no-household-description": "Opprett eller bli med i et hushold for å håndtere beredskap sammen med familie eller venner.",
     "manage-household": "Administrer hushold",
     "leave-household": "Forlat hushold",
+    "leave-confirm-title": "Forlat hushold",
     "leave-confirm": "Er du sikker på at du vil forlate dette husholdet?",
     "leave-success": "Du har forlatt husholdet",
+    "leave-error": "Kunne ikke forlate husholdet",
+    "leave-admin-warning": "Du er administrator for dette husholdet. Du kan ikke forlate det før du overfører administratorrettigheter til et annet medlem.",
+    "transfer-admin-first": "Vennligst overfør administratorrettigheter til et annet medlem først.",
+    "transfer-admin-role": "Overfør administratorrolle",
+    "transfer-admin-title": "Overfør administratorrolle",
+    "transfer-admin-description": "Velg et medlem å overføre administratorrettigheter til:",
+    "no-members-to-transfer": "Ingen medlemmer tilgjengelig for å overføre administratorrettigheter til.",
+    "admin-transferred-success": "Administratorrolle overført",
+    "admin-transferred-error": "Kunne ikke overføre administratorrolle",
+    "error-fetching-data": "Feil ved henting av husholddata",
     "generate-invitation": "Generer invitasjonskode",
     "copy-invitation": "Kopier invitasjonskode",
     "copied-to-clipboard": "Kopiert til utklippstavlen!",
     "share-invitation": "Del denne koden med noen du vil invitere til husholdet ditt.",
     "users": "Brukere",
     "no-users": "Ingen brukere i dette husholdet ennå",
-    "done": "ferdig",
-    "manage-members": "administrer medlemmer",
+    "done": "Ferdig",
+    "manage-members": "Administrer medlemmer",
+    "confirm-remove-member": "Fjern husholdsmedlem",
+    "confirm-remove-member-description": "Er du sikker på at du vil fjerne dette medlemmet fra husholdet ditt?",
+    "error-fetching-members": "Feil ved henting av husholdsmedlemmer",
+    "member-added-success": "Medlem lagt til",
+    "member-added-error": "Kunne ikke legge til medlem",
+    "member-removed-success": "Medlem fjernet",
+    "member-removed-error": "Kunne ikke fjerne medlem",
 
     "create": {
       "title": "Opprett nytt hushold",
@@ -394,7 +571,7 @@
         "powerOutage": "Strømbrudd",
         "waterShortage": "Vannmangel",
         "cyberAttack": "Cyberangrep",
-        "majorAccident": "Storulykke"
+        "majorAccident": "Stor ulykke"
       },
       "preparednessStorage": "Beredskapslager",
       "afterCrisis": "Etter en krise"
@@ -487,9 +664,14 @@
   "settings": {
     "settings": "Innstillinger",
     "title": "Innstillinger",
+    "cancel": "Avbryt endringer",
     "tabs": {
       "account": "Konto",
       "notifications": "Varslinger"
+    },
+    "notifications": {
+      "enabled": "Aktivert",
+      "disabled": "Deaktivert"
     },
     "account": {
       "title": "Kontoinnstillinger",
@@ -497,13 +679,19 @@
       "subtitle": "Konto",
       "description": "Gjør endringer i kontoen din her. Klikk lagre når du er ferdig.",
       "fullName": "Fullt navn",
-      "email": "E-post",
-      "saveChanges": "Lagre endringer",
+      "save-changes": "Lagre endringer",
       "password": {
         "title": "Passord",
         "description": "Endre passordet ditt her. Etter lagring blir du logget ut.",
         "current": "Nåværende passord",
         "new": "Nytt passord"
+      },
+      "email": {
+        "email": "E-post",
+        "subtitle": "E-postinnstillinger",
+        "description": "Oppdater e-postadressen din her. Etter lagring vil du bli logget ut.",
+        "verified": "E-post verifisert",
+        "not-verified": "E-post ikke verifisert"
       },
       "security": {
         "title": "Kontosikkerhet",
@@ -517,6 +705,11 @@
         "button": "Slett konto"
       }
     },
+    "profile": {
+      "title": "Profilinnstillinger",
+      "description": "Oppdater din personlige informasjon og profildetaljer.",
+      "address-privacy": "Adressen din er ikke synlig for andre brukere."
+    },
     "notifications": {
       "title": "Varslingsinnstillinger",
       "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
@@ -526,7 +719,7 @@
         "system": "Systemvarsler",
         "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
       },
-      "saveChanges": "Lagre endringer"
+      "save-changes": "Lagre endringer"
     }
   },
   "add-event-info": {
@@ -541,6 +734,7 @@
     "success-message": "Hendelsen din er lagt til i systemet.",
     "success-added": "har blitt lagt til.",
     "go-to-admin": "Gå til Admin-panelet",
+    "category": "Velg hvilken type hendelse dette er, f.eks. flom, jordskjelv eller strømbrudd...",
     "errors": {
       "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
       "latitude": "Breddegraden må være mellom -90 og 90.",
@@ -551,7 +745,22 @@
       "description": "Beskrivelsen må være minst 10 tegn og kan ikke overstige 500 tegn.",
       "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
       "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
-      "contact-info": "Skriv inn et gyldig telefonnummer."
+      "contact-info": "Skriv inn et gyldig telefonnummer.",
+      "category": "Denne kategorien er ikke gyldig."
+    },
+    "scenarios": {
+      "undefined": "Velg en kategori",
+      "flood": "Flom",
+      "hurricane": "Orkan",
+      "drought":"Tørke",
+      "heatwave":"Hetebølge",
+      "pandemic":"Pandemi",
+      "war":"Krig",
+      "forest fire": "Skogbrann",
+      "power outage": "Strømbrudd",
+      "water shortage": "Vannmangel",
+      "cyber attack": "Cyber angrep",
+      "major accident": "Stor ulykke"
     },
     "titles": {
       "address": "Adresse",
@@ -564,12 +773,28 @@
       "submit": "Lagre",
       "time": "Tidspunkt",
       "date": "Dato",
-      "choose-event": "Velg en hendelse"
+      "choose-event": "Velg en hendelse",
+      "deactivate": "Deaktiver hendelse",
+      "active": "Aktiv status",
+      "category": "Kategori"
     },
     "crisis-level": {
+      "undefined":"Velg et krisenivå",
       "low": "Lav",
       "medium": "Middels",
-      "high": "Høy"
+      "high": "Høy",
+      "green": "Lav",
+      "yellow": "Middels",
+      "red": "Høy"
+    },
+    "active": {
+      "true": "aktiv",
+      "false": "inaktiv",
+      "description": "For å endre statusen på hendelsen må du deaktivere den!"
+    },
+    "isArchived": {
+      "active": "active",
+      "archived": "inaktiv"
     }
   },
   "add-POI-info": {
@@ -633,16 +858,13 @@
     "viewDetails": "Vis detaljer",
     "description": "Beskrivelse",
     "instructions": "Instruksjoner",
+    "before": "Før krisen",
+    "under": "Under krisen",
+    "after": "Etter krisen",
     "noDescription": "Ingen beskrivelse tilgjengelig",
     "noInstructions": "Ingen instruksjoner tilgjengelig",
     "relatedCrises": "Relaterte krisehendelser",
     "noRelatedEvents": "Ingen relaterte krisehendelser funnet",
     "themeNotFound": "Scenariotema ikke funnet"
-  },
-  "common": {
-    "back": "Tilbake",
-    "cancel": "Avbryt",
-    "delete": "Slett",
-    "confirm": "Bekreft"
   }
 }

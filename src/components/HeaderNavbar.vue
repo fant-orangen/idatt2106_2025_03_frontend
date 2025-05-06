@@ -133,7 +133,7 @@ function logOut() {
       <!-- Logo -->
 
       <RouterLink to="/" class="hover:text-primary flex items-center">
-        <img src="../assets/krisefikser.svg" alt="Logo" class="h-8 w-auto" />
+        <img src="../assets/krisefikserNY.png" alt="Logo" class="h-8 w-auto" />
       </RouterLink>
 
       <!-- Change Language -->
@@ -186,7 +186,7 @@ function logOut() {
               <span>{{ t('settings.settings') }}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator v-if="userStore.isAdminUser" />
-            <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin-panel')">
+            <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin/admin-panel')">
               <ShieldUser class="mr-2 h-4 w-4" />
               <span>{{ t('admin.adminPanel') }}</span>
             </DropdownMenuItem>

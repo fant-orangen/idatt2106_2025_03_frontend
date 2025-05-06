@@ -103,7 +103,7 @@ import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 
 import {
   fetchAllPreviewCrisisEvents,
-  fetchTheCrisisEventById
+  fetchCrisisEventById
 } from '@/services/CrisisEventService.ts';
 
 /**
@@ -189,7 +189,7 @@ const fetchAndSelectCrisis = async (crisisId: number) => {
   try {
     loading.value = true;
     error.value = null;
-    const crisisDetails = await fetchTheCrisisEventById(crisisId);
+    const crisisDetails = await fetchCrisisEventById(crisisId);
     if (crisisDetails) {
       selectedCrisis.value = crisisDetails;
     } else {

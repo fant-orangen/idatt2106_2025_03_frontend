@@ -4,21 +4,30 @@
       <CardTitle>{{ $t('household.beredskapslager') }}</CardTitle>
     </CardHeader>
     <CardContent>
-      <!-- Messages about items about to expire -->
+      <!-- Status messages about food and water -->
       <div class="mb-4">
-        <div v-if="sortedExpiringItems.length === 0" class="text-center text-gray-500">
-          {{ $t('household.no-expiring-items') }}
+        <div v-if="!daysOfFood && !daysOfWater" class="text-center text-gray-500">
+          {{ $t('household.no-supplies') }}
         </div>
         <div v-else>
           <div
-            v-for="item in sortedExpiringItems"
-            :key="item.id"
+            v-if="daysOfFood !== null"
             class="mb-2 p-2 rounded-md flex items-center"
-            :class="getItemClasses(item.priority)"
+            :class="getItemClasses(getFoodPriority(daysOfFood))"
           >
-            <AlertTriangle class="mr-2 flex-shrink-0" :class="getIconClass(item.priority)" />
+            <AlertTriangle class="mr-2 flex-shrink-0" :class="getIconClass(getFoodPriority(daysOfFood))" />
             <p class="text-sm">
-              {{ item.name }} - {{ item.daysLeft }} {{ $t('household.days-left') }}
+              {{ Math.round(daysOfFood) }} dager med mat igjen
+            </p>
+          </div>
+          <div
+            v-if="daysOfWater !== null"
+            class="mb-2 p-2 rounded-md flex items-center"
+            :class="getItemClasses(getWaterPriority(daysOfWater))"
+          >
+            <AlertTriangle class="mr-2 flex-shrink-0" :class="getIconClass(getWaterPriority(daysOfWater))" />
+            <p class="text-sm">
+              {{ Math.round(daysOfWater) }} dager med vann igjen
             </p>
           </div>
         </div>
@@ -33,56 +42,74 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+/**
+ * @component ShelterStore
+ * @description Displays a card with information about the household's emergency supplies (beredskapslager).
+ * Shows the number of days remaining for food and water supplies.
+ * Provides a button to navigate to the detailed shelter store page.
+ */
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-vue-next';
-import { daysLeft } from '@/utils/dateUtils.ts';
 import { useRouter } from 'vue-router';
+import { inventoryService } from '@/services/InventoryService';
 
 // Initialize i18n
 useI18n();
 
-
-// Priority levels
+/**
+ * Priority levels for supplies
+ * @enum {string}
+ */
 enum Priority {
-  HIGH = 'high',   // Less than 7 days
-  MEDIUM = 'medium', // Less than 30 days
-  LOW = 'low'      // Less than 90 days
+  /** Less than 3 days remaining */
+  HIGH = 'high',
+  /** Less than 7 days remaining */
+  MEDIUM = 'medium',
+  /** Less than 14 days remaining */
+  LOW = 'low',
+  /** More than 14 days remaining */
+  GOOD = 'good'
 }
 
-// Types
-interface ExpiringItem {
-  id: number;
-  name: string;
-  expiryDate: Date;
-  daysLeft: number;
-  priority: Priority;
-}
-
-// Router
+/** Router instance for navigation */
 const router = useRouter();
 
-// State
-const expiringItems = ref<ExpiringItem[]>([]);
+/** Days of food and water remaining */
+const daysOfFood = ref<number | null>(null);
+const daysOfWater = ref<number | null>(null);
 
-// Computed property to sort items by priority (high to low)
-const sortedExpiringItems = computed(() => {
-  return [...expiringItems.value].sort((a, b) => {
-    const priorityOrder = { [Priority.HIGH]: 0, [Priority.MEDIUM]: 1, [Priority.LOW]: 2 };
-    return priorityOrder[a.priority] - priorityOrder[b.priority];
-  });
-});
-
-// Helper function to determine priority based on days left
-const getPriority = (days: number): Priority => {
-  if (days < 7) return Priority.HIGH;
-  if (days < 30) return Priority.MEDIUM;
-  return Priority.LOW;
+/**
+ * Returns the priority level based on days of food remaining
+ * @param {number} days - Number of days of food remaining
+ * @returns {Priority} Priority level
+ */
+const getFoodPriority = (days: number): Priority => {
+  if (days < 3) return Priority.HIGH;
+  if (days < 7) return Priority.MEDIUM;
+  if (days < 14) return Priority.LOW;
+  return Priority.GOOD;
 };
 
-// Helper function to get CSS classes based on priority
+/**
+ * Returns the priority level based on days of water remaining
+ * @param {number} days - Number of days of water remaining
+ * @returns {Priority} Priority level
+ */
+const getWaterPriority = (days: number): Priority => {
+  if (days < 3) return Priority.HIGH;
+  if (days < 7) return Priority.MEDIUM;
+  if (days < 14) return Priority.LOW;
+  return Priority.GOOD;
+};
+
+/**
+ * Returns CSS classes for styling items based on their priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for styling
+ */
 const getItemClasses = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
@@ -91,12 +118,18 @@ const getItemClasses = (priority: Priority): string => {
       return 'bg-orange-50 border border-orange-200';
     case Priority.LOW:
       return 'bg-yellow-50 border border-yellow-200';
+    case Priority.GOOD:
+      return 'bg-green-50 border border-green-200';
     default:
       return '';
   }
 };
 
-// Helper function to get icon color based on priority
+/**
+ * Returns CSS classes for styling icons based on priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for icon styling
+ */
 const getIconClass = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
@@ -105,62 +138,45 @@ const getIconClass = (priority: Priority): string => {
       return 'text-orange-500';
     case Priority.LOW:
       return 'text-yellow-500';
+    case Priority.GOOD:
+      return 'text-green-500';
     default:
       return '';
   }
 };
 
-// Mock data for demonstration (replace with actual API calls)
-onMounted(() => {
-  // Create dates for different timeframes
-
-  const today = new Date();
-  const threeDaysLater = new Date(today);
-  threeDaysLater.setDate(today.getDate() + 3);
-
-  const fifteenDaysLater = new Date(today);
-  fifteenDaysLater.setDate(today.getDate() + 15);
-
-  const sixtyDaysLater = new Date(today);
-  sixtyDaysLater.setDate(today.getDate() + 60);
-
-  // Simulate fetching expiring items from backend with different timeframes
-  const items = [
-    { id: 1, name: 'Canned beans', expiryDate: threeDaysLater },
-    { id: 2, name: 'Water bottles', expiryDate: fifteenDaysLater },
-    { id: 3, name: 'Medicine', expiryDate: sixtyDaysLater },
-  ];
-
-  // Calculate days left and priority for each item
-  expiringItems.value = items.map(item => {
-    const days = daysLeft(item.expiryDate);
-    return {
-      ...item,
-      daysLeft: days,
-      priority: getPriority(days)
-    };
-  });
-});
-
-// Methods
-const viewBeredskapslager = () => {
-  // Navigate to the shelter store page
-  router.push('/shelter-frontpage');
+/**
+ * Fetches the days remaining for food and water from the backend
+ */
+const fetchDaysRemaining = async () => {
+  try {
+    const [foodDays, waterDays] = await Promise.all([
+      inventoryService.getFoodDaysRemaining(),
+      inventoryService.getWaterDaysRemaining()
+    ]);
+    daysOfFood.value = foodDays;
+    daysOfWater.value = waterDays;
+  } catch (error) {
+    console.error('Error fetching days remaining:', error);
+  }
 };
+
+onMounted(() => {
+  fetchDaysRemaining();
+});
 </script>
 
 <style scoped>
 .beredskapslager {
-  height: 100%;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
-/* Make sure the warning icon is properly sized */
 .mr-2 {
   width: 18px;
   height: 18px;
 }
 
-/* Add some hover effect to the items */
 .mb-2:hover {
   opacity: 0.9;
   cursor: pointer;

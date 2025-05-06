@@ -2,7 +2,10 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
 import { getCurrentHousehold, getHouseholdMembers, getEmptyHouseholdMembers, joinWithToken } from '@/services/HouseholdService';
-import type { Household, Member } from '@/models/Household';
+import type { Household, HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household';
+
+// Type alias for convenience
+type Member = HouseholdMember | EmptyHouseholdMemberDto;
 
 export const useHouseholdStore = defineStore('household', () => {
   const userStore = useUserStore();

@@ -220,6 +220,34 @@ class InventoryService {
   }
 
   /**
+   * Get the number of days of food remaining in the household
+   * @returns Promise containing the number of days of food remaining
+   */
+  async getFoodDaysRemaining(): Promise<number> {
+    try {
+      const response = await api.get('/user/inventory/food/days-remaining');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching food days remaining:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get the number of days of water remaining in the household
+   * @returns Promise containing the number of days of water remaining
+   */
+  async getWaterDaysRemaining(): Promise<number> {
+    try {
+      const response = await api.get('/user/inventory/water/days-remaining');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching water days remaining:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Search for product types by name and category
    * @param search The search string
    * @param category The category to filter by (food, water, medicine)

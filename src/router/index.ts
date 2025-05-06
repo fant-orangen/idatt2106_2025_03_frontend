@@ -73,11 +73,7 @@ const routes = [
     component: () => import('@/views/HouseholdView.vue'),
     meta: { requiresAuth: true },
   },
-  {
-    path: '/household/create',
-    name: 'CreateHousehold',
-    component: () => import('@/components/household/CreateNewHousehold.vue'),
-  },
+  // Removed CreateHousehold route as it's now handled in the Household view
   {
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
@@ -91,43 +87,43 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin-panel',
+    path: '/admin/admin-panel',
     name: 'AdminPanel',
     component: () => import('@/views/AdminPanel.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/add-new-event',
+    path: '/admin/add-new-event',
     name: 'AddNewEvent',
     component: () => import('@/views/AdminAddNewEvent.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/add-new-scenario-theme',
+    path: '/admin/add-new-scenario-theme',
     name: 'AddNewScenarioTheme',
     component: () => import('@/views/AdminAddNewScenarioTheme.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/add-new-POI',
+    path: '/admin/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/edit-event',
+    path: '/admin/edit-event',
     name: 'EditEvent',
     component: () => import('@/views/AdminEditEvent.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/edit-scenario-theme',
+    path: '/admin/edit-scenario-theme',
     name: 'EditScenarioTheme',
     component: () => import('@/views/AdminEditScenarioTheme.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/handle-admins',
+    path: '/admin/handle-admins',
     name: 'HandleAdmins',
     component: () => import('@/views/SuperAdminAdministrate.vue'),
     meta: { requiresSuperAdmin: true },
@@ -141,6 +137,12 @@ const routes = [
     path: '/medicine-inventory',
     name: 'MedicineInventory',
     component: () => import('@/views/MedicineInventory.vue'),
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/views/ProfileView.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/edit-POI',
@@ -170,9 +172,14 @@ const routes = [
     path: '/group',
     name: 'GroupPage',
     component: () => import('@/views/GroupPage.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin/meeting-point',
+    name: 'MeetingPointPage',
+    component: () => import('@/views/AdminEditMeetingPoint.vue'),
+    meta: { requiresAdmin: true},
   }
-
 ]
 
 const router = createRouter({
@@ -200,7 +207,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
+  const publicRoutes = ['Login', 'Register', 'Home', 'Household', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
 
   // Allow immediate navigation if the target route is public
   if (publicRoutes.includes(to.name as string)) { //
@@ -244,13 +251,13 @@ router.beforeEach(async (to, from, next) => {
 
         // If the user has no household (API returns null or 404), redirect them.
         if (!household) {
-          // Prevent an infinite redirect loop if already on the CreateHousehold page.
-          if (to.name === 'CreateHousehold') {
-            return next(false); // Block navigation
+          // Prevent an infinite redirect loop if already on the Household page.
+          if (to.name === 'Household') {
+            return next(); // Allow navigation to Household page
           }
-          console.log('User has no household, redirecting to CreateHousehold.');
-          // Redirect user to create or join a household.
-          return next({ name: 'CreateHousehold' });
+          console.log('User has no household, redirecting to Household page.');
+          // Redirect user to the Household page where they can see invitations and create options
+          return next({ name: 'Household' });
         }
 
     } catch (error) {
