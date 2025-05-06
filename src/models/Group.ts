@@ -1,19 +1,22 @@
 export interface GroupSummary {
   id: number;
   name: string;
-  description?: string;
+  createdByUserId: number;
   createdAt: string;
 }
 
 export interface Household {
   id: number;
   name: string;
-  memberCount: number;
+  address: string;
+  populationCount: number;
+  latitude?: number;
+  longitude?: number;
+  createdAt: string;
 }
 
 export interface ContributedProductTypesRequest {
   groupId: number;
-  category: 'food' | 'water' | 'medicine';
 }
 
 export interface ContributedProductBatchesRequest {

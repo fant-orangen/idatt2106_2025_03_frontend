@@ -61,12 +61,13 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { groupService } from '@/services/api/GroupService';
 import { useGroupStore } from '@/stores/GroupStore';
 import { useI18n } from 'vue-i18n'
 import InventorySearchBar from '@/components/inventory/InventorySearchBar.vue';
 import GroupInventory from '@/components/group/GroupInventory.vue';
+import type { ProductType } from '@/models/Product';
 
 const { t } = useI18n();
 const groupStore = useGroupStore();
@@ -80,6 +81,43 @@ interface Group {
 const groups = ref<Group[]>([]);
 const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
+
+// Watch for changes in search text and current group ID
+watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
+  if (!newGroupId) return;
+
+  try {
+    let response;
+    if (newSearchText.trim() === '') {
+      // If search is empty, get all product types
+      response = await groupService.getContributedProductTypes(
+        { groupId: newGroupId },
+        0,
+        20
+      );
+    } else {
+      // If there's a search term, use the search endpoint
+      response = await groupService.searchContributedProductTypes(
+        newGroupId,
+        newSearchText,
+        0,
+        20
+      );
+    }
+
+    // Update the store with the new product types
+    if (response?.content) {
+      const productTypes = response.content.map((pt: ProductType) => ({
+        name: pt.name,
+        id: pt.id
+      }));
+      groupStore.clearProductTypeIds(); // Clear existing before adding new
+      groupStore.addProductTypeIds(productTypes);
+    }
+  } catch (error) {
+    console.error('Error fetching product types:', error);
+  }
+}, { immediate: true });
 
 onMounted(async () => {
   const response = await groupService.getCurrentUserGroups();

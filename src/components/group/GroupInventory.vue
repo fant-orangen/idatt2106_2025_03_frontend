@@ -107,32 +107,21 @@ const isLoading = ref(true);
 const fetchAllProductTypes = async () => {
   try {
     isLoading.value = true;
-    const categories: ('food' | 'water' | 'medicine')[] = ['food', 'water', 'medicine'];
+    const response: Page<ProductType> = await groupService.getContributedProductTypes({
+      groupId: props.groupId
+    });
 
-    const results = await Promise.allSettled(
-      categories.map(category =>
-        groupService.getContributedProductTypes({
-          groupId: props.groupId,
-          category
-        })
-      )
-    );
+    if (response?.content) {
+      items.value = response.content.map(product => ({
+        ...product,
+        edit: false,
+        batches: [],
+        totalUnits: 0
+      }));
 
-    const allProducts = results
-      .filter((result): result is PromiseFulfilledResult<Page<ProductType>> => result.status === 'fulfilled')
-      .map(result => result.value)
-      .filter(response => response?.content)
-      .flatMap(response => response.content);
-
-    items.value = allProducts.map(product => ({
-      ...product,
-      edit: false,
-      batches: [],
-      totalUnits: 0
-    }));
-
-    if (items.value.length > 0) {
-      groupStore.addProductTypeIds(items.value);
+      if (items.value.length > 0) {
+        groupStore.addProductTypeIds(items.value);
+      }
     }
 
     console.log('Loaded group inventory items:', items.value.length);
@@ -161,11 +150,31 @@ watch(() => props.groupId, (newGroupId) => {
 
 // Watch for search text changes
 watch(() => props.searchText, async (val) => {
-  if (val && val.trim() !== '') {
-    // TODO: Implement search functionality when backend supports it
-    console.log('Search not yet implemented for group inventory');
-  } else {
-    fetchAllProductTypes();
+  try {
+    isLoading.value = true;
+    if (val && val.trim() !== '') {
+      const response: Page<ProductType> = await groupService.searchContributedProductTypes(
+        props.groupId,
+        val.trim()
+      );
+      if (response?.content) {
+        items.value = response.content.map(product => ({
+          ...product,
+          edit: false,
+          batches: [],
+          totalUnits: 0
+        }));
+        if (items.value.length > 0) {
+          groupStore.addProductTypeIds(items.value);
+        }
+      }
+    } else {
+      await fetchAllProductTypes();
+    }
+  } catch (error) {
+    console.error('Error searching group inventory:', error);
+  } finally {
+    isLoading.value = false;
   }
 });
 
