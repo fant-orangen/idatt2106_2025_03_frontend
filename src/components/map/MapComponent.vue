@@ -226,14 +226,17 @@ export default defineComponent({
       for (const mp of list) {
         const marker = L.marker([mp.latitude, mp.longitude], { icon: getMeetingIcon() })
         .bindPopup(`<strong>${mp.name}</strong><br/>${mp.description||''}`);
-        meetingMarkers.value.set(mp.id, marker);
+
+        // Use an auto-incrementing index if ID is not available
+        const id = mp.id !== undefined ? mp.id : `temp-${markers.length}`;
+        meetingMarkers.value.set(id, marker);
         markers.push(marker);
       }
 
       if (markers.length) meetingLayer.value.addLayers(markers);
     }
 
-// Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
+    // Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
     let updateTimeout: number | null = null;
 
 
