@@ -179,6 +179,12 @@ const routes = [
     name: 'MeetingPointPage',
     component: () => import('@/views/AdminEditMeetingPoint.vue'),
     meta: { requiresAdmin: true},
+  },
+  {
+    path: '/admin/news',
+    name: 'AdminCreateNews',
+    component: () => import('@/views/AdminAddNews.vue'),
+    meta: { requiresAdmin: true },
   }
 ]
 
