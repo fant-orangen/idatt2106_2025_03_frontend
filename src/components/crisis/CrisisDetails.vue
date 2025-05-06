@@ -70,23 +70,66 @@
             </span>
           </div>
 
+          <!-- Add Reflection Button -->
+          <div class="mt-6">
+            <Button
+              variant="outline"
+              class="w-full flex items-center justify-center gap-2"
+              @click="openReflectionDialog"
+            >
+              <PencilIcon class="h-4 w-4" />
+              {{ t('reflect.add-reflection-for-crisis') }}
+            </Button>
+          </div>
+
         </div>
       </div>
     </CardContent>
   </Card>
+
+  <!-- Create Reflection Dialog -->
+  <Dialog :open="isReflectionDialogOpen" @update:open="isReflectionDialogOpen = $event" class="z-[1000]">
+    <DialogContent class="sm:max-w-[500px] z-[1000]">
+      <DialogHeader>
+        <DialogTitle>{{ t('reflect.add-reflection-for-crisis') }}</DialogTitle>
+        <DialogDescription>
+          {{ t('reflect.reflection-for-crisis-description') }}
+        </DialogDescription>
+      </DialogHeader>
+      <div class="grid gap-4 py-4">
+        <ReflectionForm
+          :reflection="{ crisisEventId: crisis?.id }"
+          :is-editing="false"
+          @save="saveReflection"
+          @cancel="isReflectionDialogOpen = false"
+        />
+      </div>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { ArrowRight } from 'lucide-vue-next';
+import { ArrowRight, PencilIcon } from 'lucide-vue-next';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
+import type { CreateReflectionDto } from '@/models/Reflection';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import { getSeverityClass } from '@/utils/severityUtils';
+import { createReflection } from '@/services/ReflectionService';
+import { toast } from 'vue-sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@/components/ui/dialog';
+import ReflectionForm from '@/components/profile/ReflectionForm.vue';
 
 /**
  * CrisisDetails component
@@ -161,5 +204,44 @@ function navigateToDefaultScenarioTheme() {
   router.push({
     name: 'Information'
   });
+}
+
+// Reflection dialog state
+const isReflectionDialogOpen = ref(false);
+const isSubmitting = ref(false);
+
+/**
+ * Opens the dialog to create a new reflection for this crisis event
+ */
+function openReflectionDialog() {
+  isReflectionDialogOpen.value = true;
+}
+
+/**
+ * Handles saving a new reflection
+ *
+ * @param {CreateReflectionDto} reflectionData - The reflection data to save
+ */
+async function saveReflection(reflectionData: CreateReflectionDto) {
+  if (!props.crisis) return;
+
+  try {
+    isSubmitting.value = true;
+
+    // Ensure the crisis event ID is set
+    const dataWithCrisisId: CreateReflectionDto = {
+      ...reflectionData,
+      crisisEventId: props.crisis.id
+    };
+
+    await createReflection(dataWithCrisisId);
+    toast.success(t('reflect.created-success'));
+    isReflectionDialogOpen.value = false;
+  } catch (error) {
+    console.error('Error creating reflection:', error);
+    toast.error(t('reflect.save-error'));
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 </script>
