@@ -1,45 +1,61 @@
 <template>
-  <div class="container mx-auto py-8 px-4">
-    <div class="max-w-md mx-auto">
-      <JoinWithToken class="mb-6" />
+  <div class="space-y-6">
 
-      <Card v-if="!showCreateForm">
-        <CardHeader>
-          <CardTitle>{{ t('household.create_new') }}</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <!-- Create new household -->
+    <Card v-if="!showCreateForm">
+      <CardHeader>
+        <CardTitle>{{ t('household.create_new') }}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div class="flex flex-col items-center text-center">
+          <HomeIcon class="h-16 w-16 mb-4 text-primary opacity-80" />
           <p class="mb-4">
             {{ t('household.create_description') }}
           </p>
-          <Button variant="outline" @click="showCreateForm = true">
+          <Button size="lg" class="mt-2" @click="showCreateForm = true">
             {{ t('household.create_button') }}
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
+    </Card>
 
-      <CreateNewHousehold v-if="showCreateForm" class="mt-6" />
-
-      <div v-if="showCreateForm" class="mt-4 text-center">
-        <Button variant="ghost" size="sm" @click="showCreateForm = false">
+    <!-- Create household form -->
+    <Card v-if="showCreateForm">
+      <CardHeader>
+        <CardTitle>{{ t('household.create.title') }}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <CreateNewHousehold @created="handleHouseholdCreated" />
+      </CardContent>
+      <CardFooter>
+        <Button variant="ghost" @click="showCreateForm = false">
           {{ t('household.cancel') }}
         </Button>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { toast } from 'vue-sonner';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import JoinWithToken from '@/components/household/JoinWithToken.vue';
+import { HomeIcon } from 'lucide-vue-next';
+
 import CreateNewHousehold from '@/components/household/CreateNewHousehold.vue';
 
 const { t } = useI18n();
 const showCreateForm = ref(false);
 
 const emit = defineEmits(['household-updated']);
+
+const handleHouseholdCreated = () => {
+  toast.success(t('household.created-success'));
+  emit('household-updated');
+  showCreateForm.value = false;
+};
 
 const handleHouseholdUpdate = () => {
   emit('household-updated');

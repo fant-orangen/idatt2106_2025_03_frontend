@@ -1,5 +1,5 @@
 <template>
-  <div id="mapContainer" class="h-full w-full relative">
+  <div id="mapContainer" class="h-full w-full relative rounded-lg overflow-hidden">
     <div :id="mapContainerId" class="w-full h-full"></div>
   </div>
 </template>
@@ -235,7 +235,7 @@ export default defineComponent({
             chunkedLoading: true,           // Enable chunked loading
             chunkInterval: 50,              // Process chunks every 50ms
             chunkDelay: 10,                 // Delay between chunks
-            chunkProgress: null,             // No progress callback needed
+            //chunkProgress: null,             // No progress callback needed
           };
           markerClusterGroup.value = L.markerClusterGroup(clusterOptions);
           if (map.value) {
@@ -535,9 +535,7 @@ export default defineComponent({
 
     // Update POIs on the map - core functionality used by both original and admin features
     function updatePOIs(newPois: POI[]): void {
-      if (!map.value || !markerClusterGroup.value) {
-        return;
-      }
+      if (!map.value || !markerClusterGroup.value) return;
 
 
       // Clear routing when POIs change
@@ -616,7 +614,7 @@ export default defineComponent({
         const markersToRemove: L.Marker[] = [];
         markersMap.value.forEach((marker, id) => {
           if (!newPoiIds.has(id)) {
-            markersToRemove.push(marker);
+            markersToRemove.push(marker as unknown as L.Marker);
             markersMap.value.delete(id);
           }
         });
@@ -653,15 +651,18 @@ export default defineComponent({
 
       if (bounds.isValid() && (hasAnyPoi || props.userLocation || props.householdLocation)) {
         nextTick(() => {
+          // @ts-expect-error This is valid
           map!.fitBounds(bounds.pad(0.2), { animate: false, maxZoom: 15 });
           forceMapRefresh();
         });
       }
       else if (!hasAnyPoi && (props.userLocation || props.householdLocation)) {
         const loc = props.userLocation || props.householdLocation!;
+          // @ts-expect-error This is valid
         map!.setView([loc.latitude, loc.longitude], 13);
       }
       else if (!hasAnyPoi) {
+          // @ts-expect-error This is valid
         map!.setView([props.centerLat, props.centerLon], props.initialZoom);
       }
     }

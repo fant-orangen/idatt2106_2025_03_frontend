@@ -58,7 +58,7 @@ async function handleRegister() {
     const token = await new Promise<string>((resolve, reject) => {
       grecaptcha.ready(() => {
         grecaptcha
-          .execute('6LcTxCorAAAAAF8Ae6Q__20X_Bqgh05-CATxVZRD', {
+          .execute('6Lee4CorAAAAABwb4TokgKDs9GdFCxpaiZTKfkfQ', {
             action: 'LOGIN',
           })
           .then((token) => {

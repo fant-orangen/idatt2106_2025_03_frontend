@@ -133,7 +133,7 @@ function logOut() {
       <!-- Logo -->
 
       <RouterLink to="/" class="hover:text-primary flex items-center">
-        <img src="../assets/krisefikser.svg" alt="Logo" class="h-8 w-auto" />
+        <img src="../assets/krisefikserNY.png" alt="Logo" class="h-8 w-auto" />
       </RouterLink>
 
       <!-- Change Language -->
