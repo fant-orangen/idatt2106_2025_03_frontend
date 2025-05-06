@@ -9,8 +9,12 @@ export interface ScenarioThemeDto {
   name: string;
   /** Detailed description of the scenario theme */
   description?: string;
-  /** Instructions for handling this type of crisis */
-  instructions?: string;
+  /** Instructions for before the crisis */
+  before?: string;
+  /** Instructions for during the crisis */
+  under?: string;
+  /** Instructions for after the crisis */
+  after?: string;
   /** Status of the scenario theme (active or archived) */
   status: 'active' | 'archived';
   /** User ID of the person who created this scenario theme */
@@ -32,7 +36,13 @@ export interface ScenarioThemeDetailsDto {
   name: string;
   /** Detailed description of the scenario theme */
   description?: string;
-  /** Instructions for handling this type of crisis */
+  /** Instructions for before the crisis */
+  before?: string;
+  /** Instructions for during the crisis */
+  under?: string;
+  /** Instructions for after the crisis */
+  after?: string;
+  /** Legacy field for backward compatibility */
   instructions?: string;
 }
 
@@ -44,8 +54,12 @@ export interface CreateScenarioThemeDto {
   name: string;
   /** Detailed description of the scenario theme */
   description?: string;
-  /** Instructions for handling this type of crisis */
-  instructions?: string;
+  /** Instructions for before the crisis */
+  before?: string;
+  /** Instructions for during the crisis */
+  under?: string;
+  /** Instructions for after the crisis */
+  after?: string;
 }
 
 /**
@@ -58,6 +72,19 @@ export interface UpdateScenarioThemeDto {
   name?: string;
   /** Updated description of the scenario theme (optional) */
   description?: string;
-  /** Updated instructions for handling this type of crisis (optional) */
-  instructions?: string;
+  /** Updated instructions for before the crisis (optional) */
+  before?: string;
+  /** Updated instructions for during the crisis (optional) */
+  under?: string;
+  /** Updated instructions for after the crisis (optional) */
+  after?: string;
+  /** Updated status of the scenario theme (optional) */
+  status?: 'active' | 'archived';
+}
+
+export interface ScenarioThemePreview {
+  /** Unique identifier for the scenario theme to update */
+  id: number;
+  /**Name of the scenario theme */
+  name: string;
 }

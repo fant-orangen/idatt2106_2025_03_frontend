@@ -11,6 +11,7 @@ import { fetchToken } from '@/services/api/AuthService.ts'
 import { register } from '@/services/api/AuthService.ts'
 import { send2FACode } from '@/services/api/AuthService.ts'
 import { verify2FACode } from '@/services/api/AuthService.ts'
+import { changePassword, changeEmail } from '@/services/api/AuthService.ts'
 import { computed, ref } from 'vue'
 import api from '@/services/api/AxiosInstance.ts'
 import type { RegistrationData, UserProfile } from '@/models/User.ts'
@@ -79,7 +80,7 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('userId')
   }
 
-  function login(status: number, tokenStr: string, userEmail: string) {
+  async function login(status: number, tokenStr: string, userEmail: string) {
     if (status === 200) {
       // Extract role and userId from token
       const tokenParts = tokenStr.split('.')
@@ -97,8 +98,12 @@ export const useUserStore = defineStore('user', () => {
 
           // Update state
           token.value = tokenStr
+          console.log('Token:', token.value)
           username.value = userEmail
           isAuthenticated.value = true
+
+          // Fetch user profile
+          await fetchUserProfile()
         } catch (error) {
           console.error('Error parsing token payload:', error)
           clearAuthState()
@@ -129,6 +134,21 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  async function fetchUserProfile() {
+    console.log(` TOKEN BENIG SENT TO BACKEND IN FETCH USER PROFILE: ${token.value}`)
+
+    try {
+      const response = await api.get<UserProfile>('/users/me', {
+        headers: { Authorization: `Bearer ${token.value}` },
+      })
+      profile.value = response.data
+      localStorage.setItem('profile', JSON.stringify(response.data))
+      console.log('User profile fetched successfully:', response.data)
+    } catch (error) {
+      console.error('Error fetching user profile:', error)
+    }
+  }
+
   async function send2FACodeToEmail(userEmail: string) {
     try {
       await send2FACode(userEmail)
@@ -144,6 +164,36 @@ export const useUserStore = defineStore('user', () => {
       return response
     } catch (error) {
       console.error('Error verifying 2FA code:', error)
+      throw error
+    }
+  }
+
+  async function updatePassword(oldPassword: string, newPassword: string) {
+    if (!username.value) {
+      throw new Error('User is not logged in. Cannot change password.')
+    }
+
+    try {
+      await changePassword(username.value, oldPassword, newPassword)
+      console.log('Password updated successfully')
+    } catch (error) {
+      console.error('Error updating password:', error)
+      throw error
+    }
+  }
+
+  async function updateEmail(newEmail: string, password: string) {
+    if (!username.value) {
+      throw new Error('User is not logged in. Cannot change email.')
+    }
+
+    try {
+      await changeEmail(username.value, newEmail, password)
+      username.value = newEmail // Update the email in the store
+      localStorage.setItem('username', newEmail) // Update localStorage
+      console.log('Email updated successfully')
+    } catch (error) {
+      console.error('Error updating email:', error)
       throw error
     }
   }
@@ -171,6 +221,8 @@ export const useUserStore = defineStore('user', () => {
     logout,
     send2FACodeToEmail,
     verify2FACodeInput,
+    updatePassword,
+    updateEmail,
     loggedIn,
     initializeFromStorage,
     isAdminUser,

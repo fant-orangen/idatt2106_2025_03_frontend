@@ -7,7 +7,7 @@
       </CardDescription>
     </CardHeader>
     <CardContent>
-      <form @submit.prevent="joinWithToken">
+      <form @submit.prevent="handleJoinWithToken">
         <div class="grid w-full items-center gap-4">
           <div class="flex flex-col space-y-1.5">
             <Label for="token">{{ t('household.join.tokenLabel') }}</Label>
@@ -40,24 +40,28 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useHouseholdStore } from '@/stores/HouseholdStore';
+import { joinWithToken } from '@/services/HouseholdService';
+import { toast } from 'vue-sonner';
 
 const { t } = useI18n();
 const router = useRouter();
-const householdStore = useHouseholdStore();
+const emit = defineEmits(['joined']);
 
 const token = ref('');
 const isLoading = ref(false);
 const error = ref('');
 
-async function joinWithToken() {
+async function handleJoinWithToken() {
   if (!token.value.trim()) return;
 
   error.value = '';
   isLoading.value = true;
 
   try {
-    await householdStore.joinHouseholdWithToken(token.value);
+    const household = await joinWithToken(token.value);
+    // Emit joined event
+    emit('joined', household);
+    toast.success(t('household.join.success'));
     // Redirect to the household page after successfully joining
     router.push('/household');
   } catch (err: Error | unknown) {

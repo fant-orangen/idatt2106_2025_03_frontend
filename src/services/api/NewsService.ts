@@ -16,7 +16,7 @@ export async function fetchNewsByCrisisEvent(
   size: number = 3
 ): Promise<Page<News>> {
   try {
-    const response = await api.get(`/news/${crisisEventId}`, {
+    const response = await api.get(`/public/news/${crisisEventId}`, {
       params: {
         page,
         size
@@ -69,12 +69,46 @@ export async function fetchNewsByCrisisEvent(
  */
 export async function fetchGeneralNews(): Promise<News[]> {
   try {
-    // In a real application, this would call a different API endpoint
-    const response = await api.get('/news/general');
+    const response = await api.get('/public/news/general');
     return response.data.content || response.data;
   } catch (error: unknown) {
     console.error('Error fetching general news:', error);
     return [];
+  }
+}
+
+/**
+ * Fetches paginated news articles that are relevant to the user's location.
+ * This includes news from crisis events within 100km of the user's registered addresses.
+ *
+ * @param {number} page - The page number to fetch (0-based index)
+ * @param {number} size - The number of items per page
+ * @returns {Promise<Page<News>>} Paginated response containing news articles
+ */
+export async function fetchNewsDigest(
+  page: number = 0,
+  size: number = 10
+): Promise<Page<News>> {
+  try {
+    console.log(`Fetching news digest page ${page} with size ${size}`);
+    const response = await api.get('/user/news/digest', {
+      params: {
+        page: page,  // Explicitly use the passed page parameter
+        size: size   // Explicitly use the passed size parameter
+      }
+    });
+
+    console.log(`Received page ${response.data.number} of ${response.data.totalPages} pages`);
+    return response.data;
+  } catch (error: unknown) {
+    console.error('Error fetching news digest:', error);
+    return {
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: size,
+      number: page
+    };
   }
 }
 
@@ -144,3 +178,10 @@ export const fetchGeneralNewsSmall = (crisisId: number, page: number = 0) =>
 
 export const fetchGeneralNewsLarge = (crisisId: number, page: number = 0) =>
   fetchPaginatedGeneralNews(crisisId, page, 5);
+
+// Export convenience functions with specific page sizes
+export const fetchNewsDigestSmall = (page: number = 0) =>
+  fetchNewsDigest(page, 5);
+
+export const fetchNewsDigestLarge = (page: number = 0) =>
+  fetchNewsDigest(page, 15);

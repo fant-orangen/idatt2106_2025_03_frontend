@@ -7,7 +7,8 @@
  * @module InvitationService
  */
 import api from '@/services/api/AxiosInstance.ts'
-import type { Invitation, InvitationResponseDto, InvitationStatus } from '@/models/Invitation'
+import type { Invitation } from '@/models/Invitation'
+import type { Household, HouseholdJoinRequestDto } from '@/models/Household'
 
 /**
  * Fetches pending invitations for the currently authenticated user.
@@ -17,7 +18,7 @@ import type { Invitation, InvitationResponseDto, InvitationStatus } from '@/mode
  */
 export async function fetchPendingInvitations(): Promise<Invitation[]> {
   try {
-    const response = await api.get<Invitation[]>('/invitations/pending');
+    const response = await api.get<Invitation[]>('/user/invitations/pending');
     return response.data;
   } catch (error) {
     console.error('Failed to fetch pending invitations:', error);
@@ -26,25 +27,37 @@ export async function fetchPendingInvitations(): Promise<Invitation[]> {
 }
 
 /**
- * Responds to an invitation (accept or decline).
+ * Accept a household invitation.
  *
- * @param {number} invitationId - The ID of the invitation to respond to
- * @param {InvitationStatus} status - The response status (ACCEPTED or DECLINED)
- * @param {string} [message] - Optional message to include with the response
- * @returns {Promise<Invitation>} Promise resolving to the updated invitation
+ * @param {string} token - The invitation token
+ * @returns {Promise<Household>} Promise resolving to the joined household
+ * @throws {Error} If the user already has a household, the token is invalid or expired
+ */
+export async function acceptInvitation(token: string): Promise<Household> {
+  const payload: HouseholdJoinRequestDto = { token };
+  try {
+    const response = await api.post<Household>('/user/invitations/accept', payload);
+    return response.data;
+  } catch (error: any) {
+    console.error('Failed to accept invitation:', error);
+    if (error.response && error.response.data) {
+      // If the error is that the user already has a household, provide a more helpful message
+      if (error.response.data.includes('already has a household')) {
+        throw new Error('You already have a household. Please leave your current household before accepting this invitation.');
+      }
+    }
+    throw error;
+  }
+}
+
+/**
+ * Decline a household invitation.
+ *
+ * @param {string} token - The invitation token
+ * @returns {Promise<void>} Promise that resolves when the invitation is declined
  * @throws {Error} If the request fails
  */
-export async function respondToInvitation(
-  id: number,
-  status: InvitationStatus,
-): Promise<Invitation> {
-
-  const payload: InvitationResponseDto = {
-    id,
-    status,
-  };
-
-  const response = await api.post<Invitation>('/invitations/respond', payload);
-  return response.data;
-
+export async function declineInvitation(token: string): Promise<void> {
+  const payload: HouseholdJoinRequestDto = { token };
+  await api.post('/user/invitations/decline', payload);
 }

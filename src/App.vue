@@ -2,7 +2,6 @@
 import HeaderNavbar from './components/HeaderNavbar.vue'
 import Footer from './components/Footer.vue'
 import { Toaster } from './components/ui/sonner'
-import InvitationPopup from './components/invitation/InvitationPopup.vue'
 import { RouterView } from 'vue-router'
 import { useWebSocket } from '@/composables/useWebSocket'
 import { useUserStore } from '@/stores/UserStore'
@@ -36,15 +35,11 @@ watch(
 
 <template>
   <div class="min-h-screen flex flex-col">
-    <HeaderNavbar class="z-9999"/>
+    <HeaderNavbar class="z-100" />
     <Toaster class="" />
     <div class="flex-grow">
       <RouterView />
     </div>
-    <Footer class="z-9999" />
-    <InvitationPopup />
-    <div v-if="isInitialized && !isConnected" class="connection-status">
-      Disconnected from notifications
-    </div>
+    <Footer class="z-99" />
   </div>
 </template>

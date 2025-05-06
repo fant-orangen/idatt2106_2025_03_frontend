@@ -1,6 +1,6 @@
 <template>
   <div class="crisis-status cursor-pointer" @click="navigateToCrisisPage()">
-    <Card :class="`crisis-status-card w-120 ${containerClass}`">
+    <Card :class="`crisis-status-card w-[100%] md:w-120 ${containerClass}`">
       <CardHeader class="items-center">
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
           <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />
@@ -8,8 +8,21 @@
         </CardTitle>
       </CardHeader>
       <CardContent class="flex flex-col items-center w-full px-4">
+        <!-- Loading State -->
+        <div v-if="loading" class="main-crisis mb-4 w-full text-center">
+          <div class="text-base font-semibold flex items-center justify-center gap-2">
+            <div class="w-4 h-4 border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+            {{ t('crisis.loading', 'Loading crisis events...') }}
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="main-crisis mb-4 w-full text-center">
+          <div class="text-base font-semibold text-destructive">{{ error }}</div>
+        </div>
+
         <!-- Main Crisis (Highest Severity) -->
-        <div v-if="mainCrisis" class="main-crisis mb-4 w-full text-center">
+        <div v-else-if="mainCrisis" class="main-crisis mb-4 w-full text-center">
           <div
             class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-colors cursor-pointer dark:text-white"
             :style="{
@@ -31,7 +44,7 @@
         </div>
 
         <!-- Other Crisis Events as Links -->
-        <div v-if="otherEvents.length > 0" class="other-events w-full mt-3">
+        <div v-if="!loading && !error && otherEvents.length > 0" class="other-events w-full mt-3">
           <div class="text-sm font-medium mb-2 text-center">{{ t('crisis.other_events', 'Other active events') }}</div>
           <div class="flex flex-wrap justify-center gap-3">
             <a
@@ -63,7 +76,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
-import { fetchAllCrisisEvents } from '@/services/api/CrisisEventService';
+import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 
@@ -81,16 +94,24 @@ const { t } = useI18n();
 const router = useRouter();
 const crisisEvents = ref<CrisisEventPreviewDto[]>([]);
 const maxDisplay = 4;
+const loading = ref(false);
+const error = ref<string | null>(null);
 
 /**
  * Fetches all active crisis events
  */
 const fetchCrisisEvents = async () => {
   try {
-    const events = await fetchAllCrisisEvents();
-    crisisEvents.value = events.filter(event => event.active !== false);
+    loading.value = true;
+    error.value = null;
+
+    const response = await fetchAllPreviewCrisisEvents(0, 4);
+    crisisEvents.value = response.content;
   } catch (err) {
     console.error('Failed to fetch crisis events:', err);
+    error.value = t('crisis.error_loading_events', 'Failed to load crisis events');
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -100,7 +121,6 @@ const fetchCrisisEvents = async () => {
 const otherEvents = computed(() => {
   if (crisisEvents.value.length <= 1) return [];
 
-  // Sort by severity and return all except the first one (main crisis)
   const sorted = [...crisisEvents.value].sort((a, b) => {
     const severityRank = { red: 3, yellow: 2, green: 1 };
     return (severityRank[b.severity] || 0) - (severityRank[a.severity] || 0);
@@ -131,12 +151,16 @@ const displayedEvents = computed(() => crisisEvents.value.slice(0, maxDisplay));
 const hasMoreEvents = computed(() => crisisEvents.value.length > maxDisplay);
 
 /**
+ * Checks if there are any ongoing crises
+ */
+const hasOngoingCrises = computed(() => crisisEvents.value.length > 0)
+
+/**
  * Returns the CSS class for the container based on highest severity
  */
 const containerClass = computed(() => {
   if (crisisEvents.value.length === 0) return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
 
-  // Use the main crisis severity to determine the container color
   if (mainCrisis.value) {
     const severity = mainCrisis.value.severity;
 
@@ -172,7 +196,6 @@ const selectCrisis = (event: CrisisEventPreviewDto) => {
   });
 };
 
-// Fetch crisis events when component is mounted
 onMounted(fetchCrisisEvents);
 </script>
 

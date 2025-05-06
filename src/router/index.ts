@@ -25,6 +25,12 @@ const routes = [
     component: () => import('@/views/LoginView.vue'),
   },
   {
+    path: '/reset-password/:token',
+    name: 'ResetPassword',
+    component: () => import('@/views/ResetPasswordView.vue'),
+    props: true
+  },
+  {
     path: '/notifications',
     name: 'Notifications',
     component: () => import('@/views/NotificationView.vue'),
@@ -67,21 +73,12 @@ const routes = [
     component: () => import('@/views/HouseholdView.vue'),
     meta: { requiresAuth: true },
   },
-  {
-    path: '/household/create',
-    name: 'CreateHousehold',
-    component: () => import('@/components/household/CreateNewHousehold.vue'),
-  },
+  // Removed CreateHousehold route as it's now handled in the Household view
   {
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
     component: () => import('@/views/FoodAndDrinksView.vue'),
     meta: { requiresAuth: true },
-  },
-  {
-    path: '/shelter-frontpage',
-    name: 'shelter-frontpage',
-    component: () => import('@/components/shelter/CategoryPage.vue')
   },
   {
     path: '/medicine-inventory',
@@ -102,6 +99,12 @@ const routes = [
     meta: { requiresAdmin: true },
   },
   {
+    path: '/add-new-scenario-theme',
+    name: 'AddNewScenarioTheme',
+    component: () => import('@/views/AdminAddNewScenarioTheme.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
     path: '/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
@@ -111,6 +114,12 @@ const routes = [
     path: '/edit-event',
     name: 'EditEvent',
     component: () => import('@/views/AdminEditEvent.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/edit-scenario-theme',
+    name: 'EditScenarioTheme',
+    component: () => import('@/views/AdminEditScenarioTheme.vue'),
     meta: { requiresAdmin: true },
   },
   {
@@ -187,7 +196,7 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'CreateHousehold', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications'];
+  const publicRoutes = ['Login', 'Register', 'Home', 'Household', 'Information', 'ScenarioTheme', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
 
   // Allow immediate navigation if the target route is public
   if (publicRoutes.includes(to.name as string)) { //
@@ -231,13 +240,13 @@ router.beforeEach(async (to, from, next) => {
 
         // If the user has no household (API returns null or 404), redirect them.
         if (!household) {
-          // Prevent an infinite redirect loop if already on the CreateHousehold page.
-          if (to.name === 'CreateHousehold') {
-            return next(false); // Block navigation
+          // Prevent an infinite redirect loop if already on the Household page.
+          if (to.name === 'Household') {
+            return next(); // Allow navigation to Household page
           }
-          console.log('User has no household, redirecting to CreateHousehold.');
-          // Redirect user to create or join a household.
-          return next({ name: 'CreateHousehold' });
+          console.log('User has no household, redirecting to Household page.');
+          // Redirect user to the Household page where they can see invitations and create options
+          return next({ name: 'Household' });
         }
 
     } catch (error) {

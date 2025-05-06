@@ -25,7 +25,7 @@
       </div>
 
       <!-- Button to view beredskapslager -->
-      <Button variant="default" class="w-full" @click="viewBeredskapslager">
+      <Button variant="default" class="w-full" @click="router.push('/food-and-drinks')">
         {{ $t('household.your-shelter-store') }}
       </Button>
     </CardContent>
@@ -33,6 +33,12 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component ShelterStore
+ * @description Displays a card with information about the household's emergency supplies (beredskapslager).
+ * Shows items that are about to expire with different priority levels based on expiration dates.
+ * Provides a button to navigate to the detailed shelter store page.
+ */
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -45,29 +51,46 @@ import { useRouter } from 'vue-router';
 useI18n();
 
 
-// Priority levels
+/**
+ * Priority levels for expiring items
+ * @enum {string}
+ */
 enum Priority {
-  HIGH = 'high',   // Less than 7 days
-  MEDIUM = 'medium', // Less than 30 days
-  LOW = 'low'      // Less than 90 days
+  /** Items expiring in less than 7 days */
+  HIGH = 'high',
+  /** Items expiring in less than 30 days */
+  MEDIUM = 'medium',
+  /** Items expiring in less than 90 days */
+  LOW = 'low'
 }
 
-// Types
+/**
+ * Interface representing an item that is about to expire
+ * @interface
+ */
 interface ExpiringItem {
+  /** Unique identifier for the item */
   id: number;
+  /** Name of the item */
   name: string;
+  /** Date when the item expires */
   expiryDate: Date;
+  /** Number of days until expiration */
   daysLeft: number;
+  /** Priority level based on days left */
   priority: Priority;
 }
 
-// Router
+/** Router instance for navigation */
 const router = useRouter();
 
-// State
+/** List of items that are about to expire */
 const expiringItems = ref<ExpiringItem[]>([]);
 
-// Computed property to sort items by priority (high to low)
+/**
+ * Computed property that sorts expiring items by priority (high to low)
+ * @returns {ExpiringItem[]} Sorted array of expiring items
+ */
 const sortedExpiringItems = computed(() => {
   return [...expiringItems.value].sort((a, b) => {
     const priorityOrder = { [Priority.HIGH]: 0, [Priority.MEDIUM]: 1, [Priority.LOW]: 2 };
@@ -75,14 +98,22 @@ const sortedExpiringItems = computed(() => {
   });
 });
 
-// Helper function to determine priority based on days left
+/**
+ * Determines the priority level based on the number of days until expiration
+ * @param {number} days - Number of days until expiration
+ * @returns {Priority} Priority level (HIGH, MEDIUM, or LOW)
+ */
 const getPriority = (days: number): Priority => {
   if (days < 7) return Priority.HIGH;
   if (days < 30) return Priority.MEDIUM;
   return Priority.LOW;
 };
 
-// Helper function to get CSS classes based on priority
+/**
+ * Returns CSS classes for styling items based on their priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for styling
+ */
 const getItemClasses = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
@@ -96,7 +127,11 @@ const getItemClasses = (priority: Priority): string => {
   }
 };
 
-// Helper function to get icon color based on priority
+/**
+ * Returns CSS classes for styling icons based on priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for icon styling
+ */
 const getIconClass = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
@@ -110,7 +145,10 @@ const getIconClass = (priority: Priority): string => {
   }
 };
 
-// Mock data for demonstration (replace with actual API calls)
+/**
+ * Initializes the component with mock data for demonstration
+ * In a real application, this would fetch data from the backend API
+ */
 onMounted(() => {
   // Create dates for different timeframes
 
@@ -126,8 +164,8 @@ onMounted(() => {
 
   // Simulate fetching expiring items from backend with different timeframes
   const items = [
-    { id: 1, name: 'Canned beans', expiryDate: threeDaysLater },
-    { id: 2, name: 'Water bottles', expiryDate: fifteenDaysLater },
+    { id: 1, name: 'Food', expiryDate: threeDaysLater },
+    { id: 2, name: 'Water', expiryDate: fifteenDaysLater },
     { id: 3, name: 'Medicine', expiryDate: sixtyDaysLater },
   ];
 
@@ -142,16 +180,18 @@ onMounted(() => {
   });
 });
 
-// Methods
+/**
+ * Navigates to the detailed shelter store page
+ */
 const viewBeredskapslager = () => {
-  // Navigate to the shelter store page
   router.push('/shelter-frontpage');
 };
 </script>
 
 <style scoped>
 .beredskapslager {
-  height: 100%;
+  max-height: 400px; /* Limit the maximum height */
+  overflow-y: auto; /* Add scrolling if content exceeds max height */
 }
 
 /* Make sure the warning icon is properly sized */

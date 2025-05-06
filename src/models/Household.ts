@@ -1,5 +1,5 @@
 /**
- * Represents a household in the system
+ * Represents a household in the system (HouseholdDto)
  */
 export interface Household {
   id: number;
@@ -12,21 +12,20 @@ export interface Household {
 }
 
 /**
- * Represents a member of a household
+ * Represents a member of a household (HouseholdMemberDto)
  */
 export interface HouseholdMember {
-  id?: number;
+  id: number;
   email: string;
   firstName: string;
   lastName: string;
-  isAdmin?: boolean;
-  name?: string;
+  isAdmin: boolean;
 }
 
 /**
- * Data required to create a new household
+ * Data required to create a new household (HouseholdCreateRequestDto)
  */
-export interface CreateHousehold {
+export interface HouseholdCreateRequestDto {
   name: string;
   address: string;
   populationCount: number;
@@ -35,26 +34,56 @@ export interface CreateHousehold {
 }
 
 /**
- * Represents an invitation token response
+ * Data required to join a household (HouseholdJoinRequestDto)
  */
-export interface InvitationToken {
+export interface HouseholdJoinRequestDto {
   token: string;
-  expiresAt: string;
 }
 
 /**
- * Data required to send an email invitation to a user
+ * Data required to switch households (HouseholdSwitchRequestDto)
  */
-export interface EmailInvitation {
-  email: string;
-  message?: string;
+export interface HouseholdSwitchRequestDto {
+  householdId: number;
 }
 
-export type Member = HouseholdMember | EmptyHouseholdMember;
+/**
+ * Data required to invite a user to a household (HouseholdInviteRequestDto)
+ */
+export interface HouseholdInviteRequestDto {
+  email: string;
+}
 
-export interface EmptyHouseholdMember {
-  id?: number;
+/**
+ * Response when inviting a user to a household (HouseholdInviteResponseDto)
+ */
+export interface HouseholdInviteResponseDto {
+  invitationId: string;
+  invitedEmail: string;
+  status: string;
+  createdAt: string;
+}
+
+/**
+ * Represents an empty household member (EmptyHouseholdMemberDto)
+ */
+export interface EmptyHouseholdMemberDto {
+  id: number;
   name: string;
   type: string;
-  description?: string;
+  description: string;
 }
+
+/**
+ * Data required to create an empty household member (EmptyHouseholdMemberCreateDto)
+ */
+export interface EmptyHouseholdMemberCreateDto {
+  name: string;
+  type: string;
+  description: string;
+}
+
+/**
+ * Type alias for convenience
+ */
+export type Member = HouseholdMember | EmptyHouseholdMemberDto;
