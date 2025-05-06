@@ -97,8 +97,9 @@ class GroupService {
   ): Promise<Page<ProductBatch>> {
     try {
       const response = await api.get('/user/groups/inventory/product-types/batches', {
-        data: request,
         params: {
+          groupId: request.groupId,
+          productTypeId: request.productTypeId,
           page,
           size
         }

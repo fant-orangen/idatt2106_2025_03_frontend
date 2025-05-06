@@ -50,57 +50,15 @@
             :key="bIndex"
             class="flex flex-col sm:grid sm:grid-cols-5 gap-3 items-center"
           >
-            <Input
-              v-model="batch.amount"
-              type="number"
-              placeholder="Mengde"
-              class="text-center w-full"
-            />
+            <div class="text-sm text-center sm:text-left">{{ batch.amount }}</div>
             <div class="text-sm text-center sm:text-left">{{ item.unit }}</div>
-            <template v-if="batch.isNew">
-              <Input
-                v-model="batch.expires"
-                placeholder="Utløp"
-                class="text-center w-full"
-                :readonly="item.category === 'water'"
-              />
-            </template>
-            <template v-else>
-              <div class="text-sm text-center sm:text-left w-full">{{ batch.expires }}</div>
-            </template>
-            <Button
-              v-if="batch.isNew"
-              variant="link"
-              @click="saveBatch(index, bIndex)"
-              class="text-sm text-primary w-full sm:w-auto"
-            >
-              Lagre
-            </Button>
+            <div class="text-sm text-center sm:text-left">{{ batch.expires }}</div>
             <Button
               variant="destructive"
               @click="removeBatch(index, bIndex)"
               class="text-sm w-full sm:w-auto"
             >
-              Slett
-            </Button>
-          </div>
-
-          <!-- Add New Batch -->
-          <div class="flex flex-col sm:flex-row justify-between items-center mt-2 gap-2">
-            <Button
-              variant="link"
-              @click="addBatch(index)"
-              class="text-sm text-primary hover:underline"
-            >
-              + Legg til
-            </Button>
-            <Button
-              v-if="item.edit"
-              variant="destructive"
-              @click="deleteProductType(index)"
-              class="text-sm"
-            >
-              Slett produkttype
+              Fjern fra gruppe
             </Button>
           </div>
         </div>
@@ -115,7 +73,6 @@ import { format } from 'date-fns';
 import { groupService } from '@/services/api/GroupService';
 import { useGroupStore } from '@/stores/GroupStore';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import type { ProductType } from '@/models/Product';
 import type { Page } from '@/types/Page';
 
@@ -229,104 +186,35 @@ const toggleEdit = async (index: number) => {
         }));
         groupStore.addBatchIds(item.name, item.batches);
       }
-    } catch {
+    } catch (error) {
+      console.error('Error fetching batches:', error);
       item.batches = [];
     }
-  } else {
-    const productId = groupStore.getProductTypeId(item.name);
-    if (productId) {
-      groupStore.clearBatchIds();
-    }
   }
-};
-
-const addBatch = (productIndex: number) => {
-  const product = items.value[productIndex];
-  if (product.category === 'water') {
-    const today = new Date();
-    today.setFullYear(today.getFullYear() + 2);
-    const formattedDate = format(today, 'yyyy-MM-dd');
-    product.batches.push({
-      id: 0,
-      amount: '',
-      expires: formattedDate,
-      isNew: true
-    });
-  } else {
-    product.batches.push({
-      id: 0,
-      amount: '',
-      expires: '',
-      isNew: true
-    });
-  }
-};
-
-const validateAndFormatDate = (dateStr: string): string | false => {
-  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?$/;
-  if (!dateRegex.test(dateStr)) {
-    return false;
-  }
-  if (dateStr.length === 7) {
-    return `${dateStr}-01`;
-  }
-  return dateStr;
-};
-
-const saveBatch = async (productIndex: number, batchIndex: number) => {
-  const product = items.value[productIndex];
-  const batch = product.batches[batchIndex];
-  const productId = groupStore.getProductTypeId(product.name);
-  if (!productId) return;
-  if (!batch.amount || isNaN(Number(batch.amount))) return;
-  if (batch.expires) {
-    const formattedDate = validateAndFormatDate(batch.expires);
-    if (formattedDate === false) {
-      alert('Ugyldig dato. Forventet format: YYYY-MM-DD eller YYYY-MM.');
-      return;
-    }
-    batch.expires = formattedDate;
-  }
-  await groupService.addBatchToGroup({
-    batchId: batch.id,
-    groupId: props.groupId
-  });
-  batch.isNew = false;
-  await fetchAllProductTypes();
 };
 
 const removeBatch = async (productIndex: number, batchIndex: number) => {
   const product = items.value[productIndex];
   const batch = product.batches[batchIndex];
-  if (batch.isNew) {
+
+  try {
+    await groupService.removeContributedBatch(batch.id);
+    // Remove the batch from the list
     product.batches.splice(batchIndex, 1);
-    return;
+    // If no more batches, close the edit view
+    if (product.batches.length === 0) {
+      product.edit = false;
+    }
+    // Refresh the product types to update totals
+    await fetchAllProductTypes();
+  } catch (error) {
+    console.error('Error removing batch from group:', error);
+    alert('Det oppstod en feil ved fjerning av batch fra gruppen');
   }
-  const batchId = groupStore.getBatchId(product.name, batch.amount, batch.expires);
-  if (!batchId) return;
-  await groupService.removeContributedBatch(batchId);
-  product.batches.splice(batchIndex, 1);
-  await fetchAllProductTypes();
 };
 
 const getTotalAmount = (item: GroupInventoryItem): string => {
   if (item.totalUnits === undefined) return "-";
   return `${item.totalUnits} ${item.unit}`;
-};
-
-const deleteProductType = async (index: number) => {
-  const item = items.value[index];
-  const confirmDelete = confirm(`Er du sikker på at du vil slette produkttypen ${item.name}?`);
-  if (!confirmDelete) return;
-  // Remove all batches first
-  for (const batch of item.batches) {
-    const batchId = groupStore.getBatchId(item.name, batch.amount, batch.expires);
-    if (batchId) {
-      await groupService.removeContributedBatch(batchId);
-    }
-  }
-  items.value.splice(index, 1);
-  groupStore.clearProductTypeIds();
-  groupStore.clearBatchIds();
 };
 </script>
