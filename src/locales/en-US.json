@@ -7,7 +7,10 @@
     "save": "Save",
     "remove": "Remove",
     "saving": "Saving...",
-    "not-provided": "Not provided"
+    "not-provided": "Not provided",
+    "loading": "Loading",
+    "not-found": "No match",
+    "all-is-loaded": "Everything is loaded"
   },
   "actions": {
     "to-reflect": "to reflect",
@@ -64,7 +67,8 @@
     "make-new-scenario-theme": "Add a new scenario theme",
     "edit-scenario-theme": "Edit scenario themes",
     "edit-event": "Edit a current event",
-    "meeting-point": "Edit meeting points",
+    "edit-mp": "Handle meeting point",
+    "create-mp":"Create a new meeting point",
     "super-admin": "Super Admin",
     "current-admins": "Current admin users",
     "edit-admin": "Handle admin users",
@@ -159,7 +163,9 @@
     "search-error": "Error searching for address.",
     "map-reset": "Map reset.",
     "edit-POI": "Edit point of interest",
-    "poi-details": "POI details"
+    "poi-details": "POI details",
+    "meeting-places": "Meeting places",
+    "meeting-point": "Handle meeting points"
   },
   "notifications": {
     "notification": "Notification",
@@ -730,6 +736,10 @@
       "true": "active",
       "false": "inactive",
       "description": "Deactivate the event to change the status to inactive!"
+    },
+    "isArchived": {
+      "archived": "inactive",
+      "active": "active"
     }
   },
   "add-POI-info": {

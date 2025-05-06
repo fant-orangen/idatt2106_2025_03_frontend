@@ -1,8 +1,16 @@
 {
   "common": {
+    "back": "Tilbake",
     "cancel": "Avbryt",
+    "delete": "Slett",
+    "confirm": "Bekreft",
+    "save": "Lagre",
     "remove": "Fjern",
-    "saving": "Lagrer..."
+    "saving": "Lagrer...",
+    "not-provided":"Ikke oppgitt",
+    "loading": "Loading",
+    "not-found": "Fant ingenting",
+    "all-is-loaded": "Alt er lastet inn"
   },
   "actions": {
     "to-reflect": "for å reflektere",
@@ -60,7 +68,8 @@
     "make-new-scenario-theme": "Legg til et nytt scenariotema",
     "edit-scenario-theme": "Rediger scenariotemaer",
     "edit-event": "Rediger en pågående hendelse",
-    "meeting-point": "Rediger møteplasser",
+    "edit-mp": "Håndter møteplassen",
+    "create-mp": "Lag en ny møteplass",
     "super-admin": "Super Admin",
     "current-admins": "Nåværende adminbrukere",
     "edit-admin": "Håndter adminbrukere",
@@ -155,7 +164,9 @@
     "search-error": "Feil ved søk etter adresse.",
     "map-reset": "Kart tilbakestilt.",
     "edit-POI": "Rediger interessepunkt",
-    "poi-details": "Interessepunkt-detaljer"
+    "poi-details": "Interessepunkt-detaljer",
+    "meeting-places": "Møteplasser",
+    "meeting-point": "Håndter møteplasser"
   },
   "notifications": {
     "notification": "Varsling",
@@ -780,6 +791,10 @@
       "true": "aktiv",
       "false": "inaktiv",
       "description": "For å endre statusen på hendelsen må du deaktivere den!"
+    },
+    "isArchived": {
+      "active": "active",
+      "archived": "inaktiv"
     }
   },
   "add-POI-info": {
@@ -851,15 +866,5 @@
     "relatedCrises": "Relaterte krisehendelser",
     "noRelatedEvents": "Ingen relaterte krisehendelser funnet",
     "themeNotFound": "Scenariotema ikke funnet"
-  },
-  "common": {
-    "back": "Tilbake",
-    "cancel": "Avbryt",
-    "delete": "Slett",
-    "confirm": "Bekreft",
-    "save": "Lagre",
-    "remove": "Fjern",
-    "saving": "Lagrer...",
-    "not-provided": "Ikke oppgitt"
   }
 }
