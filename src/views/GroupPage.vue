@@ -25,6 +25,26 @@
       >
         {{ t('group.invite-household') }}
       </button>
+
+      <!-- Households in group -->
+      <div class="mt-4">
+        <h3 class="text-lg font-semibold mb-2">{{ t('group.households') }}</h3>
+        <div class="max-h-48 overflow-y-auto pr-1">
+          <ul class="space-y-2">
+            <li
+                v-for="household in households"
+                :key="household.id"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-secondary text-sidebar-secondary-foreground text-sm"
+            >
+              <span class="i-heroicons-home-modern w-4 h-4" />
+              <div>
+                <p class="font-medium">{{ household.name }}</p>
+                <p class="text-xs opacity-80">{{ household.populationCount }} {{ t('group.residents') }}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </aside>
 
     <!-- Main content -->
@@ -68,6 +88,7 @@ import { useI18n } from 'vue-i18n'
 import InventorySearchBar from '@/components/inventory/InventorySearchBar.vue';
 import GroupInventory from '@/components/group/GroupInventory.vue';
 import type { ProductType } from '@/models/Product';
+import type { Household } from '@/models/Group';
 
 const { t } = useI18n();
 const groupStore = useGroupStore();
@@ -79,6 +100,7 @@ interface Group {
 }
 
 const groups = ref<Group[]>([]);
+const households = ref<Household[]>([]);
 const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
 
@@ -116,6 +138,26 @@ watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
     }
   } catch (error) {
     console.error('Error fetching product types:', error);
+  }
+}, { immediate: true });
+
+// Watch for changes in current group ID to update households
+watch(currentGroupId, async (newGroupId) => {
+  if (!newGroupId) {
+    households.value = [];
+    return;
+  }
+
+  try {
+    const response = await groupService.getCurrentHouseholdsInGroup(newGroupId);
+    if (Array.isArray(response)) {
+      households.value = response as Household[];
+    } else {
+      households.value = [];
+    }
+  } catch (error) {
+    console.error('Error fetching households:', error);
+    households.value = [];
   }
 }, { immediate: true });
 

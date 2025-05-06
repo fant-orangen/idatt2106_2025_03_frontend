@@ -1,6 +1,7 @@
 import type { Page } from '../../types/Page';
 import api from './AxiosInstance';
-import type { GroupSummary, Household, ContributedProductTypesRequest, ContributedProductBatchesRequest, AddBatchToGroupRequest } from '@/models/Group';
+import type { GroupSummary, ContributedProductTypesRequest, ContributedProductBatchesRequest, AddBatchToGroupRequest } from '@/models/Group';
+import type { Household } from '@/models/Household';
 import type { ProductType, ProductBatch } from '@/models/Product';
 import type { AxiosError } from 'axios';
 
