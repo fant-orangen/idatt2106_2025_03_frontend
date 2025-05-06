@@ -87,43 +87,43 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin-panel',
+    path: '/admin/admin-panel',
     name: 'AdminPanel',
     component: () => import('@/views/AdminPanel.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/add-new-event',
+    path: '/admin/add-new-event',
     name: 'AddNewEvent',
     component: () => import('@/views/AdminAddNewEvent.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/add-new-scenario-theme',
+    path: '/admin/add-new-scenario-theme',
     name: 'AddNewScenarioTheme',
     component: () => import('@/views/AdminAddNewScenarioTheme.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/add-new-POI',
+    path: '/admin/add-new-POI',
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/edit-event',
+    path: '/admin/edit-event',
     name: 'EditEvent',
     component: () => import('@/views/AdminEditEvent.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/edit-scenario-theme',
+    path: '/admin/edit-scenario-theme',
     name: 'EditScenarioTheme',
     component: () => import('@/views/AdminEditScenarioTheme.vue'),
     meta: { requiresAdmin: true },
   },
   {
-    path: '/handle-admins',
+    path: '/admin/handle-admins',
     name: 'HandleAdmins',
     component: () => import('@/views/SuperAdminAdministrate.vue'),
     meta: { requiresSuperAdmin: true },
@@ -172,13 +172,19 @@ const routes = [
     path: '/group',
     name: 'GroupPage',
     component: () => import('@/views/GroupPage.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: '/reflections',
     name: 'Reflections',
     component: () => import('@/views/ReflectionsView.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin/meeting-point',
+    name: 'MeetingPointPage',
+    component: () => import('@/views/AdminEditMeetingPoint.vue'),
+    meta: { requiresAdmin: true},
   }
 
 ]
