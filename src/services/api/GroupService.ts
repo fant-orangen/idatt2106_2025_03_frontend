@@ -148,6 +148,36 @@ class GroupService {
       throw error;
     }
   }
+
+  /**
+   * Search for product types that have at least one batch contributed to the specified group by the current user's household.
+   * @param groupId The ID of the group to search within
+   * @param search The search term to filter product types by name
+   * @param page page number (0-based)
+   * @param size page size
+   * @returns Promise containing a page of product types matching the search criteria
+   */
+  async searchContributedProductTypes(
+    groupId: number,
+    search: string,
+    page: number = 0,
+    size: number = 20
+  ): Promise<Page<ProductType>> {
+    try {
+      const response = await api.get('/user/groups/inventory/product-types/search', {
+        params: {
+          groupId,
+          search,
+          page,
+          size
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error searching contributed product types:', error);
+      throw error;
+    }
+  }
 }
 
 export const groupService = new GroupService();
