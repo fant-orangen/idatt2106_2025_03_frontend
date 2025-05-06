@@ -32,10 +32,11 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
         <button
-            @click="switchGroup"
-            class="underline text-sm text-primary hover:text-primary-foreground transition"
+          v-if="currentGroupId"
+          @click="leaveCurrentGroup"
+          class="text-sm text-destructive hover:text-destructive/90 transition"
         >
-          {{ t('group.switch-group') }}
+          {{ t('group.leave-group') }} <!-- TODO: implement translation and only allow if the user is household admin -->
         </button>
       </div>
 
@@ -104,8 +105,27 @@ function inviteHousehold() {
   console.log('Invite household not implemented');
 }
 
-function switchGroup() {
-  // TODO: Implement group switching
-  console.log('Switch group not implemented');
+async function leaveCurrentGroup() {
+  if (!currentGroupId.value) return;
+
+  const confirmLeave = confirm('Er du sikker på at du vil forlate denne gruppen?');
+  if (!confirmLeave) return;
+
+  try {
+    await groupService.leaveGroup(currentGroupId.value);
+
+    // Remove the group from the list
+    groups.value = groups.value.filter(g => g.groupId !== currentGroupId.value);
+
+    // Switch to another group if available, otherwise clear current group
+    if (groups.value.length > 0) {
+      switchToGroup(groups.value[0].groupId);
+    } else {
+      groupStore.clearCurrentGroup();
+    }
+  } catch (error) {
+    console.error('Error leaving group:', error);
+    alert('Det oppstod en feil ved forsøk på å forlate gruppen');
+  }
 }
 </script>
