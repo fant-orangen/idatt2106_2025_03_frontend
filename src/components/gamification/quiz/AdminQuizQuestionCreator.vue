@@ -49,10 +49,7 @@ function addOption() {
   if (options.value.length < 5) {
     options.value.push('')
   } else {
-    toast.error(t('gamification.quizCreator.maxOptions'), {
-      description: t('gamification.quizCreator.maxOptionsDescription'),
-      title: t('gamification.quizCreator.maxOptions'),
-    })
+    toast.error(t('gamification.quizCreator.maxOptions'))
   }
 }
 
@@ -99,19 +96,13 @@ async function fetchQuestionsAndAnswers() {
     console.log('Processed questions with answers:', fetchedQuestions.value)
   } catch (error) {
     console.error('Error fetching questions and answers:', error)
-    toast.error(t('gamification.quizCreator.fetchError'), {
-      description: t('gamification.quizCreator.fetchErrorDescription'),
-      title: t('gamification.quizCreator.fetchError'),
-    })
+    toast.error(t('gamification.quizCreator.fetchError'))
   }
 }
 
 async function submitQuestion() {
   if (!newQuestionText.value.trim() || correctOption.value === null) {
-    toast.error(t('gamification.quizCreator.questionValidationError'), {
-      description: t('gamification.quizCreator.questionValidationErrorDescription'),
-      title: t('gamification.quizCreator.questionValidationError'),
-    })
+    toast.error(t('gamification.quizCreator.questionValidationError'))
     console.log(newQuestionText.value, correctOption.value)
     return
   }
@@ -124,8 +115,6 @@ async function submitQuestion() {
       quizId: props.quizId,
       questionBody: newQuestionText.value,
     })
-
-    console.log('API Response:', questionResponse.id)
 
     const questionId = questionResponse.id
     console.log('Created question ID:', questionId)
@@ -145,10 +134,7 @@ async function submitQuestion() {
       })
     }
 
-    toast.success('Question added successfully', {
-      description: t('gamification.quizCreator.questionAddedDescription'),
-      title: t('gamification.quizCreator.questionAdded'),
-    })
+    toast.success(t('gamification.quizCreator.questionAdded'))
 
     // Reset the form
     newQuestionText.value = ''
@@ -159,10 +145,7 @@ async function submitQuestion() {
     await fetchQuestionsAndAnswers()
   } catch (error) {
     console.error('Error creating question or answers:', error)
-    toast.error(t('gamification.quizCreator.questionCreationError'), {
-      description: t('gamification.quizCreator.questionCreationErrorDescription'),
-      title: t('gamification.quizCreator.questionCreationError'),
-    })
+    toast.error(t('gamification.quizCreator.questionCreationError'))
     console.log('user is admin: ', userStore.isAdminUser)
   }
 }
@@ -171,18 +154,12 @@ async function deleteQuestion(questionId: number) {
   try {
     console.log('Deleting question with ID:', questionId)
     await quizService.deleteQuizQuestion(questionId)
-    toast.success(t('gamification.quizCreator.questionDeleted'), {
-      description: t('gamification.quizCreator.questionDeletedDescription'),
-      title: t('gamification.quizCreator.questionDeleted'),
-    })
+    toast.success(t('gamification.quizCreator.questionDeleted'))
     // Refresh the questions list
     await fetchQuestionsAndAnswers()
   } catch (error) {
     console.error('Error deleting question:', error)
-    toast.error(t('gamification.quizCreator.deleteError'), {
-      description: t('gamification.quizCreator.deleteErrorDescription'),
-      title: t('gamification.quizCreator.deleteError'),
-    })
+    toast.error(t('gamification.quizCreator.deleteError'))
   }
 }
 
@@ -206,10 +183,7 @@ function editQuestion(questionId: number) {
 
 async function saveEditedQuestion() {
   if (!newQuestionText.value.trim() || correctOption.value.length === 0) {
-    toast.error(t('gamification.quizCreator.questionValidationError'), {
-      description: t('gamification.quizCreator.questionValidationErrorDescription'),
-      title: t('gamification.quizCreator.questionValidationError'),
-    })
+    toast.error(t('gamification.quizCreator.questionValidationError'))
     return
   }
 
@@ -259,20 +233,14 @@ async function saveEditedQuestion() {
       }
     }
 
-    toast.success(t('gamification.quizCreator.questionUpdated'), {
-      description: t('gamification.quizCreator.questionUpdatedDescription'),
-      title: t('gamification.quizCreator.questionUpdated'),
-    })
+    toast.success(t('gamification.quizCreator.questionUpdated'))
 
     resetForm()
 
     await fetchQuestionsAndAnswers()
   } catch (error) {
     console.error('Error saving edited question:', error)
-    toast.error(t('gamification.quizCreator.updateError'), {
-      description: t('gamification.quizCreator.updateErrorDescription'),
-      title: t('gamification.quizCreator.updateError'),
-    })
+    toast.error(t('gamification.quizCreator.updateError'))
   }
 }
 
