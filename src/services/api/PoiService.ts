@@ -10,26 +10,6 @@ export async function fetchPoiPreviews(page = 0, size = 10, sort = 'id,asc'): Pr
     console.log('poi list:', response.data)
   return response.data
 }
-export async function deletePoi(id: number): Promise<void> {
-  await api.delete(`/admin/poi/${id}`, {
-    withCredentials: true
-  });
-}
-
-
-
-export async function getPoiById(id: number): Promise<PoiData | null> {
-  const response = await api.get<PoiData>(`/public/poi/${id}`, {
-    withCredentials: true // viktig for å sende cookie/session info
-  });
-  return response.data;
-}
-
-export async function updatePoi(id: number, data: any) {
-  await api.put(`/admin/poi/${id}`, data, {
-    withCredentials: true // kreves for å sende innlogget bruker (admin)
-  });
-}
 
 /**
  * Fetches all public Points of Interest (POIs) from the backend.

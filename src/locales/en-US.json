@@ -747,6 +747,7 @@
     "longitude": "Longitude",
     "opening-hours": "Opening Hours",
     "contact": "Contact Information",
+    "address":"Address",
     "type": "Type",
     "submit": "Save",
     "delete": "Delete",

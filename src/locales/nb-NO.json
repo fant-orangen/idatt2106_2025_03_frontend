@@ -796,6 +796,7 @@
     "description": "Beskrivelse",
     "latitude": "Breddegrad",
     "longitude": "Lengdegrad",
+    "address": "Adresse",
     "opening-hours": "Åpningstider",
     "contact": "Kontaktinformasjon",
     "type": "Type",

@@ -2,20 +2,14 @@ import api from '@/services/api/AxiosInstance'
 import type { AxiosResponse } from 'axios' // Import AxiosResponse type
 import type {  CrisisEventDto, UpdateCrisisEventDto, CreateCrisisEventDto} from '@/models/CrisisEvent'
 import type { Page } from '@/types/Page.ts'
-import type {UpdatePoiDto} from "@/models/PoiData.ts";
-
-export async function updateCurrentPoi(id: number, PoiData: UpdatePoiDto): Promise<AxiosResponse<any>> {
-  return await api.put(`/admin/poi/${id}`, PoiData, {
-    headers: { 'Content-Type': 'application/json' }
-  });
-}
+import type { UpdatePoiDto } from "@/models/PoiData.ts";
 
 /**
  * Edit existing POI.
  * @param id - ID of the POI to edit.
  * @param updateData - The data to update.
  */
-export async function editPoi(id: number, updateData: any): Promise<AxiosResponse> {
+export async function editPoi(id: number, updateData: UpdatePoiDto): Promise<AxiosResponse> {
   return await api.put(`/admin/poi/${id}`, updateData, {
     headers: { 'Content-Type': 'application/json' }
   });

@@ -34,7 +34,7 @@
           </CardHeader>
           <CardContent class="flex-grow overflow-y-auto card-content-padding">
              <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage" class="h-full">
-                <div v-for="(poi) in allPois" :key="poi.id" @click="selectPoiById(poi.id)"
+                <div v-for="poi in allPois" :key="poi.id" @click="selectedAPoi(poi.id)"
                     class="text-sm cursor-pointer transition-colors hover:bg-muted/80 p-2 rounded-md">
                   <div class="flex flex-nowrap w-full justify-between items-center gap-2">
                     <span class="poi-tag truncate">{{ poi.name }}</span>
@@ -62,45 +62,41 @@
           <CardContent class="card-content-padding">
 
             <form v-if="form && onSubmitPoi" @submit.prevent="onSubmitPoi" class="space-y-6">
-              <FormField v-slot="{ field, meta, errorMessage }" name="name">
+              <FormField v-slot="{ field }" name="name">
                 <FormItem>
                   <FormLabel>{{t('add-poi.name')}}</FormLabel>
                   <FormControl>
                     <Input type="text" v-bind="field" readonly disabled />
                   </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
                 </FormItem>
               </FormField>
 
               <div class="flex flex-nowrap gap-4">
-                <FormField v-slot="{ field, meta, errorMessage }" name="latitude" class="flex-1">
+                <FormField v-slot="{ field }" name="latitude" class="flex-1">
                   <FormItem>
                     <FormLabel>{{t('add-poi.latitude')}}</FormLabel>
                     <FormControl>
                       <Input type="number" step="any" v-bind="field" readonly disabled />
                     </FormControl>
-                    <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
                   </FormItem>
                 </FormField>
 
-                <FormField v-slot="{ field, meta, errorMessage }" name="longitude" class="flex-1">
+                <FormField v-slot="{ field }" name="longitude" class="flex-1">
                   <FormItem>
                     <FormLabel>{{t('add-poi.longitude')}}</FormLabel>
                     <FormControl>
                       <Input type="number" step="any" v-bind="field" readonly disabled />
                     </FormControl>
-                    <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
                   </FormItem>
                 </FormField>
               </div>
 
-              <FormField v-slot="{ field, meta, errorMessage }" name="address">
+              <FormField v-slot="{ field }" name="address">
                 <FormItem>
                   <FormLabel>{{t('add-poi.address')}}</FormLabel>
                   <FormControl>
                     <Input type="text" v-bind="field" readonly disabled/>
                   </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
                 </FormItem>
               </FormField>
               <p class="text-xs text-muted-foreground">{{ t('add-event-info.coordinates') }}</p>
@@ -148,19 +144,18 @@
                 </FormItem>
               </FormField>
 
-              <FormField v-slot="{ field, meta, errorMessage }" name="poiTypeId">
+              <FormField v-slot="{ field }" name="poiType">
                 <FormItem>
                   <FormLabel>{{ t('add-poi.type') }}</FormLabel>
                   <FormControl>
-                      <Input :placeholder="$t('add-POI-info.POI-type.')" readonly disabled/>
+                    <Input type="text" v-bind="field" readonly disabled/>
                   </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
                 </FormItem>
               </FormField>
 
               <div class="flex gap-2 pt-4">
                 <Button type="submit">{{t('add-poi.submit')}}</Button>
-                <Button type="button" variant="destructive" @click="confirmDeletePoi(selectedPoi?.id)">{{t('add-poi.delete')}}</Button>
+                <Button type="button" variant="destructive" @click="openDialog()">{{t('add-poi.delete')}}</Button>
               </div>
             </form>
              <div v-else class="text-center p-4 text-muted-foreground">
@@ -174,6 +169,29 @@
          {{ t('admin.map-placeholder') }}
       </div>
     </div>
+
+    <Dialog v-model:open="wantToDelete" v-if="selectedPoi">
+      <DialogTrigger>Open</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete your account
+            and remove your data from our servers.
+
+            
+          </DialogDescription>
+          <DialogFooter>
+            <Button @click="confirmDeletePoi(selectedPoi.id)">
+              Slett
+            </Button>
+          </DialogFooter>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+    
+
+
   </div>
 </template>
 
@@ -184,7 +202,7 @@ import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 import { useRouter } from 'vue-router';
 import type { PoiPreviewDto, PoiData, UpdatePoiDto } from '@/models/PoiData.ts'
-import { fetchPoiPreviews, getPoiById, updatePoi as apiUpdatePoi } from '@/services/api/PoiService';
+import { fetchPoiPreviews, fetchPoiById } from '@/services/api/PoiService';
 import { deletePoi } from '@/services/api/AdminServices';
 
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
@@ -194,24 +212,22 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-
 
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
-import { updateCurrentPoi } from "@/services/api/AdminServices.ts";
+import { editPoi } from "@/services/api/AdminServices.ts";
 
 
 const { t } = useI18n();
-const router = useRouter();
 const queryClient = useQueryClient();
 const selectedPoi = ref<PoiData | null>(null);
 const updatedData = ref<UpdatePoiDto | null> (null);
 const form = ref();
 const onSubmitPoi = ref<(e?: Event) => void>();
+const wantToDelete = ref(false)
 
 const pageSize = 10;
 const {
@@ -238,23 +254,32 @@ const allPois = computed<PoiPreviewDto[]>(() =>
   data.value?.pages.flat() ?? []
 );
 
+async function selectedAPoi(id: number) {
+  if (id == null || undefined) {
+    console.log('Feil id !!!!')
+    return;
+  }
+  try {
+    const response = await fetchPoiById(id);
+    console.log('fetched poi details: ', response)
+    selectedPoi.value = response;
+  } catch (error) {
+    console.error('Feil skjedde under fetch av details for poi:' , error)
+  }
+}
 
 function setupFormSchema() {
   console.log("Setting up form schema...");
   const schema = z.object({
-     name: z.string().min(2, t('add-poi.errors.name-minmax')).max(100, t('add-poi.errors.name-minmax')),
-    latitude: z.preprocess((val) => (val === '' || val === null || val === undefined) ? undefined : Number(val),
-      z.number({invalid_type_error: t('add-event-info.errors.latitude')}).min(-90, t('add-event-info.errors.latitude')).max(90, t('add-event-info.errors.latitude'))
-    ).optional(),
-    longitude: z.preprocess((val) => (val === '' || val === null || val === undefined) ? undefined : Number(val),
-      z.number({invalid_type_error: t('add-event-info.errors.longitude')}).min(-180, t('add-event-info.errors.longitude')).max(180, t('add-event-info.errors.longitude'))
-    ).optional(),
-    address: z.string().max(200, t('add-poi.errors.address-max')).optional(),
+     name: z.string(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    address: z.string().optional(),
     description: z.string().max(1000, t('add-poi.errors.description-max')).optional(),
-    openFrom: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, t('admin.errors.invalid-time-format')).optional().or(z.literal('')),
-    openTo: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, t('admin.errors.invalid-time-format')).optional().or(z.literal('')),
+    openFrom: z.string().optional(),
+    openTo: z.string().optional(),
     contactInfo: z.string().max(100, t('add-poi.errors.contact-max')).optional(),
-    poiTypeId: z.preprocess(val => val ? Number(val) : undefined, z.number({ required_error: t('add-poi.errors.type-required'), invalid_type_error: t('add-poi.errors.type-invalid') })),
+    poiType: z.string().optional()
   }).refine(data => {
     // Tillater at begge koordinatene er undefined, men hvis én er satt, må begge være det.
     const latIsNum = typeof data.latitude === 'number' && !isNaN(data.latitude);
@@ -298,27 +323,28 @@ async function handleFormSubmitPoi(values: any) {
     console.log("Submitting update data:", updatedData.value);
     updateSelectedPoi();
 }
+
 async function updateSelectedPoi() {
-    if (!selectedPoi.value || !updatedData.value) {
-        console.log('No POI selected or updated.');
-        return;
-    }
-    try {
-        const response = await updateCurrentPoi(selectedPoi.value.id, updatedData.value)
+  if (!selectedPoi.value || !updatedData.value) {
+      console.log('No POI selected or updated.');
+      return;
+  }
+  try {
+    const response = await editPoi(selectedPoi.value.id, updatedData.value)
 
-        console.log('Event updated successfully!', response.data);
-        callToast('Updated the event with your new values!');
+    console.log('Event updated successfully!', response.data);
+    callToast('Updated the event with your new values!');
 
-        selectedPoi.value = null;
-        updatedData.value = null;
+    selectedPoi.value = null;
+    updatedData.value = null;
 
-        await queryClient.invalidateQueries({queryKey: ['pois']});
+    await queryClient.invalidateQueries({queryKey: ['pois']});
 
-    } catch (error) {
-        callToast('Failed to update POI details...');
-        console.error('Failed to update POI: ', error);
-    }
-
+  } catch (error) {
+      callToast('Failed to update POI details...');
+      console.error('Failed to update POI: ', error);
+  }
+}
 
 function cancelUpdate() {
   console.log("Update cancelled.");
@@ -328,40 +354,31 @@ function cancelUpdate() {
 
 }
 
-async function confirmDeletePoi(poiId: number | undefined) {
-  if (poiId === undefined) {
+function openDialog() {
+  wantToDelete.value = true
+}
+
+async function confirmDeletePoi(poiId: number) {
+  if (poiId === null || undefined) {
     callToast(t('admin.errors.poi-delete-failed'));
     return;
   }
-  console.log(`Attempting to delete POI with ID: ${poiId}`);
-  const confirmed = window.confirm(t('add-poi.confirm-delete'));
-  if (confirmed) {
-    console.log("Deletion confirmed.");
-    try {
-      const response = await deletePoi(poiId);
-      console.log("Tried deleting a POI..", response)
+  console.log('Attempting to delete POI with ID:', poiId);
+  
+  console.log("Deletion confirmed.");// dette burde stå på slutten etter at det faktisk er sletta
+  try {
+    const response = await deletePoi(poiId);
+    console.log("Deleted a POI: ", response)
 
-      callToast(t('admin.success.poi-deleted'));
-      selectedPoi.value = null;
-      await queryClient.invalidateQueries({ queryKey: ['pois'] });
+    callToast(t('admin.success.poi-deleted'));
+    selectedPoi.value = null;
+    await queryClient.invalidateQueries({ queryKey: ['pois'] });
 
-      console.log("POI deleted successfully, query invalidated.");
-    } catch (error) {
-      console.error('Failed to delete POI:', error);
-      const errorResponse = (error as any)?.response?.data;
-      let errorMessage = t('admin.errors.poi-delete-failed'); // Default
-      if (typeof errorResponse === 'string' && errorResponse.length > 0) {
-            errorMessage = errorResponse;
-      } else if (typeof errorResponse?.message === 'string' && errorResponse.message.length > 0) {
-            errorMessage = errorResponse.message;
-      } else if ((error as Error)?.message) {
-            errorMessage = (error as Error).message;
-      }
-      callToast(errorMessage);
-    }
-  } else {
-      console.log("Deletion cancelled.");
+    console.log("POI deleted successfully, query invalidated.");
+  } catch (error) {
+    console.error('Failed to delete POI:', error);
   }
+  
 }
 
 function callToast(message: string) {
@@ -370,7 +387,7 @@ function callToast(message: string) {
 }
 
 onMounted(() => {
-  fetchNextPage();
+  fetchNextPage;
   setupFormSchema(); // Initialiser form
 });
 
@@ -381,59 +398,15 @@ watch(selectedPoi, async(poi) => {
       name: poi.name ?? '',
       latitude: poi.latitude ?? '',
       longitude: poi.longitude ??'',
+      address: poi.address ?? '',
       description: poi.description ?? '',
       openFrom: poi.openFrom ?? '',
       openTo: poi.openTo ?? '',
-
+      contactInfo: poi.contactInfo ?? '',
+      poiType: poi.poiTypeName ?? ''
     })
   }
 });
-
-watch(selectedPoi, async (poi) => {
-   console.log("Watcher: selectedPoi changed", poi);
-  if (poi) {
-    if (form.value && typeof form.value.setValues === 'function') {
-      await nextTick();
-      console.log("Setting form values for POI:", poi.id);
-      try {
-           const initialValues = {
-                name: poi.name ?? '',
-                latitude: poi.latitude?.toString() ?? '',
-                longitude: poi.longitude?.toString() ?? '',
-                address: poi.address ?? '',
-                description: poi.description ?? '',
-                openFrom: poi.openFrom ?? '',
-                openTo: poi.openTo ?? '',
-                contactInfo: poi.contactInfo ?? '',
-                poiTypeId: poi.poiTypeId ?? undefined,
-            };
-          // Reset for å fjerne gamle feil og sett nye verdier
-          form.value.resetForm({ values: initialValues });
-          console.log("Form values set and form reset.");
-
-      } catch (e) {
-          console.error("Error setting/resetting form values:", e);
-      }
-
-    } else {
-         console.warn("Form not ready when trying to set values for selected POI.");
-         //setter opp skjema på nytt dersom det ikk går med onMounted
-         setupFormSchema();
-         await nextTick();
-         if (form.value && typeof form.value.setValues === 'function') {
-              const initialValuesRetry = {};
-             form.value.resetForm({ values: initialValuesRetry });
-         } else {
-             console.error("Form still not ready after retry.");
-         }
-    }
-  } else if (form.value && typeof form.value.resetForm === 'function') {
-    console.log("Resetting form because selectedPoi is null.");
-    form.value.resetForm();
-  }
-}, { deep: true })};
-// --- Slutt Watchers ---
-
 </script>
 
 <style scoped>
