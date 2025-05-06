@@ -1,7 +1,6 @@
 import type { Page } from '../../types/Page';
 import api from './AxiosInstance';
-import type { GroupSummary, ContributedProductTypesRequest, ContributedProductBatchesRequest, AddBatchToGroupRequest } from '@/models/Group';
-import type { Household } from '@/models/Household';
+import type { GroupSummary, ContributedProductTypesRequest, ContributedProductBatchesRequest, AddBatchToGroupRequest, Household } from '@/models/Group';
 import type { ProductType, ProductBatch } from '@/models/Product';
 import type { AxiosError } from 'axios';
 
@@ -13,7 +12,7 @@ class GroupService {
    * @param size page size
    * @returns Promise containing a page of group summaries
    */
-  async getCurrentUserGroups(page: number = 0, size: number = 20): Promise<Page<GroupSummary>> {
+  async getCurrentUserGroups(page: number = 0, size: number = 1000): Promise<Page<GroupSummary>> {
     try {
       const response = await api.get('/user/groups/current', {
         params: {
@@ -66,13 +65,12 @@ class GroupService {
   async getContributedProductTypes(
     request: ContributedProductTypesRequest,
     page: number = 0,
-    size: number = 20
+    size: number = 1000 // TODO: maybe implement infinite scroll?
   ): Promise<Page<ProductType>> {
     try {
       const response = await api.get('/user/groups/inventory/product-types', {
         params: {
           groupId: request.groupId,
-          category: request.category,
           page,
           size
         }
@@ -94,7 +92,7 @@ class GroupService {
   async getContributedProductBatches(
     request: ContributedProductBatchesRequest,
     page: number = 0,
-    size: number = 20
+    size: number = 1000
   ): Promise<Page<ProductBatch>> {
     try {
       const response = await api.get('/user/groups/inventory/product-types/batches', {
