@@ -32,7 +32,7 @@
 	<div class="events" v-if="!selectedEvent">
 		<Card>
 			<CardHeader>
-				<CardTitle>{{ $t('add-event-info.titles.choose-event') }}:</CardTitle>
+				<CardTitle>{{ $t('add-event-info.titles.choose-event') }}: </CardTitle>
 			</CardHeader>
 			<CardContent class="card-content">
 				<InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
@@ -184,34 +184,15 @@
 							<FormControl>
 								<Select v-bind="field">
 									<SelectTrigger style="cursor: pointer;">
-									<!--<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->
+									<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->
 										<SelectValue :placeholder="scenarioName"/>
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem v-for="type in scenarioPreviews" :key="type.id"
 											:value="type.name">
 											{{ type.name }}
-										<!--	{{ $t('add-event-info.scenarios.' + type.name) }} dette vil bare fungere dersom det er fastsatte typer i språkfilene...-->
+										
 										</SelectItem>
-										<!--
-										<SelectGroup>
-											<SelectLabel>{{ $t('sidebar.themes.crisisSituations.extremeWeather.title') }}:</SelectLabel>
-											<SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>
-											<SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
-											<SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
-											<SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
-										</SelectGroup>
-
-										<SelectGroup>
-											<SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}:</SelectLabel>
-											<SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
-											<SelectItem value="war">{{ $t('add-event-info.scenarios.war') }}</SelectItem>
-											<SelectItem value="forest fire">{{ $t('add-event-info.scenarios.forest fire') }}</SelectItem>
-											<SelectItem value="power outage">{{ $t('add-event-info.scenarios.power outage') }}</SelectItem>
-											<SelectItem value="water shortage">{{ $t('add-event-info.scenarios.water shortage') }}</SelectItem>
-											<SelectItem value="cyber attack">{{ $t('add-event-info.scenarios.cyber attack') }}</SelectItem>
-											<SelectItem value="major accident">{{ $t('add-event-info.scenarios.major accident') }}</SelectItem>
-										</SelectGroup>-->
 									</SelectContent>
 								</Select>
 							</FormControl>

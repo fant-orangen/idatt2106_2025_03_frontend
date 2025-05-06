@@ -20,6 +20,7 @@ export interface CreateMeetingPlaceRequest {
 export interface MeetingPlacePreviewDto {
     id: number;
     name: string;
+    status: string;
 }
 
 export interface CreateMeetingPlaceDto {
