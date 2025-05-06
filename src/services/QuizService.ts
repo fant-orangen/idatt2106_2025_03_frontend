@@ -102,7 +102,7 @@ class QuizService {
    * Get all active quizzes (paginated)
    */
   async getAllActiveQuizzes(page: number = 0, size: number = 20): Promise<Page<QuizPreview>> {
-    const response = await api.get('/quizzes/all/previews/active', {
+    const response = await api.get('/quizzes/user/all/previews/active', {
       params: { page, size },
     })
     return response.data
@@ -112,7 +112,7 @@ class QuizService {
    * Get all archived quizzes (paginated)
    */
   async getAllArchivedQuizzes(page: number = 0, size: number = 20): Promise<Page<QuizPreview>> {
-    const response = await api.get('/quizzes/all/previews/archived', {
+    const response = await api.get('/quizzes/user/all/previews/archived', {
       params: { page, size },
     })
     return response.data
