@@ -1,5 +1,5 @@
-import api from './api/AxiosInstance';
-import type { Page } from '../types/Page';
+import api from './api/AxiosInstance'
+import type { Page } from '../types/Page'
 import type {
   QuizPreview,
   CreateQuizRequest,
@@ -8,9 +8,9 @@ import type {
   QuizAnswerResponse,
   CreateQuizAnswerRequest,
   QuizAttemptSummary,
-  CreateUserQuizAnswerRequest
-} from '@/models/Quiz';
-
+  CreateUserQuizAnswerRequest,
+  QuizAnswerAdminResponse,
+} from '@/models/Quiz'
 
 // TODO: these API functions have not been tested in the frontend yet
 class QuizService {
@@ -18,73 +18,84 @@ class QuizService {
    * Create a new quiz (admin only)
    */
   async createQuiz(data: CreateQuizRequest): Promise<{ quizId: number }> {
-    const response = await api.post('/quizzes/admin', data);
-    return response.data;
+    const response = await api.post('/quizzes/admin', data)
+    return response.data
   }
 
   /**
    * Archive a quiz (admin only)
    */
   async archiveQuiz(quizId: number): Promise<void> {
-    await api.patch(`/quizzes/admin/${quizId}/archive`);
+    await api.patch(`/quizzes/admin/${quizId}/archive`)
   }
 
   /**
    * Get all questions for a quiz
    */
   async getQuizQuestionsByQuizId(quizId: number): Promise<QuizQuestionResponse[]> {
-    const response = await api.get(`/quizzes/${quizId}/questions`);
-    return response.data;
+    const response = await api.get(`/quizzes/user/${quizId}/questions`)
+    return response.data
   }
 
   /**
    * Get all answers for a quiz question
    */
   async getAnswersByQuestionId(questionId: number): Promise<QuizAnswerResponse[]> {
-    const response = await api.get(`/quizzes/questions/${questionId}/answers`);
-    return response.data;
+    const response = await api.get(`/quizzes/user/questions/${questionId}/answers`)
+    console.log('Quiz answers:', response.data)
+    return response.data
+  }
+
+  /**
+   * Get all correct answers for a quiz question
+   */
+  async getCorrectAnswersByQuestionId(questionId: number): Promise<QuizAnswerAdminResponse[]> {
+    const response = await api.get(`/quizzes/admin/${questionId}/answers/correct`)
+    return response.data
   }
 
   /**
    * Save a quiz question (admin only)
    */
   async saveQuizQuestion(data: CreateQuizQuestionRequest): Promise<void> {
-    await api.post('/quizzes/admin/questions', data);
+    const response = await api.post('/quizzes/admin/questions', data)
+    return response.data
   }
 
   /**
    * Update a quiz question (admin only)
    */
   async updateQuizQuestion(questionId: number, data: CreateQuizQuestionRequest): Promise<void> {
-    await api.patch(`/quizzes/admin/questions/${questionId}`, data);
+    console.log('Updating quiz question:', questionId, data)
+    await api.patch(`/quizzes/admin/questions/${questionId}`, data)
   }
 
   /**
    * Update a quiz answer (admin only)
    */
   async updateQuizAnswer(answerId: number, data: CreateQuizAnswerRequest): Promise<void> {
-    await api.patch(`/quizzes/admin/answers/${answerId}`, data);
+    await api.patch(`/quizzes/admin/answers/${answerId}`, data)
   }
 
   /**
    * Save a quiz answer (admin only)
    */
   async saveQuizAnswer(data: CreateQuizAnswerRequest): Promise<void> {
-    await api.post('/quizzes/admin/answers', data);
+    await api.post('/quizzes/admin/answers', data)
   }
 
   /**
    * Delete a quiz question (admin only)
    */
   async deleteQuizQuestion(questionId: number): Promise<void> {
-    await api.delete(`/quizzes/admin/questions/${questionId}`);
+    await api.delete(`/quizzes/admin/questions/${questionId}`)
   }
 
   /**
    * Delete a quiz answer (admin only)
    */
   async deleteQuizAnswer(answerId: number): Promise<void> {
-    await api.delete(`/quizzes/admin/answers/${answerId}`);
+    await api.delete(`/quizzes/admin/answers/${answerId}`)
   }
 
   /**
@@ -92,9 +103,9 @@ class QuizService {
    */
   async getAllActiveQuizzes(page: number = 0, size: number = 20): Promise<Page<QuizPreview>> {
     const response = await api.get('/quizzes/all/previews/active', {
-      params: { page, size }
-    });
-    return response.data;
+      params: { page, size },
+    })
+    return response.data
   }
 
   /**
@@ -102,9 +113,9 @@ class QuizService {
    */
   async getAllArchivedQuizzes(page: number = 0, size: number = 20): Promise<Page<QuizPreview>> {
     const response = await api.get('/quizzes/all/previews/archived', {
-      params: { page, size }
-    });
-    return response.data;
+      params: { page, size },
+    })
+    return response.data
   }
 
   // --- UserQuizController endpoints ---
@@ -113,24 +124,28 @@ class QuizService {
    * Create a user quiz attempt
    */
   async createUserQuizAttempt(quizId: number): Promise<void> {
-    await api.post(`/quizzes/user/attempts/${quizId}`);
+    await api.post(`/quizzes/user/attempts/${quizId}`)
   }
 
   /**
    * Record a user's answer to a quiz question for a specific attempt
    */
   async createUserQuizAnswer(data: CreateUserQuizAnswerRequest): Promise<void> {
-    await api.post('/quizzes/user/attempts/answer', data);
+    await api.post('/quizzes/user/attempts/answer', data)
   }
 
   /**
    * Get all attempts for a quiz by the current user (paginated)
    */
-  async getQuizAttemptsByQuizId(quizId: number, page: number = 0, size: number = 20): Promise<Page<QuizAttemptSummary>> {
+  async getQuizAttemptsByQuizId(
+    quizId: number,
+    page: number = 0,
+    size: number = 20,
+  ): Promise<Page<QuizAttemptSummary>> {
     const response = await api.get(`/quizzes/user/attempts/${quizId}`, {
-      params: { page, size }
-    });
-    return response.data;
+      params: { page, size },
+    })
+    return response.data
   }
 
   /**
@@ -138,18 +153,18 @@ class QuizService {
    */
   async getAttemptedQuizHistory(page: number = 0, size: number = 20): Promise<Page<QuizPreview>> {
     const response = await api.get('/quizzes/user/attempted', {
-      params: { page, size }
-    });
-    return response.data;
+      params: { page, size },
+    })
+    return response.data
   }
 
   /**
    * Get the total number of correct answers for a given quiz attempt
    */
   async getTotalCorrectAnswersForAttempt(attemptId: number): Promise<number> {
-    const response = await api.get(`/quizzes/user/attempts/${attemptId}/correct-count`);
-    return response.data;
+    const response = await api.get(`/quizzes/user/attempts/${attemptId}/correct-count`)
+    return response.data
   }
 }
 
-export const quizService = new QuizService();
+export const quizService = new QuizService()
