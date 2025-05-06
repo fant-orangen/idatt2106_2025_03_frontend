@@ -67,7 +67,7 @@ function validateAndSubmit() {
 
 <template>
   <!-- Define Quiz Window -->
-  <div class="define-quiz w-6/7 mt-50 md:w-1/2 mx-auto md:min-w-160" v-if="!quizDefined">
+  <div class="define-quiz w-6/7 mt-50 md:w-1/2 mx-auto md:min-w-160">
     <Card>
       <CardHeader>
         <CardTitle>
