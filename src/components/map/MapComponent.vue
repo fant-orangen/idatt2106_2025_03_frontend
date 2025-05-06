@@ -236,7 +236,7 @@ export default defineComponent({
       if (markers.length) meetingLayer.value.addLayers(markers);
     }
 
-    // Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
+// Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
     let updateTimeout: number | null = null;
 
 

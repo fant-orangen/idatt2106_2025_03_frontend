@@ -33,8 +33,17 @@
     <CardContent>
       <div class="grid grid-cols-1 gap-4 items-end md:grid-cols-3">
         <div>
-          <Button @click="fetchUserLocation" :disabled="isLoadingLocation" class="w-full">
-            {{ isLoadingLocation ? t('map.getting-location') : t('map.my-location') }}
+          <Button
+            @click="fetchUserLocation"
+            :disabled="isLoadingLocation"
+            class="w-full"
+          >
+            {{ isLoadingLocation
+            ? t('map.getting-location')
+            : (locationError || (!userLocation && locationStatus))
+              ? t('map.retry-location', 'Retry My Location')
+              : t('map.my-location', 'My Location')
+            }}
           </Button>
           <p
             v-if="locationStatusMessage"
@@ -175,12 +184,12 @@ library.add(faHouseChimney, faChevronUp, faChevronDown)
 const { t } = useI18n()
 
 // --- Pinia Stores and Geolocation Composable ---
-const userStore = useUserStore(); // Still needed for the composable internally
-const geolocationStore = useGeolocationStore(); // Import used for clarity or direct access if needed
-const householdStore = useHouseholdStore(); // Used to get household location
+const userStore = useUserStore();
+const geolocationStore = useGeolocationStore();
+const householdStore = useHouseholdStore();
 
 const {
-  coords: locationCoords, // Destructure coords from the composable
+  coords: locationCoords,
   error: locationError,
   isLoading: isLoadingLocation,
   status: locationStatus,
@@ -188,6 +197,8 @@ const {
   stopWatching,
   getCurrentLocation,
   canShareLocation,
+  // Get resetBrowserPermissionState if available in your composable
+  resetBrowserPermissionState,
 } = useGeolocation()
 
 const mapComponentRef = ref<InstanceType<typeof MapComponent> | null>(null);
@@ -206,6 +217,7 @@ const householdLocation = computed(() => {
   }
   return null;
 });
+
 // --- Local Reactive State ---
 const allPois = ref<PoiData[]>([])
 const pointsOfInterest = ref<PoiData[]>([])
@@ -227,7 +239,6 @@ const meetingPlaces     = ref<MeetingPlaceDto[]>([])
 const isLoadingMeetings = ref(false)
 
 // --- Computed Properties ---
-// (Keep existing computed properties: convertedPois, poiTypes, locationStatusMessage)
 // Convert displayed PoiData to POI objects for the MapComponent
 const convertedPois = computed<POI[]>(() => {
   return pointsOfInterest.value.map((poi) => convertPoiData(poi))
@@ -243,52 +254,74 @@ const poiTypes = computed(() => {
     }
   })
   return Array.from(types.entries())
-    .map(([id, name]: [number, string]) => ({ id, name }))
-    .sort((a, b) => a.name.localeCompare(b.name))
+  .map(([id, name]: [number, string]) => ({ id, name }))
+  .sort((a, b) => a.name.localeCompare(b.name))
 })
 
-// Computed property for displaying location status/error messages
 const locationStatusMessage = computed(() => {
-  if (isLoadingLocation.value) return t('map.getting-location')
+  // First, handle loading state
+  if (isLoadingLocation.value) return t('map.getting-location');
+
+  // Handle errors
   if (locationError.value) {
-    const statusKey = locationStatus.value?.replace(/\s+/g, '-').toLowerCase() || 'unknown-error'
-    // Add fallback messages directly in t() if keys don't exist in locales
-    const translatedStatus = t(`map.status.${statusKey}`, locationStatus.value || 'Error')
-    return `${t('map.location-error', 'Location Error')} (${translatedStatus})`
+    const statusKey = locationStatus.value?.replace(/\s+/g, '-').toLowerCase() || 'unknown-error';
+    const translatedStatus = t(`map.status.${statusKey}`, locationStatus.value || 'Error');
+    return `${t('map.location-error', 'Location Error')} (${translatedStatus})`;
   }
-  if (locationStatus.value === 'Success' && userLocation.value) return t('map.location-success')
-  if (locationStatus.value === 'Not Supported') return t('map.location-unavailable')
-  if (!canShareLocation.value && !isLoadingLocation.value && !locationError.value) {
-    // Provide more specific feedback based on user preference vs browser permission
-    const userPrefDisabled = userStore.profile?.locationSharingEnabled === false
+
+  // Success case
+  if (locationStatus.value === 'Success' && userLocation.value) return t('map.location-success');
+
+  // Unsupported case
+  if (locationStatus.value === 'Not Supported') return t('map.location-unavailable');
+
+  // NEW: Only show the permission error when actually trying to use location
+  // Don't show it initially after logout when the user hasn't tried yet
+  if (!canShareLocation.value && !isLoadingLocation.value && !locationError.value && locationStatus.value) {
+    // We only show this message if the user has actually tried to use location
+    // after the page load or after logout
+    const userPrefDisabled = userStore.profile?.locationSharingEnabled === false;
     const reasonKey = userPrefDisabled
       ? 'map.status.disabled-by-user'
-      : 'map.status.permission-denied-or-prompt'
+      : 'map.status.permission-denied-or-prompt';
     const reasonText = userPrefDisabled
       ? 'Disabled by user'
-      : 'Permission required or denied by browser'
-    return `${t('map.location-sharing-disabled', 'Location sharing disabled')} (${t(reasonKey, reasonText)})`
+      : 'Permission required or denied by browser';
+    return `${t('map.location-sharing-disabled', 'Location sharing disabled')} (${t(reasonKey, reasonText)})`;
   }
-  return null
-})
+
+  // Default: no message when not yet attempted
+  return null;
+});
+
+// --- Handle location reset on logout ---
+function handleLocationReset() {
+  console.log('Resetting location state due to user action or logout');
+
+  // Stop any active location watching
+  stopWatching();
+
+  // Clear geolocation store state
+  geolocationStore.clearLocationState();
+
+  // Clear any error states in this component
+  poiError.value = null;
+}
 
 // --- Methods ---
-// (Keep existing methods: loadCrisisEvents, fetchUserLocation, resetFilters, applyFilters, findNearestShelter, findNearestPoi)
-// Ensure they use 'userLocation' which now points to 'locationCoords'
-
 async function loadCrisisEvents() {
   isLoadingCrisisEvents.value = true
   try {
     const events = await fetchActiveCrisisEvents()
     console.log('Crisis events loaded:', events)
     crisisEvents.value = events
-      .filter((event) => event.latitude != null && event.longitude != null && event.level != null)
-      .map((event) => ({
-        ...event,
-        latitude: Number(event.latitude),
-        longitude: Number(event.longitude),
-        level: Number(event.level),
-      }))
+    .filter((event) => event.latitude != null && event.longitude != null && event.level != null)
+    .map((event) => ({
+      ...event,
+      latitude: Number(event.latitude),
+      longitude: Number(event.longitude),
+      level: Number(event.level),
+    }))
     console.log(`Processed ${crisisEvents.value.length} valid crisis events.`)
   } catch (error) {
     console.error('Error loading crisis events:', error)
@@ -299,29 +332,42 @@ async function loadCrisisEvents() {
 }
 
 async function fetchUserLocation(): Promise<boolean> {
-  console.log('fetchUserLocation called')
-  const fetchedLocation = await getCurrentLocation() // Use the composable's method
+  console.log('fetchUserLocation called');
+
+  // Reset any error state
+  poiError.value = null;
+
+  // Force complete state reset before trying again
+  handleLocationReset();
+
+  // Set a flag to indicate this is a user-initiated location request
+  // This could be stored in the geolocation store if needed
+  geolocationStore.setLocationStatus('Requested'); // Add this action to your store
+
+  console.log('Attempting to get current location...');
+  const fetchedLocation = await getCurrentLocation();
+
   if (fetchedLocation) {
-    console.log('Location fetch successful via composable:', fetchedLocation)
-    // Optional: startWatching();
+    console.log('Location fetch successful!', fetchedLocation);
+
     await nextTick();
     if (mapComponentRef.value && userLocation.value) {
       mapComponentRef.value.centerMap(
         userLocation.value.latitude,
         userLocation.value.longitude,
-        15 // Set a suitable zoom level, e.g., 15
+        15
       );
     }
-    return true
+    return true;
   } else {
     console.error(
       'Location fetch failed. Status:',
       locationStatus.value,
       'Error:',
-      locationError.value,
-    )
-    // Display error via computed locationStatusMessage automatically
-    return false
+      locationError.value
+    );
+
+    return false;
   }
 }
 
@@ -484,6 +530,17 @@ watch(distanceInMeters, (val: number | string) => {
   else if (typeof val === 'string') distanceInMeters.value = numVal
 })
 
+// Watch for auth state changes to handle logout properly
+watch(() => userStore.loggedIn, (isLoggedIn, wasLoggedIn) => {
+  console.log(`Auth state changed: ${wasLoggedIn} -> ${isLoggedIn}`);
+
+  if (!isLoggedIn && wasLoggedIn) {
+    // User logged out - reset location state
+    console.log('User logged out - resetting location state');
+    handleLocationReset();
+  }
+}, { immediate: true });
+
 watch(
   [ () => showMeetingPlaces.value, () => userLocation.value ],
   async ([show, loc]) => {
@@ -494,7 +551,6 @@ watch(
           loc.latitude,
           loc.longitude,
           distanceInMeters.value / 1000  // if your API expects km
-
         )
         console.log('Fetched meetingPlaces:', meetingPlaces.value)
       } finally {
