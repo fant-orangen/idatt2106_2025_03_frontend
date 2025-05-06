@@ -177,7 +177,7 @@ const routes = [
   {
     path: '/games',
     name: 'Games',
-    component: () => import('@/views/GamificationView.vue'),
+    component: () => import('@/views/gamification/GamificationView.vue'),
   },
   {
     path: '/admin/meeting-point',
