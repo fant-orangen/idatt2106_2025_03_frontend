@@ -44,11 +44,8 @@
             class="text-sm font-medium leading-none cursor-pointer"
             @click="isShared = !isShared"
           >
-            {{ t('reflect.share-with-community') }} ({{ isShared ? 'Yes' : 'No' }})
+            {{ t('reflect.share-with-community') }}
           </label>
-        </div>
-        <div class="flex items-center space-x-2">
-          <Button type="button" size="sm" @click="toggleShared">Toggle Shared ({{ isShared }})</Button>
         </div>
         <p class="text-sm text-muted-foreground">
           {{ t('reflect.sharing-description-simple') }}
@@ -147,11 +144,7 @@ const fetchCrisisEventName = async (crisisId: number) => {
   }
 };
 
-// Toggle the shared value
-const toggleShared = () => {
-  isShared.value = !isShared.value;
-  console.log('Toggled isShared to:', isShared.value);
-};
+
 
 // Form submission handler
 const onSubmit = () => {
@@ -160,14 +153,11 @@ const onSubmit = () => {
   try {
     // Force isShared to be a boolean
     const sharedValue = isShared.value === true;
-    console.log('isShared.value:', isShared.value, 'type:', typeof isShared.value);
-    console.log('sharedValue:', sharedValue, 'type:', typeof sharedValue);
 
     const formData: CreateReflectionDto | UpdateReflectionDto = {
       content: content.value,
       shared: sharedValue
     };
-    console.log('formData:', formData);
 
     // Add crisis event ID if it was provided in the reflection prop
     if (!props.isEditing && props.reflection?.crisisEventId) {
