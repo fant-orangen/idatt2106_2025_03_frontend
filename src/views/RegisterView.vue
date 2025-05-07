@@ -197,11 +197,9 @@ const handleRegister = form.handleSubmit(async (values) => {
                   />
                   <label for="terms" class="text-sm font-medium leading-none">
                     {{ t('login.consent-1') }}
-                    <a href="/privacy-policy" class="underline"> {{ t('login.privacy-policy') }}</a>
-                    {{ t('login.and') }}
-                    <a href="/terms-of-service" class="underline">{{
-                      t('login.terms-of-service')
-                    }}</a>
+                    <a href="/privacy-policy" class="underline">
+                      {{ t('login.privacy-policy') }}.</a
+                    >
                   </label>
                 </div>
               </FormControl>
@@ -221,21 +219,3 @@ const handleRegister = form.handleSubmit(async (values) => {
     </Card>
   </div>
 </template>
-
-<style scoped>
-/* Wrapper styling to center the registration form */
-
-/* Styling for the registration form container */
-.register-container {
-  /* min-width: 30vw; */
-}
-
-/* Styling for error and success messages */
-.error {
-  margin-top: 10px;
-}
-
-.success {
-  margin-top: 10px;
-}
-</style>
