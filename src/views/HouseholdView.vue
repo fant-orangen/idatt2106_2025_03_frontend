@@ -1,18 +1,29 @@
 <template>
-  <div class="household-container max-w-7xl mx-auto px-4 py-6">
-    <div class="flex items-center justify-between mb-6">
+  <div class="household-container min-h-[calc(100vh-64px)] max-w-7xl mx-auto px-4 py-6">
+    <div class="flex flex-col gap-4 items-start justify-start mb-6 md:flex-row md:items-center md:justify-between">
       <h1 class="text-2xl font-bold">{{ household?.name || t('household.my-household') }}</h1>
-      <div class="flex gap-2">
-        <Button v-if="showAdminTransferButton" variant="outline" class="flex items-center gap-2" @click="openTransferAdminDialog">
+      <div class="flex flex-col gap-2 w-full md:w-auto md:flex-row">
+        <Button
+          v-if="showAdminTransferButton" variant="outline"
+          class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
+          @click="openTransferAdminDialog">
           <UserIcon class="h-4 w-4" />
           <span>{{ t('household.transfer-admin-role') }}</span>
         </Button>
-        <DeleteHousehold v-if="isAdmin && hasHousehold" @deleted="refreshHouseholdData" />
-        <Button v-if="hasHousehold" variant="outline" class="flex items-center gap-2" @click="showLeaveDialog = true">
+        <DeleteHousehold v-if="isAdmin && hasHousehold"
+          class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
+        @deleted="refreshHouseholdData" />
+        <Button v-if="hasHousehold"
+          variant="outline"
+          class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
+          @click="showLeaveDialog = true">
           <LogOutIcon class="h-4 w-4" />
           <span>{{ t('household.leave-household') }}</span>
         </Button>
-        <Button v-if="hasHousehold" variant="outline" class="flex items-center gap-2" @click="goToGroupPage">
+        <Button v-if="hasHousehold"
+          variant="outline"
+          class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
+          @click="goToGroupPage">
           <UsersIcon class="h-4 w-4" />
           <span>{{ t('group.go-to-groups') }}</span>
         </Button>
@@ -396,17 +407,17 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.household-container {
+/* .household-container {
   min-height: calc(100vh - 64px);
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments
 @media (max-width: 768px) {
   .household-container {
     padding: 1rem;
   }
 
-  /* Fix buttons on narrow screens */
+  /* Fix buttons on narrow screens
   .flex.items-center.justify-between {
     flex-direction: column;
     align-items: flex-start;
@@ -422,5 +433,5 @@ onMounted(async () => {
     flex: 1 1 auto;
     min-width: 120px;
   }
-}
+} */
 </style>

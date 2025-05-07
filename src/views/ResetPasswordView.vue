@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import router from '@/router'
+import { getPasswordValidationSchema } from '@/utils/passwordValidation'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -30,16 +31,12 @@ const tokenFromQuery = ref<string | null>(null)
 // Reactive variables
 const isView = ref(false)
 
-// Define the validation schema using zod
+const passwordValidation = getPasswordValidationSchema(t)
+
 const resetPasswordSchema = toTypedSchema(
   z.object({
     token: z.string().nonempty(t('reset-password.token-required')),
-    password: z
-      .string()
-      .min(8, t('reset-password.password-req'))
-      .regex(/[A-Z]/, t('reset-password.password-req'))
-      .regex(/[0-9]/, t('reset-password.password-req'))
-      .regex(/[\W_]/, t('reset-password.password-req')),
+    password: passwordValidation,
     confirmPassword: z.string(),
   }).refine((data) => data.password === data.confirmPassword, {
     message: t('reset-password.password-req-match'),

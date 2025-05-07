@@ -99,11 +99,11 @@
 		  </div>
 
 		  <!-- Map Section -->
-		  <div class="map flex-grow">
+		  <div class="map flex-grow pb-20">
 			<h1 class="text-2xl font-bold text-primary mb-4">
 			  {{ $t('info.current-situation') }}
 			</h1>
-			<div class="w-full h-96 bg-gray-100 rounded-md shadow-md">
+			<div class="w-full rounded-md shadow-md">
 			  <MapOverviewComponent />
 			</div>
 		  </div>

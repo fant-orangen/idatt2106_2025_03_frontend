@@ -26,7 +26,7 @@
           <div
             class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-colors cursor-pointer dark:text-white"
             :style="{
-              backgroundColor: `${getSeverityColor(mainCrisis.severity)}20`,
+              backgroundColor: `rgb(var(--crisis-level-${mainCrisis.severity}) / 0.2)`,
               borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}`
             }"
             @click.stop="selectCrisis(mainCrisis)"
@@ -158,7 +158,7 @@ const hasOngoingCrises = computed(() => crisisEvents.value.length > 0)
 /**
  * Returns the CSS class for the container based on highest severity
  */
-const containerClass = computed(() => {
+ const containerClass = computed(() => {
   if (crisisEvents.value.length === 0) return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
 
   if (mainCrisis.value) {
@@ -166,11 +166,11 @@ const containerClass = computed(() => {
 
     switch (severity) {
       case 'red':
-        return 'bg-white dark:bg-gray-800 border border-red-300 dark:border-red-700';
+        return 'bg-white dark:bg-gray-800 border border-[var(--crisis-level-red)]';
       case 'yellow':
-        return 'bg-white dark:bg-gray-800 border border-yellow-300 dark:border-yellow-700';
+        return 'bg-white dark:bg-gray-800 border border-[var(--crisis-level-yellow)]';
       case 'green':
-        return 'bg-white dark:bg-gray-800 border border-green-300 dark:border-green-700';
+        return 'bg-white dark:bg-gray-800 border border-[var(--crisis-level-green)]';
       default:
         return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
     }

@@ -25,44 +25,43 @@
   <h1 class="text-3xl p-5">{{$t('admin.meeting-point')}}</h1>
 
 
-  <div class="grid grid-cols-3 gap-5">
+  <div class="grid flex-col gap-5 md:grid-cols-3">
     <!--Overview of all meeting points-->
     <Card>
       <CardHeader>
-        <CardTitle>Current meeting places to find: </CardTitle>
+        <CardTitle>{{ $t('admin.meeting-places') }}: </CardTitle>
       </CardHeader>
       <CardContent>
         <!--Search field-->
         <div class="relative mb-4 w-full max-w-sm">
           <Input v-model="searchQuery" type="text" placeholder="Søk etter en møteplass..."
             class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" />
-          
             <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
             <Search class="size-4 text-muted-foreground" />
           </span>
         </div>
         <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
-          <div v-for="meetingPoint in filteredMPts" 
-            :key="meetingPoint.id" 
+          <div v-for="meetingPoint in filteredMPts"
+            :key="meetingPoint.id"
             @click="selectMeetingPoint(meetingPoint.id)"
             class="h-full w-full rounded-md border p-2 cursor-pointer hover:bg-muted transition-colors m-2 min-w-fit">
-            <div class="cursor-pointer min-w-fit">
+            <div class="cursor-pointer min-w-fit flex flex-row flex-nowrap">
               <MapPinCheckInside />
               <span>{{ meetingPoint.name }}</span>
             </div>
           </div>
-          <div v-if="!filteredMPts.length" class="p-2 text-center text-muted">
-            Fant ingen resultater...
+          <div v-if="!filteredMPts.length" class="p-2 text-center">
+            {{ $t('common.not-found') }}...
           </div>
         </InfiniteScroll>
       </CardContent>
-      
+
       <CardFooter>
         <template #loading>
-          <div class="text-center p-4">Laster...</div>
+          <div class="text-center p-4">{{ $t('common.loading') }}</div>
         </template>
         <template #end-message>
-          <div class="text-center p-4">Alle hendelser er lastet inn</div>
+          <div class="text-center p-4">{{ $t('common.all-is-loaded') }}</div>
         </template>
       </CardFooter>
     </Card>
@@ -70,7 +69,7 @@
     <!--Form to create new meeting point -->
     <Card>
       <CardHeader>
-        <CardTitle>Lag en ny møteplass</CardTitle>
+        <CardTitle>{{ $t('admin.create-mp') }}</CardTitle>
       </CardHeader>
       <CardContent>
         <form @submit.prevent="onSubmit" class="flex flex-col gap-5">
@@ -79,36 +78,38 @@
             <FormItem>
               <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
               <FormControl>
-                <Input type="text" v-bind="field" />
+                <Input type="text" v-bind="field" class="w-full" />
               </FormControl>
               <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
               <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
             </FormItem>
           </FormField>
 
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-5">
             <!--Latitude field-->
-            <div class="flex flex-row flex-wrap gap-3 justify-evenly">
-              <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
-                <FormItem>
-                  <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
-                  <FormControl>
-                    <Input class="w-[100px]" type="number" step="any" v-bind="field" />
-                  </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-                </FormItem>
-              </FormField>
+            <div class="flex flex-col gap-5">
+              <div class="flex flex-col gap-5 md:flex-row">
+                <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
+                  <FormItem>
+                    <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
+                    <FormControl>
+                      <Input class="w-full" type="number" step="any" v-bind="field" />
+                    </FormControl>
+                    <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                  </FormItem>
+                </FormField>
 
-              <!--Longitude field-->
-              <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
-                <FormItem>
-                  <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
-                  <FormControl>
-                    <Input class="w-[100px]" type="number" step="any" v-bind="field" />
-                  </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-                </FormItem>
-              </FormField>
+                <!--Longitude field-->
+                <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
+                  <FormItem>
+                    <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
+                    <FormControl>
+                      <Input class="w-full" type="number" step="any" v-bind="field" />
+                    </FormControl>
+                    <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                  </FormItem>
+                </FormField>
+              </div>
 
               <!--Address field-->
               <FormField v-slot="{ field, meta, errorMessage }" name="address">
@@ -137,7 +138,7 @@
         <CardTitle>Map</CardTitle>
       </CardHeader>
       <CardContent>
-        <p>MAp <3</p>
+        <p>MAp<3 </p>
       </CardContent>
       <CardFooter>
         Card Footer
@@ -146,19 +147,20 @@
 
   </div>
   <!--Handle meeting point drawer -->
-  <Drawer v-model:open="isOpen" v-if="selectedMeetingPoint">
+  <Drawer v-model:open="isOpen" v-if="selectedMP">
     <DrawerContent class="z-101">
       <DrawerHeader class="flex flex-column gap-3">
         <DrawerTitle class="flex flex-row flex-wrap gap-3">
           <MapPinCheckInside />
-          {{selectedMeetingPoint.name}}
+          <span>{{selectedMP.name}}</span>
+          <span :class="['bg rounded-md p-1', selectedMP.status === 'active' ? 'bg-blue-300' : 'bg-gray-300']">{{$t('add-event-info.isArchived.' + selectedMP.status)}}</span>
         </DrawerTitle>
-        <DrawerDescription>Håndter møteplassen:</DrawerDescription>
+        <DrawerDescription>{{ $t('admin.edit-mp') }}</DrawerDescription>
       </DrawerHeader>
       <DrawerFooter>
         <DrawerClose class="flex flex-row flex-wrap gap-5 justify-center">
-          <Button @click="activateMP(selectedMeetingPoint.id)" variant="outline">Aktiver møteplass</Button>
-          <Button @click="archiveMP(selectedMeetingPoint.id)" variant="destructive">Arkiver møteplass</Button>
+          <Button @click="activateMP(selectedMP.id)" variant="outline">Aktiver møteplass</Button>
+          <Button @click="archiveMP(selectedMP.id)" variant="destructive">Arkiver møteplass</Button>
         </DrawerClose>
       </DrawerFooter>
     </DrawerContent>
@@ -237,15 +239,13 @@ const {
 	initialPageParam: 0
 });
 
-
 const isOpen = ref(false);
-const selectedMP = ref<MeetingPlace | null>(null);
-const selectedMeetingPoint = ref<MeetingPlacePreviewDto | null>(null);
+const selectedMP = ref<MeetingPlacePreviewDto | null>(null);
 const newMeetingPoint = ref<CreateMeetingPlaceDto | null>(null);
-const allMPts = computed<MeetingPlacePreviewDto[]>(() => data.value?.pages.flat() ?? []);
 const searchQuery = ref('');
 
-allMPts.value.forEach((event: MeetingPlacePreviewDto) => { console.log(event.id)});
+const allMPts = computed<MeetingPlacePreviewDto[]>(() => data.value?.pages.flat() ?? []);
+allMPts.value.forEach((event: MeetingPlacePreviewDto) => { console.log(event.name)});
 
 onMounted(() => {
   fetchNextPage;
@@ -283,6 +283,7 @@ const formSchema = toTypedSchema(
 const form = useForm({
   validationSchema: formSchema
 });
+
 const onSubmit = form.handleSubmit(handleFormSubmit);
 
 async function handleFormSubmit(values: any) {
@@ -295,20 +296,20 @@ async function handleFormSubmit(values: any) {
   createNewMP(newMeetingPoint.value);
 }
 
-function selectMeetingPoint(id: number) {
+async function selectMeetingPoint(id: number) {
 	for (let i = 0; i < allMPts.value.length; i++) {
     if (allMPts.value[i].id === id) {
-      selectedMeetingPoint.value = allMPts.value[i]
+      selectedMP.value = allMPts.value[i]
+      console.log('mp = ', selectedMP.value)
+      isOpen.value = true
       break;
 	  }
   }
-  isOpen.value = true
-  console.log('selected meeting point: ', selectedMeetingPoint.value)
 }
 
 /**
- * Create a new meeting point 
- * @param data 
+ * Create a new meeting point
+ * @param data
  */
 async function createNewMP(data: CreateMeetingPlaceDto) {
   try {
@@ -326,13 +327,13 @@ async function createNewMP(data: CreateMeetingPlaceDto) {
 
 /**
  * Archive (deactivate) a meeting point.
- * @param id 
+ * @param id
  */
 async function archiveMP(id: number) {
   try {
     const response = await meetingPlaceService.archiveMeetingPlace(id)
     console.log('Putting meeting place in archive ...', response)
-    callToast('Archived the meeting point: ');
+    callToast('Archived the meeting point.');
 
     selectedMP.value = null;
 
@@ -344,14 +345,14 @@ async function archiveMP(id: number) {
 
 /**
  * Activate a meeting point
- * @param id 
+ * @param id
  */
 async function activateMP(id: number) {
   try {
     const response = await meetingPlaceService.activateMeetingPlace(id)
     console.log('Activating the meeting place ...', response)
     callToast('Activated the meeting point!');
-    
+
     selectedMP.value = null;
     await queryClient.invalidateQueries({queryKey: ['allMPts']});
   } catch (error) {

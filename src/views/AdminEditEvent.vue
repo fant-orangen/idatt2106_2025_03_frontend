@@ -32,12 +32,12 @@
 	<div class="events" v-if="!selectedEvent">
 		<Card>
 			<CardHeader>
-				<CardTitle>{{ $t('add-event-info.titles.choose-event') }}:</CardTitle>
+				<CardTitle>{{ $t('add-event-info.titles.choose-event') }}: </CardTitle>
 			</CardHeader>
 			<CardContent class="card-content">
 				<InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
 					<div v-for="(event, index) in allEvents" :key="event.id" @click="selectEvent(index)"
-						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-muted/80']">
+						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-bray-200', 'dark:hover:bg-bray-700']">
 
 						<div class=listOfEvents>
 							<span class="severity-tag">{{ event.name }} </span>
@@ -184,34 +184,15 @@
 							<FormControl>
 								<Select v-bind="field">
 									<SelectTrigger style="cursor: pointer;">
-									<!--<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->
+									<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->
 										<SelectValue :placeholder="scenarioName"/>
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem v-for="type in scenarioPreviews" :key="type.id"
 											:value="type.name">
 											{{ type.name }}
-										<!--	{{ $t('add-event-info.scenarios.' + type.name) }} dette vil bare fungere dersom det er fastsatte typer i språkfilene...-->
+										
 										</SelectItem>
-										<!--
-										<SelectGroup>
-											<SelectLabel>{{ $t('sidebar.themes.crisisSituations.extremeWeather.title') }}:</SelectLabel>
-											<SelectItem value="flood">{{ $t('add-event-info.scenarios.flood') }}</SelectItem>
-											<SelectItem value="hurricane">{{ $t('add-event-info.scenarios.hurricane') }}</SelectItem>
-											<SelectItem value="drought">{{ $t('add-event-info.scenarios.drought') }}</SelectItem>
-											<SelectItem value="heatwave">{{ $t('add-event-info.scenarios.heatwave') }}</SelectItem>
-										</SelectGroup>
-
-										<SelectGroup>
-											<SelectLabel>{{ $t('sidebar.themes.crisisSituations.title') }}:</SelectLabel>
-											<SelectItem value="pandemic">{{ $t('add-event-info.scenarios.pandemic') }}</SelectItem>
-											<SelectItem value="war">{{ $t('add-event-info.scenarios.war') }}</SelectItem>
-											<SelectItem value="forest fire">{{ $t('add-event-info.scenarios.forest fire') }}</SelectItem>
-											<SelectItem value="power outage">{{ $t('add-event-info.scenarios.power outage') }}</SelectItem>
-											<SelectItem value="water shortage">{{ $t('add-event-info.scenarios.water shortage') }}</SelectItem>
-											<SelectItem value="cyber attack">{{ $t('add-event-info.scenarios.cyber attack') }}</SelectItem>
-											<SelectItem value="major accident">{{ $t('add-event-info.scenarios.major accident') }}</SelectItem>
-										</SelectGroup>-->
 									</SelectContent>
 								</Select>
 							</FormControl>
@@ -662,21 +643,20 @@ PErsonlig liker jeg ikke scroll i tekstbokser */
 	text-transform: capitalize;
 }
 .true {
-	background-color: lightblue;/**endre fargene senere */
+	background-color: var(--default-blue);/**endre fargene senere */
 }
 .false {
-	background-color: grey;
-	color: white
+	background-color: var(--gray);
 }
 
 .green {
-	background-color: var(--color-chart-2); /* should be green but is off*/
+	background-color: var(--crisis-level-green); /* should be green but is off*/
 }
 .yellow {
-	background-color: var(--color-chart-4); /*should be yellow on dark mode... */
+	background-color: var(--crisis-level-yellow); /*should be yellow on dark mode... */
 }
 .red {
-	background-color: var(--color-chart-1); /*should be red but is blue  */
+	background-color: var(--crisis-level-red); /*should be red but is blue  */
 }
 
 .map { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder,

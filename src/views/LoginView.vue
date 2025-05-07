@@ -151,8 +151,8 @@ async function handleResetPassword() {
 </script>
 
 <template>
-  <div class="login-wrapper">
-    <Card class="min-w-[20vw]">
+  <div class="login-wrapper flex justify-around mt-[13rem] bg-backround p-[1rem]">
+    <Card class="min-w-5/6 md:min-w-xl">
       <CardHeader>
         <CardTitle class="text-xl font-bold text-center">{{ $t('login.login') }}</CardTitle>
       </CardHeader>
@@ -220,10 +220,7 @@ async function handleResetPassword() {
                 </div>
                 <DialogFooter>
                   <DialogClose>
-                    <Button
-                      type="submit"
-                      @click="handleResetPassword"
-                    >
+                    <Button type="submit" @click="handleResetPassword">
                       {{ $t('login.reset-password') }}
                     </Button>
                   </DialogClose>
@@ -259,27 +256,9 @@ async function handleResetPassword() {
           <Button type="submit" class="w-full bg-primary hover:bg-primary/90">
             {{ $t('login.login') }}
           </Button>
-          <p v-if="errorMessage" class="error text-red text-center mt-2">{{ errorMessage }}</p>
+          <p v-if="errorMessage" class="error text-red text-center mt-[10px]">{{ errorMessage }}</p>
         </form>
       </CardContent>
     </Card>
   </div>
 </template>
-
-<style scoped>
-/* Wrapper styling to center the login form */
-.login-wrapper {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 100vh;
-  background-color: var(--background-color);
-  padding: 1rem;
-}
-
-
-/* Styling for error messages */
-.error {
-  margin-top: 10px;
-}
-</style>

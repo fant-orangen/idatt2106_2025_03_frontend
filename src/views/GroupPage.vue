@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-6 p-6">
+  <div class="flex gap-6 p-6 flex-col md:flex-row">
 
     <!-- Sidebar -->
     <aside class="bg-sidebar text-sidebar-foreground rounded-lg p-4 w-64 shadow flex flex-col h-full max-h-[calc(100vh-6rem)]">
