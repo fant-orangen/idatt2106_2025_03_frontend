@@ -8,7 +8,7 @@
           :variant="manageMode ? 'default' : 'outline'"
           size="sm"
           class="transition-all duration-300 ease-in-out flex items-center gap-1.5"
-          :class="{ 'bg-destructive/10 hover:bg-destructive/20 text-destructive': manageMode }"
+          :class="{ 'bg-primary/10 hover:bg-primary/20 text-primary': manageMode }"
           @click="toggleManageMode"
         >
           <span v-if="manageMode" class="flex items-center gap-1.5">
