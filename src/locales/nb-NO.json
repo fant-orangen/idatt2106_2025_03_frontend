@@ -304,6 +304,17 @@
     "view_map": "Vis krisekart",
     "view_all_news": "Se alle nyheter",
     "learn_more": "Lær mer",
+    "national_crisis": {
+      "title": "Krisehendelser i Norge",
+      "description": "Se alle aktive krisehendelser i Norge",
+      "view_all": "Se alle krisehendelser"
+    },
+    "no_crisis": {
+      "banner": "Ingen pågående krise for øyeblikket. Hold deg forberedt!"
+    },
+    "crisis_theme": {
+      "read_more_specific": "Les mer om {crisisType} her"
+    },
     "household": {
       "title": "Opprett din husholdning",
       "description": "Sett opp din husholdning for å bedre administrere ressurser og holde kontakten med familiemedlemmer under nødsituasjoner.",

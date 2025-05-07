@@ -15,6 +15,29 @@
       <MapViewComponent />
     </section>
 
+    <!-- Crisis Theme Information (shown right under map when crisis in area) -->
+    <section v-if="mainCrisis && mainCrisis.id" class="crisis-theme-section w-full px-4">
+      <div class="crisis-theme-info bg-card p-6 rounded-lg border border-[var(--crisis-level-red)]/30">
+        <h2 class="text-xl font-bold mb-3 flex items-center">
+          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2 text-[var(--crisis-level-red)]" />
+          {{ t('home.crisis_theme.title', 'Current Crisis Information') }}
+        </h2>
+        <p class="mb-4 text-muted-foreground">
+          {{ t('home.crisis_theme.read_more_specific', 'Read more about {crisisType} here', { crisisType: mainCrisis.name }) }}
+        </p>
+
+        <div class="mt-4 text-center">
+          <Button
+            variant="outline"
+            class="border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/5"
+            @click="navigateToScenarioTheme(mainCrisis.id)"
+          >
+            {{ t('home.crisis_theme.learn_more', 'Learn More About This Crisis') }}
+          </Button>
+        </div>
+      </div>
+    </section>
+
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-8 px-4">
       <!-- News Section (2/5) - Shows general news -->
@@ -111,40 +134,8 @@
           </div>
         </div>
 
-        <!-- Crisis Theme Information (replaces generic crisis info) -->
-        <div v-if="mainCrisis && mainCrisis.id" class="crisis-theme-info bg-card p-6 rounded-lg border border-[var(--crisis-level-red)]/30">
-          <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2 text-[var(--crisis-level-red)]" />
-            {{ t('home.crisis_theme.title', 'Current Crisis Information') }}
-          </h2>
-          <p class="mb-4 text-muted-foreground">
-            {{ t('home.crisis_theme.description', 'Learn more about the current crisis and how to respond') }}
-          </p>
-
-          <div class="p-4 bg-[var(--crisis-level-red)]/10 rounded-lg border border-[var(--crisis-level-red)]/20 mb-4">
-            <h3 class="font-medium mb-2 text-center">{{ mainCrisis.name }}</h3>
-            <p class="text-sm text-center">
-              {{ t('home.crisis_theme.active_since', 'Active since') }}: {{ formatDateFull(mainCrisis.startTime) }}
-            </p>
-          </div>
-
-          <div class="mt-4 text-center">
-            <Button
-              variant="outline"
-              class="border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/5"
-              @click="navigateToScenarioTheme(mainCrisis.id)"
-            >
-              {{ t('home.crisis_theme.learn_more', 'Learn More About This Crisis') }}
-            </Button>
-          </div>
-        </div>
-
-        <!-- Generic Crisis Info (fallback if no theme) -->
-        <CrisisInfoComponent
-          v-else
-          @learn-more="navigateTo('/info')"
-          :main-crisis="mainCrisis"
-        />
+        <!-- Empty space for layout consistency -->
+        <div v-if="!mainCrisis || !mainCrisis.id" class="h-4"></div>
       </section>
     </div>
   </div>
@@ -158,16 +149,16 @@ import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-vue-next';
 import MapViewComponent from '@/components/shared/MapViewComponent.vue';
 import NewsViewComponent from '@/components/shared/NewsViewComponent.vue';
-import CrisisInfoComponent from '@/components/shared/CrisisInfoComponent.vue';
+
 import CrisisLevelOverview from '@/components/homeview/CrisisLevelOverview.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faTriangleExclamation, faBoxOpen, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faTriangleExclamation, faBoxOpen, faUsers, faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { inventoryService } from '@/services/InventoryService';
 import { fetchCrisisEventsInRadius } from '@/services/CrisisEventService';
 import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
 
 // Register FontAwesome icons
-library.add(faTriangleExclamation, faBoxOpen, faUsers);
+library.add(faTriangleExclamation, faBoxOpen, faUsers, faArrowRight, faCheckCircle);
 
 const router = useRouter();
 const { t } = useI18n();
@@ -314,6 +305,23 @@ const fetchMainCrisis = async () => {
 };
 
 /**
+ * Format a date in full format
+ * @param {string} dateString - The date string to format
+ * @returns {string} Formatted date string
+ */
+const formatDateFull = (dateString: string): string => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+};
+
+/**
  * Fetches the days remaining for food and water from the backend
  */
 const fetchDaysRemaining = async () => {
@@ -342,5 +350,12 @@ onMounted(async () => {
 .mr-2 {
   width: 18px;
   height: 18px;
+}
+
+.notification-banner {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
 }
 </style>

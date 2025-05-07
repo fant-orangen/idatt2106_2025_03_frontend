@@ -301,6 +301,17 @@
     "view_map": "View Crisis Map",
     "view_all_news": "View all news",
     "learn_more": "Learn more",
+    "national_crisis": {
+      "title": "Crisis Events in Norway",
+      "description": "View all active crisis events across Norway",
+      "view_all": "See All Crisis Events"
+    },
+    "no_crisis": {
+      "banner": "No ongoing crisis at the moment. Stay prepared!"
+    },
+    "crisis_theme": {
+      "read_more_specific": "Read more about {crisisType} here"
+    },
     "household": {
       "title": "Create Your Household",
       "description": "Set up your household to better manage resources and stay connected with family members during emergencies.",

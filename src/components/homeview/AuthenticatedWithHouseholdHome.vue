@@ -3,9 +3,21 @@
     <!-- No Crisis Notification Banner (when no active crisis) -->
     <section v-if="!hasOngoingCrises" class="notification-banner py-3 bg-green-100 border-b border-green-200 w-full">
       <div class="max-w-7xl mx-auto px-4">
-        <div class="flex items-center gap-2 text-green-800">
-          <font-awesome-icon :icon="['fas', 'check-circle']" class="text-lg" />
-          <p>{{ t('home.no_crisis.banner', 'No ongoing crisis at the moment. Stay prepared!') }}</p>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div class="flex items-center gap-2 text-green-800">
+            <font-awesome-icon :icon="['fas', 'check-circle']" class="text-lg" />
+            <p>{{ t('home.no_crisis.banner', 'No ongoing crisis at the moment. Stay prepared!') }}</p>
+          </div>
+          <div>
+            <Button
+              @click="navigateTo('/crisis-event')"
+              class="flex items-center gap-2 text-sm bg-white hover:bg-gray-50 border border-green-300 text-green-800"
+              size="sm"
+            >
+              {{ t('home.national_crisis.view_all', 'See All Crisis Events') }}
+              <font-awesome-icon :icon="['fas', 'arrow-right']" />
+            </Button>
+          </div>
         </div>
       </div>
     </section>
@@ -13,8 +25,8 @@
     <!-- Crisis Button Section -->
     <section class="crisis-button-section w-full px-4">
       <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300 bg-white">
-        <div 
-          @click="navigateTo('/crisis-event')" 
+        <div
+          @click="navigateTo('/crisis-event')"
           class="w-full py-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-white hover:bg-gray-50"
         >
           <div class="flex items-center justify-center mb-3">
@@ -48,7 +60,7 @@
             <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)]" />
             {{ t('home.household.supplies', 'Household Supplies') }}
           </h2>
-          
+
           <!-- Status messages about food and water -->
           <div class="mb-4">
             <div v-if="!daysOfFood && !daysOfWater" class="text-center text-gray-500">
@@ -77,16 +89,16 @@
               </div>
             </div>
           </div>
-          
+
           <div class="flex flex-col sm:flex-row gap-3 mt-4">
-            <Button 
+            <Button
               class="flex-1 bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/90 text-white"
               @click="navigateTo('/food-and-drinks')"
             >
               {{ t('household.manage-supplies', 'Manage Supplies') }}
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               class="flex-1 border-[var(--crisis-level-green)]/30 text-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/5"
               @click="navigateTo('/household')"
             >
@@ -102,13 +114,13 @@
             {{ t('home.community.title', 'Community Features') }}
           </h2>
           <p class="mb-4 text-muted-foreground">{{ t('home.community.description', 'Share experiences and resources with your community') }}</p>
-          
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
             <div class="text-center p-4 bg-[var(--default-blue)]/10 rounded-lg border border-[var(--default-blue)]/20">
               <h3 class="font-medium mb-2">{{ t('home.reflections.title', 'Reflections') }}</h3>
               <p class="text-sm text-muted-foreground mb-3">{{ t('home.reflections.description', 'Share your experiences and learn from others') }}</p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 class="w-full border-[var(--default-blue)]/30 text-[var(--default-blue)] hover:bg-[var(--default-blue)]/5"
                 @click="navigateTo('/reflections')"
               >
@@ -118,8 +130,8 @@
             <div class="text-center p-4 bg-[var(--default-blue)]/10 rounded-lg border border-[var(--default-blue)]/20">
               <h3 class="font-medium mb-2">{{ t('home.groups.title', 'Groups') }}</h3>
               <p class="text-sm text-muted-foreground mb-3">{{ t('home.groups.description', 'Collaborate and share resources with other households') }}</p>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 class="w-full border-[var(--default-blue)]/30 text-[var(--default-blue)] hover:bg-[var(--default-blue)]/5"
                 @click="navigateTo('/groups')"
               >
@@ -130,7 +142,12 @@
         </div>
 
         <!-- Crisis Information -->
-        <CrisisInfoComponent @learn-more="navigateTo('/info')" />
+        <div class="w-full">
+          <CrisisLevelOverview
+            :max-display="3"
+            @select-crisis="navigateTo('/crisis-event')"
+          />
+        </div>
       </section>
     </div>
   </div>
@@ -145,14 +162,15 @@ import { ChevronRight } from 'lucide-vue-next';
 import { AlertTriangle } from 'lucide-vue-next';
 import MapViewComponent from '@/components/shared/MapViewComponent.vue';
 import NewsViewComponent from '@/components/shared/NewsViewComponent.vue';
-import CrisisInfoComponent from '@/components/shared/CrisisInfoComponent.vue';
+import CrisisLevelOverview from '@/components/homeview/CrisisLevelOverview.vue';
+
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCheckCircle, faTriangleExclamation, faBoxOpen, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faTriangleExclamation, faBoxOpen, faUsers, faMapLocationDot, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { inventoryService } from '@/services/InventoryService';
 import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService';
 
 // Register FontAwesome icons
-library.add(faCheckCircle, faTriangleExclamation, faBoxOpen, faUsers);
+library.add(faCheckCircle, faTriangleExclamation, faBoxOpen, faUsers, faMapLocationDot, faArrowRight);
 
 const router = useRouter();
 const { t } = useI18n();

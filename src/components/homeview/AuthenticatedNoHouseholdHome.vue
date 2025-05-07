@@ -16,6 +16,16 @@
             {{ t('home.no_household.create_now', 'Create Household') }}
           </Button>
         </div>
+        <div>
+          <Button
+            @click="navigateTo('/crisis-event')"
+            class="flex items-center gap-2 text-sm bg-white hover:bg-gray-50 border border-green-300 text-green-800"
+            size="sm"
+          >
+            {{ t('home.national_crisis.view_all', 'See All Crisis Events') }}
+            <font-awesome-icon :icon="['fas', 'arrow-right']" />
+          </Button>
+        </div>
       </div>
     </section>
 
