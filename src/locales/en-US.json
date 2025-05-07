@@ -163,7 +163,7 @@
     "search-error": "Error searching for address.",
     "map-reset": "Map reset.",
     "edit-POI": "Edit point of interest",
-    "poi-details": "POI details",
+    "poi-details": "Point of interest details",
     "meeting-places": "Meeting places",
     "meeting-point": "Handle meeting points"
   },
@@ -758,7 +758,8 @@
       "type": "Type",
       "open-from": "Open from",
       "open-to": "Open until",
-      "contact-info": "Contact information"
+      "contact-info": "Contact information",
+      "choose-poi": "Choose Point Of Interest"
     },
     "POI-type": {
       "undefined": "Select type",
@@ -785,7 +786,21 @@
     "submit": "Save",
     "delete": "Delete",
     "confirm-delete": "Are you sure you want to delete this point of interest?",
-    "edit-POI": "Edit point of interest"
+    "edit-POI": "Edit point of interest",
+    "loading": "Loading more...",
+    "loading-complete": "All points of interest loaded.",
+    "loading-schema": "Loading schema...",
+    "deletion": {
+      "failed": "Failed to delete point of interest.",
+      "success": "Point of interest is now deleted."
+    },
+    "description-max": "The description cannot exceed 1000 characters",
+    "contact-max": "Contact information cannot exceed 100 characters.",
+    "confirm-delete": "Are you sure you want to permanently delete this point of interest?",
+    "delete-info": "This action cannot be undone.",
+    "update-success": "The point of interest has been updated successfully!",
+    "update-failed": "Failed to update point of interest with new values."
+
   },
   "language": {
     "title": "Language",
