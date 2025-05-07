@@ -216,14 +216,35 @@ export async function fetchNewsArticleById(id: number) {
 /**
  * Fetches news article drafts created by a user. 
  * @param userId - identifying the user by ID
+ * @param page
+ * @param size
  * @returns {Promise<Page<News>>} - A paginated list of drafts created by the user
  */
-export async function fetchDraftsByUserId(userId: number) {
-  try {// endre url når endepunkt er laga 
-    const response = await api.get<Page<News>>('public/news/article/' + userId);
-    return response.data;
+export async function fetchDraftsByUserId(page: number, size: number): Promise<Page<News>> { // legg til userId senere slik at det tilhører en bruker
+  try {
+    const response = await api.get<Page<News>>('public/news/article/', {
+      params: {page, size}
+    });
+    if (response.data.content) {
+      return response.data;
+    } else {
+      return {
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: size,
+      number: page
+    };
+    }
   } catch (error) {
     console.error('Error while trying to fetch a news article')
+    return {
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: size,
+      number: page
+    };
   }
 }
 
