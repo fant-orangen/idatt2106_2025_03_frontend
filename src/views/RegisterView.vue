@@ -8,16 +8,11 @@ import { useI18n } from 'vue-i18n'
 import { getPasswordValidationSchema } from '@/utils/passwordValidation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'vue-sonner'
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Eye, EyeOff } from 'lucide-vue-next'
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -30,20 +25,22 @@ const isView = ref(false)
 // Schema
 const passwordSchema = getPasswordValidationSchema(t)
 const registerSchema = toTypedSchema(
-  z.object({
-    firstName: z.string().min(1, t('errors.required')),
-    lastName: z.string().min(1, t('errors.required')),
-    email: z.string().email(t('errors.invalid-email')),
-    phone: z.string().min(8, t('errors.invalid-phone')),
-    password: passwordSchema,
-    confirmPassword: z.string(),
-    terms: z.boolean().refine(val => val === true, {
-      message: t('errors.terms'),
+  z
+    .object({
+      firstName: z.string().min(1, t('errors.required')),
+      lastName: z.string().min(1, t('errors.required')),
+      email: z.string().email(t('errors.invalid-email')),
+      phone: z.string().min(8, t('errors.invalid-phone')),
+      password: passwordSchema,
+      confirmPassword: z.string(),
+      terms: z.boolean().refine((val) => val === true, {
+        message: t('errors.terms'),
+      }),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('errors.passwords-do-not-match'),
+      path: ['confirmPassword'],
     }),
-  }).refine((data) => data.password === data.confirmPassword, {
-    message: t('errors.passwords-do-not-match'),
-    path: ['confirmPassword'],
-  })
 )
 
 const form = useForm({
@@ -93,148 +90,144 @@ const handleRegister = form.handleSubmit(async (values) => {
 })
 </script>
 
-
 <template>
-  <div class="register-wrapper">
-    <div class="register-container">
-      <h1 class="text-xl font-bold text-center mb-4">{{ t('login.signup') }}</h1>
-      <form @submit.prevent="handleRegister" class="space-y-4">
-        <FormField v-slot="{ field, meta, errorMessage }" name="firstName">
-          <FormItem>
-            <FormLabel>{{ t('login.first-name') }}*</FormLabel>
-            <FormControl><Input v-bind="field" /></FormControl>
-            <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField>
+  <div class="register-wrapper flex justify-center items-center mt-[13rem] bg-background p-[1rem]">
+    <Card class="register-container min-w-5/6 md:min-w-xl">
+      <CardHeader>
+        <h1 class="text-xl font-bold text-center">{{ t('login.signup') }}</h1>
+      </CardHeader>
+      <CardContent>
+        <form @submit.prevent="handleRegister" class="space-y-4">
+          <FormField v-slot="{ field, meta, errorMessage }" name="firstName">
+            <FormItem>
+              <FormLabel>{{ t('login.first-name') }}*</FormLabel>
+              <FormControl><Input v-bind="field" /></FormControl>
+              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
 
-        <FormField v-slot="{ field, meta, errorMessage }" name="lastName">
-          <FormItem>
-            <FormLabel>{{ t('login.last-name') }}*</FormLabel>
-            <FormControl><Input v-bind="field" /></FormControl>
-            <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField>
+          <FormField v-slot="{ field, meta, errorMessage }" name="lastName">
+            <FormItem>
+              <FormLabel>{{ t('login.last-name') }}*</FormLabel>
+              <FormControl><Input v-bind="field" /></FormControl>
+              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
 
-        <FormField v-slot="{ field, meta, errorMessage }" name="email">
-          <FormItem>
-            <FormLabel>{{ t('login.email') }}*</FormLabel>
-            <FormControl><Input type="email" v-bind="field" /></FormControl>
-            <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField>
+          <FormField v-slot="{ field, meta, errorMessage }" name="email">
+            <FormItem>
+              <FormLabel>{{ t('login.email') }}*</FormLabel>
+              <FormControl><Input type="email" v-bind="field" /></FormControl>
+              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
 
-        <FormField v-slot="{ field, meta, errorMessage }" name="phone">
-          <FormItem>
-            <FormLabel>{{ t('login.phone') }}*</FormLabel>
-            <FormControl><Input v-bind="field" /></FormControl>
-            <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField>
+          <FormField v-slot="{ field, meta, errorMessage }" name="phone">
+            <FormItem>
+              <FormLabel>{{ t('login.phone') }}*</FormLabel>
+              <FormControl><Input v-bind="field" /></FormControl>
+              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
 
-        <FormField v-slot="{ field, meta, errorMessage }" name="password">
-          <FormItem>
-            <FormLabel for="password">{{ $t('reset-password.new-password') }}</FormLabel>
-            <div class="relative">
-              <FormControl>
-                <Input
-                  :type="isView ? 'text' : 'password'"
-                  id="password"
-                  v-bind="field"
-                  :placeholder="$t('reset-password.new-password')"
-                />
-              </FormControl>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2"
-                @click="isView = !isView"
-              >
-                <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
-              </Button>
-            </div>
-            <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField>
-
-        <!-- Confirm Password Field -->
-        <FormField v-slot="{ field, meta, errorMessage }" name="confirmPassword">
-          <FormItem>
-            <FormLabel for="confirmPassword">{{ $t('reset-password.confirm-new-password') }}</FormLabel>
-            <div class="relative">
-              <FormControl>
-                <Input
-                  :type="isView ? 'text' : 'password'"
-                  id="confirmPassword"
-                  v-bind="field"
-                  :placeholder="$t('reset-password.confirm-new-password')"
-                />
-              </FormControl>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2"
-                @click="isView = !isView"
-              >
-                <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
-              </Button>
-            </div>
-            <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField>
-
-        <FormField v-slot="{ field, meta, errorMessage }" name="terms">
-          <FormItem>
-            <FormControl>
-              <div class="flex items-center space-x-2">
-                <Checkbox
-                  :modelValue="field.value"
-                  @update:modelValue="field.onChange"
-                  @blur="field.onBlur"
-                  id="terms"
-                />
-                <label for="terms" class="text-sm font-medium leading-none">
-                  {{ t('login.consent') }}
-                </label>
+          <FormField v-slot="{ field, meta, errorMessage }" name="password">
+            <FormItem>
+              <FormLabel for="password">{{ $t('reset-password.new-password') }}</FormLabel>
+              <div class="relative">
+                <FormControl>
+                  <Input
+                    :type="isView ? 'text' : 'password'"
+                    id="password"
+                    v-bind="field"
+                    :placeholder="$t('reset-password.new-password')"
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  class="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-transparent dark:hover:bg-transparent"
+                  @click="isView = !isView"
+                >
+                  <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
+                </Button>
               </div>
-            </FormControl>
-            <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-          </FormItem>
-        </FormField>
+              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
 
+          <!-- Confirm Password Field -->
+          <FormField v-slot="{ field, meta, errorMessage }" name="confirmPassword">
+            <FormItem>
+              <FormLabel for="confirmPassword">{{
+                $t('reset-password.confirm-new-password')
+              }}</FormLabel>
+              <div class="relative">
+                <FormControl>
+                  <Input
+                    :type="isView ? 'text' : 'password'"
+                    id="confirmPassword"
+                    v-bind="field"
+                    :placeholder="$t('reset-password.confirm-new-password')"
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  class="absolute right-2 top-1/2 transform -translate-y-1/2 hover:bg-transparent dark:hover:bg-transparent"
+                  @click="isView = !isView"
+                >
+                  <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
+                </Button>
+              </div>
+              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ field, meta, errorMessage }" name="terms">
+            <FormItem>
+              <FormControl>
+                <div class="flex items-center space-x-2">
+                  <Checkbox
+                    :modelValue="field.value"
+                    @update:modelValue="field.onChange"
+                    @blur="field.onBlur"
+                    id="terms"
+                  />
+                  <label for="terms" class="text-sm font-medium leading-none">
+                    {{ t('login.consent-1') }}
+                    <a href="/privacy-policy" class="underline"> {{ t('login.privacy-policy') }}</a>
+                    {{ t('login.and') }}
+                    <a href="/terms-of-service" class="underline">{{
+                      t('login.terms-of-service')
+                    }}</a>
+                  </label>
+                </div>
+              </FormControl>
+              <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+            </FormItem>
+          </FormField>
+
+          <p v-if="successMessage" class="text-green-500 text-center mt-2">{{ successMessage }}</p>
+          <p v-if="errorMessage" class="text-red-500 text-center mt-2">{{ errorMessage }}</p>
+        </form>
+      </CardContent>
+      <CardFooter>
         <Button type="submit" class="w-full bg-primary hover:bg-primary/90">
           {{ t('login.signup') }}
         </Button>
-
-        <p v-if="successMessage" class="text-green-500 text-center mt-2">{{ successMessage }}</p>
-        <p v-if="errorMessage" class="text-red-500 text-center mt-2">{{ errorMessage }}</p>
-      </form>
-    </div>
+      </CardFooter>
+    </Card>
   </div>
 </template>
 
-
 <style scoped>
 /* Wrapper styling to center the registration form */
-.register-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Full viewport height */
-  background-color: var(--background-color); /* Use a background color variable */
-  padding: 1rem;
-}
 
 /* Styling for the registration form container */
 .register-container {
-  min-width: 30vw;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  /* min-width: 30vw; */
 }
 
 /* Styling for error and success messages */
