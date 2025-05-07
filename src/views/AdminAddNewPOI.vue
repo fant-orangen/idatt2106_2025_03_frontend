@@ -521,7 +521,7 @@ function updateMapMarker(lat: number, lng: number): void {
  */
 function navigateToAdminPanel(): void {
   isSuccessDialogOpen.value = false;
-  router.push('/admin-panel');
+  router.push('/admin/admin-panel');
 }
 
 // --- Form Submission Logic ---
