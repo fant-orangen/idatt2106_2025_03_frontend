@@ -105,7 +105,26 @@ export async function leaveHousehold(): Promise<void> {
  * @returns Array of household members
  */
 export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
+  console.log("trying to get household members");
   const response = await api.get('/user/households/members');
+  return response.data;
+}
+
+/**
+ * Get all non-admin members of the current household
+ * @returns Array of non-admin household members
+ */
+export async function getNonAdminHouseholdMembers(): Promise<HouseholdMember[]> {
+  const response = await api.get('/user/households/members/non-admin');
+  return response.data;
+}
+
+/**
+ * Get all members of the current household
+ * @returns Array of household members
+ */
+export async function getHouseholdNotAdminMembers(): Promise<HouseholdMember[]> {
+  const response = await api.get('/user/households/members/non-admin');
   return response.data;
 }
 
@@ -217,8 +236,8 @@ export async function isCurrentUserHouseholdAdmin(): Promise<boolean> {
  */
 export async function deleteHousehold(): Promise<void> {
   try {
-    const response = await api.delete('/user/households');
-    console.log('Household deleted successfully:', response.data);
+    console.log('Sending request to delete household');
+    await api.delete('/user/households/delete');
   } catch (error) {
     console.error('Error deleting household:', error);
     throw error;

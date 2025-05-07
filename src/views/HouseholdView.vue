@@ -3,11 +3,11 @@
     <div class="flex items-center justify-between mb-6">
       <h1 class="text-2xl font-bold">{{ household?.name || t('household.my-household') }}</h1>
       <div class="flex gap-2">
+        <DeleteHousehold v-if="isAdmin && hasHousehold" @deleted="refreshHouseholdData" />
         <Button v-if="showAdminTransferButton" variant="outline" class="flex items-center gap-2" @click="openTransferAdminDialog">
           <UserIcon class="h-4 w-4" />
           <span>{{ t('household.transfer-admin-role') }}</span>
         </Button>
-        <DeleteHousehold v-if="isAdmin && hasHousehold" @deleted="refreshHouseholdData" />
         <Button v-if="hasHousehold" variant="outline" class="flex items-center gap-2" @click="showLeaveDialog = true">
           <LogOutIcon class="h-4 w-4" />
           <span>{{ t('household.leave-household') }}</span>
@@ -177,8 +177,8 @@ import {
   promoteUserToAdmin,
   getHouseholdMembers,
   getEmptyHouseholdMembers,
-  removeEmptyMemberFromHousehold
-} from '@/services/HouseholdService';
+  removeEmptyMemberFromHousehold, getNonAdminHouseholdMembers
+} from '@/services/HouseholdService'
 import { toast } from 'vue-sonner';
 // Using direct service calls instead of the store
 
@@ -211,13 +211,11 @@ const allHouseholdMembers = computed(() => {
 });
 
 /**
- * Computed property for household members who are not admins.
+ * Non-admin members of the household.
  * Used for the admin transfer dialog.
- * @returns {Array} Array of household members who are not admins
+ * @type {Ref<HouseholdMember[]>}
  */
-const nonAdminMembers = computed(() => {
-  return householdMembers.value.filter(member => !member.isAdmin);
-});
+const nonAdminMembers = ref<HouseholdMember[]>([]);
 
 /**
  * Computed property for household members who are admins.
@@ -271,6 +269,11 @@ const refreshHouseholdData = async () => {
       // Fetch empty household members
       const empty = await getEmptyHouseholdMembers();
       emptyMembers.value = empty;
+
+      // Fetch non-admin members for the admin transfer dialog
+      if (isAdmin.value) {
+        nonAdminMembers.value = await getNonAdminHouseholdMembers();
+      }
 
       // Refresh invitations in child components
       if (isAdmin.value && pendingInvitationsRef.value) {
@@ -329,10 +332,18 @@ const leaveCurrentHousehold = async () => {
 };
 
 /**
- * Opens the dialog for transferring admin role to another household member.
+ * Opens the dialog for giving admin rights to another household member.
+ * Fetches non-admin members using the dedicated API endpoint.
  */
-const openTransferAdminDialog = () => {
-  showTransferAdminDialog.value = true;
+const openTransferAdminDialog = async () => {
+  try {
+    // Fetch non-admin members using the dedicated endpoint
+    nonAdminMembers.value = await getNonAdminHouseholdMembers();
+    showTransferAdminDialog.value = true;
+  } catch (error) {
+    console.error('Error fetching non-admin members:', error);
+    toast.error(t('household.error-fetching-members'));
+  }
 };
 
 /**
