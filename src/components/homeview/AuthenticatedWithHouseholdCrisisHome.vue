@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col w-full gap-8 pb-20">
     <!-- Crisis Level Overview at top -->
-    <section class="crisis-overview-section w-full px-4 flex justify-center">
+    <section class="crisis-overview-section w-full px-4 flex justify-center pt-6 mt-4">
       <div class="w-full max-w-2xl">
         <CrisisLevelOverview
           :max-display="3"
@@ -143,6 +143,7 @@
         <CrisisInfoComponent
           v-else
           @learn-more="navigateTo('/info')"
+          :main-crisis="mainCrisis"
         />
       </section>
     </div>

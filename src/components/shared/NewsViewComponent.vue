@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-[var(--default-blue)]/30 rounded-lg overflow-hidden h-full min-h-[550px] flex flex-col">
+  <div class="border border-[var(--default-blue)]/30 rounded-lg overflow-hidden h-full min-h-[600px] flex flex-col">
     <div class="p-4 bg-[var(--default-blue)]/5">
       <h2 class="text-2xl font-bold flex items-center">
         <font-awesome-icon :icon="['fas', 'newspaper']" class="mr-2 text-[var(--default-blue)]" />
@@ -9,22 +9,22 @@
 
     <div class="news-content p-4 flex-grow flex flex-col">
       <!-- Loading state -->
-      <div v-if="initialLoading" class="flex justify-center items-center py-6 h-[450px]">
+      <div v-if="initialLoading" class="flex justify-center items-center py-6 flex-grow">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
 
       <!-- Error state -->
-      <div v-else-if="error" class="text-center py-4 text-red-500 h-[450px] flex items-center justify-center">
+      <div v-else-if="error" class="text-center py-4 text-red-500 flex-grow flex items-center justify-center">
         {{ error }}
       </div>
 
       <!-- Empty state -->
-      <div v-else-if="news.length === 0 && !loading" class="text-center py-4 text-muted-foreground h-[450px] flex items-center justify-center">
+      <div v-else-if="news.length === 0 && !loading" class="text-center py-4 text-muted-foreground flex-grow flex items-center justify-center">
         {{ t('news.no_general_news', 'No news available') }}
       </div>
 
-      <!-- News content with fixed height and scrolling -->
-      <div v-else class="h-[450px] overflow-y-auto pr-2">
+      <!-- News content with scrolling - using flex-grow to fill available space -->
+      <div v-else class="flex-grow overflow-y-auto pr-2">
         <InfiniteScroll
           :is-loading="loading"
           :has-more="hasMore"

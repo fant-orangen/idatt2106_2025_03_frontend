@@ -20,8 +20,8 @@
       </div>
     </div>
     <div class="mt-4 text-center">
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         class="border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/5"
         @click="onLearnMoreClick"
       >
@@ -36,11 +36,17 @@ import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
 
 // Register FontAwesome icons
 library.add(faTriangleExclamation);
 
 const { t } = useI18n();
+
+// Define props
+const props = defineProps<{
+  mainCrisis?: CrisisEventPreviewDto | null
+}>();
 
 // Define emits
 const emit = defineEmits(['learn-more']);
