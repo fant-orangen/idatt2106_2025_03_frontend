@@ -28,11 +28,26 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * MapLegend Component
+ *
+ * A responsive grid display of map icons and their corresponding labels.
+ * This component renders a legend for map features, displaying icons or colored indicators
+ * with translated labels for each map element type.
+ */
 import { useI18n } from 'vue-i18n'
 
-// Option 2: Legend items defined inside the component
 const { t } = useI18n()
 
+/**
+ * Represents a single item in the map legend
+ *
+ * @typedef {Object} LegendItem
+ * @property {string} [icon] - URL to the icon image
+ * @property {string} [iconClass] - CSS class for styling a colored indicator (used when no icon is provided)
+ * @property {string} [extraClass] - Additional CSS classes to apply to the icon
+ * @property {string} labelKey - Translation key for the item's label
+ */
 type LegendItem = {
   icon?: string
   iconClass?: string
@@ -40,7 +55,13 @@ type LegendItem = {
   labelKey: string
 }
 
-// Import your map icon URLs
+/**
+ * Map icon imports
+ *
+ * These icons represent different points of interest and features on the map.
+ * They are used in the legend to help users identify map elements visually.
+ * The standard marker icon comes from Leaflet, while custom POI icons are from the local assets.
+ */
 import markerIconUrl        from 'leaflet/dist/images/marker-icon.png'
 import firestationIconUrl from '@/assets/mapicons/firestation.svg'
 import policestationIconUrl from '@/assets/mapicons/policestation.svg'
@@ -53,13 +74,25 @@ import meetingpointIconUrl from '@/assets/mapicons/meetingpoint.svg'
 import shelterIconUrl from '@/assets/mapicons/shelter.svg'
 import defaultPoiIconUrl from '@/assets/mapicons/home.svg'
 
-// Props for optional title and visibility
+/**
+ * Component props
+ */
 const props = defineProps({
+  /**
+   * Optional title for the legend
+   */
   title: { type: String, default: '' },
+
+  /**
+   * Controls whether the title is displayed
+   */
   showTitle: { type: Boolean, default: true }
 })
 
-// Fixed list of legend items with translation keys
+/**
+ * Legend items configuration
+ * Each item represents a map feature with its icon and translated label
+ */
 const items: LegendItem[] = [
   { icon: markerIconUrl, labelKey: 'map.legend.user-location', extraClass: 'user-location-icon' },
   { icon: markerIconUrl, labelKey: 'map.legend.household-location', extraClass: 'filter hue-rotate-300' },
