@@ -26,7 +26,7 @@
           <div
             class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-colors cursor-pointer dark:text-white"
             :style="{
-              backgroundColor: `rgb(var(--crisis-level-${severity}) / 0.2)`,
+              backgroundColor: `rgb(var(--crisis-level-${mainCrisis.severity}) / 0.2)`,
               borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}`
             }"
             @click.stop="selectCrisis(mainCrisis)"
