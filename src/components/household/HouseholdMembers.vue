@@ -245,11 +245,6 @@
         </Button>
       </div>
 
-      <!-- Message for non-admin users -->
-      <div v-if="activeTab === 'people' && !isAdmin && showInviteInfo" class="mt-4 p-3 bg-muted/50 rounded-md text-sm text-muted-foreground">
-        <p>{{ $t('household.admin_only') }}</p>
-      </div>
-
       <!-- Add empty member form -->
       <AddEmptyMember
         v-if="showAddEmptyMember || showAddUser"
@@ -383,7 +378,7 @@ const showAddUser = ref(false);
 const showAddEmptyMember = ref(false);
 const manageMode = ref(false);
 const showInviteUser = ref(false);
-const showInviteInfo = ref(true); // Show info message for non-admin users
+// No longer showing info message for non-admin users
 const memberToRemove = ref<HouseholdMember | EmptyHouseholdMemberDto | null>(null);
 const householdMembers = ref<HouseholdMember[]>([]);
 const emptyMembers = ref<EmptyHouseholdMemberDto[]>([]);
