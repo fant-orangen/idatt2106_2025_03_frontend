@@ -906,7 +906,84 @@
     "invite-household": "Inviter husholdning",
     "switch-group": "Bytt gruppe",
     "share-from-inventory": "Del varer fra ditt lager",
-    "go-to-groups": "Gå til dine grupper →"
+    "go-to-groups": "Gå til dine grupper →",
+    "create-group": "Opprett gruppe",
+    "enter-group-name": "Skriv inn gruppenavn",
+    "create": "Opprett",
+    "households": "Husholdninger",
+    "residents": "beboere",
+    "leave-group": "Forlat gruppe"
+  },
+  "inventory": {
+    "save": "Lagre",
+    "edit": "Rediger",
+    "remove-from-group": "Fjern fra gruppe",
+    "search": {
+      "placeholder": "Søk...",
+      "clear": "Opphev søk"
+    },
+    "water": {
+      "title": "Vann",
+      "total": "Totalt vann i husholdningen",
+      "liters": "liter",
+      "amount": "Mengde",
+      "expiry": "Utløp",
+      "already-shared": "Allerede delt",
+      "share": "Del",
+      "add": "Legg til",
+      "delete-type": "Slett produkttype",
+      "add-new": "Legg til",
+      "product-name": "Produktnavn",
+      "exists": {
+        "title": "Denne produkttypen finnes allerede",
+        "message": "Du kan ikke legge til den samme typen flere ganger.",
+        "action": "Trykk på \"Rediger\" for å legge til en ny batch"
+      }
+    },
+    "food": {
+      "title": "Matvarer",
+      "calories": "kcal per",
+      "amount": "Mengde",
+      "expiry": "Utløp",
+      "already-shared": "Allerede delt",
+      "share": "Del",
+      "add": "Legg til",
+      "delete-type": "Slett produkttype",
+      "add-new": "Legg til",
+      "product-name": "Produktnavn",
+      "exists": {
+        "title": "Denne produkttypen finnes allerede",
+        "message": "Du kan ikke legge til den samme typen flere ganger.",
+        "action": "Trykk på \"Rediger\" for å legge til en ny batch"
+      }
+    },
+    "medicine": {
+      "title": "Medisin",
+      "amount": "Mengde",
+      "expiry": "Utløp",
+      "already-shared": "Allerede delt",
+      "share": "Del",
+      "add": "Legg til",
+      "delete-type": "Slett produkttype",
+      "add-new": "Legg til",
+      "product-name": "Produktnavn",
+      "exists": {
+        "title": "Denne produkttypen finnes allerede",
+        "message": "Du kan ikke legge til den samme typen flere ganger.",
+        "action": "Trykk på \"Rediger\" for å legge til en ny batch"
+      }
+    },
+    "common": {
+      "share-with-group": "Del med gruppe",
+      "select-group": "Velg en gruppe",
+      "no-groups": "Ingen grupper funnet",
+      "delete-confirm": "Er du sikker på at du vil slette produkttypen",
+      "success": {
+        "shared": "Produktet ble lagt til i gruppen",
+        "error": "Det oppstod en feil ved deling av produkt med gruppen"
+      },
+      "select-unit": "Velg enhet"
+    }
   },
   "scenarioThemes": {
     "title": "Krisescenario-temaer",
