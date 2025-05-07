@@ -307,6 +307,9 @@
     "directions": "Veibeskrivelse",
     "contact": "Kontakt",
     "filter": "Filtrer POIer",
+    "show-pois": "Interessepunkt",
+    "show-crisis": "Kriser",
+    "show-meeting-places": "Møteplasser",
     "my-location": "Bruk min posisjon",
     "your-location": "Din posisjon",
     "household-location": "Din husholdning",
@@ -327,7 +330,32 @@
     "find-nearest": "Finn nærmeste",
     "show-directions": "Vis veibeskrivelse",
     "close-directions": "Lukk",
-    "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse"
+    "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse",
+    "legend": {
+              "crisis-level-1": "Krisenivå 1",
+              "crisis-level-2": "Krisenivå 2",
+              "crisis-level-3": "Krisenivå 3",
+              "fire-station": "Brannstasjon",
+              "police-station": "Politistasjon",
+              "hospital": "Sykehus",
+              "pharmacy": "Apotek",
+              "gas-station": "Bensinstasjon",
+              "grocery-store": "Dagligvarebutikk",
+              "water-point": "Vannkilde",
+              "meeting-point": "Møtepunkt",
+              "shelter": "Tilfluktsrom",
+              "default": "Other"
+              },
+    "poiTypes": {
+      "1": "Sykehus",
+      "2": "Politistasjon",
+      "3": "Brannstasjon",
+      "4": "Tilfluktsrom",
+      "5": "Dagligvarebutikk",
+      "6": "Vannkilde",
+      "7": "Bensinstajon",
+      "8": "Apotek"
+    }
   },
   "time-units": {
     "month": "1 måned | {count} måneder",

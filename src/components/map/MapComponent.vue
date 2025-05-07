@@ -171,7 +171,7 @@ export default defineComponent({
       'pharmacy': pharmacyIconUrl,
       'police station': policestationIconUrl,
       'shelter': shelterIconUrl,
-      'water point': waterpointIconUrl, // Example key, adjust if needed
+      'water distribution point': waterpointIconUrl, // Example key, adjust if needed
       // 'home': homeIconUrl, // Add if 'Home' is a POI type
       // Add other type mappings here...
     };

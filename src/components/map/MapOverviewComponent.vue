@@ -38,7 +38,7 @@
 
       <div class="flex items-center gap-2">
         <label class="text-sm font-medium cursor-pointer">
-          {{ t('map.show-crisis', 'Krise') }}
+          {{ t('map.show-crisis', 'Kriser') }}
         </label>
         <Switch v-model="showCrisis" />
       </div>
@@ -108,7 +108,7 @@
             v-model.number="distanceInMeters"
             :disabled="!userLocation"
             min="100"
-            max="5000"
+            max="50000"
             step="100"
             class="w-full"
           />
@@ -125,7 +125,7 @@
             <SelectContent>
               <SelectItem :value="null">{{ t('map.all-types') }}</SelectItem>
               <SelectItem v-for="type in poiTypes" :key="type.id" :value="type.id">
-                {{ type.name }}
+                {{ t(`map.poiTypes.${type.id}`, type.name) }}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -192,7 +192,6 @@
       <MapLegend
         class="mt-4"
         :items="legendItems"
-        :title="t('map.legend','Legend')"
       />
   </div>
 </template>
@@ -318,7 +317,7 @@ const isLoadingCrisisEvents = ref(false)
 
 // Filter state
 const selectedPoiType = ref<number | null>(null)
-const distanceInMeters = ref(5000)
+const distanceInMeters = ref(50000)
 const isFilterMenuVisible = ref(false)
 
 const showPois          = ref(true)
@@ -629,7 +628,7 @@ watch(distanceInMeters, (val: number | string) => {
     return
   }
   if (numVal < 100) distanceInMeters.value = 100
-  else if (numVal > 5000) distanceInMeters.value = 5000
+  else if (numVal > 50000) distanceInMeters.value = 50000
   else if (typeof val === 'string') distanceInMeters.value = numVal
 })
 
