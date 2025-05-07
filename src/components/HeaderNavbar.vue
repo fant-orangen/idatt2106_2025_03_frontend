@@ -142,7 +142,7 @@ function logOut() {
 
       <Button variant="link" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
         <Globe class="h-4 w-4" />
-        {{ englishSelected ? 'Norsk bokmål' : 'English' }}
+        {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
       </Button>
     </div>
     <div class="navbar-right flex flex-row items-center gap-4">
