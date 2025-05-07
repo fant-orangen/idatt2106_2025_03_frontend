@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1 class="text-3xl font-bold mb-6">Vann</h1>
+    <h1 class="text-3xl font-bold mb-6">{{ t('inventory.water.title') }}</h1>
     <div class="mb-4 text-lg font-medium text-primary">
-      Totalt vann i husholdningen: {{ totalWater }} liter
+      {{ t('inventory.water.total') }}: {{ totalWater }} {{ t('inventory.water.liters') }}
     </div>
     <!-- Product list -->
     <div
@@ -27,7 +27,7 @@
             @click="toggleEdit(index)"
             class="text-sm text-primary hover:underline hover:cursor-pointer"
           >
-            {{ item?.edit ? 'Lagre' : 'Rediger' }}
+            {{ item?.edit ? t('inventory.save') : t('inventory.edit') }}
           </button>
         </div>
       </div>
@@ -35,11 +35,11 @@
       <div v-if="item.edit" class="space-y-4 mt-4">
         <!-- Group selector -->
         <div class="border-b pb-4 mb-4">
-          <h3 class="text-sm font-medium mb-2">Del med gruppe:</h3>
+          <h3 class="text-sm font-medium mb-2">{{ t('inventory.common.share-with-group') }}:</h3>
           <div class="flex gap-2 items-center">
             <Select v-model="selectedGroupId" class="w-full sm:w-64">
               <SelectTrigger>
-                <SelectValue :placeholder="groups.length > 0 ? 'Velg en gruppe' : 'Ingen grupper funnet'" />
+                <SelectValue :placeholder="groups.length > 0 ? t('inventory.common.select-group') : t('inventory.common.no-groups')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="group in groups" :key="group.id" :value="group.id">
@@ -59,14 +59,14 @@
             v-model="batch.amount"
             type="number"
             class="bg-input text-foreground py-2 px-3 text-center rounded-md w-full"
-            placeholder="Mengde"
+            :placeholder="t('inventory.water.amount')"
           />
-          <div class="text-sm text-center sm:text-left">{{ item.unit === 'l' ? 'liter' : item.unit }}</div>
+          <div class="text-sm text-center sm:text-left">{{ item.unit === 'l' ? t('inventory.water.liters') : item.unit }}</div>
           <template v-if="batch.isNew">
             <input
               v-model="batch.expires"
               class="bg-input text-foreground py-2 px-3 text-center rounded-md w-full"
-              placeholder="Utløp"
+              :placeholder="t('inventory.water.expiry')"
               :readonly="true"
             />
           </template>
@@ -78,13 +78,13 @@
             @click="() => { saveBatch(index, bIndex); }"
             class="text-sm text-primary underline w-full sm:w-auto"
           >
-            Lagre
+            {{ t('inventory.save') }}
           </button>
           <button
             @click="() => { removeBatch(index, bIndex); }"
             class="text-sm text-destructive underline w-full sm:w-auto"
           >
-            Slett
+            {{ t('inventory.remove-from-group') }}
           </button>
 
           <Button
@@ -95,7 +95,7 @@
             :disabled="!selectedGroupId || addingBatchToGroup || batch.isContributed"
             class="text-xs w-full sm:w-auto"
           >
-            {{ batch.isContributed ? 'Allerede delt' : 'Del' }}
+            {{ batch.isContributed ? t('inventory.water.already-shared') : t('inventory.water.share') }}
           </Button>
         </div>
         <!-- Add new batch -->
@@ -104,35 +104,35 @@
             @click="addBatch(index)"
             class="text-sm text-primary hover:underline"
           >
-            + Legg til
+            + {{ t('inventory.water.add') }}
           </button>
           <button
             v-if="item.edit"
             @click="deleteProductType(index)"
             class="text-sm text-destructive hover:underline"
           >
-            Slett produkttype
+            {{ t('inventory.water.delete-type') }}
           </button>
         </div>
       </div>
     </div>
     <!-- Add New Product -->
     <div class="pt-6 space-y-4">
-      <h2 class="text-lg font-semibold">Legg til</h2>
+      <h2 class="text-lg font-semibold">{{ t('inventory.water.add-new') }}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
         <Input
           v-model="newProductName"
-          placeholder="Produktnavn"
+          :placeholder="t('inventory.water.product-name')"
         />
         <div class="bg-input text-foreground py-2 px-3 rounded-md text-center select-none">
-          liter
+          {{ t('inventory.water.liters') }}
         </div>
         <Button
           variant="link"
           @click="addProduct"
           class="text-sm text-primary hover:underline"
         >
-          + Legg til
+          + {{ t('inventory.water.add') }}
         </Button>
       </div>
     </div>
@@ -142,9 +142,9 @@
       class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground border border-destructive p-6 rounded-lg shadow-xl"
     >
       <p class="text-center">
-        <strong>Denne produkttypen finnes allerede.</strong><br>
-        Du kan ikke legge til den samme typen flere ganger.<br>
-        Trykk på "Rediger" for å legge til en ny batch.
+        <strong>{{ t('inventory.water.exists.title') }}</strong><br>
+        {{ t('inventory.water.exists.message') }}<br>
+        {{ t('inventory.water.exists.action') }}
       </p>
       <div class="text-right mt-4">
         <button @click="showExistsModal = false" class="text-sm text-primary underline">
@@ -165,6 +165,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
   searchText: {

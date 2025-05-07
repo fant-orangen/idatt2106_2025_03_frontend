@@ -38,7 +38,7 @@
               @click="toggleEdit(index)"
               class="text-sm"
             >
-              {{ item.edit ? 'Lagre' : 'Rediger' }}
+              {{ item.edit ? t('inventory.save') : t('inventory.edit') }}
             </Button>
           </div>
         </div>
@@ -58,7 +58,7 @@
               @click="removeBatch(index, bIndex)"
               class="text-sm w-full sm:w-auto"
             >
-              Fjern fra gruppe
+              {{ t('inventory.remove-from-group') }}
             </Button>
           </div>
         </div>
@@ -75,6 +75,7 @@ import { useGroupStore } from '@/stores/GroupStore';
 import { Button } from '@/components/ui/button';
 import type { ProductType } from '@/models/Product';
 import type { Page } from '@/types/Page';
+import { useI18n } from 'vue-i18n';
 
 interface GroupInventoryItem extends ProductType {
   edit: boolean;
@@ -103,6 +104,7 @@ const props = defineProps({
 const groupStore = useGroupStore();
 const items = ref<GroupInventoryItem[]>([]);
 const isLoading = ref(true);
+const { t } = useI18n();
 
 const fetchAllProductTypes = async () => {
   try {

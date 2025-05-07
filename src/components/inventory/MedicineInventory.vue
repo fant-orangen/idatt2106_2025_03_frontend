@@ -2,7 +2,7 @@
   <div class="min-h-screen p-4 sm:p-6 bg-background text-foreground">
     <div class="max-w-5xl mx-auto space-y-8">
       <!-- Main Header -->
-      <h1 class="text-2xl sm:text-3xl font-bold mb-6">Medisin</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold mb-6">{{ t('inventory.medicine.title') }}</h1>
 
       <!-- Product List -->
       <div
@@ -10,96 +10,96 @@
         :key="index"
         class="border border-border rounded-lg bg-card p-4 space-y-4 shadow-md"
       >
-  <!-- Product Overview -->
-  <div class="flex flex-col md:grid md:grid-cols-4 md:items-center gap-2 text-left md:text-left">
-    <div class="font-medium text-base sm:text-left">
-      {{ item?.name }}
-    </div>
-    <div class="text-left md:text-left text-sm text-muted-foreground">
-      {{ getTotalAmount(item) }}
-    </div>
-    <div class="text-right md:text-center">
-      <Button
-        variant="link"
-        @click="toggleEdit(index)"
-        class="text-sm"
-      >
-        {{ item?.edit ? 'Save' : 'Edit' }}
-      </Button>
-    </div>
-  </div>
+        <!-- Product Overview -->
+        <div class="flex flex-col md:grid md:grid-cols-4 md:items-center gap-2 text-left md:text-left">
+          <div class="font-medium text-base sm:text-left">
+            {{ item?.name }}
+          </div>
+          <div class="text-left md:text-left text-sm text-muted-foreground">
+            {{ getTotalAmount(item) }}
+          </div>
+          <div class="text-right md:text-center">
+            <Button
+              variant="link"
+              @click="toggleEdit(index)"
+              class="text-sm"
+            >
+              {{ item?.edit ? t('inventory.save') : t('inventory.edit') }}
+            </Button>
+          </div>
+        </div>
 
-  <!-- Batch Editing -->
-  <div v-if="item.edit" class="space-y-4 mt-4">
-    <!-- Group selector -->
-    <div class="border-b pb-4 mb-4">
-      <h3 class="text-sm font-medium mb-2">Del med gruppe:</h3>
-      <div class="flex gap-2 items-center">
-        <Select v-model="selectedGroupId" class="w-full sm:w-64">
-          <SelectTrigger>
-            <SelectValue :placeholder="groups.length > 0 ? 'Velg en gruppe' : 'Ingen grupper funnet'" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="group in groups" :key="group.id" :value="group.id">
-              {{ group.name }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
+        <!-- Batch Editing -->
+        <div v-if="item.edit" class="space-y-4 mt-4">
+          <!-- Group selector -->
+          <div class="border-b pb-4 mb-4">
+            <h3 class="text-sm font-medium mb-2">{{ t('inventory.common.share-with-group') }}:</h3>
+            <div class="flex gap-2 items-center">
+              <Select v-model="selectedGroupId" class="w-full sm:w-64">
+                <SelectTrigger>
+                  <SelectValue :placeholder="groups.length > 0 ? t('inventory.common.select-group') : t('inventory.common.no-groups')" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="group in groups" :key="group.id" :value="group.id">
+                    {{ group.name }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
-    <div
-      v-for="(batch, bIndex) in item.batches"
-      :key="bIndex"
-      class="flex flex-col md:grid md:grid-cols-6 gap-3 items-center"
-    >
-      <Input
-        v-model="batch.amount"
-        type="number"
-        placeholder="Amount"
-        class="text-center w-full"
-      />
-      <div class="text-sm text-center sm:text-left">{{ item.unit }}</div>
+          <div
+            v-for="(batch, bIndex) in item.batches"
+            :key="bIndex"
+            class="flex flex-col md:grid md:grid-cols-6 gap-3 items-center"
+          >
+            <Input
+              v-model="batch.amount"
+              type="number"
+              :placeholder="t('inventory.medicine.amount')"
+              class="text-center w-full"
+            />
+            <div class="text-sm text-center sm:text-left">{{ item.unit }}</div>
 
-      <template v-if="batch.isNew">
-        <Input
-          v-model="batch.expires"
-          placeholder="Expiration"
-          class="text-center w-full"
-        />
-      </template>
-      <template v-else>
-        <div class="text-sm text-center md:text-left w-full">{{ batch.expires }}</div>
-      </template>
+            <template v-if="batch.isNew">
+              <Input
+                v-model="batch.expires"
+                :placeholder="t('inventory.medicine.expiry')"
+                class="text-center w-full"
+              />
+            </template>
+            <template v-else>
+              <div class="text-sm text-center md:text-left w-full">{{ batch.expires }}</div>
+            </template>
 
-      <Button
-        v-if="batch.isNew"
-        variant="link"
-        @click="saveBatch(index, bIndex)"
-        class="text-sm text-primary w-full md:w-auto"
-      >
-        Save
-      </Button>
+            <Button
+              v-if="batch.isNew"
+              variant="link"
+              @click="saveBatch(index, bIndex)"
+              class="text-sm text-primary w-full md:w-auto"
+            >
+              {{ t('inventory.save') }}
+            </Button>
 
-      <Button
-        variant="destructive"
-        @click="removeBatch(index, bIndex)"
-        class="text-sm w-full md:w-auto"
-      >
-        Delete
-      </Button>
+            <Button
+              variant="destructive"
+              @click="removeBatch(index, bIndex)"
+              class="text-sm w-full md:w-auto"
+            >
+              {{ t('inventory.remove-from-group') }}
+            </Button>
 
-      <Button
-        v-if="!batch.isNew"
-        variant="secondary"
-        size="sm"
-        @click="addBatchToGroup(batch.id)"
-        :disabled="!selectedGroupId || addingBatchToGroup || batch.isContributed"
-        class="text-xs w-full md:w-auto"
-      >
-        {{ batch.isContributed ? 'Allerede delt' : 'Del' }}
-      </Button>
-    </div>
+            <Button
+              v-if="!batch.isNew"
+              variant="secondary"
+              size="sm"
+              @click="addBatchToGroup(batch.id)"
+              :disabled="!selectedGroupId || addingBatchToGroup || batch.isContributed"
+              class="text-xs w-full md:w-auto"
+            >
+              {{ batch.isContributed ? t('inventory.medicine.already-shared') : t('inventory.medicine.share') }}
+            </Button>
+          </div>
 
           <!-- Add New Batch -->
           <div class="flex flex-col md:flex-row justify-between items-center mt-2 gap-2">
@@ -108,7 +108,7 @@
               @click="addBatch(index)"
               class="text-sm text-primary hover:underline"
             >
-              + Legg til
+              + {{ t('inventory.medicine.add') }}
             </Button>
             <Button
               v-if="item.edit"
@@ -116,7 +116,7 @@
               @click="deleteProductType(index)"
               class="text-sm"
             >
-              Slett produkttype
+              {{ t('inventory.medicine.delete-type') }}
             </Button>
           </div>
         </div>
@@ -124,11 +124,11 @@
 
       <!-- Add New Product Type -->
       <div class="pt-6 space-y-4">
-        <h2 class="text-lg font-semibold">Legg til</h2>
+        <h2 class="text-lg font-semibold">{{ t('inventory.medicine.add-new') }}</h2>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
           <Input
             v-model="newProductName"
-            placeholder="Produktnavn"
+            :placeholder="t('inventory.medicine.product-name')"
           />
           <Select v-model="newProductUnit">
             <SelectTrigger>
@@ -145,7 +145,7 @@
             @click="addProduct"
             class="text-sm text-primary hover:underline"
           >
-            + Legg til
+            + {{ t('inventory.medicine.add') }}
           </Button>
         </div>
       </div>
@@ -156,8 +156,9 @@
         class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground border border-destructive p-6 rounded-lg shadow-xl"
       >
         <p class="text-center">
-          <strong>Feil</strong><br />
-          Denne produkttypen finnes allerede. Trykk på "Rediger" for å legge til en ny batch.
+          <strong>{{ t('inventory.medicine.exists.title') }}</strong><br />
+          {{ t('inventory.medicine.exists.message') }}<br />
+          {{ t('inventory.medicine.exists.action') }}
         </p>
         <div class="text-right mt-4">
           <Button
@@ -189,6 +190,9 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { toast } from 'vue-sonner'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n();
 
 const props = defineProps({
   searchText: {
