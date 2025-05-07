@@ -2,61 +2,70 @@
   <div class="flex gap-6 p-6 flex-col md:flex-row">
 
     <!-- Sidebar -->
-    <aside class="bg-sidebar text-sidebar-foreground rounded-lg p-4 w-64 shadow flex flex-col h-full max-h-[calc(100vh-6rem)]">
+    <aside class="bg-sidebar text-sidebar-foreground rounded-lg p-4 w-full shadow flex flex-col h-full max-h-[calc(100vh-6rem)]  md:w-64">
       <h2 class="text-xl font-bold mb-4">{{ t('group.title') }}</h2>
 
       <!-- Scrollbar for list of groups -->
-      <ul class="space-y-3 overflow-y-auto pr-1 flex-1">
-        <li
-            v-for="group in groups"
-            :key="group.id"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-primary text-sidebar-primary-foreground hover:opacity-90 transition cursor-pointer"
-            :class="{ 'bg-opacity-80': currentGroupId === group.groupId }"
-            @click="switchToGroup(group.groupId)"
-        >
-          <span class="i-heroicons-home w-5 h-5" /> {{ group.name }}
-        </li>
-      </ul>
+      <ScrollArea  class="space-y-3 overflow-y-auto gap-2 pr-1 flex-1">
+        <ul class="space-y-2">
+          <li
+              v-for="group in groups"
+              :key="group.id"
+              class="flex items-center px-3 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
+              :class="{
+                  'bg-black text-accent dark:bg-white ': currentGroupId === group.groupId,
+                  'hover:bg-sidebar-primary/15 ': currentGroupId !== group.groupId
+                }"
+              @click="switchToGroup(group.groupId)"
+          >
+            <span class="i-heroicons-home w-5 h-5" /> {{ group.name }}
+          </li>
+        </ul>
+      </ScrollArea>
 
       <!-- Button for inviting household -->
-      <button
+      <Button
           v-if="isAdmin"
           @click="inviteHousehold"
-          class="mt-4 bg-sidebar-accent text-sidebar-accent-foreground py-2 rounded-md text-sm font-medium"
+          variant="outline"
+          class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/15"
       >
         {{ t('group.invite-household') }}
-      </button>
+      </Button>
 
       <!-- Create group section -->
       <div v-if="isAdmin" class="mt-8 border-t border-sidebar-border pt-4">
-        <button
+        <Button
             v-if="!showCreateGroupInput"
             @click="showCreateGroupInput = true"
-            class="w-full bg-sidebar-accent text-sidebar-accent-foreground py-2 rounded-md text-sm font-medium"
-        >
+            variant="outline"
+            class="mt-4 w-full hover:cursor-pointer hover:bg-sidebar-primary/15 dark:hover:bg-sidebar-primary/10"
+          >
           {{ t('group.create-group') }}
-        </button>
+        </Button>
         <div v-else class="space-y-2">
-          <input
+          <Input
               v-model="newGroupName"
               type="text"
               :placeholder="t('group.enter-group-name')"
-              class="w-full px-3 py-2 rounded-md bg-sidebar-primary text-sidebar-primary-foreground text-sm"
-          />
+              variant="outline"
+              class="mt-4 focus:ring-2 focus:ring-primary"
+              />
           <div class="flex gap-2">
-            <button
+            <Button
                 @click="createGroup"
-                class="flex-1 bg-sidebar-accent text-sidebar-accent-foreground py-2 rounded-md text-sm font-medium"
+                variant="outline"
+                class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/20"
                 :disabled="!newGroupName.trim()"
             >
               {{ t('group.create') }}
-            </button>
-            <button
+            </Button>
+            <Button
                 @click="cancelCreateGroup"
-                class="px-3 py-2 rounded-md bg-sidebar-secondary text-sidebar-secondary-foreground text-sm font-medium"
-            >
+                variant="destructive"
+                class="mt-4 hover:cursor-pointer hover:bg-destructive/70"            >
               {{ t('common.cancel') }}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -64,21 +73,21 @@
       <!-- Households in group -->
       <div class="mt-4">
         <h3 class="text-lg font-semibold mb-2">{{ t('group.households') }}</h3>
-        <div class="max-h-48 overflow-y-auto pr-1">
+        <ScrollArea class="max-h-48 overflow-y-auto pr-1">
           <ul class="space-y-2">
             <li
                 v-for="household in households"
                 :key="household.id"
                 class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-secondary text-sidebar-secondary-foreground text-sm"
             >
-              <span class="i-heroicons-home-modern w-4 h-4" />
+              <House class="w-5 h-5" />
               <div>
                 <p class="font-medium">{{ household.name }}</p>
                 <p class="text-xs opacity-80">{{ household.populationCount }} {{ t('group.residents') }}</p>
               </div>
             </li>
           </ul>
-        </div>
+        </ScrollArea>
       </div>
     </aside>
 
@@ -86,13 +95,13 @@
     <main class="flex-1">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
-        <button
+        <Button
           v-if="isAdmin && currentGroupId"
           @click="leaveCurrentGroup"
-          class="text-sm text-destructive hover:text-destructive/90 transition"
+          class="text-sm text-white bg-destructive hover:cursor-pointer hover:bg-destructive/70"
         >
           {{ t('group.leave-group') }}
-        </button>
+        </Button>
       </div>
 
       <!-- Inventory Search Bar -->
@@ -125,6 +134,12 @@ import GroupInventory from '@/components/group/GroupInventory.vue';
 import type { ProductType } from '@/models/Product';
 import type { Household } from '@/models/Group';
 import { isCurrentUserHouseholdAdmin } from '@/services/HouseholdService';
+import { House } from 'lucide-vue-next';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+
+
 
 const { t } = useI18n();
 const groupStore = useGroupStore();

@@ -1,6 +1,6 @@
 <template>
-  <div class="crisis-status cursor-pointer" @click="navigateToCrisisPage()">
-    <Card :class="`crisis-status-card w-[100%] md:w-120 ${containerClass}`">
+  <div class="crisis-status cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5" @click="navigateToCrisisPage()">
+    <Card :class="`w-full md:w-120 rounded-2xl p-4 transition-all duration-200 ease-in-out ${containerClass}`">
       <CardHeader class="items-center">
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
           <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />
@@ -24,11 +24,9 @@
         <!-- Main Crisis (Highest Severity) -->
         <div v-else-if="mainCrisis" class="main-crisis mb-4 w-full text-center">
           <div
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-colors cursor-pointer dark:text-white"
-            :style="{
-              backgroundColor: `rgb(var(--crisis-level-${mainCrisis.severity}) / 0.2)`,
-              borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}`
-            }"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-all duration-200 ease-in-out cursor-pointer dark:text-white hover:scale-[1.03] hover:shadow-md"
+            :class="'bg-(--crisis-level-${mainCrisis.severity}) bg-opacity-20'"
+            :style="{ borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}`}"
             @click.stop="selectCrisis(mainCrisis)"
           >
             <span class="text-base font-semibold">{{ mainCrisis.name }}</span>
@@ -44,14 +42,14 @@
         </div>
 
         <!-- Other Crisis Events as Links -->
-        <div v-if="!loading && !error && otherEvents.length > 0" class="other-events w-full mt-3">
+        <div v-if="!loading && !error && otherEvents.length > 0" class="other-events w-full mt-3 max-w-full py-2 border-t border-black/10 dark:border-white/10">
           <div class="text-sm font-medium mb-2 text-center">{{ t('crisis.other_events', 'Other active events') }}</div>
           <div class="flex flex-wrap justify-center gap-3">
             <a
               v-for="event in otherEvents"
               :key="event.id"
               href="#"
-              class="text-sm text-primary hover:underline flex items-center gap-1 px-2"
+              class="relative text-sm text-primary hover:underline flex items-center gap-1 px-2 dark:text-white/90"
               @click.prevent.stop="selectCrisis(event)"
             >
               <span class="truncate max-w-[120px]">{{ event.name }}</span>
@@ -198,50 +196,3 @@ const selectCrisis = (event: CrisisEventPreviewDto) => {
 
 onMounted(fetchCrisisEvents);
 </script>
-
-<style scoped>
-.crisis-status-card {
-  border-radius: 1rem;
-  padding: 1rem;
-  transition: all 0.2s ease-in-out;
-}
-
-.crisis-status {
-  transition: transform 0.2s ease;
-}
-
-.crisis-status:hover {
-  transform: translateY(-2px);
-}
-
-.main-crisis > div {
-  transition: all 0.2s ease;
-}
-
-.main-crisis > div:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.other-events {
-  max-width: 100%;
-  padding: 0.5rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.dark .other-events {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.other-events a {
-  position: relative;
-}
-
-.other-events a:hover {
-  text-decoration: underline;
-}
-
-.dark .other-events a {
-  color: rgba(255, 255, 255, 0.9);
-}
-</style>
