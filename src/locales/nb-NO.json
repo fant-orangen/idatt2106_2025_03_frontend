@@ -910,7 +910,8 @@
     "confirm-delete": "Er du sikker på at du ønsker å slette dette interessepunktet permanent?",
     "delete-info": "Denne handlingen kan ikke angres.",
     "update-success": "Interessepunktet er blitt oppdatert!",
-    "update-failed": "Kunne ikke oppdatere interessepunkt med nye verdier."
+    "update-failed": "Kunne ikke oppdatere interessepunkt med nye verdier.",
+    "search-poi": "Søk etter et interessepunkt..."
   },
   "language": {
     "title": "Språk",
