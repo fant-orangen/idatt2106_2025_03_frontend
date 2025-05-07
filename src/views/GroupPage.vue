@@ -26,6 +26,40 @@
         {{ t('group.invite-household') }}
       </button>
 
+      <!-- Create group section -->
+      <div class="mt-8 border-t border-sidebar-border pt-4">
+        <button
+            v-if="!showCreateGroupInput"
+            @click="showCreateGroupInput = true"
+            class="w-full bg-sidebar-accent text-sidebar-accent-foreground py-2 rounded-md text-sm font-medium"
+        >
+          {{ t('group.create-group') }}
+        </button>
+        <div v-else class="space-y-2">
+          <input
+              v-model="newGroupName"
+              type="text"
+              :placeholder="t('group.enter-group-name')"
+              class="w-full px-3 py-2 rounded-md bg-sidebar-primary text-sidebar-primary-foreground text-sm"
+          />
+          <div class="flex gap-2">
+            <button
+                @click="createGroup"
+                class="flex-1 bg-sidebar-accent text-sidebar-accent-foreground py-2 rounded-md text-sm font-medium"
+                :disabled="!newGroupName.trim()"
+            >
+              {{ t('group.create') }}
+            </button>
+            <button
+                @click="cancelCreateGroup"
+                class="px-3 py-2 rounded-md bg-sidebar-secondary text-sidebar-secondary-foreground text-sm font-medium"
+            >
+              {{ t('common.cancel') }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- Households in group -->
       <div class="mt-4">
         <h3 class="text-lg font-semibold mb-2">{{ t('group.households') }}</h3>
@@ -103,6 +137,8 @@ const groups = ref<Group[]>([]);
 const households = ref<Household[]>([]);
 const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
+const showCreateGroupInput = ref(false);
+const newGroupName = ref('');
 
 // Watch for changes in search text and current group ID
 watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
@@ -207,5 +243,39 @@ async function leaveCurrentGroup() {
     console.error('Error leaving group:', error);
     alert('Det oppstod en feil ved forsøk på å forlate gruppen');
   }
+}
+
+async function createGroup() {
+  if (!newGroupName.value.trim()) return;
+
+  try {
+    await groupService.createGroup(newGroupName.value.trim());
+
+    // Refresh the groups list
+    const response = await groupService.getCurrentUserGroups();
+    if (response?.content?.length > 0) {
+      groups.value = response.content.map(group => ({
+        id: group.id,
+        name: group.name,
+        groupId: group.id
+      }));
+      // Switch to the newly created group
+      const newGroup = groups.value.find(g => g.name === newGroupName.value.trim());
+      if (newGroup) {
+        switchToGroup(newGroup.groupId);
+      }
+    }
+
+    // Reset the create group form
+    cancelCreateGroup();
+  } catch (error) {
+    console.error('Error creating group:', error);
+    alert(error instanceof Error ? error.message : 'Det oppstod en feil ved opprettelse av gruppen');
+  }
+}
+
+function cancelCreateGroup() {
+  showCreateGroupInput.value = false;
+  newGroupName.value = '';
 }
 </script>

@@ -192,6 +192,24 @@ class GroupService {
       throw error;
     }
   }
+
+  /**
+   * Create a new group with the given name
+   * @param name The name of the group to create
+   * @returns Promise that resolves when the group is created
+   * @throws Error if the user is not a household admin or if the group creation fails
+   */
+  async createGroup(name: string): Promise<void> {
+    try {
+      await api.post(`/user/groups/${encodeURIComponent(name)}`);
+    } catch (error) {
+      if ((error as AxiosError)?.response?.status === 403) {
+        throw new Error('You must be a household admin to create a group.');
+      }
+      console.error('Error creating group:', error);
+      throw error;
+    }
+  }
 }
 
 export const groupService = new GroupService();
