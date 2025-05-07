@@ -1,22 +1,28 @@
 <template>
-  <div class="household-container min-h-[calc(100vh-64px)] max-w-7xl mx-auto px-4 py-6">
-    <div class="flex flex-col gap-4 items-start justify-start mb-6 md:flex-row md:items-center md:justify-between">
-      <h1 class="text-2xl font-bold">{{ household?.name || t('household.my-household') }}</h1>
-      <div class="flex flex-col gap-2 w-full md:w-auto md:flex-row">
-        <Button
-          v-if="showAdminTransferButton" variant="outline"
-          class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
-          @click="openTransferAdminDialog">
+  <div class="household-container max-w-7xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-2xl font-bold">{{ household?.name || t('household.my-household') }}</h1>
+          <Button
+            v-if="isAdmin && hasHousehold"
+            variant="ghost"
+            size="sm"
+            class="h-7 w-7 rounded-full"
+            @click="openEditHouseholdDialog"
+          >
+            <PencilIcon class="h-4 w-4" />
+          </Button>
+        </div>
+        <p v-if="household?.address" class="text-sm text-muted-foreground mt-1">{{ household.address }}</p>
+      </div>
+      <div class="flex gap-2">
+        <!-- Delete button moved to edit dialog -->
+        <Button v-if="showAdminTransferButton" variant="outline" class="flex items-center gap-2" @click="openTransferAdminDialog">
           <UserIcon class="h-4 w-4" />
           <span>{{ t('household.transfer-admin-role') }}</span>
         </Button>
-        <DeleteHousehold v-if="isAdmin && hasHousehold"
-          class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
-        @deleted="refreshHouseholdData" />
-        <Button v-if="hasHousehold"
-          variant="outline"
-          class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
-          @click="showLeaveDialog = true">
+        <Button v-if="hasHousehold" variant="outline" class="flex items-center gap-2" @click="showLeaveDialog = true">
           <LogOutIcon class="h-4 w-4" />
           <span>{{ t('household.leave-household') }}</span>
         </Button>
@@ -127,31 +133,93 @@
                 <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
                   <UserIcon class="h-4 w-4" />
                 </div>
-                <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}</span>
+                <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.email }}</span>
               </div>
               <ChevronRightIcon class="h-4 w-4" />
-            </div>
-
-            <!-- Admin members (not selectable) -->
-            <div
-              v-for="member in adminMembers"
-              :key="member.id"
-              class="flex items-center justify-between p-2 border rounded-md bg-muted/30 opacity-70"
-            >
-              <div class="flex items-center gap-2">
-                <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
-                  <UserIcon class="h-4 w-4" />
-                </div>
-                <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}</span>
-                <Badge variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
-                  {{ t('household.admin_badge') }}
-                </Badge>
-              </div>
             </div>
           </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" @click="showTransferAdminDialog = false">{{ t('common.cancel') }}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Edit Household Dialog -->
+    <Dialog :open="showEditHouseholdDialog" @update:open="showEditHouseholdDialog = false">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{{ t('household.edit-household') }}</DialogTitle>
+          <DialogDescription>
+            {{ t('household.edit-household-description') }}
+          </DialogDescription>
+        </DialogHeader>
+        <form @submit.prevent="updateHouseholdDetails" class="space-y-4">
+          <div class="space-y-2">
+            <Label for="householdName">{{ t('household.name') }}</Label>
+            <Input
+              id="householdName"
+              v-model="editHouseholdData.name"
+              :placeholder="t('household.name-placeholder')"
+              required
+            />
+          </div>
+          <div class="space-y-2">
+            <Label for="householdAddress">{{ t('household.address') }}</Label>
+            <Input
+              id="householdAddress"
+              v-model="editHouseholdData.address"
+              :placeholder="t('household.address-placeholder')"
+              required
+            />
+          </div>
+          <DialogFooter>
+            <div class="flex w-full justify-between items-center">
+              <Button
+                variant="destructive"
+                type="button"
+                class="flex items-center gap-2"
+                @click="showConfirmDeleteDialog = true"
+              >
+                <TrashIcon class="h-4 w-4" />
+                {{ t('household.delete_household') }}
+              </Button>
+              <div class="flex gap-2">
+                <Button variant="ghost" type="button" @click="showEditHouseholdDialog = false">{{ t('common.cancel') }}</Button>
+                <Button type="submit" :disabled="isUpdatingHousehold">
+                  <Loader2 v-if="isUpdatingHousehold" class="mr-2 h-4 w-4 animate-spin" />
+                  {{ t('common.save') }}
+                </Button>
+              </div>
+            </div>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Delete Household Confirmation Dialog -->
+    <Dialog :open="showConfirmDeleteDialog" @update:open="showConfirmDeleteDialog = false">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{{ t('household.confirm_delete_title') }}</DialogTitle>
+          <DialogDescription>
+            {{ t('household.confirm_delete_description') }}
+          </DialogDescription>
+        </DialogHeader>
+        <div class="py-4">
+          <p class="text-destructive font-medium">{{ t('household.delete_warning') }}</p>
+          <p class="mt-2 text-sm text-muted-foreground">{{ t('household.delete_permanent') }}</p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" @click="showConfirmDeleteDialog = false">{{ t('common.cancel') }}</Button>
+          <Button
+            variant="destructive"
+            @click="handleDeleteHousehold"
+            :disabled="isDeletingHousehold"
+          >
+            <Loader2 v-if="isDeletingHousehold" class="mr-2 h-4 w-4 animate-spin" />
+            {{ t('household.confirm_delete') }}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -164,6 +232,9 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type {HouseholdMember} from '@/models/Household';
 import {
   Dialog,
   DialogContent,
@@ -172,14 +243,14 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
-import { UsersIcon, LogOutIcon, UserIcon, ChevronRightIcon } from 'lucide-vue-next';
+import { UsersIcon, LogOutIcon, UserIcon, ChevronRightIcon, PencilIcon, Loader2, TrashIcon } from 'lucide-vue-next';
 import HouseholdMembers from '@/components/household/HouseholdMembers.vue';
 import ShelterStore from '@/components/household/ShelterStore.vue';
 import MemberNotInHousehold from '@/components/household/MemberNotInHousehold.vue';
 import UserInvitations from '@/components/household/UserInvitations.vue';
 import PendingInvitations from '@/components/household/PendingInvitations.vue';
 import HouseholdStats from '@/components/household/HouseholdStats.vue';
-import DeleteHousehold from '@/components/household/DeleteHousehold.vue';
+// DeleteHousehold component no longer used - functionality integrated into edit dialog
 import { useUserStore } from '@/stores/UserStore';
 import {
   getCurrentHousehold,
@@ -188,8 +259,11 @@ import {
   promoteUserToAdmin,
   getHouseholdMembers,
   getEmptyHouseholdMembers,
-  removeEmptyMemberFromHousehold
-} from '@/services/HouseholdService';
+  removeEmptyMemberFromHousehold,
+  getNonAdminHouseholdMembers,
+  updateHousehold,
+  deleteHousehold
+} from '@/services/HouseholdService'
 import { toast } from 'vue-sonner';
 // Using direct service calls instead of the store
 
@@ -198,9 +272,17 @@ const router = useRouter()
 const userStore = useUserStore();
 // Using direct service calls instead of the store
 const hasHousehold = ref(false);
-const household = ref<{ id: number; name: string } | null>(null);
+const household = ref<{ id: number; name: string; address?: string } | null>(null);
 const isAdmin = ref(false);
 const showLeaveDialog = ref(false);
+const showEditHouseholdDialog = ref(false);
+const isUpdatingHousehold = ref(false);
+const showConfirmDeleteDialog = ref(false);
+const isDeletingHousehold = ref(false);
+const editHouseholdData = ref({
+  name: '',
+  address: ''
+});
 const showTransferAdminDialog = ref(false);
 const showCreateForm = ref(false);
 const householdMembers = ref<any[]>([]);
@@ -222,22 +304,11 @@ const allHouseholdMembers = computed(() => {
 });
 
 /**
- * Computed property for household members who are not admins.
+ * Non-admin members of the household.
  * Used for the admin transfer dialog.
- * @returns {Array} Array of household members who are not admins
+ * @type {Ref<HouseholdMember[]>}
  */
-const nonAdminMembers = computed(() => {
-  return householdMembers.value.filter(member => !member.isAdmin);
-});
-
-/**
- * Computed property for household members who are admins.
- * Used to display admin badges in the transfer dialog.
- * @returns {Array} Array of household members who are admins
- */
-const adminMembers = computed(() => {
-  return householdMembers.value.filter(member => member.isAdmin);
-});
+const nonAdminMembers = ref<HouseholdMember[]>([]);
 
 /**
  * Methods
@@ -258,6 +329,70 @@ const handleMemberSelected = (member: any) => {
 const handleViewBeredskapslager = () => {
   console.log('View beredskapslager in parent');
   // Implement navigation to beredskapslager page
+};
+
+/**
+ * Opens the edit household dialog and populates it with current household data
+ */
+const openEditHouseholdDialog = () => {
+  if (household.value) {
+    editHouseholdData.value.name = household.value.name || '';
+    editHouseholdData.value.address = household.value.address || '';
+    showEditHouseholdDialog.value = true;
+  }
+};
+
+/**
+ * Updates the household details with the data from the edit form
+ * @async
+ */
+const updateHouseholdDetails = async () => {
+  if (!isAdmin.value || !household.value) return;
+
+  isUpdatingHousehold.value = true;
+  try {
+    await updateHousehold({
+      name: editHouseholdData.value.name.trim(),
+      address: editHouseholdData.value.address.trim()
+    });
+
+    // Update local data
+    await refreshHouseholdData();
+    showEditHouseholdDialog.value = false;
+    toast.success(t('household.update-success'));
+  } catch (error) {
+    console.error('Error updating household:', error);
+    toast.error(t('household.update-error'));
+  } finally {
+    isUpdatingHousehold.value = false;
+  }
+};
+
+/**
+ * Handles the household deletion process
+ * @async
+ */
+const handleDeleteHousehold = async () => {
+  if (!isAdmin.value) return;
+
+  isDeletingHousehold.value = true;
+  try {
+    await deleteHousehold();
+    toast.success(t('household.delete_success'));
+    showConfirmDeleteDialog.value = false;
+    showEditHouseholdDialog.value = false;
+    await refreshHouseholdData();
+  } catch (error: any) {
+    console.error('Error deleting household:', error);
+
+    if (error.response && error.response.data) {
+      toast.error(error.response.data);
+    } else {
+      toast.error(t('household.delete_error'));
+    }
+  } finally {
+    isDeletingHousehold.value = false;
+  }
 };
 
 /**
@@ -282,6 +417,11 @@ const refreshHouseholdData = async () => {
       // Fetch empty household members
       const empty = await getEmptyHouseholdMembers();
       emptyMembers.value = empty;
+
+      // Fetch non-admin members for the admin transfer dialog
+      if (isAdmin.value) {
+        nonAdminMembers.value = await getNonAdminHouseholdMembers();
+      }
 
       // Refresh invitations in child components
       if (isAdmin.value && pendingInvitationsRef.value) {
@@ -340,10 +480,18 @@ const leaveCurrentHousehold = async () => {
 };
 
 /**
- * Opens the dialog for transferring admin role to another household member.
+ * Opens the dialog for giving admin rights to another household member.
+ * Fetches non-admin members using the dedicated API endpoint.
  */
-const openTransferAdminDialog = () => {
-  showTransferAdminDialog.value = true;
+const openTransferAdminDialog = async () => {
+  try {
+    // Fetch non-admin members using the dedicated endpoint
+    nonAdminMembers.value = await getNonAdminHouseholdMembers();
+    showTransferAdminDialog.value = true;
+  } catch (error) {
+    console.error('Error fetching non-admin members:', error);
+    toast.error(t('household.error-fetching-members'));
+  }
 };
 
 /**
@@ -384,19 +532,11 @@ const showAdminTransferButton = computed(() => {
 
 // Fetch household data when the component mounts
 onMounted(async () => {
-  console.log('HouseholdView mounted');
   await refreshHouseholdData();
-
-  console.log('After refreshHouseholdData - hasHousehold:', hasHousehold.value);
-  console.log('userInvitationsRef exists:', !!userInvitationsRef.value);
-
   // Ensure user invitations are refreshed for users without a household
   if (!hasHousehold.value) {
-    console.log('User has no household, should show invitations');
-    // Force a small delay to ensure the component is mounted
     setTimeout(() => {
       if (userInvitationsRef.value) {
-        console.log('Explicitly refreshing user invitations for user without household');
         userInvitationsRef.value.refreshInvitations();
       } else {
         console.warn('userInvitationsRef is still null after timeout');
@@ -407,31 +547,4 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* .household-container {
-  min-height: calc(100vh - 64px);
-}
-
-/* Responsive adjustments
-@media (max-width: 768px) {
-  .household-container {
-    padding: 1rem;
-  }
-
-  /* Fix buttons on narrow screens
-  .flex.items-center.justify-between {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .flex.gap-2 {
-    flex-wrap: wrap;
-    width: 100%;
-  }
-
-  .flex.gap-2 > button {
-    flex: 1 1 auto;
-    min-width: 120px;
-  }
-} */
 </style>

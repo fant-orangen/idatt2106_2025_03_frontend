@@ -35,6 +35,7 @@
               <SharedReflections
                 :title="t('reflect.community-reflections')"
                 :household-id="profile.householdId || undefined"
+                :default-scope="profile.householdId ? 'all' : 'all'"
               />
             </CardContent>
           </Card>

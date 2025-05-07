@@ -1,14 +1,10 @@
 <template>
   <div class="container mx-auto p-4">
-    <div class="flex items-center mb-6">
-      <h1 class="text-2xl font-bold">{{ t('crisis.title', 'Crisis Events') }}</h1>
-    </div>
-
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Map Area -->
       <Card class="lg:col-span-2 z-50">
-        <CardHeader class="pb-2">
-          <CardTitle>{{ t('crisis.map_view', 'Map View') }}</CardTitle>
+        <CardHeader class="pb-2 flex justify-center">
+          <CardTitle class="text-2xl font-bold">{{ selectedCrisis ? selectedCrisis.name : t('crisis.map_view', 'Map View') }}</CardTitle>
         </CardHeader>
         <CardContent class="p-0">
           <StaticMapWithCircle
