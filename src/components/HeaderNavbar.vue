@@ -212,9 +212,9 @@ function logOut() {
           <DropdownMenuLabel>{{ t('settings.account.myAccount') }}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem @select="goToPage('/profile')">
               <User class="mr-2 h-4 w-4" />
-              <span @click="goToPage('/profile')">{{ t('navigation.profile') }}</span>
+              <span>{{ t('navigation.profile') }}</span>
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToPage('/reflections')">
               <BookOpen class="mr-2 h-4 w-4" />
