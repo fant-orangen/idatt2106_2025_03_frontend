@@ -58,16 +58,6 @@ const routes = [
     component: () => import('@/views/RegisterView.vue'),
   },
   {
-    path: '/before-crisis',
-    name: 'BeforeCrisis',
-    component: () => import('@/views/BeforeCrisisView.vue'),
-  },
-  {
-    path: '/during-crisis',
-    name: 'DuringCrisis',
-    component: () => import('@/views/DuringCrisisView.vue'),
-  },
-  {
     path: '/household',
     name: 'Household',
     component: () => import('@/views/HouseholdView.vue'),
@@ -194,6 +184,12 @@ const routes = [
     component: () => import('@/views/gamification/admin/EditQuizView.vue'),
     meta: { requiresAdmin: true },
     props: true,
+  },
+  {
+    path: '/reflections',
+    name: 'Reflections',
+    component: () => import('@/views/ReflectionsView.vue'),
+    meta: { requiresAuth: true },
   },
   {
     path: '/admin/meeting-point',

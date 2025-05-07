@@ -2,43 +2,45 @@
 /**
  * @component ProfileView
  * @description User profile view that displays user information and reflections.
- * Provides tabs to toggle between profile information and user reflections.
+ * Provides a simplified view of the user's profile with only relevant information.
  */
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { RouterLink } from 'vue-router'
 import { getUserProfile } from '@/services/UserService'
 import { toast } from 'vue-sonner'
-import UserReflections from '@/components/profile/UserReflections.vue'
-import UserProfileInfo from '@/components/profile/UserProfileInfo.vue'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import type { ExtendedUserProfile } from '@/models/User'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { UserIcon, HomeIcon, CheckCircle2 } from 'lucide-vue-next'
+import type { UserBasicInfoDto } from '@/models/User'
 
 const { t } = useI18n()
 
-// Profile data
-const profile = ref<ExtendedUserProfile>({
-  id: null,
-  email: '',
+// Profile data using the simplified UserBasicInfoDto structure
+const profile = ref<UserBasicInfoDto>({
   firstName: '',
   lastName: '',
-  homeAddress: '',
-  homeLatitude: null,
-  homeLongitude: null,
-  locationSharingEnabled: true,
-  emailVerified: false,
-  householdId: null,
-  householdName: ''
+  email: '',
+  householdName: '',
+  emailVerified: false
 })
 
 const isLoading = ref(false)
 
-// Fetch user profile data
+// Fetch user profile data and convert to basic info format
 const fetchUserProfile = async () => {
   try {
     isLoading.value = true
     const userData = await getUserProfile()
-    profile.value = userData
+
+    // Map the extended profile to the basic info format
+    profile.value = {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      householdName: userData.householdName,
+      emailVerified: userData.emailVerified
+    }
   } catch (error) {
     console.error('Failed to fetch user profile:', error)
     toast.error(t('errors.unexpected-error'))
@@ -57,30 +59,44 @@ onMounted(() => {
     {{ t('navigation.profile') }}
   </h1>
   <div class="page-content flex flex-col items-center mt-10 mb-20 w-full">
-    <!-- Tabs for toggling between profile and reflections -->
-    <Tabs default-value="profile" class="w-full max-w-2/3">
-      <TabsList class="grid grid-cols-2 w-2/3 mx-auto mb-4">
-        <TabsTrigger value="profile">{{ t('navigation.profile') }}</TabsTrigger>
-        <TabsTrigger value="reflections">{{ t('reflect.your-reflections') }}</TabsTrigger>
-      </TabsList>
+    <!-- Profile content -->
+    <div class="w-full max-w-md">
+      <Card>
+        <CardContent class="pt-6">
+          <div class="flex flex-col items-center mb-6">
+            <!-- Profile Avatar -->
+            <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <UserIcon class="w-12 h-12 text-primary" />
+            </div>
 
-      <!-- Profile Content -->
-      <TabsContent value="profile" class="transition-all duration-300 ease-in-out">
-        <UserProfileInfo :profile="profile" />
-      </TabsContent>
+            <!-- Full Name -->
+            <h2 class="text-2xl font-bold">{{ profile.firstName }} {{ profile.lastName }}</h2>
 
-      <!-- Reflections Content -->
-      <TabsContent value="reflections" class="transition-all duration-300 ease-in-out">
-        <Card>
-          <CardHeader>
-            <CardTitle>{{ t('reflect.reflection') }}</CardTitle>
-            <CardDescription>{{ t('reflect.what-2-do-after-crisis') }}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <UserReflections />
-          </CardContent>
-        </Card>
-      </TabsContent>
-      </Tabs>
+            <!-- Email -->
+            <p class="text-sm text-muted-foreground mt-1">{{ profile.email }}</p>
+
+            <!-- Verification Badge -->
+            <div v-if="profile.emailVerified" class="flex items-center mt-2 text-xs text-green-600 dark:text-green-400">
+              <CheckCircle2 class="w-3 h-3 mr-1" />
+              <span>{{ t('settings.account.email.verified', 'Verified') }}</span>
+            </div>
+          </div>
+
+          <!-- Household info (if available) -->
+          <div v-if="profile.householdName" class="flex items-center justify-center p-3 bg-muted rounded-md mb-4">
+            <HomeIcon class="w-4 h-4 mr-2 text-muted-foreground" />
+            <span class="text-sm">{{ profile.householdName }}</span>
+          </div>
+
+          <div class="mt-6 flex justify-center">
+            <RouterLink to="/reflections">
+              <Button>
+                {{ t('reflect.view-reflections') }}
+              </Button>
+            </RouterLink>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   </div>
 </template>
