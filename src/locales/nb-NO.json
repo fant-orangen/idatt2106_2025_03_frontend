@@ -70,6 +70,7 @@
     "edit-event": "Rediger en pågående hendelse",
     "edit-mp": "Håndter møteplassen",
     "create-mp": "Lag en ny møteplass",
+    "news": "Lag et nyhetsvarsel",
     "super-admin": "Super Admin",
     "current-admins": "Nåværende adminbrukere",
     "edit-admin": "Håndter adminbrukere",
@@ -259,7 +260,8 @@
     "new-activity": "Ny aktivivtet",
     "go-back": "Tilbake",
     "light-mode": "Lys modus",
-    "dark-mode": "Mørk modus"
+    "dark-mode": "Mørk modus",
+    "admin-news": "Lag et nyhetsvarsel"
   },
   "user-profile": {
     "title": "Brukerprofil",
@@ -288,7 +290,17 @@
     "related_news": "Relaterte nyheter",
     "no_news_found": "Ingen nyheter funnet",
     "published_at": "Publisert",
-    "read_more": "Les mer"
+    "read_more": "Les mer",
+    "post": "Lagre & Post",
+    "search": "Søk etter en hendelse",
+    "select": "Velg en hendelse",
+    "content": "Innhold",
+    "news-title": "Tittel",
+    "description": {
+      "title": "Dette er tittelen på nyhetsvarselet",
+      "subject": "Dette er temaet i nyhetsvarselet, og burde være relatert til hendelsen",
+      "event": "Velg en tilhørende hendelse til dette nyhetsvarselet"
+    }
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",

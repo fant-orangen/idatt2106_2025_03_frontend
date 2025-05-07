@@ -1,5 +1,5 @@
 import api from '@/services/api/AxiosInstance';
-import type { News, CreateNewsDto } from '@/models/News';
+import type { News, CreateNewsDto, UpdateNewsArticle } from '@/models/News';
 import type { Page } from '@/types/Page';
 /**
  * Fetches paginated news articles related to a specific crisis event.
@@ -184,6 +184,34 @@ export async function adminAddNews(newsArticle: CreateNewsDto) {
   }
 }
 
+/**
+ * Update a news article, draft or not, with status or content. 
+ * @param id - id of the specific news article to update
+ * @param updatedData - new updated data to send to the backend API.
+ * @returns 
+ */
+export async function adminUpdateNews(id: number, updatedData: UpdateNewsArticle) {
+  try {
+    const response = await api.patch('admin/news/' + id, updatedData);
+    return response.data;
+  } catch (error) {
+    console.error('Error while updating a news article')
+  }
+}
+
+/**
+ * Fetches the saved data of an existing news article. 
+ * @param id - identifying the specified news article
+ * @returns 
+ */
+export async function fetchNewsArticleById(id: number) {
+  try {
+    const response = await api.get('public/news/article/' + id);
+    return response.data;
+  } catch (error) {
+    console.error('Error while trying to fetch a news article')
+  }
+}
 
 // Export convenience functions with specific page sizes
 export const fetchGeneralNewsSmall = (crisisId: number, page: number = 0) =>

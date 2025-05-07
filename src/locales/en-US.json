@@ -68,6 +68,7 @@
     "edit-scenario-theme": "Edit scenario themes",
     "edit-event": "Edit a current event",
     "edit-mp": "Handle meeting point",
+    "news": "Write a news alert",
     "create-mp":"Create a new meeting point",
     "super-admin": "Super Admin",
     "current-admins": "Current admin users",
@@ -257,7 +258,8 @@
     "new-activity": "New activity",
     "go-back": "Go back",
     "light-mode": "Lightmode",
-    "dark-mode": "Darkmode"
+    "dark-mode": "Darkmode",
+    "admin-news": "Write a news alert"
   },
   "user-profile": {
     "title": "User Profile",
@@ -286,7 +288,17 @@
     "related_news": "Related News",
     "no_news_found": "No news found",
     "published_at": "Published at",
-    "read_more": "Read more"
+    "read_more": "Read more",
+    "post": "Save & Post",
+    "search": "Search for an event",
+    "select": "Select an event",
+    "content": "Content",
+    "news-title": "Title",
+    "description": {
+      "title": "This is the title of the news alert",
+      "subject": "This is the subject of the news alert, should be realted to the crisis event",
+      "event": "Select a related event to this news alert"
+    }
   },
   "reflect": {
     "reflection": "Reflect after crisis",
@@ -813,4 +825,5 @@
     "noRelatedEvents": "No related crisis events found",
     "themeNotFound": "Scenario theme not found"
   }
+  
 }

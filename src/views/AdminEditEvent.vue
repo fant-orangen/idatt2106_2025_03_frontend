@@ -184,7 +184,7 @@
 							<FormControl>
 								<Select v-bind="field">
 									<SelectTrigger style="cursor: pointer;">
-									<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->
+									<!--<SelectValue :placeholder="$t('add-event-info.scenarios.' + getScenarioName(field.value))"/> Vil kun fungere dersom språkfilene har typen-->
 										<SelectValue :placeholder="scenarioName"/>
 									</SelectTrigger>
 									<SelectContent>

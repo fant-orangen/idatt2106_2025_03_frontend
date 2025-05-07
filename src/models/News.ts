@@ -28,3 +28,8 @@ export interface CreateNewsDto {
   createdByUserId: number;
 }
 
+export interface UpdateNewsArticle {
+  title: string;
+  content: string;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+}
