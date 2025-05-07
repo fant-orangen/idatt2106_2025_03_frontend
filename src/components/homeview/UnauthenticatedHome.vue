@@ -25,7 +25,7 @@
     <div class="grid grid-cols-1 md:grid-cols-5 gap-8 px-4">
       <!-- News Section (2/5) -->
       <section class="news-section md:col-span-2 h-full flex flex-col">
-        <NewsViewComponent class="flex-grow" />
+        <NewsViewComponent class="flex-grow h-full" />
       </section>
 
       <!-- Information Sections (3/5) -->
