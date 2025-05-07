@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { getCurrentHousehold } from '@/services/HouseholdService'
-import { useUserStore } from '@/stores/UserStore';
-import { type AxiosError } from 'axios';
+import { useUserStore } from '@/stores/UserStore'
+import { type AxiosError } from 'axios'
 
 const routes = [
   {
@@ -28,7 +28,7 @@ const routes = [
     path: '/reset-password/:token',
     name: 'ResetPassword',
     component: () => import('@/views/ResetPasswordView.vue'),
-    props: true
+    props: true,
   },
   {
     path: '/notifications',
@@ -39,12 +39,12 @@ const routes = [
   {
     path: '/crisis-event',
     name: 'CrisisEvent',
-    component: () => import('@/views/CrisisEventView.vue')
+    component: () => import('@/views/CrisisEventView.vue'),
   },
   {
     path: '/news',
     name: 'News',
-    component: () => import('@/views/NewsView.vue')
+    component: () => import('@/views/NewsView.vue'),
   },
   {
     path: '/settings',
@@ -56,16 +56,6 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: () => import('@/views/RegisterView.vue'),
-  },
-  {
-    path: '/before-crisis',
-    name: 'BeforeCrisis',
-    component: () => import('@/views/BeforeCrisisView.vue'),
-  },
-  {
-    path: '/during-crisis',
-    name: 'DuringCrisis',
-    component: () => import('@/views/DuringCrisisView.vue'),
   },
   {
     path: '/household',
@@ -145,10 +135,10 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/edit-POI',
+    path: '/admin/edit-POI',
     name: 'AdminEditPOI',
     component: () => import('@/views/AdminEditPOI.vue'),
-    meta: { requiresAdmin: true},
+    meta: { requiresAdmin: true },
   },
   {
     path: '/inventory/water',
@@ -178,15 +168,24 @@ const routes = [
     path: '/reflections',
     name: 'Reflections',
     component: () => import('@/views/ReflectionsView.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: '/admin/meeting-point',
     name: 'MeetingPointPage',
     component: () => import('@/views/AdminEditMeetingPoint.vue'),
-    meta: { requiresAdmin: true},
-  }
-
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/privacy-policy',
+    name: 'PrivacyPolicy',
+    component: () => import('@/views/PrivacyPolicyView.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/404NotFoundView.vue'),
+  },
 ]
 
 const router = createRouter({
@@ -211,10 +210,10 @@ const router = createRouter({
  */
 router.beforeEach(async (to, from, next) => {
   // Instantiate the Pinia user store to access authentication state and user info
-  const userStore = useUserStore();
+  const userStore = useUserStore()
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'Household', 'Information', 'ScenarioTheme', 'CrisisEvent', 'NotFound', 'News', 'Notifications', 'ResetPassword'];
+  const publicRoutes = ['Login', 'Register', 'Home', 'Household', 'Information', 'ScenarioTheme', 'CrisisEvent', 'NotFound', 'News', 'Notifications', 'ResetPassword', 'PrivacyPolicy', ];
 
   // Define routes that require authentication but don't require a household
   const noHouseholdRequiredRoutes = ['Reflections', 'Profile', 'Settings', ];
@@ -226,31 +225,32 @@ router.beforeEach(async (to, from, next) => {
 
   // Check if the user store indicates authentication.
   // If not, attempt to initialize the store from localStorage (e.g., refresh scenario).
-  if (!userStore.isAuthenticated) { //
-    console.log('Store not authenticated, attempting initialization...');
-    await userStore.initializeFromStorage(); // Attempt to load user session
+  if (!userStore.isAuthenticated) {
+    //
+    console.log('Store not authenticated, attempting initialization...')
+    await userStore.initializeFromStorage() // Attempt to load user session
 
     // After attempting initialization, re-check authentication status.
     // If still not authenticated and the route is not public, redirect to Login.
     if (!userStore.isAuthenticated && !publicRoutes.includes(to.name as string)) {
-      console.log('Initialization failed or user not authenticated, redirecting to Login.');
-      userStore.logout(); // Ensure any partial/invalid state is cleared
-      return next({ name: 'Login' }); // Redirect to the login page
+      console.log('Initialization failed or user not authenticated, redirecting to Login.')
+      userStore.logout() // Ensure any partial/invalid state is cleared
+      return next({ name: 'Login' }) // Redirect to the login page
     }
-    console.log('Store initialized, role:', userStore.role);
+    console.log('Store initialized, role:', userStore.role)
   }
 
   // requires super admin - not allowed
   if (to.meta.requiresSuperAdmin && !userStore.isSuperAdminUser) {
-    return next({ name: 'NotFound' });
+    return next({ name: 'NotFound' })
   }
   // requires admin - not allowed
   if (to.meta.requiresAdmin && !userStore.isAdminUser) {
-    return next({ name: 'NotFound' });
+    return next({ name: 'NotFound' })
   }
   // requires authentication - not allowed
   if (to.meta.requiresAuth && !userStore.isAuthenticated) {
-    return next( { name: 'Login' });
+    return next({ name: 'Login' })
   }
 
   // For authenticated, non-admin users, check for household association.
@@ -261,39 +261,38 @@ router.beforeEach(async (to, from, next) => {
     }
 
     try {
-        // Attempt to fetch the user's current household information from the backend.
-        const household = await getCurrentHousehold();
+      // Attempt to fetch the user's current household information from the backend.
+      const household = await getCurrentHousehold()
 
-        // If the user has no household (API returns null or 404), redirect them.
-        if (!household) {
-          // Prevent an infinite redirect loop if already on the Household page.
-          if (to.name === 'Household') {
-            return next(); // Allow navigation to Household page
-          }
-          console.log('User has no household, redirecting to Household page.');
-          // Redirect user to the Household page where they can see invitations and create options
-          return next({ name: 'Household' });
+      // If the user has no household (API returns null or 404), redirect them.
+      if (!household) {
+        // Prevent an infinite redirect loop if already on the Household page.
+        if (to.name === 'Household') {
+          return next() // Allow navigation to Household page
         }
-
+        console.log('User has no household, redirecting to Household page.')
+        // Redirect user to the Household page where they can see invitations and create options
+        return next({ name: 'Household' })
+      }
     } catch (error) {
       // Catch errors during the household check (e.g., network, API errors)
-      console.error('Error checking household:', error); // Log the error for debugging
+      console.error('Error checking household:', error) // Log the error for debugging
 
       // Check if the error is an Axios error with a 401 (Unauthorized) status.
       // This indicates the user's token might be invalid or expired.
-      const axiosError = error as AxiosError; // Assert error type
+      const axiosError = error as AxiosError // Assert error type
       if (axiosError.response?.status === 401) {
-        console.log('Unauthorized check for household, redirecting to login.');
-        userStore.logout(); // Log out the user and clear auth state
-        return next({ name: 'Login' }); // Redirect to login
+        console.log('Unauthorized check for household, redirecting to login.')
+        userStore.logout() // Log out the user and clear auth state
+        return next({ name: 'Login' }) // Redirect to login
       }
 
       // For other errors during the household check, allow navigation to prevent
-      return next(); // Proceed, potentially to a route that might show an error state
+      return next() // Proceed, potentially to a route that might show an error state
     }
   }
   // User is authenticated, not an admin, and has a household. Allow navigation.
-  return next(); // Proceed to the requested route
-});
+  return next() // Proceed to the requested route
+})
 
 export default router

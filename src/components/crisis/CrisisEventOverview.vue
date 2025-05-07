@@ -2,7 +2,7 @@
   <div class="container mx-auto p-4">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Map Area -->
-      <Card class="lg:col-span-2">
+      <Card class="lg:col-span-2 z-50">
         <CardHeader class="pb-2 flex justify-center">
           <CardTitle class="text-2xl font-bold">{{ selectedCrisis ? selectedCrisis.name : t('crisis.map_view', 'Map View') }}</CardTitle>
         </CardHeader>
@@ -47,7 +47,7 @@
                   <div class="flex-1">
                     <div class="flex items-center justify-between">
                       <h3 class="font-medium">{{ event.name }}</h3>
-                      <Badge :class="getSeverityClass(event.severity)">
+                      <Badge :style="{ backgroundColor: getSeverityColor(event.severity) }">
                         {{ event.severity.toUpperCase() }}
                       </Badge>
                     </div>
@@ -207,12 +207,13 @@ const mapData = computed(() => {
   if (!selectedCrisis.value) {
     return null;
   }
+  const radiusInKm = typeof selectedCrisis.value.radius === 'number' ? selectedCrisis.value.radius : null;
   const lat = selectedCrisis.value.epicenterLatitude;
   const lng = selectedCrisis.value.epicenterLongitude;
   return {
     lat: lat,
     lng: lng,
-    radius: selectedCrisis.value.radius || 1000,
+    radius: radiusInKm !== null ? radiusInKm * 1000 : null,
     color: getSeverityColor(selectedCrisis.value.severity)
   };
 });

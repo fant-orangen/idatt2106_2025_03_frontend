@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 
 // Icon
@@ -58,18 +58,51 @@ function changeLanguage(code: string) {
 
 // Notifications
 const topNotifications = computed(() => notificationStore.latestNotifications)
+const hasUnreadNotifications = computed(() => notificationStore.hasUnread)
+
+// Watch for changes in notifications and update unread status
+watch(
+  () => notificationStore.notifications,
+  async () => {
+    console.log('HeaderNavbar: Notifications changed, checking unread status'); // TODO: remove logs
+    await notificationStore.checkUnreadNotifications();
+  },
+  { deep: true }
+);
+
+// Watch hasUnread state for debugging
+watch(
+  () => notificationStore.hasUnread,
+  (newValue) => {
+    console.log('HeaderNavbar: hasUnread state changed to:', newValue);
+  }
+);
 
 onMounted(async () => {
   // Only fetch if logged in and haven't fetched yet
   if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
     try {
       await notificationStore.fetchNotifications()
-      console.log('NavBar: Initial notifications fetched via store.')
+      await notificationStore.checkUnreadNotifications()
+      console.log('NavBar: Initial notifications fetched and checked for unread')
     } catch (error) {
       console.error('NavBar: Failed to fetch initial notifications via store:', error)
     }
   }
 })
+
+// Handle notification bell click
+async function handleNotificationClick() {
+  if (notificationStore.hasUnread) {
+    try {
+      await notificationStore.markAllAsRead()
+      await notificationStore.checkUnreadNotifications() // Recheck after marking as read
+      console.log('NavBar: Marked all notifications as read')
+    } catch (error) {
+      console.error('NavBar: Failed to mark notifications as read:', error)
+    }
+  }
+}
 
 // Mobile menu
 const isMenuOpen = ref(false)
@@ -194,7 +227,7 @@ function logOut() {
             <DropdownMenuSeparator v-if="userStore.isAdminUser" />
             <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin/admin-panel')">
               <ShieldUser class="mr-2 h-4 w-4" />
-              <span>{{ t('admin.adminPanel') }}</span>
+              <span>{{ t('navigation.admin-panel') }}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="logOut()">
@@ -207,16 +240,17 @@ function logOut() {
 
       <!-- Notifications -->
 
-      <Popover>
+      <Popover v-if="userStore.loggedIn">
         <PopoverTrigger as="button" class="no-border relative">
           <Button
             variant="ghost"
             size="icon"
             class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            @click="handleNotificationClick"
           >
             <Bell class="h-5 w-5" />
             <span
-              v-if="notificationStore.unreadCount > 0"
+              v-if="hasUnreadNotifications"
               class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-secondary"
             ></span>
           </Button>

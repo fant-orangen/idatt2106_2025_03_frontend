@@ -26,7 +26,10 @@
           <LogOutIcon class="h-4 w-4" />
           <span>{{ t('household.leave-household') }}</span>
         </Button>
-        <Button v-if="hasHousehold" variant="outline" class="flex items-center gap-2" @click="goToGroupPage">
+        <Button v-if="hasHousehold"
+          variant="outline"
+          class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
+          @click="goToGroupPage">
           <UsersIcon class="h-4 w-4" />
           <span>{{ t('group.go-to-groups') }}</span>
         </Button>
@@ -119,7 +122,7 @@
             {{ t('household.no-members-to-transfer') }}
           </div>
           <div class="space-y-2 max-h-60 overflow-y-auto">
-            <!-- Household members -->
+            <!-- Non-admin members (selectable) -->
             <div
               v-for="member in nonAdminMembers"
               :key="member.id"
@@ -544,31 +547,4 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.household-container {
-  min-height: calc(100vh - 64px);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .household-container {
-    padding: 1rem;
-  }
-
-  /* Fix buttons on narrow screens */
-  .flex.items-center.justify-between {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .flex.gap-2 {
-    flex-wrap: wrap;
-    width: 100%;
-  }
-
-  .flex.gap-2 > button {
-    flex: 1 1 auto;
-    min-width: 120px;
-  }
-}
 </style>

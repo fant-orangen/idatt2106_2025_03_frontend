@@ -239,9 +239,9 @@ export async function switchHousehold(householdId: number): Promise<Household> {
 export async function isCurrentUserHouseholdAdmin(): Promise<boolean> {
   try {
     const response = await api.get('/user/households/is-admin');
-    return response.data.isAdmin === true;
+    return response.data.isAdmin;
   } catch (error) {
-    console.error('Error checking admin status:', error);
+    console.error('Error checking if user is household admin:', error);
     return false;
   }
 }

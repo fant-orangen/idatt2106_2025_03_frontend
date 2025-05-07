@@ -42,8 +42,8 @@
           >
             <div class="flex items-center gap-1.5">
               <UserIcon class="h-4 w-4" />
-              <span>{{ $t('household.people') }}</span>
-              <Badge variant="secondary" class="ml-1 text-xs">{{ realMembers.length }}</Badge>
+              <span>{{ $t('household.users') }}</span>
+              <Badge variant="secondary" size="sm" class="ml-1">{{ realMembers.length }}</Badge>
             </div>
           </button>
           <button
@@ -66,7 +66,7 @@
         <div class="mb-2 text-sm text-muted-foreground flex items-center gap-1">
           <UserIcon class="h-3.5 w-3.5" />
           <span>
-            {{ realMembers.length }} {{ realMembers.length === 1 ? $t('household.person') : $t('household.people') }} {{ $t('household.in-household') }}
+            {{ realMembers.length }} {{ realMembers.length === 1 ? $t('household.user') : $t('household.users') }} {{ $t('household.in-household') }}
           </span>
         </div>
 
@@ -378,7 +378,6 @@ const showAddUser = ref(false);
 const showAddEmptyMember = ref(false);
 const manageMode = ref(false);
 const showInviteUser = ref(false);
-// No longer showing info message for non-admin users
 const memberToRemove = ref<HouseholdMember | EmptyHouseholdMemberDto | null>(null);
 const householdMembers = ref<HouseholdMember[]>([]);
 const emptyMembers = ref<EmptyHouseholdMemberDto[]>([]);
@@ -454,7 +453,6 @@ const toggleMemberSelection = (member: HouseholdMember | EmptyHouseholdMemberDto
 const fetchMembers = async () => {
   try {
     const members = await getHouseholdMembers();
-    console.log('Fetched household members:', members);
     householdMembers.value = members;
 
     const emptyMembersList = await getEmptyHouseholdMembers();

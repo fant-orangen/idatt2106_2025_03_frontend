@@ -40,7 +40,7 @@
 
             <!-- Render change content -->
             <div class="mb-1 flex items-center justify-between">
-              <Badge :class="getChangeTypeClass(change.changeType)">
+              <Badge :class="[getChangeTypeClass(change.changeType), 'pl-[2.5]']">
                 {{ getChangeTypeName(change.changeType) }}
               </Badge>
               <time class="text-xs text-muted-foreground">
@@ -82,6 +82,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { fetchCrisisEventChanges } from '@/services/CrisisEventService.ts';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
+import { getSeverityColor } from '@/utils/severityUtils';
 
 /**
  * CrisisEventHistory component
@@ -116,18 +117,24 @@ const loading = ref(false);
 const initialLoading = ref(false);
 
 /**
- * Returns the appropriate CSS class for a change type badge
+ * Returns the appropriate CSS class or inline style for a change type badge
  *
  * @param changeType - The type of change
- * @returns CSS class string for styling the badge
+ * @param severity - The severity level (optional, used for 'creation' and 'level_change')
+ * @returns CSS class string or inline style for styling the badge
  */
-const getChangeTypeClass = (changeType: string): string => {
+ const getChangeTypeClass = (changeType: string, severity?: string): string => {
   switch (changeType) {
-    case 'creation': return 'bg-green-500 text-white';
-    case 'level_change': return 'bg-yellow-500 text-black';
-    case 'description_update': return 'bg-blue-500 text-white';
-    case 'epicenter_moved': return 'bg-purple-500 text-white';
-    default: return 'bg-gray-500 text-white';
+    case 'creation':
+      return `bg-[${getSeverityColor(severity || 'default')}]`;
+    case 'level_change':
+      return `bg-[${getSeverityColor(severity || 'default')}]`;
+    case 'description_update':
+      return 'bg-accent';
+    case 'epicenter_moved':
+      return 'bg-accent';
+    default:
+      return 'bg-blue-500';
   }
 };
 

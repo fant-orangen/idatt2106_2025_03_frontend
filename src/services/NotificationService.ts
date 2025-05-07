@@ -26,6 +26,31 @@ export async function getNotifications(page: number = 1, size: number = 20): Pro
   };
 }
 
+/**
+ * Marks all notifications as read for the current user.
+ * @returns The number of notifications marked as read.
+ */
+export async function markAllNotificationsAsRead() {
+  const response = await api.patch('/user/notifications/read-all');
+  console.log(response.data);
+  return response.data;
+}
+
+/**
+ * Checks if the current user has any unread notifications.
+ * @returns true if the user has any unread notifications, false otherwise.
+ */
+export async function hasUnreadNotifications() {
+  const response = await api.get('/user/notifications/any-unread');
+  console.log(response.data);
+  return response.data;
+}
+
+/**
+ * Maps dates to objects.
+ * @param notification The notification to map.
+ * @returns The mapped notification.
+ */
 function mapDatesToObjects(notification: NotificationMessage): NotificationMessage {
   return {
     ...notification,

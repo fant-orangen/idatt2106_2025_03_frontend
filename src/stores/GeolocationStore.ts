@@ -55,6 +55,12 @@ export const useGeolocationStore = defineStore('geolocation', () => {
     locationError.value = null; // Clear error on success/status update
   }
 
+
+  function setLocationStatus(status: string | null) {
+    console.log('GeolocationStore: Setting location status', status);
+    locationStatus.value = status;
+  }
+
   /**
    * Updates the store when a geolocation error occurs.
    * @param payload - Object containing the error, status message, and loading state.
@@ -112,5 +118,6 @@ export const useGeolocationStore = defineStore('geolocation', () => {
     setLocationError,
     setLocationLoading,
     clearLocationState,
+    setLocationStatus,
   };
 });

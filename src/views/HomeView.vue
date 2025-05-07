@@ -6,12 +6,14 @@
         @select-crisis="handleCrisisSelect"
       />
     </div>
-    <div class="container flex flex-col gap-10 w-full max-w-7xl md:flex-row md:gap-40">
+    <div class="container flex flex-col gap-10 w-full max-w-7xl md:flex-row md:gap-40 pb-20">
       <!-- Dynamic Buttons -->
       <div class="crisis-components flex flex-col px-4 md:gap-20 md:px-0">
         <component :is="crisisComponents[currentStatus]" />
       </div>
-      <div class="map flex-grow px-4 md:px-0 min-h-[200px] md:min-h-[300px] rounded-lg overflow-hidden">
+      <div
+           class="map flex-grow px-4 md:px-0 rounded-lg"
+         >
         <MapOverviewComponent />
       </div>
     </div>
@@ -96,3 +98,4 @@ onMounted(async () => {
   await checkForOngoingCrises()
 })
 </script>
+
