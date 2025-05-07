@@ -97,7 +97,6 @@
     </CardHeader>
     <CardContent>
       <div class="grid grid-cols-1 gap-4 items-end md:grid-cols-2">
-        <!-- Remove "Use My Location" from here since we've moved it outside -->
         <div>
           <label for="distance" class="text-sm font-medium block mb-1">
             {{ t('map.distance') }}
@@ -234,7 +233,9 @@ import { faHouseChimney, faChevronUp, faChevronDown, faLocationDot } from '@fort
 
 import MapLegend from './MapLegend.vue'
 
-// also import your POI icon URLs:
+/**
+ * Import POI icon URLs for map markers
+ */
 import firestationIconUrl   from '@/assets/mapicons/firestation.svg'
 import gasstationIconUrl     from '@/assets/mapicons/gasstation.svg'
 import grocerystoreIconUrl   from '@/assets/mapicons/grocerystore.svg'
@@ -246,12 +247,15 @@ import shelterIconUrl        from '@/assets/mapicons/shelter.svg'
 import waterpointIconUrl     from '@/assets/mapicons/waterpoint.svg'
 import defaultPoiIconUrl     from '@/assets/mapicons/home.svg'
 
-// Add the location-dot icon
+// Register FontAwesome icons
 library.add(faHouseChimney, faChevronUp, faChevronDown, faLocationDot)
 
 const { t } = useI18n()
 
-// --- Pinia Stores and Geolocation Composable ---
+/**
+ * Store and Geolocation Setup
+ * Initialize Pinia stores and geolocation functionality
+ */
 const userStore = useUserStore();
 const geolocationStore = useGeolocationStore();
 const householdStore = useHouseholdStore();
@@ -292,10 +296,16 @@ const legendItems = [
 
 const mapComponentRef = ref<InstanceType<typeof MapComponent> | null>(null);
 
-// --- Correctly Alias userLocation ---
-const userLocation = locationCoords // Use the ref returned by the composable
+/**
+ * User Location Setup
+ * Alias the coordinates from geolocation composable
+ */
+const userLocation = locationCoords
 
-// --- Compute household location from HouseholdStore ---
+/**
+ * Household Location
+ * Compute household location from HouseholdStore data
+ */
 const householdLocation = computed(() => {
   const household = householdStore.currentHousehold;
   if (household && household.latitude && household.longitude) {
@@ -307,7 +317,10 @@ const householdLocation = computed(() => {
   return null;
 });
 
-// --- Local Reactive State ---
+/**
+ * Points of Interest State
+ * Reactive state for POIs, crisis events, and loading indicators
+ */
 const allPois = ref<PoiData[]>([])
 const pointsOfInterest = ref<PoiData[]>([])
 const isLoadingPois = ref(false)
@@ -315,7 +328,10 @@ const poiError = ref<string | null>(null)
 const crisisEvents = ref<CrisisEvent[]>([])
 const isLoadingCrisisEvents = ref(false)
 
-// Filter state
+/**
+ * Filter State
+ * State variables for filtering POIs and UI controls
+ */
 const selectedPoiType = ref<number | null>(null)
 const distanceInMeters = ref(50000)
 const isFilterMenuVisible = ref(false)
@@ -327,7 +343,11 @@ const showMeetingPlaces = ref(false)
 const meetingPlaces     = ref<MeetingPlaceDto[]>([])
 const isLoadingMeetings = ref(false)
 
-// --- Custom method to toggle meeting places ---
+/**
+ * Meeting Places Toggle Handler
+ * Handles validation when toggling meeting places visibility
+ * @param value - The new toggle state
+ */
 function handleMeetingPlacesToggle(value: boolean) {
   if (!userLocation.value && value) {
     // If trying to enable meeting places without location, show error
@@ -338,13 +358,23 @@ function handleMeetingPlacesToggle(value: boolean) {
   }
 }
 
-// --- Computed Properties ---
-// Convert displayed PoiData to POI objects for the MapComponent
+/**
+ * Computed Properties
+ * Derived state and calculations
+ */
+
+/**
+ * Converted POIs
+ * Converts PoiData objects to POI objects for the MapComponent
+ */
 const convertedPois = computed<POI[]>(() => {
   return pointsOfInterest.value.map((poi) => convertPoiData(poi))
 })
 
-// Derive unique POI types from all loaded POIs
+/**
+ * POI Types
+ * Derives unique POI types from all loaded POIs
+ */
 const poiTypes = computed(() => {
   const types = new Map<number, string>()
   allPois.value.forEach((poi: PoiData) => {
@@ -358,6 +388,11 @@ const poiTypes = computed(() => {
   .sort((a, b) => a.name.localeCompare(b.name))
 })
 
+/**
+ * Location Status Message
+ * Computes a user-friendly message about the current location status
+ * @returns A translated status message or null if no status to display
+ */
 const locationStatusMessage = computed(() => {
   // First, handle loading state
   if (isLoadingLocation.value) return t('map.getting-location');
@@ -391,7 +426,10 @@ const locationStatusMessage = computed(() => {
   return null;
 });
 
-// --- Handle location reset on logout ---
+/**
+ * Location Reset Handler
+ * Resets all location-related state when user logs out or manually resets
+ */
 function handleLocationReset() {
   console.log('Resetting location state due to user action or logout');
 
@@ -408,7 +446,14 @@ function handleLocationReset() {
   showMeetingPlaces.value = false;
 }
 
-// --- Methods ---
+/**
+ * Core Functionality Methods
+ * Main methods for data fetching and user interactions
+ */
+/**
+ * Load Crisis Events
+ * Fetches active crisis events from the API and processes them for display
+ */
 async function loadCrisisEvents() {
   isLoadingCrisisEvents.value = true
   try {
@@ -431,6 +476,11 @@ async function loadCrisisEvents() {
   }
 }
 
+/**
+ * Fetch User Location
+ * Requests the user's current location and centers the map on it if successful
+ * @returns Promise resolving to true if location was successfully obtained, false otherwise
+ */
 async function fetchUserLocation(): Promise<boolean> {
   console.log('fetchUserLocation called');
 
@@ -470,6 +520,10 @@ async function fetchUserLocation(): Promise<boolean> {
   }
 }
 
+/**
+ * Reset Filters
+ * Resets all filter criteria to their default values and shows all POIs
+ */
 function resetFilters() {
   console.log('Resetting filters')
   selectedPoiType.value = null
@@ -479,6 +533,11 @@ function resetFilters() {
   console.log('Filters reset, showing all POIs:', pointsOfInterest.value.length)
 }
 
+/**
+ * Apply Filters
+ * Applies the selected filters to the POI list
+ * Filters by type and/or location based on user selections
+ */
 async function applyFilters() {
   console.log('Applying filters with:', {
     type: selectedPoiType.value,
@@ -527,6 +586,11 @@ async function applyFilters() {
   }
 }
 
+/**
+ * Find Nearest Shelter
+ * Locates and displays the nearest shelter to the user's current location
+ * Will attempt to get user location if not already available
+ */
 async function findNearestShelter() {
   console.log('Finding nearest shelter')
   poiError.value = null
@@ -577,6 +641,12 @@ async function findNearestShelter() {
   }
 }
 
+/**
+ * Find Nearest POI
+ * Locates and displays the nearest POI of the selected type to the user's location
+ * Will attempt to get user location if not already available
+ * Requires a POI type to be selected first
+ */
 async function findNearestPoi() {
   console.log('Finding nearest POI of selected type')
   poiError.value = null
@@ -620,7 +690,10 @@ async function findNearestPoi() {
   }
 }
 
-// Watch distance input for simple validation
+/**
+ * Distance Input Validation
+ * Ensures the distance value stays within acceptable range
+ */
 watch(distanceInMeters, (val: number | string) => {
   const numVal = Number(val)
   if (isNaN(numVal)) {
@@ -632,7 +705,10 @@ watch(distanceInMeters, (val: number | string) => {
   else if (typeof val === 'string') distanceInMeters.value = numVal
 })
 
-// Watch for auth state changes to handle logout properly
+/**
+ * Authentication State Watcher
+ * Handles location reset when user logs out
+ */
 watch(() => userStore.loggedIn, (isLoggedIn, wasLoggedIn) => {
   console.log(`Auth state changed: ${wasLoggedIn} -> ${isLoggedIn}`);
 
@@ -643,10 +719,13 @@ watch(() => userStore.loggedIn, (isLoggedIn, wasLoggedIn) => {
   }
 }, { immediate: true });
 
-// Watch for user location changes
+/**
+ * User Location Watcher
+ * Centers map when location changes and manages meeting places visibility
+ */
 watch(userLocation, (loc) => {
   if (loc && mapComponentRef.value) {
-    // e.g. zoom level 15 when you share your location
+    // Center map on user location with zoom level 15
     mapComponentRef.value.centerMap(loc.latitude, loc.longitude, 15);
   }
 
@@ -656,6 +735,10 @@ watch(userLocation, (loc) => {
   }
 });
 
+/**
+ * Meeting Places Visibility Watcher
+ * Fetches meeting places when visibility is toggled on and location is available
+ */
 watch(
   [ () => showMeetingPlaces.value, () => userLocation.value ],
   async ([show, loc]) => {
@@ -665,7 +748,7 @@ watch(
         meetingPlaces.value = await fetchMeetingPlacesNearby(
           loc.latitude,
           loc.longitude,
-          distanceInMeters.value / 1000  // if your API expects km
+          distanceInMeters.value / 1000  // Convert meters to kilometers for API
         )
         console.log('Fetched meetingPlaces:', meetingPlaces.value)
       } finally {
@@ -678,7 +761,14 @@ watch(
   { immediate: true }
 )
 
-// --- Lifecycle Hooks ---
+/**
+ * Lifecycle Hooks
+ * Component initialization and cleanup
+ */
+/**
+ * Component Initialization
+ * Loads initial data when component is mounted
+ */
 onMounted(async () => {
   console.log('Map overview component mounted')
   isLoadingPois.value = true
@@ -710,6 +800,10 @@ onMounted(async () => {
   console.log('Geolocation will be fetched on user interaction.')
 })
 
+/**
+ * Component Cleanup
+ * Stops location watching when component is unmounted
+ */
 onBeforeUnmount(() => {
   console.log('Map overview unmounting, stopping location watch.')
   stopWatching() // Ensure watcher is stopped
@@ -717,7 +811,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Add some styling for disabled buttons */
+/**
+ * Disabled button styling
+ * Prevents pointer events on disabled buttons
+ */
 .cursor-not-allowed {
   pointer-events: none;
 }
