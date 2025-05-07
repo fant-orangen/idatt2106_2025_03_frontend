@@ -60,7 +60,7 @@ import { useI18n } from 'vue-i18n';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCcwIcon, Loader2, XIcon } from 'lucide-vue-next';
-import { getPendingHouseholdInvitations, declineHouseholdInvitation } from '@/services/HouseholdService';
+import { getPendingHouseholdInvitations, cancelHouseholdInvitation } from '@/services/HouseholdService';
 import type { Invitation } from '@/models/Invitation';
 import { toast } from 'vue-sonner';
 
@@ -118,7 +118,7 @@ const refreshInvitations = async () => {
  */
 const cancelInvitation = async (token: string) => {
   try {
-    await declineHouseholdInvitation(token);
+    await cancelHouseholdInvitation(token);
     toast.success(t('household.invitation-canceled'));
     await refreshInvitations();
   } catch (error) {

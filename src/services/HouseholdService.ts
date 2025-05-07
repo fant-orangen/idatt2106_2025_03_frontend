@@ -171,15 +171,17 @@ export async function removeMemberFromHousehold(memberId: number): Promise<void>
 }
 
 /**
- * Decline a household invitation (deprecated - use InvitationService.declineInvitation instead)
+ * Cancel a household invitation that was sent to another user
  * @param token The invitation token
  * @returns Promise that resolves when operation is successful
- * @deprecated This endpoint has been removed. Use InvitationService.declineInvitation instead.
  */
-export async function declineHouseholdInvitation(token: string): Promise<void> {
-  console.warn('declineHouseholdInvitation is deprecated. Use InvitationService.declineInvitation instead.');
-  const payload: HouseholdJoinRequestDto = { token };
-  await api.post('/user/invitations/decline', payload);
+export async function cancelHouseholdInvitation(token: string): Promise<void> {
+  try {
+    await api.delete(`/user/households/invitations/${token}`);
+  } catch (error) {
+    console.error('Error canceling invitation:', error);
+    throw error;
+  }
 }
 
 /**
