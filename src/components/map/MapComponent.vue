@@ -5,6 +5,31 @@
 </template>
 
 <script lang="ts">
+/**
+ * @component MapComponent
+ * @description An interactive map component built with Leaflet.js that displays various geographic data:
+ * - Points of Interest (POIs) with custom icons based on type
+ * - User and household locations
+ * - Crisis events with different severity levels
+ * - Meeting places
+ * - Routing functionality between locations
+ *
+ * The component supports clustering for better performance with large numbers of markers,
+ * responsive design for different screen sizes, and an optional admin mode for marker management.
+ *
+ * @example
+ * <MapComponent
+ *   :pois="poiList"
+ *   :userLocation="currentUserLocation"
+ *   :householdLocation="householdAddress"
+ *   :crisisEvents="activeCrisisEvents"
+ *   :showPois="true"
+ *   :showCrisis="true"
+ *   :showMeetingPlaces="false"
+ *   :adminMode="false"
+ *   @map-clicked="handleMapClick"
+ * />
+ */
 import { onMounted, onBeforeUnmount, watch, ref, defineComponent, nextTick } from 'vue';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -19,11 +44,12 @@ import type { MeetingPlaceDto } from '@/types/meetingPlace'
 // Import shared types
 import type { POI, UserLocation, CrisisEvent, MarkerMovedEvent, MarkerAddedEvent, MarkerRemovedEvent, POIMarker } from '@/types/map';
 
-// Fix default Leaflet icon paths
+// Import Leaflet icon assets
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
+// Import POI type-specific SVG icons
 import firestationIconUrl from '@/assets/mapicons/firestation.svg';
 import gasstationIconUrl from '@/assets/mapicons/gasstation.svg';
 import grocerystoreIconUrl from '@/assets/mapicons/grocerystore.svg';
@@ -35,22 +61,46 @@ import shelterIconUrl from '@/assets/mapicons/shelter.svg';
 import waterpointIconUrl from '@/assets/mapicons/waterpoint.svg';
 import defaultPoiIconUrl from '@/assets/mapicons/home.svg';
 
-
+/**
+ * Interface for translated UI strings used in the map component
+ * These strings are loaded from i18n translations with fallbacks
+ */
 interface TranslatedStrings {
+  /** Label for address information in POI popups */
   address: string;
+  /** Label for opening hours information in POI popups */
   openingHours: string;
+  /** Label for contact information in POI popups */
   contact: string;
+  /** Label for directions information in POI popups */
   directions: string;
+  /** Label for user's current location marker */
   yourLocation: string;
+  /** Label for household location marker */
   householdLocation: string;
+  /** Text for button to show directions to a POI */
   showDirections: string;
+  /** Text for button to close directions panel */
   closeDirections: string;
 }
 
-// Declare global functions for window
+/**
+ * Declare global functions added to the window object
+ * These functions enable interaction with the map from popup HTML content
+ */
 declare global {
   interface Window {
+    /**
+     * Shows routing directions from user's location to a specified point
+     * @param lat - Destination latitude
+     * @param lng - Destination longitude
+     * @param poiName - Name of the destination POI for display in the directions panel
+     */
     showRouteFor: (lat: number, lng: number, poiName: string) => void;
+
+    /**
+     * Closes the active routing directions panel
+     */
     closeRouting: () => void;
   }
 }
@@ -58,71 +108,163 @@ declare global {
 export default defineComponent({
   name: 'MapComponent',
   props: {
-    // Original props
+    /**
+     * Array of Points of Interest to display on the map
+     * Each POI should have id, name, latitude, longitude, and poiTypeName properties
+     * Optional properties: description, address, openingHours, contactInfo
+     */
     pois: {
       type: Array as () => POI[],
       default: () => []
     },
+
+    /**
+     * Initial center latitude of the map
+     * Defaults to Trondheim, Norway coordinates
+     */
     centerLat: {
       type: Number,
       default: 63.4305
     },
+
+    /**
+     * Initial center longitude of the map
+     * Defaults to Trondheim, Norway coordinates
+     */
     centerLon: {
       type: Number,
       default: 10.3951
     },
+
+    /**
+     * Initial zoom level of the map (1-19)
+     * Higher values = more zoomed in
+     */
     initialZoom: {
       type: Number,
       default: 6
     },
+
+    /**
+     * Current user's location to display on the map
+     * Should contain latitude and longitude properties
+     */
     userLocation: {
       type: Object as () => UserLocation | null,
       default: null
     },
+
+    /**
+     * User's household location to display on the map
+     * Should contain latitude and longitude properties
+     */
     householdLocation: {
       type: Object as () => UserLocation | null,
       default: null
     },
+
+    /**
+     * Array of crisis events to display on the map
+     * Each event should have id, name, latitude, longitude, level, and radius properties
+     * Optional properties: description, startTime, isActive
+     */
     crisisEvents: {
       type: Array as () => CrisisEvent[],
       default: () => []
     },
-    // Admin functionality prop
+
+    /**
+     * Enables admin mode which allows adding, moving, and removing markers
+     * When true, map clicks will emit 'map-clicked' events
+     */
     adminMode: {
       type: Boolean,
       default: false
     },
 
+    /**
+     * Controls visibility of POI markers on the map
+     */
     showPois: {
       type: Boolean,
       default: true
-              },
+    },
+
+    /**
+     * Controls visibility of crisis events on the map
+     */
     showCrisis: {
       type: Boolean,
       default: true
     },
-    meetingPlaces:     { type: Array as () => MeetingPlaceDto[], default: () => [] },
-    showMeetingPlaces: { type: Boolean, default: false },
-  },
-  emits: ['map-clicked', 'marker-added', 'marker-removed', 'marker-moved'],
-  setup(props, { emit }) {
-    const { t } = useI18n();
-    const map = ref<L.Map | null>(null);
-    const markerClusterGroup = ref<L.MarkerClusterGroup | null>(null);
-    const userMarker = ref<L.Marker | null>(null);
-    const householdMarker = ref<L.Marker | null>(null);
-    const adminMarkers = ref<L.Marker[]>([]);
-    const mapContainerId: string = 'map-' + Math.random().toString(36).substring(2, 9);
-    const routingControl = ref<L.Routing.Control | null>(null);
-    const activeRouteMarker = ref<L.Marker | null>(null);
-    const tempMarker = ref<L.Marker | null>(null);
-    const markersMap = ref<Map<string | number, POIMarker>>(new Map()); // Store markers by POI ID for easier reference
-    // Store crisis event layers for management
-    const crisisLayers = ref<L.Layer[]>([]);
-    const crisisRenderer = L.canvas({ padding: 0.5 });
-    const meetingLayer   = ref<L.MarkerClusterGroup|null>(null)
-    const meetingMarkers = ref<Map<string | number, L.Marker>>(new Map())
 
+    /**
+     * Array of meeting places to display on the map
+     * Each meeting place should have id, name, latitude, longitude properties
+     * Optional properties: description
+     */
+    meetingPlaces: {
+      type: Array as () => MeetingPlaceDto[],
+      default: () => []
+    },
+
+    /**
+     * Controls visibility of meeting places on the map
+     */
+    showMeetingPlaces: {
+      type: Boolean,
+      default: false
+    },
+  },
+
+  /**
+   * Events emitted by the component
+   * - map-clicked: Emitted when the map is clicked in admin mode, with click coordinates
+   * - marker-added: Emitted when a marker is added in admin mode
+   * - marker-removed: Emitted when a marker is removed in admin mode
+   * - marker-moved: Emitted when a marker is moved in admin mode
+   */
+  emits: ['map-clicked', 'marker-added', 'marker-removed', 'marker-moved'],
+  /**
+   * Component setup function
+   * @param props - Component props
+   * @param emit - Function to emit events
+   * @returns Exposed methods and properties
+   */
+  setup(props, { emit }) {
+    const { t } = useI18n(); // Translation function
+
+    // Core map references
+    /** Main Leaflet map instance */
+    const map = ref<L.Map | null>(null);
+    /** Cluster group for POI markers to improve performance */
+    const markerClusterGroup = ref<L.MarkerClusterGroup | null>(null);
+    /** Marker for user's current location */
+    const userMarker = ref<L.Marker | null>(null);
+    /** Marker for user's household location */
+    const householdMarker = ref<L.Marker | null>(null);
+    /** Collection of markers created in admin mode */
+    const adminMarkers = ref<L.Marker[]>([]);
+    /** Unique ID for the map container element */
+    const mapContainerId: string = 'map-' + Math.random().toString(36).substring(2, 9);
+    /** Control for displaying routing directions */
+    const routingControl = ref<L.Routing.Control | null>(null);
+    /** Marker highlighting the active route destination */
+    const activeRouteMarker = ref<L.Marker | null>(null);
+    /** Temporary marker used during admin operations */
+    const tempMarker = ref<L.Marker | null>(null);
+    /** Map of POI IDs to their marker instances for efficient updates */
+    const markersMap = ref<Map<string | number, POIMarker>>(new Map());
+    /** Collection of crisis event layers for management */
+    const crisisLayers = ref<L.Layer[]>([]);
+    /** Shared canvas renderer for crisis circles to improve performance */
+    const crisisRenderer = L.canvas({ padding: 0.5 });
+    /** Cluster group for meeting place markers */
+    const meetingLayer = ref<L.MarkerClusterGroup|null>(null);
+    /** Map of meeting place IDs to their marker instances */
+    const meetingMarkers = ref<Map<string | number, L.Marker>>(new Map());
+
+    /** Minimum zoom level required to display POIs (for performance) */
     const MIN_ZOOM_FOR_POIS = 10;
 
     // Translation strings with fallbacks
@@ -160,9 +302,11 @@ export default defineComponent({
       className: 'admin-marker-icon',
     });
 
-    // --- SVG Icon Handling for POIs ---
+    /**
+     * Mapping of POI type names to their corresponding SVG icon URLs
+     * Keys should be lowercase to match normalized poiTypeName values
+     */
     const poiIconUrls: Record<string, string> = {
-      // *** Adjust these lowercase keys to match your actual poiTypeName values ***
       'fire station': firestationIconUrl,
       'gas station': gasstationIconUrl,
       'grocery store': grocerystoreIconUrl,
@@ -171,35 +315,40 @@ export default defineComponent({
       'pharmacy': pharmacyIconUrl,
       'police station': policestationIconUrl,
       'shelter': shelterIconUrl,
-      'water distribution point': waterpointIconUrl, // Example key, adjust if needed
-      // 'home': homeIconUrl, // Add if 'Home' is a POI type
-      // Add other type mappings here...
+      'water distribution point': waterpointIconUrl,
     };
-    // Use the imported default SVG as fallback
+
+    /** Default icon URL to use when a POI type doesn't have a specific icon */
     const defaultIconUrlForPoi = defaultPoiIconUrl;
 
+    /**
+     * Creates a Leaflet DivIcon for a POI based on its type
+     * @param poiTypeName - The type name of the POI
+     * @returns A Leaflet DivIcon with the appropriate SVG icon
+     */
     function getPoiIcon(poiTypeName: string): L.DivIcon {
       const typeKey = poiTypeName ? poiTypeName.toLowerCase() : 'default';
-      const iconUrlToUse = poiIconUrls[typeKey] || defaultIconUrlForPoi; // Fallback
+      const iconUrlToUse = poiIconUrls[typeKey] || defaultIconUrlForPoi;
 
-      // --- Adjust these values to fit your SVG icons' natural size and desired anchor ---
-      const iconWidth = 32; // Example width in pixels
-      const iconHeight = 32; // Example height in pixels
+      const iconWidth = 32;
+      const iconHeight = 32;
       const iconAnchorX = iconWidth / 2; // Center horizontally
       const iconAnchorY = iconHeight;    // Bottom vertically (typical for pins)
-      // --------------------------------------------------------------------------------
 
       return L.divIcon({
         html: `<img src="${iconUrlToUse}" alt="${poiTypeName}" style="width: ${iconWidth}px; height: ${iconHeight}px; display: block;">`,
         iconSize: [iconWidth, iconHeight],
         iconAnchor: [iconAnchorX, iconAnchorY],
-        popupAnchor: [0, -iconAnchorY + 5], // Adjust popup anchor if needed
-        className: 'poi-svg-icon' // Class for custom styling
+        popupAnchor: [0, -iconAnchorY + 5],
+        className: 'poi-svg-icon'
       });
     }
-    // --- End SVG Icon Handling ---
 
-    // Only cluster the POIs actually in view (plus a 50% padding)
+    /**
+     * Filters the POIs array to return only those currently visible in the map viewport
+     * Includes a 50% padding around the visible area for smoother user experience
+     * @returns Array of POIs that are within the current map bounds
+     */
     function getVisiblePois(): POI[] {
       if (!map.value) return [];
       const bounds = map.value.getBounds().pad(0.5);
@@ -214,6 +363,10 @@ export default defineComponent({
       });
     }
 
+    /**
+     * Creates a Leaflet DivIcon for meeting place markers
+     * @returns A Leaflet DivIcon with the meeting point SVG icon
+     */
     function getMeetingIcon(): L.DivIcon {
       return L.divIcon({
         html: `<img src="${meetingpointIconUrl}" style="width:32px;height:32px" />`,
@@ -223,8 +376,12 @@ export default defineComponent({
       })
     }
 
+    /**
+     * Updates the meeting places displayed on the map
+     * Clears existing markers and adds new ones based on the provided list
+     * @param list - Array of meeting places to display
+     */
     function updateMeetingPlaces(list: MeetingPlaceDto[]) {
-      console.log('Drawing meeting places:', list)
       if (!meetingLayer.value) return;
 
       // Clear all existing markers
@@ -246,25 +403,29 @@ export default defineComponent({
       if (markers.length) meetingLayer.value.addLayers(markers);
     }
 
-// Debounce scheduler: wait 200ms after the last zoom/pan before re-clustering
+    /** Timeout ID for debounced viewport updates */
     let updateTimeout: number | null = null;
 
-
+    /**
+     * Schedules an update of visible POIs with debouncing for better performance
+     * Waits 200ms after the last zoom/pan before re-clustering markers
+     * Hides POI markers when zoomed out too far (below MIN_ZOOM_FOR_POIS)
+     */
     function scheduleViewportUpdate() {
       if (!map.value || !markerClusterGroup.value) return;
 
       const zoom = map.value.getZoom();
       const tooFar = zoom < MIN_ZOOM_FOR_POIS;
 
-      // if zoomed out too far, hide everything _and_ dump the pending debounce
+      // If zoomed out too far, hide markers and cancel pending updates
       if (tooFar) {
-        // 1) cancel the pending update
+        // Cancel any pending update
         if (updateTimeout) {
           clearTimeout(updateTimeout);
           updateTimeout = null;
         }
 
-        // 2) hide the layer (or clear it if you prefer)
+        // Hide the marker cluster layer
         if (map.value.hasLayer(markerClusterGroup.value as unknown as L.Layer)) {
           map.value.removeLayer(markerClusterGroup.value as unknown as L.Layer);
         }
@@ -272,11 +433,12 @@ export default defineComponent({
         return;
       }
 
-      // zoom is fine → show layer (if it was hidden) and debounce an update
+      // Zoom level is acceptable, show markers and schedule update
       if (!map.value.hasLayer(markerClusterGroup.value as unknown as L.Layer)) {
         map.value.addLayer(markerClusterGroup.value as unknown as L.Layer);
       }
 
+      // Debounce the update to avoid excessive processing during rapid interactions
       if (updateTimeout) clearTimeout(updateTimeout);
       updateTimeout = window.setTimeout(() => {
         updatePOIs(getVisiblePois());
@@ -284,10 +446,11 @@ export default defineComponent({
       }, 200);
     }
 
-    // Initialize map
+    /**
+     * Initializes the map and sets up event listeners when the component is mounted
+     */
     onMounted(() => {
-      // Fix icon paths globally
-      // Use type assertion to access _getIconUrl property
+      // Fix Leaflet default icon paths globally
       const defaultIconPrototype = L.Icon.Default.prototype as any;
       if (defaultIconPrototype._getIconUrl) {
         delete defaultIconPrototype._getIconUrl;
@@ -298,12 +461,9 @@ export default defineComponent({
         shadowUrl
       });
 
-
-
       // Small delay to ensure DOM is ready
       nextTick(() => {
         try {
-
           // Ensure container exists
           const container = document.getElementById(mapContainerId);
           if (!container) {
@@ -315,11 +475,10 @@ export default defineComponent({
           map.value = L.map(mapContainerId, {
             preferCanvas: true,
             fadeAnimation: false,
-            // markerZoomAnimation: true,
             zoomAnimation: true
           }).setView([props.centerLat, props.centerLon], props.initialZoom);
 
-          // Add tile layer
+          // Add tile layer (CartoDB light style)
           L.tileLayer(
             'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
             {
@@ -329,7 +488,7 @@ export default defineComponent({
             }
           ).addTo(map.value as L.Map);
 
-          // Create marker cluster with chunked loading enabled
+          // Create marker cluster with performance optimizations
           const clusterOptions: L.MarkerClusterGroupOptions = {
             spiderfyOnMaxZoom: true,
             disableClusteringAtZoom: 45,
@@ -337,31 +496,31 @@ export default defineComponent({
             removeOutsideVisibleBounds: true,
             animate: false,
             animateAddingMarkers: false,
-            chunkedLoading: true,           // Enable chunked loading
-            chunkInterval: 50,              // Process chunks every 50ms
-            chunkDelay: 10,                 // Delay between chunks
-            chunkProgress: undefined,       // No progress callback needed
+            chunkedLoading: true,
+            chunkInterval: 50,
+            chunkDelay: 10,
+            chunkProgress: undefined,
           };
           markerClusterGroup.value = L.markerClusterGroup(clusterOptions);
           if (map.value) {
             map.value.addLayer(markerClusterGroup.value as unknown as L.Layer);
           }
 
+          // Create meeting places cluster group
           meetingLayer.value = L.markerClusterGroup({ chunkedLoading: true });
           map.value!.addLayer(meetingLayer.value as unknown as L.Layer);
 
-          // Set up map event listeners
+          // Set up map event listeners for viewport changes
           map.value.on('zoomend moveend', scheduleViewportUpdate);
 
           // Add click listener for admin mode only
           if (props.adminMode) {
             map.value.on('click', (e: L.LeafletMouseEvent) => {
-              // Emit in the format expected by AdminAddNewPOI.vue
               emit('map-clicked', { latlng: e.latlng });
             });
           }
 
-          // Global functions for routing - these are necessary for the original functionality
+          // Set up global functions for routing from popup HTML content
           window.showRouteFor = (lat: number, lng: number, poiName: string) => {
             showRouteFor(lat, lng, poiName);
           };
@@ -370,28 +529,24 @@ export default defineComponent({
             clearRouting();
           };
 
-          // Initial refresh
+          // Initial map refresh
           nextTick(() => {
             forceMapRefresh();
           });
 
-
-          // Initial population of POIs
+          // Initialize map with data from props
           if (props.pois && props.pois.length > 0) {
             nextTick(() => scheduleViewportUpdate());
           }
 
-          // Initial user location
           if (props.userLocation) {
             updateUserLocation(props.userLocation);
           }
 
-          // Initial household location
           if (props.householdLocation) {
             updateHouseholdLocation(props.householdLocation);
           }
 
-          // Initial crisis events
           if (props.crisisEvents && props.crisisEvents.length > 0) {
             updateCrisisEvents(props.crisisEvents);
           }
@@ -399,10 +554,12 @@ export default defineComponent({
           console.error("Error initializing map:", error);
         }
       });
-
     });
 
-    // Force map refresh
+    /**
+     * Forces a refresh of the map and all its markers
+     * Ensures proper positioning after container size changes or data updates
+     */
     const forceMapRefresh = (): void => {
       if (map.value) {
         // Ensure the map container has proper dimensions
@@ -420,6 +577,7 @@ export default defineComponent({
           householdMarker.value.setLatLng(latLng);
         }
 
+        // Update active route marker position if it exists
         if (activeRouteMarker.value) {
           // Access the coordinates stored on the marker itself
           const destLat = (activeRouteMarker.value as any).destinationLat;
@@ -428,12 +586,9 @@ export default defineComponent({
           // Check if the stored coordinates are valid numbers
           if (typeof destLat === 'number' && typeof destLng === 'number' && isFinite(destLat) && isFinite(destLng)) {
             const correctLatLng = L.latLng(destLat, destLng);
-            // Ensure the marker's position is always set to the correct destination
             activeRouteMarker.value.setLatLng(correctLatLng);
           } else {
-            // Optional Fallback (less reliable during rapid zoom):
-            // If stored coords are missing, try getting from waypoints, but be aware it might be stale.
-            console.warn("Stored destination coordinates missing on activeRouteMarker. Falling back to routingControl waypoints.");
+            // Fallback to routing control waypoints if available
             if (routingControl.value) {
               const waypoints = routingControl.value.getWaypoints();
               if (waypoints && waypoints.length >= 2 && waypoints[1].latLng) {
@@ -464,14 +619,25 @@ export default defineComponent({
       }
     };
 
-    // Refresh marker positions
+    /**
+     * Refreshes all marker positions and forces a map refresh
+     * Useful after data changes that affect multiple markers
+     */
     function refreshMarkerPositions(): void {
       if (!map.value || !markerClusterGroup.value) return;
       markerClusterGroup.value.refreshClusters();
       forceMapRefresh();
     }
 
-    // Add a marker to the map - admin functionality
+    /**
+     * Adds a marker to the map at the specified coordinates
+     * In admin mode, the marker will be draggable and emit events when moved
+     *
+     * @param lat - Latitude for the marker
+     * @param lng - Longitude for the marker
+     * @param title - Title/tooltip for the marker
+     * @returns The created marker or null if the map is not initialized
+     */
     function addMarker(lat: number, lng: number, title: string = 'New Marker'): L.Marker | null {
       if (!map.value) {
         console.warn("Cannot add marker: map not initialized");
@@ -484,7 +650,7 @@ export default defineComponent({
         title: title
       }).addTo(map.value as L.Map);
 
-      // If in admin mode, make the marker draggable
+      // If in admin mode, make the marker draggable and set up event handlers
       if (props.adminMode) {
         marker.on('dragend', function(event) {
           const position = event.target.getLatLng();
@@ -505,7 +671,12 @@ export default defineComponent({
       return marker;
     }
 
-    // Remove a marker from the map - admin functionality
+    /**
+     * Removes a marker from the map
+     * If the marker is in the adminMarkers list, it will also emit a marker-removed event
+     *
+     * @param marker - The marker to remove
+     */
     function removeMarker(marker: L.Marker): void {
       if (!map.value || !marker) return;
 
@@ -519,7 +690,13 @@ export default defineComponent({
       }
     }
 
-    // Center the map on a location
+    /**
+     * Centers the map on the specified coordinates with optional zoom level
+     *
+     * @param lat - Latitude to center on
+     * @param lng - Longitude to center on
+     * @param zoom - Zoom level (1-19, higher = more zoomed in)
+     */
     function centerMap(lat: number, lng: number, zoom: number = 15): void {
       if (!map.value) {
         console.warn("Cannot center map: map not initialized");
@@ -529,7 +706,14 @@ export default defineComponent({
       map.value.setView([lat, lng], zoom);
     }
 
-    // Show routing between user location and POI - original functionality
+    /**
+     * Shows routing directions from user's location to a specified point
+     * Creates a routing control and adds it to the map
+     *
+     * @param lat - Destination latitude
+     * @param lng - Destination longitude
+     * @param poiName - Name of the destination POI for display in the directions panel
+     */
     function showRouteFor(lat: number, lng: number, poiName: string): void {
       if (!map.value || !props.userLocation) {
         console.warn("Cannot show route: map or user location is not available");
@@ -539,8 +723,7 @@ export default defineComponent({
 
       clearRouting(); // Clear any existing route
 
-
-      // Create the routing control
+      // Create the routing control with configuration options
       routingControl.value = L.Routing.control({
         waypoints: [
           { latLng: L.latLng(props.userLocation.latitude, props.userLocation.longitude) },
@@ -604,7 +787,7 @@ export default defineComponent({
         }
       });
 
-      // Highlight the destination marker
+      // Highlight the destination marker with a pulsing effect
       activeRouteMarker.value = L.marker([lat, lng], {
         icon: L.divIcon({
           className: 'destination-marker',
@@ -622,7 +805,10 @@ export default defineComponent({
       }
     }
 
-    // Clear routing - original functionality
+    /**
+     * Clears any active routing directions from the map
+     * Removes both the routing control and the destination marker
+     */
     function clearRouting(): void {
       if (routingControl.value && map.value) {
         map.value.removeControl(routingControl.value);
@@ -635,7 +821,14 @@ export default defineComponent({
       }
     }
 
-    // Create popup content for POIs - original functionality
+    /**
+     * Creates HTML content for POI popups
+     * Includes name, type, description, address, opening hours, contact info,
+     * and a button to show directions
+     *
+     * @param poi - The POI object to create popup content for
+     * @returns HTML string for the popup content
+     */
     function createPopupContent(poi: POI): string {
       let html = `<div class="poi-popup"><strong>${poi.name}</strong> (${poi.poiTypeName})<br>`;
       if (poi.description) html += `${poi.description}<hr>`;
@@ -657,28 +850,31 @@ export default defineComponent({
       return html;
     }
 
-    // Update POIs on the map - core functionality used by both original and admin features
-    // Update POIs on the map - using SVG Icons and without fitBounds
+    /**
+     * Updates the POI markers on the map based on the provided list
+     * Efficiently handles adding new markers, updating existing ones, and removing old ones
+     * Optimized for performance with large numbers of markers
+     *
+     * @param newPois - Array of POIs to display on the map
+     */
     function updatePOIs(newPois: POI[]): void {
-
+      // Skip update if map is not ready or zoom level is too low for POIs
       if (!map.value || map.value.getZoom() < MIN_ZOOM_FOR_POIS) {
         markerClusterGroup.value?.clearLayers();
         return;
       }
+
       // Ensure map and cluster group are initialized
       if (!map.value || !markerClusterGroup.value) {
         console.warn("Map or marker cluster group not ready for POI update.");
         return;
       }
 
-
-
       const newPoiIds = new Set<string | number>();
       const markersToAdd: L.Marker[] = [];
-      // Bounds calculation is kept in case you need it elsewhere, but not used for fitBounds here
       const bounds = L.latLngBounds([]);
 
-      // Process the list of POIs provided (should be the full list from props)
+      // Process the list of POIs provided
       if (newPois && newPois.length > 0) {
         newPois.forEach(poi => {
           // Basic validation for essential POI data
@@ -699,87 +895,78 @@ export default defineComponent({
 
           // Determine POI type for icon selection, default if missing
           const currentPoiTypeName = poi.poiTypeName || 'default';
-          if (!poi.poiTypeName) {
-            console.warn(`POI ${poi.id || poi.name} is missing poiTypeName. Using default icon.`);
-          }
 
           // Check if a marker for this POI already exists in our map
-          const existingMarker = markersMap.value.get(poi.id) as POIMarker | undefined; // Type assertion for clarity
+          const existingMarker = markersMap.value.get(poi.id) as POIMarker | undefined;
 
           if (existingMarker) {
-            // --- Update Existing Marker ---
-            // 1. Update position if latitude or longitude changed
+            // Update existing marker if needed
             if (existingMarker.poiLat !== lat || existingMarker.poiLng !== lon) {
               existingMarker.setLatLng([lat, lon]);
-              // Update stored coordinates on the marker object
               existingMarker.poiLat = lat;
               existingMarker.poiLng = lon;
             }
-            // 2. Update popup content (always update in case details changed)
+
+            // Always update content in case details changed
             existingMarker.setPopupContent(createPopupContent(poi));
-            // 3. Update tooltip content (always update in case name changed)
             existingMarker.setTooltipContent(poi.name);
-            // 4. Update icon *only if the POI type changed*
+
+            // Update icon only if the POI type changed
             if (existingMarker.poiTypeName !== currentPoiTypeName) {
               existingMarker.setIcon(getPoiIcon(currentPoiTypeName));
-              existingMarker.poiTypeName = currentPoiTypeName; // Update stored type
+              existingMarker.poiTypeName = currentPoiTypeName;
             }
           } else {
-            // --- Create New Marker ---
+            // Create new marker
             const marker = L.marker([lat, lon], {
-              icon: getPoiIcon(currentPoiTypeName), // Use the SVG icon function
+              icon: getPoiIcon(currentPoiTypeName),
               riseOnHover: true,
-              bubblingMouseEvents: false, // Prevent events from bubbling up to the map (optional)
-              zIndexOffset: 100 // Ensure POIs are generally below user/household markers
+              bubblingMouseEvents: false,
+              zIndexOffset: 100 // Ensure POIs are below user/household markers
             });
 
             // Bind popup and tooltip
             marker.bindPopup(createPopupContent(poi));
             marker.bindTooltip(poi.name, { permanent: false, direction: 'top', className: 'poi-label' });
 
-            // Store custom properties directly on the marker object
-            const poiMarker = marker as POIMarker; // Assert type
+            // Store custom properties on the marker for future updates
+            const poiMarker = marker as POIMarker;
             poiMarker.poiLat = lat;
             poiMarker.poiLng = lon;
-            poiMarker.poiTypeName = currentPoiTypeName; // Store type name for future comparisons
+            poiMarker.poiTypeName = currentPoiTypeName;
 
-            // Add to our internal map and the list to be added to the cluster group
+            // Add to internal tracking and the list to be added to the cluster group
             markersMap.value.set(poi.id, poiMarker);
-            markersToAdd.push(poiMarker); // Add the typed marker
+            markersToAdd.push(poiMarker);
           }
-          // Extend bounds (still useful for potential manual centering logic elsewhere)
+
+          // Extend bounds for potential manual centering
           bounds.extend([lat, lon]);
         });
 
-        // --- Remove Old Markers ---
-        // Identify markers in our internal map that are NOT in the new POI list
+        // Remove markers that are no longer in the POI list
         const markersToRemove: L.Marker[] = [];
         markersMap.value.forEach((marker, id) => {
           if (!newPoiIds.has(id)) {
-            // Found a marker for a POI that's no longer in the props
-            markersToRemove.push(marker as unknown as L.Marker); // Add to removal list
-            markersMap.value.delete(id); // Remove from our internal map
+            markersToRemove.push(marker as unknown as L.Marker);
+            markersMap.value.delete(id);
           }
         });
 
-        // Perform bulk add/remove operations on the cluster group for efficiency
+        // Perform bulk operations for better performance
         if (markersToRemove.length > 0) {
           markerClusterGroup.value.removeLayers(markersToRemove);
-          console.log(`Removed ${markersToRemove.length} old POI markers.`);
         }
         if (markersToAdd.length > 0) {
           markerClusterGroup.value.addLayers(markersToAdd);
-          console.log(`Added ${markersToAdd.length} new POI markers.`);
         }
-
       } else {
-        // If the newPois list is empty, clear everything
-        console.log("Received empty POI list, clearing all markers.");
+        // If the POI list is empty, clear all markers
         markerClusterGroup.value.clearLayers();
         markersMap.value.clear();
       }
 
-      // Extend bounds with user/household locations if they exist
+      // Include user and household locations in bounds
       if (props.userLocation) {
         bounds.extend([props.userLocation.latitude, props.userLocation.longitude]);
       }
@@ -793,26 +980,31 @@ export default defineComponent({
       }
 
       // Force a map refresh to ensure visuals are updated correctly
-      // This invalidates size and redraws, but DOES NOT change zoom/center
       forceMapRefresh();
-
-      console.log(`updatePOIs finished. Markers in map: ${markersMap.value.size}`);
     }
 
+    /**
+     * Updates the crisis events displayed on the map
+     * Creates circles with radius based on event radius and color based on severity level
+     * Also adds level badges at the center of each crisis event
+     *
+     * @param events - Array of crisis events to display
+     * @param fit - Whether to fit the map bounds to include all crisis events (default: true)
+     */
     function updateCrisisEvents(events: CrisisEvent[], fit: boolean = true): void {
       if (!map.value) {
         console.warn("Cannot update crisis events: map not initialized");
         return;
       }
 
-      // 1) clear old
+      // Clear existing crisis events
       clearCrisisEvents();
 
-      // 2) style lookup
+      // Define styles for different crisis severity levels
       const LEVEL_STYLES: Record<number, { base: string; border: string }> = {
-        1: { base: '#a6d96a', border: '#333333' },
-        2: { base: '#fdae61', border: '#333333' },
-        3: { base: '#f46d43', border: '#333333' }
+        1: { base: '#a6d96a', border: '#333333' }, // Low severity (green)
+        2: { base: '#fdae61', border: '#333333' }, // Medium severity (orange)
+        3: { base: '#f46d43', border: '#333333' }  // High severity (red)
       };
       const bounds = L.latLngBounds([]);
 
@@ -942,7 +1134,13 @@ export default defineComponent({
       });
     }
 
-    // Update user location - original functionality
+    /**
+     * Updates the user's current location marker on the map
+     * Removes any existing marker and adds a new one at the specified location
+     * Also updates any active routing directions to use the new location
+     *
+     * @param location - The user's location with latitude and longitude
+     */
     function updateUserLocation(location: UserLocation): void {
       if (!map.value) return;
 
@@ -981,8 +1179,13 @@ export default defineComponent({
       }
     }
 
-    // Update household location
-    // Update household location
+    /**
+     * Updates the household location marker on the map
+     * Removes any existing marker and adds a new one at the specified location
+     * Includes a popup with a link to the household page
+     *
+     * @param location - The household location with latitude and longitude
+     */
     function updateHouseholdLocation(location: UserLocation): void {
       if (!map.value) return;
 
@@ -1038,10 +1241,12 @@ export default defineComponent({
       }
     }
 
-    // Clear all crisis events from the map
+    /**
+     * Clears all crisis events from the map
+     * Safely removes each layer and resets the crisis layers array
+     */
     function clearCrisisEvents(): void {
       if (!map.value) return;
-
 
       // Remove each layer from the map safely
       crisisLayers.value.forEach(layer => {
@@ -1061,6 +1266,11 @@ export default defineComponent({
       crisisLayers.value = [];
     }
 
+    /**
+     * Adjusts the map view to fit both the user's location and a POI
+     * Useful for showing the relationship between the user and a specific POI
+     * Adds padding to ensure markers aren't at the edge of the viewport
+     */
     function fitBoundsToUserAndPoi(): void {
       if (!map.value || !props.userLocation || !props.pois || props.pois.length === 0) {
         console.warn("Cannot fit bounds: map, user location, or POI data missing.");
@@ -1083,29 +1293,34 @@ export default defineComponent({
 
       const bounds = L.latLngBounds(userLatLng, poiLatLng);
 
-      // Add some padding to the bounds so markers aren't right at the edge
-      map.value.fitBounds(bounds.pad(0.15), { // Adjust padding as needed (0.1 = 10%)
+      // Add 15% padding to the bounds so markers aren't right at the edge
+      map.value.fitBounds(bounds.pad(0.15), {
         animate: true,
-        duration: 0.5 // Optional animation
+        duration: 0.5 // Animation duration in seconds
       });
-      console.log("Fitted map bounds to user and POI:", poi.name);
     }
 
-    // Watch for POI changes
+    /**
+     * Watch handlers for reactive updates
+     * These watchers respond to changes in props and DOM to keep the map in sync
+     */
+
+    // Watch for POI data changes to update markers
     watch(() => props.pois, () => {
       if (map.value) scheduleViewportUpdate();
     }, { deep: true, immediate: false });
 
+    // Watch for POI visibility toggle
     watch(() => props.showPois, (visible) => {
       if (!markerClusterGroup.value || !map.value) return;
       if (visible) {
-        // re-add and re-populate on show
         scheduleViewportUpdate();
       } else {
         map.value.removeLayer(markerClusterGroup.value as unknown as L.Layer);
       }
     }, { immediate: true });
 
+    // Watch for crisis events visibility toggle
     watch(() => props.showCrisis, (visible) => {
       if (visible) {
         updateCrisisEvents(props.crisisEvents, false);
@@ -1114,55 +1329,59 @@ export default defineComponent({
       }
     }, { immediate: true });
 
-    // Watch for user location changes
+    // Watch for user location changes to update marker
     watch(() => props.userLocation, (newLocation: UserLocation | null) => {
       if (newLocation) {
         updateUserLocation(newLocation);
       }
     }, { deep: true, immediate: false });
 
-    // Watch for household location changes
+    // Watch for household location changes to update marker
     watch(() => props.householdLocation, (newLocation: UserLocation | null) => {
       if (newLocation) {
         updateHouseholdLocation(newLocation);
       }
     }, { deep: true, immediate: false });
 
-    // Watch for crisis events changes
+    // Watch for crisis events data changes
     watch(() => props.crisisEvents, (newEvents: CrisisEvent[]) => {
-        // redraw crisis‐layers but never auto‐fit on a prop swap
-          if (props.showCrisis) updateCrisisEvents(newEvents, /* fit = */ false);
-      }, { deep: true, immediate: false });
+      // Update crisis events without auto-fitting the map
+      if (props.showCrisis) updateCrisisEvents(newEvents, false);
+    }, { deep: true, immediate: false });
 
-    // Watch for map container resize events
+    // Watch for map container width changes to refresh the map
     watch(() => document.getElementById(mapContainerId)?.clientWidth, () => {
       nextTick(() => {
         forceMapRefresh();
       });
     });
 
-    // Watch for map container resize events
+    // Watch for map container height changes to refresh the map
     watch(() => document.getElementById(mapContainerId)?.clientHeight, () => {
       nextTick(() => {
         forceMapRefresh();
       });
     });
 
+    // Watch for meeting places visibility toggle
     watch(() => props.showMeetingPlaces, show => {
       if (!meetingLayer.value) return;
       if (show) updateMeetingPlaces(props.meetingPlaces);
       else      meetingLayer.value.clearLayers();
     });
 
-// react to data changes
+    // Watch for meeting places data changes
     watch(() => props.meetingPlaces, list => {
       if (props.showMeetingPlaces) updateMeetingPlaces(list);
     }, { deep:true });
 
-    // Cleanup on component unmount
+    /**
+     * Cleanup function that runs when the component is unmounted
+     * Removes all markers, layers, event listeners, and global functions
+     * Prevents memory leaks and ensures proper cleanup
+     */
     onBeforeUnmount(() => {
-
-      // Remove global functions - using type assertion to avoid TypeScript errors
+      // Remove global functions from window object
       if ('showRouteFor' in window) {
         (window as any).showRouteFor = undefined;
       }
@@ -1170,7 +1389,7 @@ export default defineComponent({
         (window as any).closeRouting = undefined;
       }
 
-      // Clear routing
+      // Clear active routing
       clearRouting();
 
       // Clear crisis events
@@ -1197,12 +1416,11 @@ export default defineComponent({
       // Clear marker cluster
       if (markerClusterGroup.value && map.value) {
         markerClusterGroup.value.clearLayers();
-        // Use type assertion to avoid type error with removeLayer
         map.value.removeLayer(markerClusterGroup.value as unknown as L.Layer);
         markerClusterGroup.value = null;
       }
 
-      // Remove map
+      // Remove map instance and event listeners
       if (map.value) {
         map.value.off();
         map.value.remove();
@@ -1210,14 +1428,23 @@ export default defineComponent({
       }
     });
 
+    /**
+     * Return public properties and methods that can be accessed by the parent component
+     */
     return {
+      /** Unique ID for the map container element */
       mapContainerId,
-      // Expose public methods
+      /** Adds a marker to the map at the specified coordinates */
       addMarker,
+      /** Removes a marker from the map */
       removeMarker,
+      /** Centers the map on the specified coordinates */
       centerMap,
+      /** Forces a refresh of the map and all its markers */
       forceMapRefresh,
+      /** Adjusts the map view to fit both the user's location and a POI */
       fitBoundsToUserAndPoi,
+      /** Reference to the temporary marker (used in admin mode) */
       tempMarker
     };
   }
