@@ -243,6 +243,9 @@ const onSubmitPoi = ref<(e?: Event) => void>();
 const wantToDelete = ref(false)
 const searchQuery = ref('');
 
+/**
+ * Method for searching for a POI by name. If no search is done, show the full list.
+ */
 const filteredPois = computed (() => {
   const query = searchQuery.value.toLowerCase().trim();
   if (!query) return allPois.value;
