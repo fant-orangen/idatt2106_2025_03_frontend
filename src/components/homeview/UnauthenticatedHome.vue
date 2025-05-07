@@ -16,6 +16,24 @@
       </div>
     </section>
 
+    <!-- Crisis Button Section -->
+    <section class="crisis-button-section w-full px-4">
+      <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300 bg-white">
+        <div
+          @click="navigateTo('/crisis-event')"
+          class="w-full py-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-white hover:bg-gray-50"
+        >
+          <div class="flex items-center justify-center mb-3">
+            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-3xl mr-3 text-orange-600" />
+            <span class="text-2xl font-medium">{{ t('home.view_crisis', 'View Crisis Events') }}</span>
+          </div>
+          <div>
+            <ChevronRight class="h-6 w-6 text-orange-600" />
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Map Button Section -->
     <section class="map-button-section w-full px-4">
       <MapViewComponent />
@@ -44,10 +62,16 @@
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-vue-next';
 import MapViewComponent from '@/components/shared/MapViewComponent.vue';
 import NewsViewComponent from '@/components/shared/NewsViewComponent.vue';
 import HouseholdInfoComponent from '@/components/shared/HouseholdInfoComponent.vue';
 import CrisisInfoComponent from '@/components/shared/CrisisInfoComponent.vue';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+
+// Register FontAwesome icons
+library.add(faTriangleExclamation);
 
 const router = useRouter();
 const { t } = useI18n();

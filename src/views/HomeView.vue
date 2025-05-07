@@ -1,23 +1,12 @@
 <template>
-  <!-- Authenticated User View -->
-  <div v-if="userStore.isAuthenticated" class="content flex justify-center items-center w-full pt-5 flex-col gap-0 md:pt-20 md:gap-15">
-    <div class="crisis-status w-full px-2 md:w-auto">
-      <CrisisLevelOverview
-        :max-display="3"
-        @select-crisis="handleCrisisSelect"
-      />
-    </div>
-    <div class="container flex flex-col gap-10 w-full max-w-7xl md:flex-row md:gap-40 pb-20">
-      <!-- Dynamic Buttons -->
-      <div class="crisis-components flex flex-col px-4 md:gap-20 md:px-0">
-        <component :is="crisisComponents[currentStatus]" />
-      </div>
-      <div
-           class="map flex-grow px-4 md:px-0 rounded-lg"
-         >
-        <MapOverviewComponent />
-      </div>
-    </div>
+  <!-- Authenticated User with Household View -->
+  <div v-if="userStore.isAuthenticated && hasHousehold" class="content w-full max-w-7xl mx-auto pt-0">
+    <AuthenticatedWithHouseholdHome />
+  </div>
+
+  <!-- Authenticated User without Household View -->
+  <div v-else-if="userStore.isAuthenticated && !hasHousehold" class="content w-full max-w-7xl mx-auto pt-0">
+    <AuthenticatedNoHouseholdHome />
   </div>
 
   <!-- Unauthenticated User View -->
@@ -31,80 +20,51 @@ import { useI18n } from 'vue-i18n'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
-import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
-import CrisisLevelOverview from '@/components/homeview/CrisisLevelOverview.vue'
 import UnauthenticatedHome from '@/components/homeview/UnauthenticatedHome.vue'
-import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService'
+import AuthenticatedNoHouseholdHome from '@/components/homeview/AuthenticatedNoHouseholdHome.vue'
+import AuthenticatedWithHouseholdHome from '@/components/homeview/AuthenticatedWithHouseholdHome.vue'
+import { getCurrentHousehold } from '@/services/HouseholdService'
 
 const router = useRouter()
 const { t } = useI18n()
 const userStore = useUserStore()
 
-// State for ongoing crises and dynamic components
-const hasOngoingCrises = ref(false)
-const currentStatus = ref('crisis.no-crisis') // Default to no crisis
-const crisisComponents = ref<Record<string, any>>({})
+// State for household status
+const hasHousehold = ref(false)
+
+
 
 /**
- * Checks for ongoing crises by fetching crisis events.
- * Updates the `currentStatus` based on whether there are ongoing crises.
+ * Checks if the current user has a household
  *
  * @async
- * @function checkForOngoingCrises
+ * @function checkHouseholdStatus
  * @returns {Promise<void>} Resolves when the check is complete.
  */
-const checkForOngoingCrises = async () => {
-  try {
-    const response = await fetchAllPreviewCrisisEvents(0, 10)
-    hasOngoingCrises.value = response.content.length > 0
-    currentStatus.value = hasOngoingCrises.value ? 'crisis.during' : 'crisis.no-crisis'
-  } catch (error) {
-    console.error('Failed to fetch crisis events:', error)
-    currentStatus.value = 'crisis.no-crisis' // Fallback to no crisis
+const checkHouseholdStatus = async () => {
+  if (userStore.isAuthenticated) {
+    try {
+      const household = await getCurrentHousehold()
+      hasHousehold.value = !!household
+    } catch (error) {
+      console.error('Failed to check household status:', error)
+      hasHousehold.value = false
+    }
+  } else {
+    hasHousehold.value = false
   }
-}
-
-/**
- * Dynamically loads the components for different crisis states.
- * Maps `crisis.no-crisis` and `crisis.during` to their respective components.
- *
- * @async
- * @function loadCrisisComponents
- * @returns {Promise<void>} Resolves when the components are loaded.
- */
-const loadCrisisComponents = async () => {
-  crisisComponents.value = {
-    'crisis.no-crisis': (await import('@/components/homeview/NoCrisisButtons.vue')).default,
-    'crisis.during': (await import('@/components/homeview/DuringCrisisButtons.vue')).default,
-  }
-}
-
-/**
- * Handles the selection of a crisis from the `CrisisLevelOverview` component.
- * Navigates to the crisis event page with the selected crisis ID as a query parameter.
- *
- * @function handleCrisisSelect
- * @param {number} crisisId - The ID of the selected crisis.
- */
-const handleCrisisSelect = (crisisId: number) => {
-  console.log('Selected crisis:', crisisId)
-  router.push({
-    path: '/crisis-event',
-    query: { id: crisisId.toString() }
-  })
 }
 
 /**
  * Lifecycle hook that runs when the component is mounted.
- * Loads the dynamic components and checks for ongoing crises.
+ * Checks if the user has a household.
  *
  * @async
  * @function onMounted
  * @returns {Promise<void>} Resolves when the setup is complete.
  */
 onMounted(async () => {
-  await loadCrisisComponents()
-  await checkForOngoingCrises()
+  await checkHouseholdStatus()
 })
 </script>
 
