@@ -198,6 +198,11 @@ const routes = [
     meta: { requiresAdmin: true },
   },
   {
+    path: '/privacy-policy',
+    name: 'PrivacyPolicy',
+    component: () => import('@/views/PrivacyPolicyView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),
@@ -233,13 +238,14 @@ router.beforeEach(async (to, from, next) => {
     'Login',
     'Register',
     'Home',
-    'CreateHousehold',
+    'Household',
     'Information',
     'ScenarioTheme',
     'NotFound',
     'News',
     'Notifications',
     'ResetPassword',
+    'PrivacyPolicy',
   ]
 
   // Allow immediate navigation if the target route is public
@@ -284,16 +290,6 @@ router.beforeEach(async (to, from, next) => {
       // Attempt to fetch the user's current household information from the backend.
       const household = await getCurrentHousehold()
 
-      // If the user has no household (API returns null or 404), redirect them.
-      if (!household) {
-        // Prevent an infinite redirect loop if already on the CreateHousehold page.
-        if (to.name === 'CreateHousehold') {
-          return next(false) // Block navigation
-        }
-        console.log('User has no household, redirecting to CreateHousehold.')
-        // Redirect user to create or join a household.
-        return next({ name: 'CreateHousehold' })
-      }
       // If the user has no household (API returns null or 404), redirect them.
       if (!household) {
         // Prevent an infinite redirect loop if already on the Household page.

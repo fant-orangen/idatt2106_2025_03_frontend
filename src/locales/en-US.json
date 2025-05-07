@@ -25,8 +25,11 @@
     "logout": "Logout",
     "forgot-password": "Forgot Password?",
     "re-enter": "Re-enter",
-    "consent": "I agree to the privacy policy and terms of service: ",
-    "privacy-policy": "the privacy policy.",
+    "consent": "I agree to the privacy policy and terms of service",
+    "consent-1": "I agree to",
+    "privacy-policy": "the privacy policy",
+    "and": "and",
+    "terms-of-service": "terms of service.",
     "email-notifs-warning": "letting krisefikser.no send me notifications via email.",
     "submit": "Submit",
     "first-name": "First Name",
@@ -849,7 +852,84 @@
     "invite-household": "Invite household",
     "switch-group": "Switch group",
     "share-from-inventory": "Share items from your inventory",
-    "go-to-groups": "Go to your groups →"
+    "go-to-groups": "Go to your groups →",
+    "create-group": "Create group",
+    "enter-group-name": "Enter group name",
+    "create": "Create",
+    "households": "Households",
+    "residents": "residents",
+    "leave-group": "Leave group"
+  },
+  "inventory": {
+    "save": "Save",
+    "edit": "Edit",
+    "remove-from-group": "Remove from group",
+    "search": {
+      "placeholder": "Search...",
+      "clear": "Clear search"
+    },
+    "water": {
+      "title": "Water",
+      "total": "Total water in household",
+      "liters": "liters",
+      "amount": "Amount",
+      "expiry": "Expiry",
+      "already-shared": "Already shared",
+      "share": "Share",
+      "add": "Add",
+      "delete-type": "Delete product type",
+      "add-new": "Add new",
+      "product-name": "Product name",
+      "exists": {
+        "title": "This product type already exists",
+        "message": "You cannot add the same type multiple times.",
+        "action": "Click \"Edit\" to add a new batch"
+      }
+    },
+    "food": {
+      "title": "Food",
+      "calories": "kcal per",
+      "amount": "Amount",
+      "expiry": "Expiry",
+      "already-shared": "Already shared",
+      "share": "Share",
+      "add": "Add",
+      "delete-type": "Delete product type",
+      "add-new": "Add new",
+      "product-name": "Product name",
+      "exists": {
+        "title": "This product type already exists",
+        "message": "You cannot add the same type multiple times.",
+        "action": "Click \"Edit\" to add a new batch"
+      }
+    },
+    "medicine": {
+      "title": "Medicine",
+      "amount": "Amount",
+      "expiry": "Expiry",
+      "already-shared": "Already shared",
+      "share": "Share",
+      "add": "Add",
+      "delete-type": "Delete product type",
+      "add-new": "Add new",
+      "product-name": "Product name",
+      "exists": {
+        "title": "This product type already exists",
+        "message": "You cannot add the same type multiple times.",
+        "action": "Click \"Edit\" to add a new batch"
+      }
+    },
+    "common": {
+      "share-with-group": "Share with group",
+      "select-group": "Select a group",
+      "no-groups": "No groups found",
+      "delete-confirm": "Are you sure you want to delete the product type",
+      "success": {
+        "shared": "Product was added to the group",
+        "error": "An error occurred while sharing the product with the group"
+      },
+      "select-unit": "Select unit"
+    }
   },
   "scenarioThemes": {
     "title": "Crisis Scenario Themes",
@@ -933,5 +1013,48 @@
     "deleteQuiz": "This action is final and cannot be undone. This will delete this quiz and all relevant data. Do you want to proceed?",
     "confirmDelete": "Confirm deletion",
     "cancel": "Cancel"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "breadcrumbHome": "Home",
+    "breadcrumbCurrent": "Privacy Policy",
+    "introductionTitle": "Introduction",
+    "introductionText": "We value your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform.",
+    "dataTitle": "Data We Collect",
+    "dataPersonal": "Personal Information: Name, email address, phone number, and household details (e.g., number of members). Location data (if you enable location services).",
+    "dataAccount": "Account Information: Login credentials (email and password, stored securely using encryption). Two-factor authentication (2FA) codes (if enabled).",
+    "dataUsage": "Usage Data: Interactions with the platform, such as activities completed, reflections, and preferences. Device and browser information for analytics purposes.",
+    "dataEmergency": "Emergency Data: Information related to crisis events, such as your preparedness status or participation in household activities.",
+    "useTitle": "How We Use Your Data",
+    "useServices": "Provide and improve services: Manage your account and household, send emergency notifications, and support 2FA if enabled.",
+    "useExperience": "Enhance user experience: Personalize content and offer location-based features.",
+    "useSecurity": "Ensure security: Use 2FA and monitor for unauthorized access.",
+    "useLegal": "Comply with legal obligations: Retain necessary data for legal and dispute purposes.",
+    "childrenTitle": "Children's Privacy",
+    "childrenText": "Our platform is not intended for children under the age of 13. We do not knowingly collect personal data from children without parental consent. If we become aware that we have collected data from a child without consent, we will delete it immediately.",
+    "twoFaTitle": "Two-Factor Authentication (2FA)",
+    "twoFaText": "Two-factor authentication is optional and adds an extra layer of security. If enabled, we collect temporary codes to verify identity. You may manage this in your settings.",
+    "sharingTitle": "Data Sharing",
+    "sharingConsent": "With your consent: e.g., inviting others to join your household.",
+    "sharingLegal": "For legal reasons: If required by law or for user safety.",
+    "sharingProviders": "With service providers: Trusted third parties that help us operate (e.g., email, maps).",
+    "retentionTitle": "Data Retention",
+    "retentionText": "We retain your data only as long as needed for services or legal requirements. You can request deletion at any time.",
+    "rightsTitle": "Your Rights",
+    "rightsAccess": "Access: Request a copy of your data.",
+    "rightsCorrect": "Correction: Update your personal information.",
+    "rightsDelete": "Deletion: Request deletion of your account and data.",
+    "rightsRestrict": "Restriction: Limit our use of your data.",
+    "rightsPortable": "Portability: Get a copy of your data in portable format.",
+    "accessibilityTitle": "Accessibility",
+    "accessibilityText": "We are committed to ensuring our platform and privacy policy are accessible to all users, including those with disabilities. If you encounter any accessibility issues, please contact us for assistance.",
+    "securityTitle": "Security",
+    "securityText": "We follow industry standards like encryption, secure storage of auth codes, and conduct regular audits.",
+    "cookiesTitle": "Cookies and Tracking",
+    "cookiesText": "We use cookies to enhance functionality, analyze usage, and support location services. You can control cookies via browser settings.",
+    "changesTitle": "Changes to This Policy",
+    "changesText": "We may update this policy periodically. Changes will be announced on the platform or via email.",
+    "contactTitle": "Contact Us",
+    "contactText": "If you have questions or concerns, reach out to us at:"
   }
 }
