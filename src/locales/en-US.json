@@ -337,7 +337,10 @@
     "reflection-for-crisis": "Reflection for crisis:",
     "selected-crisis": "Selected crisis",
     "unknown-crisis": "Unknown crisis",
-    "view-reflections": "View Reflections"
+    "view-reflections": "View Reflections",
+    "no-household-message": "You are not currently in a household. ",
+    "cannot-view-shared-reflections": "You need to be in a household to view shared reflections from other users.",
+    "join-household-prompt": "Join or create a household to connect with others and share reflections."
   },
   "map": {
     "defibrillator": "Defibrillator",

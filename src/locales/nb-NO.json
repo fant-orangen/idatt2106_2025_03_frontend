@@ -339,7 +339,10 @@
     "reflection-for-crisis": "Refleksjon for krise:",
     "selected-crisis": "Valgt krise",
     "unknown-crisis": "Ukjent krise",
-    "view-reflections": "Se refleksjoner"
+    "view-reflections": "Se refleksjoner",
+    "no-household-message": "Du er ikke i en husholdning for øyeblikket.",
+    "cannot-view-shared-reflections": "Du må være i en husholdning for å se delte refleksjoner fra andre brukere.",
+    "join-household-prompt": "Bli med i eller opprett en husholdning for å koble til andre og dele refleksjoner."
   },
   "map": {
     "defibrillator": "Hjertestarter",
