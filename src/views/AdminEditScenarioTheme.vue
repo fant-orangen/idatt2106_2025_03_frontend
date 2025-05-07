@@ -48,7 +48,7 @@
                   v-for="theme in scenarioThemes"
                   :key="theme.id"
                   variant="outline"
-                  class="w-full justify-start text-left h-auto py-3 px-4"
+                  class="w-full justify-start text-left h-auto py-3 px-4 hover:bg-muted dark:hover:bg-muted/2"
                   @click="selectTheme(theme)"
                 >
                   <div class="font-medium">{{ theme.name }}</div>
