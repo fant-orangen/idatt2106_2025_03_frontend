@@ -168,6 +168,14 @@ export async function fetchAllPreviewCrisisEvents(
   }
 }
 
+/**
+ * Fetches crisis events within the radius of the current user's location.
+ * Returns a paginated response with crisis events that are relevant to the user.
+ *
+ * @param {number} page - The page number to fetch (0-based index)
+ * @param {number} size - The number of items per page
+ * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing crisis events
+ */
 export async function fetchCrisisEventsInRadius(
   page = 0,
   size = 5
@@ -186,7 +194,15 @@ export async function fetchCrisisEventsInRadius(
   }
 }
 
-export async function fetchInavtiveCrisisEvents(
+/**
+ * Fetches inactive crisis events from the backend API.
+ * Makes a GET request to the '/public/crisis-events/inactive/previews' endpoint.
+ *
+ * @param {number} page - The page number to fetch (0-based index)
+ * @param {number} size - The number of items per page
+ * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing inactive crisis events
+ */
+export async function fetchInactiveCrisisEvents(
   page = 0,
   size = 5
 ): Promise<Page<CrisisEventPreviewDto>> {
