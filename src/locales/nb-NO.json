@@ -208,6 +208,7 @@
     "crisis-status": "Krisestatus",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
     "no-crisis": "Ingen pågående krise",
+    "all_clear": "Alt klart. Ingen aktive krisehendelser for øyeblikket.",
     "color": {
       "green": "grønn",
       "yellow": "gul",
@@ -294,6 +295,30 @@
     "read-info-preparations": "Les mer om hvordan du kan forberede deg til en krise",
     "info-current-crisis": "Les mer om den nåværende krisetype",
     "info-scenario-type": "Les mer om {scenario}"
+  },
+  "home": {
+    "hero": {
+      "title": "Vær forberedt på enhver krise",
+      "description": "Krisefikser hjelper deg og din husholdning med å holde dere informert, forberedt og trygge under nødsituasjoner."
+    },
+    "view_map": "Vis krisekart",
+    "view_all_news": "Se alle nyheter",
+    "learn_more": "Lær mer",
+    "household": {
+      "title": "Opprett din husholdning",
+      "description": "Sett opp din husholdning for å bedre administrere ressurser og holde kontakten med familiemedlemmer under nødsituasjoner.",
+      "feature1": "Spor nødforsyninger og få påminnelser når varer utløper",
+      "feature2": "Del viktig informasjon med husholdningsmedlemmer",
+      "feature3": "Motta stedsspesifikke varsler og veiledning",
+      "create_button": "Opprett husholdning"
+    },
+    "crisis_info": {
+      "title": "Kriseinformasjonssenter",
+      "description": "Få sanntidsoppdateringer og praktisk veiledning for alle typer nødsituasjoner.",
+      "before": "Lær hvordan du forbereder deg før en krise oppstår",
+      "during": "Få kritisk informasjon under aktive nødsituasjoner",
+      "after": "Finn ressurser for gjenoppretting etter at en krise har passert"
+    }
   },
   "news": {
     "title": "Nyheter",

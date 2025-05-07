@@ -207,6 +207,7 @@
     "crisis-status": "Crisis Status",
     "more-crisis-info": "Read more about your current crisis situation",
     "no-crisis": "No ongoing crisis",
+    "all_clear": "All clear. No active crisis events at this time.",
     "color": {
       "green": "green",
       "yellow": "yellow",
@@ -291,6 +292,30 @@
     "read-info-preparations": "Read more about how you can prepare for a crisis",
     "info-current-crisis": "Read more about the current crisis",
     "info-scenario-type": "Read more about {scenario}"
+  },
+  "home": {
+    "hero": {
+      "title": "Be Prepared for Any Crisis",
+      "description": "Krisefikser helps you and your household stay informed, prepared, and safe during emergencies."
+    },
+    "view_map": "View Crisis Map",
+    "view_all_news": "View all news",
+    "learn_more": "Learn more",
+    "household": {
+      "title": "Create Your Household",
+      "description": "Set up your household to better manage resources and stay connected with family members during emergencies.",
+      "feature1": "Track emergency supplies and get reminders when items expire",
+      "feature2": "Share important information with household members",
+      "feature3": "Receive location-specific alerts and guidance",
+      "create_button": "Create Household"
+    },
+    "crisis_info": {
+      "title": "Crisis Information Center",
+      "description": "Get real-time updates and practical guidance for all types of emergencies.",
+      "before": "Learn how to prepare before a crisis happens",
+      "during": "Get critical information during active emergencies",
+      "after": "Find recovery resources after a crisis has passed"
+    }
   },
   "news": {
     "title": "News",

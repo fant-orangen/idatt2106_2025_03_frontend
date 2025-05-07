@@ -1,5 +1,6 @@
 <template>
-  <div class="content flex justify-center items-center w-full pt-5 flex-col gap-0 md:pt-20 md:gap-15">
+  <!-- Authenticated User View -->
+  <div v-if="userStore.isAuthenticated" class="content flex justify-center items-center w-full pt-5 flex-col gap-0 md:pt-20 md:gap-15">
     <div class="crisis-status w-full px-2 md:w-auto">
       <CrisisLevelOverview
         :max-display="3"
@@ -18,18 +19,26 @@
       </div>
     </div>
   </div>
+
+  <!-- Unauthenticated User View -->
+  <div v-else class="content w-full max-w-7xl mx-auto pt-0">
+    <UnauthenticatedHome />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/UserStore'
 import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
-import CrisisLevelOverview from '@/components/crisis/CrisisLevelOverview.vue'
+import CrisisLevelOverview from '@/components/homeview/CrisisLevelOverview.vue'
+import UnauthenticatedHome from '@/components/homeview/UnauthenticatedHome.vue'
 import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService'
 
 const router = useRouter()
 const { t } = useI18n()
+const userStore = useUserStore()
 
 // State for ongoing crises and dynamic components
 const hasOngoingCrises = ref(false)
