@@ -34,21 +34,41 @@
 			<CardHeader>
 				<CardTitle>{{ $t('add-event-info.titles.choose-event') }}: </CardTitle>
 			</CardHeader>
-			<CardContent class="card-content">
-				<InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
-					<div v-for="(event, index) in allEvents" :key="event.id" @click="selectEvent(index)"
-						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-bray-200', 'dark:hover:bg-bray-700']">
+      <CardContent class="card-content">
+        <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
+          <div
+            v-for="(event, index) in allEvents"
+            :key="event.id"
+            @click="selectEvent(index)"
+            :class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-gray-200', 'dark:hover:bg-gray-700']"
+          >
+            <div class="listOfEvents items-center">
+              <!-- Crisis Name -->
+              <span class="severity-tag">{{ event.name }}</span>
 
-						<div class=listOfEvents>
-							<span class="severity-tag">{{ event.name }} </span>
-							<span :class="['severity-tag', event.severity]"> {{ $t('crisis.color.' + event.severity) }}</span>
-							<span class="severity-tag">  {{ formatDateFull(event.startTime) }}</span>
-							<span :class="['severity-tag', event.active ? 'true' : 'false']">  {{ $t('add-event-info.active.' + event.active) }}</span>
-						</div>
-							<Separator class="my-2" />
-					</div>
-				</InfiniteScroll>
-			</CardContent>
+              <!-- Crisis Level Badge -->
+              <span
+                :class="['severity-tag', event.severity]"
+                class="flex items-center justify-center h-8 rounded-full text-sm font-semibold"
+              >
+                {{ $t('crisis.color.' + event.severity) }}
+              </span>
+
+              <!-- Crisis Start Time -->
+              <span class="severity-tag">{{ formatDateFull(event.startTime) }}</span>
+
+              <!-- Crisis Active Status -->
+              <span
+                :class="['severity-tag', event.active ? 'true' : 'false']"
+                class="flex items-center justify-center h-8 rounded-full text-sm font-semibold"
+              >
+                {{ $t('add-event-info.active.' + event.active) }}
+              </span>
+            </div>
+            <Separator class="my-2" />
+          </div>
+        </InfiniteScroll>
+      </CardContent>
 			<CardFooter>
         <template #loading>
           <div class="text-center p-4">Laster...</div>
@@ -191,7 +211,7 @@
 										<SelectItem v-for="type in scenarioPreviews" :key="type.id"
 											:value="type.name">
 											{{ type.name }}
-										
+
 										</SelectItem>
 									</SelectContent>
 								</Select>
