@@ -1,11 +1,13 @@
 <template>
   <div class="flex flex-col w-full gap-8 pb-20">
     <!-- Crisis Level Overview at top -->
-    <section class="crisis-overview-section w-full px-4">
-      <CrisisLevelOverview
-        :max-display="3"
-        @select-crisis="handleCrisisSelect"
-      />
+    <section class="crisis-overview-section w-full px-4 flex justify-center">
+      <div class="w-full max-w-2xl">
+        <CrisisLevelOverview
+          :max-display="3"
+          @select-crisis="handleCrisisSelect"
+        />
+      </div>
     </section>
 
     <!-- Map Button Section -->

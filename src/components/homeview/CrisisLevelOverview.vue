@@ -1,6 +1,6 @@
 <template>
   <div class="crisis-status" :class="{'cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5': hasOngoingCrises, 'cursor-default': !hasOngoingCrises}" @click="hasOngoingCrises && navigateToCrisisPage()">
-    <Card :class="`w-full md:w-120 rounded-2xl p-4 transition-all duration-200 ease-in-out ${containerClass}`">
+    <Card :class="`w-full max-w-20xl rounded-2xl p-4 transition-all duration-200 ease-in-out ${containerClass}`">
       <CardHeader class="items-center">
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
           <font-awesome-icon :icon="hasOngoingCrises ? ['fas', 'triangle-exclamation'] : ['fas', 'check-circle']" :size="hasOngoingCrises ? '2xl' : 'xl'" :class="{'text-green-500 dark:text-green-400': !hasOngoingCrises}" />
