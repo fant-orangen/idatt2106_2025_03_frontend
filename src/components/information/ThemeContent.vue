@@ -242,7 +242,7 @@ function closeEmergencyContacts() {
       </CardContent>
     </Card>
 
-refactor:     <!-- Before Crisis Instructions -->
+  <!-- Before Crisis Instructions -->
     <Card v-if="scenarioTheme.before" class="mb-6 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
