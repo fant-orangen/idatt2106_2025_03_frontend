@@ -16,7 +16,8 @@ import type {
   HouseholdInviteRequestDto,
   HouseholdInviteResponseDto,
   HouseholdJoinRequestDto,
-  HouseholdSwitchRequestDto
+  HouseholdSwitchRequestDto,
+  HouseholdUpdateRequestDto
 } from '@/models/Household'
 import type { Invitation } from '@/models/Invitation'
 
@@ -49,6 +50,22 @@ export async function getCurrentHousehold(): Promise<Household | null> {
 export async function createHousehold(householdData: HouseholdCreateRequestDto): Promise<Household> {
   const response = await api.post('/user/households', householdData);
   return response.data;
+}
+
+/**
+ * Update an existing household (admin only)
+ * @param updateData The updated household data
+ * @returns The updated household
+ * @throws Error if the user is not an admin or the update fails
+ */
+export async function updateHousehold(updateData: HouseholdUpdateRequestDto): Promise<Household> {
+  try {
+    const response = await api.put('/user/households/update', updateData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating household:', error);
+    throw error;
+  }
 }
 
 /**

@@ -1,9 +1,23 @@
 <template>
   <div class="household-container max-w-7xl mx-auto px-4 py-6">
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">{{ household?.name || t('household.my-household') }}</h1>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-2xl font-bold">{{ household?.name || t('household.my-household') }}</h1>
+          <Button
+            v-if="isAdmin && hasHousehold"
+            variant="ghost"
+            size="sm"
+            class="h-7 w-7 rounded-full"
+            @click="openEditHouseholdDialog"
+          >
+            <PencilIcon class="h-4 w-4" />
+          </Button>
+        </div>
+        <p v-if="household?.address" class="text-sm text-muted-foreground mt-1">{{ household.address }}</p>
+      </div>
       <div class="flex gap-2">
-        <DeleteHousehold v-if="isAdmin && hasHousehold" @deleted="refreshHouseholdData" />
+        <!-- Delete button moved to edit dialog -->
         <Button v-if="showAdminTransferButton" variant="outline" class="flex items-center gap-2" @click="openTransferAdminDialog">
           <UserIcon class="h-4 w-4" />
           <span>{{ t('household.transfer-admin-role') }}</span>
@@ -127,6 +141,85 @@
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    <!-- Edit Household Dialog -->
+    <Dialog :open="showEditHouseholdDialog" @update:open="showEditHouseholdDialog = false">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{{ t('household.edit-household') }}</DialogTitle>
+          <DialogDescription>
+            {{ t('household.edit-household-description') }}
+          </DialogDescription>
+        </DialogHeader>
+        <form @submit.prevent="updateHouseholdDetails" class="space-y-4">
+          <div class="space-y-2">
+            <Label for="householdName">{{ t('household.name') }}</Label>
+            <Input
+              id="householdName"
+              v-model="editHouseholdData.name"
+              :placeholder="t('household.name-placeholder')"
+              required
+            />
+          </div>
+          <div class="space-y-2">
+            <Label for="householdAddress">{{ t('household.address') }}</Label>
+            <Input
+              id="householdAddress"
+              v-model="editHouseholdData.address"
+              :placeholder="t('household.address-placeholder')"
+              required
+            />
+          </div>
+          <DialogFooter>
+            <div class="flex w-full justify-between items-center">
+              <Button
+                variant="destructive"
+                type="button"
+                class="flex items-center gap-2"
+                @click="showConfirmDeleteDialog = true"
+              >
+                <TrashIcon class="h-4 w-4" />
+                {{ t('household.delete_household') }}
+              </Button>
+              <div class="flex gap-2">
+                <Button variant="ghost" type="button" @click="showEditHouseholdDialog = false">{{ t('common.cancel') }}</Button>
+                <Button type="submit" :disabled="isUpdatingHousehold">
+                  <Loader2 v-if="isUpdatingHousehold" class="mr-2 h-4 w-4 animate-spin" />
+                  {{ t('common.save') }}
+                </Button>
+              </div>
+            </div>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+
+    <!-- Delete Household Confirmation Dialog -->
+    <Dialog :open="showConfirmDeleteDialog" @update:open="showConfirmDeleteDialog = false">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{{ t('household.confirm_delete_title') }}</DialogTitle>
+          <DialogDescription>
+            {{ t('household.confirm_delete_description') }}
+          </DialogDescription>
+        </DialogHeader>
+        <div class="py-4">
+          <p class="text-destructive font-medium">{{ t('household.delete_warning') }}</p>
+          <p class="mt-2 text-sm text-muted-foreground">{{ t('household.delete_permanent') }}</p>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" @click="showConfirmDeleteDialog = false">{{ t('common.cancel') }}</Button>
+          <Button
+            variant="destructive"
+            @click="handleDeleteHousehold"
+            :disabled="isDeletingHousehold"
+          >
+            <Loader2 v-if="isDeletingHousehold" class="mr-2 h-4 w-4 animate-spin" />
+            {{ t('household.confirm_delete') }}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -136,6 +229,8 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import type {HouseholdMember} from '@/models/Household';
 import {
   Dialog,
@@ -145,14 +240,14 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
-import { UsersIcon, LogOutIcon, UserIcon, ChevronRightIcon } from 'lucide-vue-next';
+import { UsersIcon, LogOutIcon, UserIcon, ChevronRightIcon, PencilIcon, Loader2, TrashIcon } from 'lucide-vue-next';
 import HouseholdMembers from '@/components/household/HouseholdMembers.vue';
 import ShelterStore from '@/components/household/ShelterStore.vue';
 import MemberNotInHousehold from '@/components/household/MemberNotInHousehold.vue';
 import UserInvitations from '@/components/household/UserInvitations.vue';
 import PendingInvitations from '@/components/household/PendingInvitations.vue';
 import HouseholdStats from '@/components/household/HouseholdStats.vue';
-import DeleteHousehold from '@/components/household/DeleteHousehold.vue';
+// DeleteHousehold component no longer used - functionality integrated into edit dialog
 import { useUserStore } from '@/stores/UserStore';
 import {
   getCurrentHousehold,
@@ -161,7 +256,10 @@ import {
   promoteUserToAdmin,
   getHouseholdMembers,
   getEmptyHouseholdMembers,
-  removeEmptyMemberFromHousehold, getNonAdminHouseholdMembers
+  removeEmptyMemberFromHousehold,
+  getNonAdminHouseholdMembers,
+  updateHousehold,
+  deleteHousehold
 } from '@/services/HouseholdService'
 import { toast } from 'vue-sonner';
 // Using direct service calls instead of the store
@@ -171,9 +269,17 @@ const router = useRouter()
 const userStore = useUserStore();
 // Using direct service calls instead of the store
 const hasHousehold = ref(false);
-const household = ref<{ id: number; name: string } | null>(null);
+const household = ref<{ id: number; name: string; address?: string } | null>(null);
 const isAdmin = ref(false);
 const showLeaveDialog = ref(false);
+const showEditHouseholdDialog = ref(false);
+const isUpdatingHousehold = ref(false);
+const showConfirmDeleteDialog = ref(false);
+const isDeletingHousehold = ref(false);
+const editHouseholdData = ref({
+  name: '',
+  address: ''
+});
 const showTransferAdminDialog = ref(false);
 const showCreateForm = ref(false);
 const householdMembers = ref<any[]>([]);
@@ -220,6 +326,70 @@ const handleMemberSelected = (member: any) => {
 const handleViewBeredskapslager = () => {
   console.log('View beredskapslager in parent');
   // Implement navigation to beredskapslager page
+};
+
+/**
+ * Opens the edit household dialog and populates it with current household data
+ */
+const openEditHouseholdDialog = () => {
+  if (household.value) {
+    editHouseholdData.value.name = household.value.name || '';
+    editHouseholdData.value.address = household.value.address || '';
+    showEditHouseholdDialog.value = true;
+  }
+};
+
+/**
+ * Updates the household details with the data from the edit form
+ * @async
+ */
+const updateHouseholdDetails = async () => {
+  if (!isAdmin.value || !household.value) return;
+
+  isUpdatingHousehold.value = true;
+  try {
+    await updateHousehold({
+      name: editHouseholdData.value.name.trim(),
+      address: editHouseholdData.value.address.trim()
+    });
+
+    // Update local data
+    await refreshHouseholdData();
+    showEditHouseholdDialog.value = false;
+    toast.success(t('household.update-success'));
+  } catch (error) {
+    console.error('Error updating household:', error);
+    toast.error(t('household.update-error'));
+  } finally {
+    isUpdatingHousehold.value = false;
+  }
+};
+
+/**
+ * Handles the household deletion process
+ * @async
+ */
+const handleDeleteHousehold = async () => {
+  if (!isAdmin.value) return;
+
+  isDeletingHousehold.value = true;
+  try {
+    await deleteHousehold();
+    toast.success(t('household.delete_success'));
+    showConfirmDeleteDialog.value = false;
+    showEditHouseholdDialog.value = false;
+    await refreshHouseholdData();
+  } catch (error: any) {
+    console.error('Error deleting household:', error);
+
+    if (error.response && error.response.data) {
+      toast.error(error.response.data);
+    } else {
+      toast.error(t('household.delete_error'));
+    }
+  } finally {
+    isDeletingHousehold.value = false;
+  }
 };
 
 /**

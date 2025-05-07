@@ -495,6 +495,13 @@
     "confirm_delete": "Delete household",
     "delete_success": "Household deleted",
     "delete_error": "Could not delete household",
+    "edit-household": "Edit Household",
+    "edit-household-description": "Update your household information",
+    "name-placeholder": "Enter household name",
+    "address-placeholder": "Enter household address",
+    "address": "Address",
+    "update-success": "Household updated successfully",
+    "update-error": "Could not update household",
     "create": {
       "title": "Create new household",
       "description": "Create a new household to manage members and resources.",
