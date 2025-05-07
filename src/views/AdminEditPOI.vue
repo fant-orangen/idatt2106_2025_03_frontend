@@ -187,9 +187,16 @@
         </Card>
       </div>
 
-      <!-- Placeholder for map -->
-      <div v-if="selectedPoi" class="map-placeholder rounded-lg border min-w-[300px] min-h-[400px] flex justify-center items-center flex-grow-2 max-w-xl">
-         {{ t('admin.map-placeholder') }}
+      <div
+        v-if="selectedPoi"
+        class="min-w-[300px] max-w-xl flex-1 h-[400px] overflow-hidden rounded-lg border"
+      >
+        <StaticMapWithMarker
+          :lat="selectedPoi.latitude"
+          :lng="selectedPoi.longitude"
+          :poiTypeName="selectedPoi.poiTypeName"
+          :mapId="'poi-marker-map-' + selectedPoi.id"
+        />
       </div>
     </div>
 
@@ -223,6 +230,8 @@ import { toast } from 'vue-sonner';
 import type { PoiPreviewDto, PoiData, UpdatePoiDto } from '@/models/PoiData.ts'
 import { fetchPoiPreviews, fetchPoiById, searchPoiPreviews } from '@/services/api/PoiService';
 import { deletePoi } from '@/services/api/AdminServices';
+import StaticMapWithMarker from '@/components/map/StaticMapWithMarker.vue'
+import 'leaflet/dist/leaflet.css'
 
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { Separator } from '@/components/ui/separator';
