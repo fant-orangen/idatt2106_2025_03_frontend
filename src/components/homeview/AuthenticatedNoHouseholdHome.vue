@@ -1,17 +1,19 @@
 <template>
   <div class="flex flex-col w-full gap-8 pb-20">
-    <!-- Notification Banner -->
-    <section class="notification-banner py-3 bg-orange-100 border-b border-orange-200 w-full">
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="flex items-center gap-2 text-orange-800">
-          <font-awesome-icon :icon="['fas', 'info-circle']" class="text-lg" />
-          <p>{{ t('home.no_household.banner', 'Create a household to see ongoing crises and manage your household resources') }}</p>
+    <!-- Notification Banner (Hero Style) -->
+    <section class="hero-banner w-full px-4 mb-4">
+      <div class="w-full rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-in-out border border-orange-300 bg-gradient-to-r from-orange-50 to-white">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-2">
+            <font-awesome-icon :icon="['fas', 'home']" class="text-2xl text-orange-600" />
+            <h2 class="text-xl font-bold text-gray-800">{{ t('home.no_household.title', 'No Household Found') }}</h2>
+          </div>
+          <p class="mb-4 text-gray-600">{{ t('home.no_household.banner', 'Create a household to see ongoing crises and manage your household resources') }}</p>
           <Button
-            variant="link"
-            class="text-orange-800 font-medium hover:text-orange-900 p-0 h-auto"
+            class="bg-orange-600 hover:bg-orange-700 text-white"
             @click="navigateTo('/household')"
           >
-            {{ t('home.no_household.create_now', 'Create now') }}
+            {{ t('home.no_household.create_now', 'Create Household') }}
           </Button>
         </div>
       </div>
@@ -50,10 +52,10 @@ import NewsViewComponent from '@/components/shared/NewsViewComponent.vue';
 import HouseholdInfoComponent from '@/components/shared/HouseholdInfoComponent.vue';
 import CrisisInfoComponent from '@/components/shared/CrisisInfoComponent.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
 // Register FontAwesome icons
-library.add(faInfoCircle);
+library.add(faHome);
 
 const router = useRouter();
 const { t } = useI18n();
@@ -69,10 +71,4 @@ const navigateTo = (route: string) => {
 </script>
 
 <style scoped>
-.notification-banner {
-  position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-}
 </style>
