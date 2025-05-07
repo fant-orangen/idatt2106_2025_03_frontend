@@ -834,12 +834,12 @@
     "info": {
       "title": "This will be the title of your point of interest (POI).",
       "coordinates": "Insert the coordinates or the address of your POI. You can also click on the map to get the coordinates automatically!",
-      "type": "Choose what type of POI this is.",
-      "description": "Write some information describing the POI. Where is it? What is its purpose?",
-      "successfully": "POI Created Successfully",
-      "success-message": "Your POI has been added to the system.",
+      "type": "Choose what type this point of interest is.",
+      "description": "Write some information describing this point of interest. Where is it? What is its purpose?",
+      "successfully": "Point Of Interest Created Successfully",
+      "success-message": "Your Point Of interest Has Been Added To The System.",
       "success-added": "had been added.",
-      "go-to-admin": "Go to Admin Panel",
+      "go-to-admin": "Go To Admin Panel",
       "description-placeholder": "Description"
     },
     "titles": {
