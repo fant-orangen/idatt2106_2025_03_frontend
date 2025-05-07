@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from '@/components/ui/breadcrumb'
 import Separator from './ui/separator/Separator.vue'
 import { useI18n } from 'vue-i18n'
 
@@ -14,18 +6,6 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <Breadcrumb class="m-5">
-    <BreadcrumbList>
-      <BreadcrumbItem>
-        <BreadcrumbLink href="/">{{ t('privacy.breadcrumbHome') }}</BreadcrumbLink>
-      </BreadcrumbItem>
-      <BreadcrumbSeparator />
-      <BreadcrumbItem>
-        <BreadcrumbPage>{{ t('privacy.breadcrumbCurrent') }}</BreadcrumbPage>
-      </BreadcrumbItem>
-    </BreadcrumbList>
-  </Breadcrumb>
-
   <section class="max-w-4xl mx-auto p-6 space-y-8 mb-10">
     <div>
       <h1 class="text-3xl font-bold">{{ t('privacy.title') }}</h1>
