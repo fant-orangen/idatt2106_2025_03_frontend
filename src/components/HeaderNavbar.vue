@@ -129,7 +129,7 @@ function logOut() {
 
 <template>
   <div
-    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0"
+    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[1100]"
   >
     <div class="navbar-left flex flex-row gap-4">
       <!-- Logo -->
