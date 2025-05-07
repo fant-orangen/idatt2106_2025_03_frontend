@@ -25,7 +25,8 @@
 
 <div class="p-5">
   <h1 class="text-3xl p-3">Title</h1>
-  <div class="flex flex-row flex-wrap gap-4 justify-center">
+  <Button type="button" @click="editDraft()">Rediger en draft</Button>
+  <div v-if="!edit" class="flex flex-row flex-wrap gap-4 justify-center">
     <Card>
       <CardHeader>
         <CardTitle>{{$t('navigation.admin-news')}}</CardTitle>
@@ -95,17 +96,6 @@
             </Combobox>
             <p>{{ $t('news.description.event') }}</p>
           
-            <FormField v-slot="{ field, meta, errorMessage }" name="status">
-              <FormItem>
-                <FormLabel>{{$t('news.content')}}</FormLabel>
-                <FormControl>
-                  <Textarea v-bind="field" class="border rounded-md shadow w-full min-h-28" />
-                </FormControl>
-                <FormDescription>{{ $t('news.description.subject') }}</FormDescription>
-                <FormMessage v-if="meta.touched && meta.validated">{{ errorMessage }}</FormMessage>
-              </FormItem>
-            </FormField>
-          
           </div>
 
         </form>
@@ -116,8 +106,8 @@
         
         <div class="flex flex-row flex-wrap gap-3">
           <Button>{{ $t('news.post') }}</Button>
-          <Button type="button" variant="secondary">Save draft</Button>
-          <Button type="button" variant="destructive">Archive</Button>
+          <Button v-if="!published" type="button" variant="secondary">Save draft</Button>
+          <Button v-if="selectedNews" type="button" variant="destructive">Archive</Button>
           <Button type="button" variant="outline">{{ $t('common.cancel') }}</Button>
         </div>
       </CardFooter>
@@ -130,18 +120,14 @@
       </CardHeader>
       <CardContent>
         <InfiniteScroll :is-loading="isFetchingNextNewsPage" :has-more="hasNextNewsPage" @load-more="fetchNextNewsPage">
-          <div v-for="news in allNews" class="flex flex-col gap-1">
+          <div v-for="news in relatedNews" class="flex flex-col gap-1">
             <span><b>{{ news.title }}</b></span>
             <span>{{ news.content }}</span>
             <span>{{  formatDateFull(news.publishedAt) }}</span>
             <Separator />
           </div>
         </InfiniteScroll>
-
       </CardContent>
-      <CardFooter>
-        Card Footer
-      </CardFooter>
     </Card>
   </div>
 </div>
@@ -183,10 +169,12 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxList, ComboboxTrigger } from '@/components/ui/combobox'
 import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
 
-const { t } = useI18n();
+const { t } = useI18n()
+const edit = ref(false)
 const showRelatedNews = ref(false)
-const selectedEvent = ref<CrisisEventPreviewDto | null>(null);
-
+const selectedEvent = ref<CrisisEventPreviewDto | null>(null)
+const selectedNews = ref<News | null>(null)
+const published = ref(false)
 onMounted(() => {
   fetchNextEventPage;
 });
@@ -217,7 +205,34 @@ const {
 	},
 	initialPageParam: 0
 });
-const allNews = computed<News[]>(() => newsData.value?.pages.flat() ?? [])
+const relatedNews = computed<News[]>(() => newsData.value?.pages.flat() ?? [])
+
+/**
+ * For pagination of list of all news articles.
+ * Only used if the admin wants to edit a draft
+ */
+
+const allNewsPageSize = 10
+
+const {
+  data: articlesData,
+  fetchNextPage: fetchAllNewsPage,
+  hasNextPage: hasNextAllNewsPage,
+  isFetchingNextPage: isFetchingNextAllNewsPage,
+} = useInfiniteQuery<News[], Error>({
+  queryKey: computed(() => ['news']),
+  queryFn: async ({ pageParam = 0 }) => {
+		const pageNumber = pageParam as number;
+		const page = await (pageParam, allNewsPageSize);
+		return page.content;
+	},
+  getNextPageParam: (lastPage, allPages) => {
+    return lastPage.length < allNewsPageSize ? undefined : allPages.length;
+	},
+	initialPageParam: 0
+});
+const allNews = computed<News[]>(() => articlesData.value?.pages.flat() ?? [])
+
 
 /**
  * For pagination of list of all events:
@@ -241,7 +256,6 @@ const allNews = computed<News[]>(() => newsData.value?.pages.flat() ?? [])
 	initialPageParam: 0
 });
 const allEvents = computed<CrisisEventPreviewDto[]>(() => eventData.value?.pages.flat() ?? [])
-allEvents.value.forEach((event: CrisisEventPreviewDto) => { console.log(event.id)});
 
 watch(selectedEvent, async (event) => {
   if (event) {
@@ -250,6 +264,12 @@ watch(selectedEvent, async (event) => {
   }
 })
 
+watch (edit, async () => {
+  await queryClient.invalidateQueries({queryKey: ['news']});
+})
 
+function editDraft() {
+  edit.value = true
+}
 
 </script>
