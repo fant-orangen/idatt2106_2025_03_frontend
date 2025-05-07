@@ -234,6 +234,7 @@ router.beforeEach(async (to, from, next) => {
     'News',
     'Notifications',
     'ResetPassword',
+    'PrivacyPolicy',
   ]
 
   // Allow immediate navigation if the target route is public
