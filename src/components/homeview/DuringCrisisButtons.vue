@@ -1,8 +1,8 @@
 <template>
   <div class="content flex justify-center items-center pt-20 flex-col gap-10">
-    <div class="container flex flex-col gap-6 w-full max-w-7xl">
+    <div class="container flex flex-col gap-4 w-full max-w-7xl">
       <!-- Buttons Section -->
-      <div class="during-crisis-buttons flex flex-col gap-4">
+      <div class="during-crisis-buttons flex flex-col gap-2">
       </div>
 
       <!-- Days of Water and Food Left Section -->
@@ -24,8 +24,9 @@
       </div>
 
       <!-- Info Button -->
+    <div class="flex flex-col gap-2">
       <Button
-        class="flex items-center justify-between gap-2 w-72 px-6 py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+        class="flex items-center justify-between w-72 mt-2 px-6 py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
         @click="navigateToScenarioTheme(currentEventId)"
       >
         Les mer om krisesenarioet
@@ -34,7 +35,7 @@
 
       <!-- Household Button -->
       <Button
-        class="flex items-center justify-between gap-2 w-72 px-6 py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+        class="flex items-center justify-between w-72 px-6 py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
         @click="navigateTo('household')"
       >
         <font-awesome-icon :icon="['fas', 'home']" class="text-xl" />
@@ -43,6 +44,7 @@
         </span>
         <ArrowRight class="text-lg" />
       </Button>
+    </div>
 
       <!-- Notifications Section -->
       <RouterLink

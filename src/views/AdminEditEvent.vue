@@ -37,7 +37,7 @@
 			<CardContent class="card-content">
 				<InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
 					<div v-for="(event, index) in allEvents" :key="event.id" @click="selectEvent(index)"
-						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-muted/80']">
+						:class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-bray-200', 'dark:hover:bg-bray-700']">
 
 						<div class=listOfEvents>
 							<span class="severity-tag">{{ event.name }} </span>
@@ -656,21 +656,20 @@ PErsonlig liker jeg ikke scroll i tekstbokser */
 	text-transform: capitalize;
 }
 .true {
-	background-color: lightblue;/**endre fargene senere */
+	background-color: var(--default-blue);/**endre fargene senere */
 }
 .false {
-	background-color: grey;
-	color: white
+	background-color: var(--gray);
 }
 
 .green {
-	background-color: var(--color-chart-2); /* should be green but is off*/
+	background-color: var(--crisis-level-green); /* should be green but is off*/
 }
 .yellow {
-	background-color: var(--color-chart-4); /*should be yellow on dark mode... */
+	background-color: var(--crisis-level-yellow); /*should be yellow on dark mode... */
 }
 .red {
-	background-color: var(--color-chart-1); /*should be red but is blue  */
+	background-color: var(--crisis-level-red); /*should be red but is blue  */
 }
 
 .map { /*denne kan fjernes når kartet er på plass, brukes bare som placeholder,

@@ -13,8 +13,27 @@ export interface PoiData {
   latitude: number;
   longitude: number;
   address?: string | null;
-  openingHours?: string | null;
-  contactInfo?: string | null;
+  openFrom?: string;
+  openTo?: string;
+  contactInfo?: string;
   createdAt: string; // Typically ISO string format
   updatedAt: string; // Typically ISO string format
+}
+
+export interface PoiPreviewDto {
+  id : number;
+  name : string;
+  type : string;
+}
+
+export interface UpdatePoiDto {
+  name: string;
+  latitude: number;
+  longitude: number;
+  description: string | null;
+  openFrom: string;
+  openTo: string;
+  contactInfo: string;
+  poiTypeId: number;
+
 }

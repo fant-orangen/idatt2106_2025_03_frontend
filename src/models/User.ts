@@ -12,6 +12,7 @@ export interface RegistrationData {
   lastName: string
   phoneNumber: string
   recaptchaToken: string
+  privacyPolicyAccepted: boolean
 }
 
 /**
