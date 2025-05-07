@@ -133,7 +133,7 @@
           />
           <Select v-model="newProductUnit">
             <SelectTrigger>
-              <SelectValue placeholder="Velg enhet" />
+              <SelectValue :placeholder="t('inventory.common.select-unit')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="kg">kg</SelectItem>

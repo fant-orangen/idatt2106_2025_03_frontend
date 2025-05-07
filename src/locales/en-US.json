@@ -860,7 +860,8 @@
       "success": {
         "shared": "Product was added to the group",
         "error": "An error occurred while sharing the product with the group"
-      }
+      },
+      "select-unit": "Select unit"
     }
   },
   "scenarioThemes": {

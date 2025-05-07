@@ -23,12 +23,13 @@
           {{ getTotalAmount(item) }}
         </div>
         <div class="text-right sm:text-center">
-          <button
+          <Button
+            variant="link"
             @click="toggleEdit(index)"
             class="text-sm text-primary hover:underline hover:cursor-pointer"
           >
             {{ item?.edit ? t('inventory.save') : t('inventory.edit') }}
-          </button>
+          </Button>
         </div>
       </div>
       <!-- Batch editing -->
@@ -73,19 +74,21 @@
           <template v-else>
             <div class="text-sm text-center sm:text-left w-full">{{ batch.expires }}</div>
           </template>
-          <button
+          <Button
             v-if="batch.isNew"
+            variant="link"
             @click="() => { saveBatch(index, bIndex); }"
-            class="text-sm text-primary underline w-full sm:w-auto"
+            class="text-sm text-primary w-full sm:w-auto"
           >
             {{ t('inventory.save') }}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="destructive"
             @click="() => { removeBatch(index, bIndex); }"
-            class="text-sm text-destructive underline w-full sm:w-auto"
+            class="text-sm w-full sm:w-auto"
           >
             {{ t('inventory.remove-from-group') }}
-          </button>
+          </Button>
 
           <Button
             v-if="!batch.isNew"
@@ -100,19 +103,21 @@
         </div>
         <!-- Add new batch -->
         <div class="flex flex-col sm:flex-row justify-between items-center mt-2 gap-2">
-          <button
+          <Button
+            variant="link"
             @click="addBatch(index)"
-            class="text-sm text-primary hover:underline"
+            class="text-sm text-primary"
           >
             + {{ t('inventory.water.add') }}
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="destructive"
             v-if="item.edit"
             @click="deleteProductType(index)"
-            class="text-sm text-destructive hover:underline"
+            class="text-sm"
           >
             {{ t('inventory.water.delete-type') }}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -147,9 +152,9 @@
         {{ t('inventory.water.exists.action') }}
       </p>
       <div class="text-right mt-4">
-        <button @click="showExistsModal = false" class="text-sm text-primary underline">
+        <Button @click="showExistsModal = false" variant="link" class="text-sm text-primary">
           OK
-        </button>
+        </Button>
       </div>
     </div>
   </div>

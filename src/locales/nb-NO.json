@@ -909,7 +909,8 @@
       "success": {
         "shared": "Produktet ble lagt til i gruppen",
         "error": "Det oppstod en feil ved deling av produkt med gruppen"
-      }
+      },
+      "select-unit": "Velg enhet"
     }
   },
   "scenarioThemes": {
