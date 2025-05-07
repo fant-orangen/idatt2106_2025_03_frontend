@@ -22,14 +22,14 @@
     </section>
 
     <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-      <!-- News Section (1/3) -->
-      <section class="news-section md:col-span-1 h-full flex flex-col">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-8 px-4">
+      <!-- News Section (2/5) -->
+      <section class="news-section md:col-span-2 h-full flex flex-col">
         <NewsViewComponent class="flex-grow" />
       </section>
 
-      <!-- Information Sections (2/3) -->
-      <section class="info-sections md:col-span-2 space-y-8">
+      <!-- Information Sections (3/5) -->
+      <section class="info-sections md:col-span-3 space-y-8">
         <!-- About Households -->
         <HouseholdInfoComponent @create="navigateToRegisterOrHousehold" />
 
@@ -80,14 +80,5 @@ const navigateToRegisterOrHousehold = () => {
   margin-right: calc(-50vw + 50%);
 }
 
-/* Custom grid columns for more precise sizing */
-@media (min-width: 1024px) {
-  .lg\:col-span-1\.2 {
-    grid-column: span 1.2 / span 1.2;
-  }
-
-  .lg\:col-span-3\.8 {
-    grid-column: span 3.8 / span 3.8;
-  }
-}
+/* We're now using standard grid columns (2/5 and 3/5) */
 </style>
