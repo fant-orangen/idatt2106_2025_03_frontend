@@ -17,9 +17,10 @@ import { toast } from 'vue-sonner'
 
 import { quizService } from '@/services/QuizService'
 
-const emit = defineEmits(['quiz-created'])
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
+const router = useRouter()
 
 const quizName = ref('')
 const quizDescription = ref('')
@@ -51,12 +52,11 @@ function validateAndSubmit() {
       description: quizDescription.value,
     })
     .then((response) => {
-      if (response.status === 200) {
-        toast.success(t('gamification.quizCreator.quizCreated'))
-        // emit('quiz-created', response.data)
-      } else {
-        toast.error(t('gamification.quizCreator.quizCreationError'))
-      }
+      // Assuming the response contains the created quiz's ID
+      const createdQuizId = response.quizId
+      toast.success(t('gamification.quizCreator.quizCreated') + ': ' + createdQuizId)
+      // Navigate to the EditQuizView with the created quiz ID
+      router.push({ name: 'EditQuiz', params: { quizId: createdQuizId } })
     })
     .catch((error) => {
       console.error('Error creating quiz:', error)
@@ -102,9 +102,14 @@ function validateAndSubmit() {
           <div v-if="quizNameError" class="text-red-500">
             {{ errorMessage }}
           </div>
-          <Button @click="validateAndSubmit()">
-            {{ $t('gamification.quizCreator.createQuiz') }}
-          </Button>
+          <div class="flex gap-4">
+            <Button class="flex-1" @click="validateAndSubmit()">
+              {{ $t('gamification.quizCreator.createQuiz') }}
+            </Button>
+            <Button class="flex-1" @click="router.push('/quizzes/')" variant="outline">
+              {{ $t('gamification.quizCreator.cancelButton') }}
+            </Button>
+          </div>
         </div>
       </CardFooter>
     </Card>

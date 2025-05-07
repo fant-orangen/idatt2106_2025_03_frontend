@@ -161,7 +161,7 @@ const routes = [
     component: () => import('@/views/gamification/QuizOverviewView.vue'),
   },
   {
-    path: '/quizzes/:id',
+    path: '/quizzes/id=:quizId',
     name: 'Quiz',
     component: () => import('@/views/gamification/QuizView.vue'),
     props: true,
@@ -179,7 +179,7 @@ const routes = [
     meta: { requiresAdmin: true },
   },
   {
-    path: '/quizzes/admin/edit-quiz/:id',
+    path: '/quizzes/admin/edit-quiz/id=:quizId',
     name: 'EditQuiz',
     component: () => import('@/views/gamification/admin/EditQuizView.vue'),
     meta: { requiresAdmin: true },

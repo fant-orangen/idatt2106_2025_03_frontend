@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import QuizComponent from '@/components/gamification/quiz/QuizComponent.vue'
+import { defineProps } from 'vue'
 
 import {
   Breadcrumb,
@@ -11,6 +12,9 @@ import {
 } from '@/components/ui/breadcrumb'
 
 const quizName = 'General Knowledge Quiz' // This should be passed as a prop or fetched from a store
+const props = defineProps<{
+  quizId: number
+}>()
 </script>
 
 <template>
@@ -29,5 +33,5 @@ const quizName = 'General Knowledge Quiz' // This should be passed as a prop or 
       </BreadcrumbItem>
     </BreadcrumbList>
   </Breadcrumb>
-  <QuizComponent />
+  <QuizComponent :quizId="props.quizId" />
 </template>
