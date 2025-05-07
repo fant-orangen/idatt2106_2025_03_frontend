@@ -1,9 +1,9 @@
 <template>
-  <div class="crisis-status cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5" @click="navigateToCrisisPage()">
+  <div class="crisis-status" :class="{'cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5': hasOngoingCrises, 'cursor-default': !hasOngoingCrises}" @click="hasOngoingCrises && navigateToCrisisPage()">
     <Card :class="`w-full md:w-120 rounded-2xl p-4 transition-all duration-200 ease-in-out ${containerClass}`">
       <CardHeader class="items-center">
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
-          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />
+          <font-awesome-icon :icon="hasOngoingCrises ? ['fas', 'triangle-exclamation'] : ['fas', 'check-circle']" :size="hasOngoingCrises ? '2xl' : 'xl'" :class="{'text-green-500 dark:text-green-400': !hasOngoingCrises}" />
           <div>{{ t('crisis.crisis-status') }}</div>
         </CardTitle>
       </CardHeader>
@@ -38,7 +38,13 @@
         </div>
 
         <div v-else class="main-crisis mb-4 w-full text-center">
-          <div class="text-base font-semibold">{{ t('crisis.no-crisis') }}</div>
+          <div class="text-base font-medium text-green-600 dark:text-green-400 py-2 px-4 rounded-md bg-green-50 dark:bg-green-900/20 inline-block">
+            <span class="flex items-center gap-2">
+              <font-awesome-icon :icon="['fas', 'check']" />
+              {{ t('crisis.no-crisis') }}
+            </span>
+          </div>
+          <div class="text-sm text-muted-foreground mt-2">{{ t('crisis.all_clear', 'All clear. No active crisis events at this time.') }}</div>
         </div>
 
         <!-- Other Crisis Events as Links -->
@@ -73,10 +79,13 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
-import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService';
+import type { CrisisEventPreviewDto } from '@/models/CrisisEvent.ts';
+import {
+  fetchAllPreviewCrisisEvents,
+  fetchCrisisEventsInRadius
+} from '@/services/CrisisEventService.ts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
+import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils.ts';
 
 /**
  * CrisisLevelOverview component
@@ -103,7 +112,7 @@ const fetchCrisisEvents = async () => {
     loading.value = true;
     error.value = null;
 
-    const response = await fetchAllPreviewCrisisEvents(0, 4);
+    const response = await fetchCrisisEventsInRadius(0, 4);
     crisisEvents.value = response.content;
   } catch (err) {
     console.error('Failed to fetch crisis events:', err);
@@ -157,7 +166,7 @@ const hasOngoingCrises = computed(() => crisisEvents.value.length > 0)
  * Returns the CSS class for the container based on highest severity
  */
  const containerClass = computed(() => {
-  if (crisisEvents.value.length === 0) return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
+  if (crisisEvents.value.length === 0) return 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-800 shadow-sm';
 
   if (mainCrisis.value) {
     const severity = mainCrisis.value.severity;
