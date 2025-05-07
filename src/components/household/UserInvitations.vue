@@ -1,5 +1,5 @@
 <template>
-  <Card v-if="invitations.length > 0 || isLoading">
+  <Card>
     <CardHeader class="flex flex-row items-center justify-between pb-2">
       <CardTitle>{{ $t('household.your-invitations') }}</CardTitle>
       <Button
