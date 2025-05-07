@@ -130,15 +130,26 @@ class QuizService {
   /**
    * Create a user quiz attempt
    */
-  async createUserQuizAttempt(quizId: number): Promise<void> {
-    await api.post(`/quizzes/user/attempts/${quizId}`)
+  async createUserQuizAttempt(quizId: number): Promise<number> {
+    const response = await api.post(`/quizzes/user/${quizId}/attempts`)
+    return response.data.attemptId // Extract and return the attemptId from the response
   }
-
   /**
    * Record a user's answer to a quiz question for a specific attempt
    */
   async createUserQuizAnswer(data: CreateUserQuizAnswerRequest): Promise<void> {
     await api.post('/quizzes/user/attempts/answer', data)
+  }
+
+  async getUserQuizAnswer(
+    quizId: number,
+    questionId: number,
+    attemptId: number,
+  ): Promise<QuizAnswerResponse | null> {
+    const response = await api.get(
+      `/quizzes/user/${quizId}/questions/${questionId}/attempts/${attemptId}/answers`,
+    )
+    return response.data
   }
 
   /**
@@ -170,6 +181,11 @@ class QuizService {
    */
   async getTotalCorrectAnswersForAttempt(attemptId: number): Promise<number> {
     const response = await api.get(`/quizzes/user/attempts/${attemptId}/correct-count`)
+    return response.data
+  }
+
+  async getLatestQuizAttempt(quizId: number): Promise<QuizAttemptSummary | null> {
+    const response = await api.get(`/quizzes/user/${quizId}/attempts/latest`)
     return response.data
   }
 }
