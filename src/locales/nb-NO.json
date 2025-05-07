@@ -362,6 +362,9 @@
     "directions": "Veibeskrivelse",
     "contact": "Kontakt",
     "filter": "Filtrer interessepunkt",
+    "show-pois": "Interessepunkt",
+    "show-crisis": "Kriser",
+    "show-meeting-places": "Møteplasser",
     "my-location": "Bruk min posisjon",
     "your-location": "Din posisjon",
     "household-location": "Din husholdning",
@@ -382,7 +385,35 @@
     "find-nearest": "Finn nærmeste",
     "show-directions": "Vis veibeskrivelse",
     "close-directions": "Lukk",
-    "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse"
+    "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse",
+    "legend": {
+      "user-location": "Din Posisjon",
+      "household-location": "Husholdning",
+      "user-location": "Din Posisjon",
+      "crisis-level-1": "Krisenivå 1",
+      "crisis-level-2": "Krisenivå 2",
+      "crisis-level-3": "Krisenivå 3",
+      "fire-station": "Brannstasjon",
+      "police-station": "Politistasjon",
+      "hospital": "Sykehus",
+      "pharmacy": "Apotek",
+      "gas-station": "Bensinstasjon",
+      "grocery-store": "Dagligvarebutikk",
+      "water-point": "Vannkilde",
+      "meeting-point": "Møtepunkt",
+      "shelter": "Tilfluktsrom",
+      "default": "Other"
+    },
+    "poiTypes": {
+      "1": "Sykehus",
+      "2": "Politistasjon",
+      "3": "Brannstasjon",
+      "4": "Tilfluktsrom",
+      "5": "Dagligvarebutikk",
+      "6": "Vannkilde",
+      "7": "Bensinstajon",
+      "8": "Apotek"
+    }
   },
   "time-units": {
     "month": "1 måned | {count} måneder",
@@ -781,7 +812,7 @@
   },
   "add-event-info": {
     "title": "Dette vil være tittelen på hendelsen din.",
-    "coordinates": "Sett inn koordinatene eller adressen til hendelsen din. Du kan også klikke på kartet for å få koordinatene automatisk!",
+    "coordinates": "Skriv inn en adresse eller klikk på kartet for å legge inn koordinatene automatisk!",
     "radius": "Sett inn radiusen til hendelsen din i meter. Omtrent hvor stort område vil hendelsen påvirke?",
     "priority": "Prioritetsnivået er viktig, og vil vises som lav (grønn), middels (oransje) og høy (rød) for brukere på kartet.",
     "description": "For eksempel: Hendelsen skjedde på (dato og sted) ... og vil mest sannsynlig vare i (tid)... Det kan bli mangel på (ressurs)...",

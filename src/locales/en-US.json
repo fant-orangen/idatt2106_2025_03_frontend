@@ -360,6 +360,9 @@
     "directions": "Directions",
     "contact": "Contact",
     "filter": "Filter Points Of Interest",
+    "show-pois": "Points of interest",
+    "show-crisis": "Crises",
+    "show-meeting-places": "Meeting Places",
     "my-location": "Use my location",
     "your-location": "Your location",
     "household-location": "Your household",
@@ -380,7 +383,34 @@
     "find-nearest": "Find Nearest",
     "show-directions": "Show directions",
     "close-directions": "Close",
-    "need-location": "Please enable your location to show directions"
+    "need-location": "Please enable your location to show directions",
+    "legend": {
+      "user-location": "Your Location",
+      "household-location": "Household",
+      "crisis-level-1": "Crisis Level 1",
+      "crisis-level-2": "Crisis Level 2",
+      "crisis-level-3": "Crisis Level 3",
+      "fire-station": "Fire Station",
+      "police-station": "Police Station",
+      "hospital": "Hospital",
+      "pharmacy": "Pharmacy",
+      "gas-station": "Gas Station",
+      "grocery-store": "Grocery Store",
+      "water-point": "Water Point",
+      "meeting-point": "Meeting Point",
+      "shelter": "Shelter",
+      "default": "Other"
+    },
+    "poiTypes": {
+      "1": "Hospital",
+      "2": "Police Station",
+      "3": "Fire Station",
+      "4": "Shelter",
+      "5": "Grocery Store",
+      "6": "Water Distribution Point",
+      "7": "Gas Station",
+      "8": "Pharmacy"
+    }
   },
   "time-units": {
     "month": "1 month | {count} months",
@@ -728,7 +758,7 @@
   },
   "add-event-info": {
     "title": "This will be the title of your event.",
-    "coordinates": "Insert the coordinates or the address of your event. You can also click on the map to get the coordinates automatically!",
+    "coordinates": "Type in a address or click on the map to fill in the coordinates automatically!",
     "radius": "Insert the radius of your event in meters. Approximately how large is the area affected by the event?",
     "priority": "The priority level is important, and will show up as low (green), medium (orange), and high (red) to users on the map.",
     "description": "For example: The event occurred on (date and location) ... and will most likely last for (time)... There might be a shortage of (resource)...",
