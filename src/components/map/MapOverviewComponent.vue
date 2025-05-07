@@ -158,37 +158,24 @@
 
   <!-- Map and Legend container -->
   <div class="flex flex-col">
-    <!-- Map area -->
-    <div class="relative z-0 overflow-visible h-[50em] md:h-[60vh] w-full">
-      <div
-        v-if="isLoadingPois || isLoadingCrisisEvents || isLoadingLocation"
-        class="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-black/80 z-10"
-      >
-        {{ t('map.loading') || 'Loading...' }}
-      </div>
-      <div
-        v-else-if="poiError || locationError"
-        class="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-black/80 z-10 text-red-600"
-      >
-        {{ poiError || locationStatusMessage || 'An error occurred' }}
-      </div>
-
+    <!-- 1. ONLY the map canvas is fixed-height & clipped -->
+    <div class="relative overflow-hidden rounded-lg h-80 sm:h-[50vh] md:h-[60vh] w-full">
+      <!-- loading / error masks are fine here -->
       <MapComponent
         ref="mapComponentRef"
         :pois="showPois ? convertedPois : []"
         :crisisEvents="showCrisis ? crisisEvents : []"
         :meetingPlaces="showMeetingPlaces ? meetingPlaces : []"
-        :showPois="showPois"
-        :showCrisis="showCrisis"
-        :showMeetingPlaces="showMeetingPlaces"
         :userLocation="userLocation"
         :householdLocation="householdLocation"
         class="absolute inset-0"
       />
     </div>
 
-    <!-- Legend underneath the map -->
-    <MapLegend class="mt-4" />
+    <!-- 2. And now the legend flows freely BELOW, with its own spacing -->
+    <div class="mt-2 sm:mt-4 md:mt-6 px-4">
+      <MapLegend />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
