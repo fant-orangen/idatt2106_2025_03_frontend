@@ -159,7 +159,7 @@
   <!-- Map and Legend container -->
   <div class="flex flex-col">
     <!-- 1. ONLY the map canvas is fixed-height & clipped -->
-    <div class="relative overflow-hidden rounded-lg h-80 sm:h-[50vh] md:h-[60vh] w-full">
+    <div class="relative overflow-hidden rounded-lg h-80 sm:h-[50vh] md:h-[60vh] w-full  z-0">
       <!-- loading / error masks are fine here -->
       <MapComponent
         ref="mapComponentRef"

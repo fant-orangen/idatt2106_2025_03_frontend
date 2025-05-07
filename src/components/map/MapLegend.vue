@@ -8,11 +8,11 @@
     </CardHeader>
     <CardContent class="pt-2">
       <!-- Responsive grid: 2 cols on xs, 3 on sm, 4 on md, 6 on lg+ -->
-      <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div class="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         <div
           v-for="item in items"
           :key="item.labelKey"
-          class="flex items-center gap-2"
+          class="flex items-center gap-2 whitespace-nowrap"
         >
           <img
             v-if="item.icon"
