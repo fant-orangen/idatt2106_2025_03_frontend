@@ -8,7 +8,7 @@
       <div v-if="crisisDetails" class="space-y-4">
         <h3 class="text-lg font-semibold flex items-center gap-2">
           {{ crisisDetails.name || 'Unnamed Crisis' }}
-          <Badge :class="crisisDetails.severityClass || 'bg-gray-500 text-white'">
+          <Badge :style="{ backgroundColor: getSeverityColor(crisisDetails.severity) }">
             {{ crisisDetails.severity ? crisisDetails.severity.toUpperCase() : 'UNKNOWN' }}
           </Badge>
         </h3>
@@ -119,7 +119,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateFull } from '@/utils/dateUtils.ts';
-import { getSeverityClass } from '@/utils/severityUtils';
+import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 import { createReflection } from '@/services/ReflectionService';
 import { toast } from 'vue-sonner';
 import {
@@ -130,6 +130,7 @@ import {
   DialogDescription
 } from '@/components/ui/dialog';
 import ReflectionForm from '@/components/profile/ReflectionForm.vue';
+
 
 /**
  * CrisisDetails component

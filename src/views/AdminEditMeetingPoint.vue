@@ -25,7 +25,7 @@
   <h1 class="text-3xl p-5">{{$t('admin.meeting-point')}}</h1>
 
 
-  <div class="grid grid-cols-3 gap-5">
+  <div class="grid flex-col gap-5 md:grid-cols-3">
     <!--Overview of all meeting points-->
     <Card>
       <CardHeader>
@@ -41,8 +41,8 @@
           </span>
         </div>
         <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
-          <div v-for="meetingPoint in filteredMPts" 
-            :key="meetingPoint.id" 
+          <div v-for="meetingPoint in filteredMPts"
+            :key="meetingPoint.id"
             @click="selectMeetingPoint(meetingPoint.id)"
             class="h-full w-full rounded-md border p-2 cursor-pointer hover:bg-muted transition-colors m-2 min-w-fit">
             <div class="cursor-pointer min-w-fit flex flex-row flex-nowrap">
@@ -55,7 +55,7 @@
           </div>
         </InfiniteScroll>
       </CardContent>
-      
+
       <CardFooter>
         <template #loading>
           <div class="text-center p-4">{{ $t('common.loading') }}</div>
@@ -78,36 +78,38 @@
             <FormItem>
               <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
               <FormControl>
-                <Input type="text" v-bind="field" />
+                <Input type="text" v-bind="field" class="w-full" />
               </FormControl>
               <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
               <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
             </FormItem>
           </FormField>
 
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-5">
             <!--Latitude field-->
-            <div class="flex flex-row flex-wrap gap-3 justify-evenly">
-              <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
-                <FormItem>
-                  <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
-                  <FormControl>
-                    <Input class="w-[100px]" type="number" step="any" v-bind="field" />
-                  </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-                </FormItem>
-              </FormField>
+            <div class="flex flex-col gap-5">
+              <div class="flex flex-col gap-5 md:flex-row">
+                <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
+                  <FormItem>
+                    <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
+                    <FormControl>
+                      <Input class="w-full" type="number" step="any" v-bind="field" />
+                    </FormControl>
+                    <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                  </FormItem>
+                </FormField>
 
-              <!--Longitude field-->
-              <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
-                <FormItem>
-                  <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
-                  <FormControl>
-                    <Input class="w-[100px]" type="number" step="any" v-bind="field" />
-                  </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-                </FormItem>
-              </FormField>
+                <!--Longitude field-->
+                <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
+                  <FormItem>
+                    <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
+                    <FormControl>
+                      <Input class="w-full" type="number" step="any" v-bind="field" />
+                    </FormControl>
+                    <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                  </FormItem>
+                </FormField>
+              </div>
 
               <!--Address field-->
               <FormField v-slot="{ field, meta, errorMessage }" name="address">
@@ -136,7 +138,7 @@
         <CardTitle>Map</CardTitle>
       </CardHeader>
       <CardContent>
-        <p>MAp <3</p>
+        <p>MAp<3 </p>
       </CardContent>
       <CardFooter>
         Card Footer
@@ -302,12 +304,12 @@ async function selectMeetingPoint(id: number) {
       isOpen.value = true
       break;
 	  }
-  } 
+  }
 }
 
 /**
- * Create a new meeting point 
- * @param data 
+ * Create a new meeting point
+ * @param data
  */
 async function createNewMP(data: CreateMeetingPlaceDto) {
   try {
@@ -325,7 +327,7 @@ async function createNewMP(data: CreateMeetingPlaceDto) {
 
 /**
  * Archive (deactivate) a meeting point.
- * @param id 
+ * @param id
  */
 async function archiveMP(id: number) {
   try {
@@ -343,14 +345,14 @@ async function archiveMP(id: number) {
 
 /**
  * Activate a meeting point
- * @param id 
+ * @param id
  */
 async function activateMP(id: number) {
   try {
     const response = await meetingPlaceService.activateMeetingPlace(id)
     console.log('Activating the meeting place ...', response)
     callToast('Activated the meeting point!');
-    
+
     selectedMP.value = null;
     await queryClient.invalidateQueries({queryKey: ['allMPts']});
   } catch (error) {

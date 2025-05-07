@@ -27,9 +27,13 @@ export const getSeverityClass = (severity: string): string => {
  */
 export const getSeverityColor = (severity: string): string => {
   switch (severity.toLowerCase()) {
-    case 'green': return '#10b981';
-    case 'yellow': return '#f59e0b';
-    case 'red': return '#ef4444';
-    default: return '#10b981';
+    case 'red':
+      return 'var(--crisis-level-red)';
+    case 'yellow':
+      return 'var(--crisis-level-yellow)';
+    case 'green':
+      return 'var(--crisis-level-green)';
+    default:
+      return 'var(--default-blue)';
   }
 };

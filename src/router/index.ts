@@ -58,16 +58,6 @@ const routes = [
     component: () => import('@/views/RegisterView.vue'),
   },
   {
-    path: '/before-crisis',
-    name: 'BeforeCrisis',
-    component: () => import('@/views/BeforeCrisisView.vue'),
-  },
-  {
-    path: '/during-crisis',
-    name: 'DuringCrisis',
-    component: () => import('@/views/DuringCrisisView.vue'),
-  },
-  {
     path: '/household',
     name: 'Household',
     component: () => import('@/views/HouseholdView.vue'),

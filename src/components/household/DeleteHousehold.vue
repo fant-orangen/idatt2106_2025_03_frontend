@@ -1,8 +1,7 @@
 <template>
   <Button
     variant="outline"
-    size="sm"
-    class="flex items-center gap-2"
+    :class="$attrs.class"
     @click="showConfirmDialog = true"
   >
     <TrashIcon class="h-4 w-4" />
@@ -67,6 +66,8 @@ const emit = defineEmits(['deleted']);
 
 const showConfirmDialog = ref(false);
 const isDeleting = ref(false);
+
+defineOptions({ inheritAttrs: false });
 
 /**
  * Handles the household deletion process.

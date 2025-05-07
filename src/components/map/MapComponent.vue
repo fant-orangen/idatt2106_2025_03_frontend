@@ -678,9 +678,9 @@ export default defineComponent({
 
       // 2) style lookup
       const LEVEL_STYLES: Record<number, { base: string; border: string }> = {
-        1: { base: '#a6d96a', border: '#333333' },
-        2: { base: '#fdae61', border: '#333333' },
-        3: { base: '#f46d43', border: '#333333' }
+        1: { base: '#10b981', border: '#333333' },
+        2: { base: '#f59e0b', border: '#333333' },
+        3: { base: '#ef4444', border: '#333333' }
       };
       const bounds = L.latLngBounds([]);
 

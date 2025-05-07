@@ -194,7 +194,7 @@ function logOut() {
             <DropdownMenuSeparator v-if="userStore.isAdminUser" />
             <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin/admin-panel')">
               <ShieldUser class="mr-2 h-4 w-4" />
-              <span>{{ t('admin.adminPanel') }}</span>
+              <span>{{ t('navigation.admin-panel') }}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="logOut()">

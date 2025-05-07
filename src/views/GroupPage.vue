@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-6 p-6">
+  <div class="flex gap-6 p-6 flex-col md:flex-row">
 
     <!-- Sidebar -->
     <aside class="bg-sidebar text-sidebar-foreground rounded-lg p-4 w-64 shadow flex flex-col h-full max-h-[calc(100vh-6rem)]">
@@ -31,7 +31,7 @@
         <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
         <button
             @click="switchGroup"
-            class="underline text-sm text-primary hover:text-primary-foreground transition"
+            class="text-sm text-primary hover:underline hover:cursor-pointer transition"
         >
           {{ t('group.switch-group') }}
         </button>
@@ -53,7 +53,7 @@
       <!-- Direct to inventory -->
       <router-link
           to="/inventory"
-          class="inline-block bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition"
+          class="inline-block bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/70 transition"
       >
         {{ t('group.share-from-inventory') }}
       </router-link>
