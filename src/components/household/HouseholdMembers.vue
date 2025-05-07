@@ -43,7 +43,7 @@
             <div class="flex items-center gap-1.5">
               <UserIcon class="h-4 w-4" />
               <span>{{ $t('household.people') }}</span>
-              <Badge variant="secondary" size="sm" class="ml-1">{{ realMembers.length }}</Badge>
+              <Badge variant="secondary" class="ml-1 text-xs">{{ realMembers.length }}</Badge>
             </div>
           </button>
           <button
@@ -54,7 +54,7 @@
             <div class="flex items-center gap-1.5">
               <UsersIcon class="h-4 w-4" />
               <span>{{ $t('household.others') }}</span>
-              <Badge variant="secondary" size="sm" class="ml-1">{{ emptyMembers.length }}</Badge>
+              <Badge variant="secondary" class="ml-1 text-xs">{{ emptyMembers.length }}</Badge>
             </div>
           </button>
         </div>
@@ -110,7 +110,7 @@
                       {{ 'firstName' in member ? `${member.firstName} ${member.lastName}` : ('name' in member ? (member as any).name : (member as any).email || '') }}
                     </p>
                     <!-- Admin badge -->
-                    <Badge v-if="'isAdmin' in member && member.isAdmin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
+                    <Badge v-if="('isAdmin' in member && member.isAdmin) || ('admin' in member && member.admin)" variant="outline" class="text-xs ml-1 border border-black dark:border-white bg-white dark:bg-black text-black dark:text-white font-bold">
                       {{ $t('household.admin_badge') }}
                     </Badge>
                   </div>
@@ -459,6 +459,7 @@ const toggleMemberSelection = (member: HouseholdMember | EmptyHouseholdMemberDto
 const fetchMembers = async () => {
   try {
     const members = await getHouseholdMembers();
+    console.log('Fetched household members:', members);
     householdMembers.value = members;
 
     const emptyMembersList = await getEmptyHouseholdMembers();

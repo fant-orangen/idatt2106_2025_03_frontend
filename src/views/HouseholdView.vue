@@ -105,7 +105,7 @@
             {{ t('household.no-members-to-transfer') }}
           </div>
           <div class="space-y-2 max-h-60 overflow-y-auto">
-            <!-- Non-admin members (selectable) -->
+            <!-- Household members -->
             <div
               v-for="member in nonAdminMembers"
               :key="member.id"
@@ -116,26 +116,9 @@
                 <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
                   <UserIcon class="h-4 w-4" />
                 </div>
-                <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}</span>
+                <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.email }}</span>
               </div>
               <ChevronRightIcon class="h-4 w-4" />
-            </div>
-
-            <!-- Admin members (not selectable) -->
-            <div
-              v-for="member in adminMembers"
-              :key="member.id"
-              class="flex items-center justify-between p-2 border rounded-md bg-muted/30 opacity-70"
-            >
-              <div class="flex items-center gap-2">
-                <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
-                  <UserIcon class="h-4 w-4" />
-                </div>
-                <span>{{ member.firstName ? `${member.firstName} ${member.lastName}` : member.name }}</span>
-                <Badge variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
-                  {{ t('household.admin_badge') }}
-                </Badge>
-              </div>
             </div>
           </div>
         </div>
@@ -153,6 +136,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import type {HouseholdMember} from '@/models/Household';
 import {
   Dialog,
   DialogContent,
@@ -216,15 +200,6 @@ const allHouseholdMembers = computed(() => {
  * @type {Ref<HouseholdMember[]>}
  */
 const nonAdminMembers = ref<HouseholdMember[]>([]);
-
-/**
- * Computed property for household members who are admins.
- * Used to display admin badges in the transfer dialog.
- * @returns {Array} Array of household members who are admins
- */
-const adminMembers = computed(() => {
-  return householdMembers.value.filter(member => member.isAdmin);
-});
 
 /**
  * Methods
@@ -384,19 +359,11 @@ const showAdminTransferButton = computed(() => {
 
 // Fetch household data when the component mounts
 onMounted(async () => {
-  console.log('HouseholdView mounted');
   await refreshHouseholdData();
-
-  console.log('After refreshHouseholdData - hasHousehold:', hasHousehold.value);
-  console.log('userInvitationsRef exists:', !!userInvitationsRef.value);
-
   // Ensure user invitations are refreshed for users without a household
   if (!hasHousehold.value) {
-    console.log('User has no household, should show invitations');
-    // Force a small delay to ensure the component is mounted
     setTimeout(() => {
       if (userInvitationsRef.value) {
-        console.log('Explicitly refreshing user invitations for user without household');
         userInvitationsRef.value.refreshInvitations();
       } else {
         console.warn('userInvitationsRef is still null after timeout');
