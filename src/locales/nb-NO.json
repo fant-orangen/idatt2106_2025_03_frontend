@@ -970,6 +970,17 @@
       "fetchErrorDescription": "En feil oppstod under henting av spørsmålene.",
       "questionValidationErrorDescription": "Vennligst oppgi et gyldig spørsmål og minst ett riktig svar.",
       "maxOptionsDescription": "Du kan ikke legge til mer enn 5 alternativer."
+    },
+    "quiz": {
+      "quizOverview": "Quizoversikt",
+      "takeQuiz": "Ta Quiz",
+      "lastAttempt": "Siste forsøk"
     }
+  },
+  "alert": {
+    "areYouSure": "Er du sikker?",
+    "deleteQuiz": "Denne handlingen er endelig og kan ikke angres. Dette vil slette quizzen og all relevant data. Vil du fortsette?",
+    "confirmDelete": "Bekreft sletting",
+    "cancel": "Avbryt"
   }
 }
