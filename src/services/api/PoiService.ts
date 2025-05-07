@@ -130,3 +130,37 @@ export async function fetchNearestPoiByType(
     throw error;
   }
 }
+
+/**
+ * Fetches all POI types from the backend.
+ * Corresponds to the /api/public/poi/types endpoint.
+ *
+ * @returns {Promise<{ id: number; name: string }[]>}
+ */
+export async function fetchPoiTypes(): Promise<{ id: number; name: string }[]> {
+  try {
+    const response = await api.get<{ id: number; name: string }[]>('/public/poi/types');
+    console.log('Fetched POI types:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch POI types:', error);
+    throw error;
+  }
+}
+
+/**
+  * Search POI previews by name (server‐side, paged).
+  * Hits GET /api/public/poi/search?q={query}&page={page}&size={size}&sort={sort}
+  */
+  export async function searchPoiPreviews(
+  query: string,
+    page = 0,
+    size = 10,
+    sort = 'id,desc'
+    ): Promise<Page<PoiPreviewDto>> {
+  const response = await api.get<Page<PoiPreviewDto>>('/public/poi/search', {
+      params: { q: query, page, size, sort }
+  });
+  console.log('poi search results:', response.data);
+  return response.data;
+}
