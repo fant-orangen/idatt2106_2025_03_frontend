@@ -40,7 +40,7 @@
 
             <!-- Render change content -->
             <div class="mb-1 flex items-center justify-between">
-              <Badge :class="getChangeTypeClass(change.changeType)">
+              <Badge :class="[getChangeTypeClass(change.changeType), 'pl-[2.5]']">
                 {{ getChangeTypeName(change.changeType) }}
               </Badge>
               <time class="text-xs text-muted-foreground">
@@ -126,7 +126,7 @@ const initialLoading = ref(false);
  const getChangeTypeClass = (changeType: string, severity?: string): string => {
   switch (changeType) {
     case 'creation':
-      return `bg-[${getSeverityColor(severity || 'default')}]`; // todo: fungerer ikke enda...
+      return `bg-[${getSeverityColor(severity || 'default')}]`;
     case 'level_change':
       return `bg-[${getSeverityColor(severity || 'default')}]`;
     case 'description_update':
@@ -134,7 +134,7 @@ const initialLoading = ref(false);
     case 'epicenter_moved':
       return 'bg-accent';
     default:
-      return 'bg-gray-500';
+      return 'bg-blue-500';
   }
 };
 
