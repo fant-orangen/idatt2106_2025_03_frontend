@@ -3,7 +3,7 @@
     <!-- Hero Section -->
     <section class="hero-section py-10 md:py-16 relative overflow-hidden mt-0 w-full">
       <!-- Background with crisis colors - full width with no limit -->
-      <div class="absolute inset-0 bg-gradient-to-r from-[var(--crisis-level-green)]/10 via-[var(--crisis-level-yellow)]/10 to-[var(--crisis-level-red)]/10 z-0 w-screen left-[calc(-50vw+50%)]"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-[var(--crisis-level-green)]/10 via-[var(--crisis-level-yellow)]/10 to-[var(--crisis-level-red)]/10 z-0 w-screen left-[calc(-50vw+50%)] right-0"></div>
 
       <div class="max-w-4xl mx-auto text-center relative z-10 px-4">
         <h1 class="text-3xl md:text-4xl font-bold mb-4">{{ t('home.hero.title') }}</h1>
@@ -74,5 +74,20 @@ const navigateToRegisterOrHousehold = () => {
 .hero-section {
   background-size: cover;
   background-position: center;
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+}
+
+/* Custom grid columns for more precise sizing */
+@media (min-width: 1024px) {
+  .lg\:col-span-1\.2 {
+    grid-column: span 1.2 / span 1.2;
+  }
+
+  .lg\:col-span-3\.8 {
+    grid-column: span 3.8 / span 3.8;
+  }
 }
 </style>
