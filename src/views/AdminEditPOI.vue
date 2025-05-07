@@ -1,17 +1,19 @@
-<!-- Page for editing an existing point of interest -->
+<!-- Page for updating an existing point of interest -->
 
 <template>
-  <div style="margin: 20px;">
+  <div class="m-5">
+
+    <!-- Navigation for admin-panel -->
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">
-            {{ $t('navigation.home') }}
+          <BreadcrumbLink href="/" class="hover:underline">
+            {{ t('navigation.home') }}
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin/admin-panel">
+          <BreadcrumbLink href="/admin/admin-panel" class="hover:underline">
             {{ t('navigation.admin-panel') }}
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -22,336 +24,466 @@
       </BreadcrumbList>
     </Breadcrumb>
 
-    <!-- Page title -->
+    <!-- Header for editing -->
+    <h1 class="text-3xl font-semibold my-5">{{ t('admin.edit-POI') }}:</h1>
 
-    <h1>{{ t('admin.edit-POI') }}</h1>
-
-    <!-- Cancel button for editing a POI -->
-    <div v-if="selectedPoi">
-      <Button @click="cancelUpdate">{{ t('navigation.go-back') }}</Button>
+    <!-- 'Go back' button after POI is chosen -->
+    <div v-if="selectedPoi" class="mb-4">
+      <Button @click="cancelUpdate()">{{ t('navigation.go-back') }}</Button>
     </div>
 
-    <div class="page">
-      <div class="events" v-if="!selectedPoi">
-        <ScrollArea class="rounded-md border w-[100%] h-[100%]">
-          <div class="p-4">
-            <h4 class="mb-4 text-sm font-medium leading-none">
-              {{ t('add-event-info.titles.choose-event') }}
-            </h4>
-            <div v-for="(poi, index) in pois" :key="index" @click="selectPoi(poi)"
-                 class="text-sm hover:underline cursor-pointer transition-colors"
-                 :class="{ 'bg-muted': false, 'hover:bg-muted/50': true }">
-              {{ poi.name }} | {{ poi.description }}
-              <Separator class="my-2" />
-            </div>
-          </div>
-        </ScrollArea>
+    <div class="flex flex-wrap justify-center gap-4">
+
+      <!-- List of POI's to choose from -->
+      <div v-if="!selectedPoi" class="min-w-fit max-w-lg max-h-[600px] flex-grow">
+        <div class="mb-4">
+          <Input
+              type="text"
+              v-model="searchQuery"
+              :placeholder="t('add-poi.search-poi')"
+              class="w-full"
+          />
+        </div>
+        <Card class="h-full flex flex-col">
+          <CardHeader>
+            <CardTitle>{{ t('add-POI-info.titles.choose-poi') }}</CardTitle>
+          </CardHeader>
+          <CardContent class="flex-grow overflow-y-auto card-content-padding">
+             <InfiniteScroll :is-loading="isFetchingNextPage" :has-more=" !searchQuery && hasNextPage" @load-more="fetchNextPage" class="h-full">
+                <div v-for="poi in filteredPois" :key="poi.id" @click="selectedAPoi(poi.id)"
+                    class="text-sm cursor-pointer transition-colors hover:bg-muted/80 p-2 rounded-md">
+                  <div class="flex flex-nowrap w-full justify-between items-center gap-2">
+                    <span class="poi-tag truncate">{{ poi.name }}</span>
+                    <span class="poi-tag whitespace-nowrap">{{ poi.type }}</span>
+                  </div>
+                  <Separator class="my-2" />
+                </div>
+
+                <template #loading>
+                  <div class="text-center p-4">{{ t('add-poi.loading') }}</div>
+                </template>
+                <template #end-message>
+                  <div class="text-center p-4 text-muted-foreground" v-if="!hasNextPage && allPois.length > 0 && !searchQuery">{{ t('add-poi.loading-complete') }}</div>
+                </template>
+             </InfiniteScroll>
+          </CardContent>
+        </Card>
       </div>
 
-      <!-- POI edit form -->
+      <!-- Editing schema for chosen POI -->
 
-      <div class="edit" v-if="selectedPoi">
-        <form @submit="onSubmit">
-          <FormField name="name" v-slot="{ field }">
-            <FormItem class="mt-4">
-              <FormLabel>{{ t('add-poi.name') }}</FormLabel>
-              <FormControl>
-                <Input v-model="field.value" />
-              </FormControl>
-            </FormItem>
-          </FormField>
+      <div v-if="selectedPoi" class="min-w-[350px] max-w-lg flex-grow">
+        <Card>
+          <CardHeader>
+            <CardTitle>{{ t('admin.poi-details') }}:</CardTitle>
+          </CardHeader>
+          <CardContent class="card-content-padding">
 
-          <!-- Latitude and longitude -->
-          <div class="container">
-            <FormField name="latitude" v-slot="{ field }">
-              <FormItem class="mt-4">
-                <FormLabel>{{ t('add-poi.latitude') }}</FormLabel>
-                <FormControl>
-                  <Input type="number" v-model="field.value" />
-                </FormControl>
-              </FormItem>
-            </FormField>
+            <form v-if="form && onSubmitPoi" @submit.prevent="onSubmitPoi" class="space-y-6">
+              <FormField v-slot="{ field }" name="name">
+                <FormItem>
+                  <FormLabel>{{t('add-poi.name')}}</FormLabel>
+                  <FormControl>
+                    <Input type="text" v-bind="field" readonly disabled />
+                  </FormControl>
+                </FormItem>
+              </FormField>
 
-            <FormField name="longitude" v-slot="{ field }">
-              <FormItem class="mt-4">
-                <FormLabel>{{ t('add-poi.longitude') }}</FormLabel>
-                <FormControl>
-                  <Input type="number" v-model="field.value" />
-                </FormControl>
-              </FormItem>
-            </FormField>
-          </div>
+              <div class="flex flex-nowrap gap-4">
+                <FormField v-slot="{ field }" name="latitude" class="flex-1">
+                  <FormItem>
+                    <FormLabel>{{t('add-poi.latitude')}}</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="any" v-bind="field" readonly disabled />
+                    </FormControl>
+                  </FormItem>
+                </FormField>
 
-          <!-- Description -->
-          <FormField name="description" v-slot="{ field }">
-            <FormItem class="mt-4">
-              <FormLabel>{{ t('add-poi.description') }}</FormLabel>
-              <FormControl>
-                <Textarea v-model="field.value" />
-              </FormControl>
-            </FormItem>
-          </FormField>
+                <FormField v-slot="{ field }" name="longitude" class="flex-1">
+                  <FormItem>
+                    <FormLabel>{{t('add-poi.longitude')}}</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="any" v-bind="field" readonly disabled />
+                    </FormControl>
+                  </FormItem>
+                </FormField>
+              </div>
 
-          <!-- Opening hours -->
-          <FormField name="openingFrom" v-slot="{ field }">
-            <FormItem class="mt-4">
-              <FormLabel>{{ t('add-POI-info.titles.open-from') }}</FormLabel>
-              <FormControl>
-                <Input type="time" v-model="field.value" />
-              </FormControl>
-            </FormItem>
-          </FormField>
+              <FormField v-slot="{ field }" name="address">
+                <FormItem>
+                  <FormLabel>{{t('add-poi.address')}}</FormLabel>
+                  <FormControl>
+                    <Input type="text" v-bind="field" readonly disabled/>
+                  </FormControl>
+                </FormItem>
+              </FormField>
 
-          <FormField name="openingTo" v-slot="{ field }">
-            <FormItem class="mt-4">
-              <FormLabel>{{ t('add-POI-info.titles.open-to') }}</FormLabel>
-              <FormControl>
-                <Input type="time" v-model="field.value" />
-              </FormControl>
-            </FormItem>
-          </FormField>
+              <FormField v-slot="{ field, meta, errorMessage }" name="description">
+                <FormItem>
+                  <FormLabel>{{t('add-poi.description')}}:</FormLabel>
+                  <FormControl>
+                    <Textarea class="min-h-[100px]" v-bind="field"></Textarea>
+                  </FormControl>
+                  <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
+                </FormItem>
+              </FormField>
 
-          <!-- Contact information -->
-          <FormField name="contactInfo" v-slot="{ field }">
-            <FormItem class="mt-4">
-              <FormLabel>{{ t('add-poi.contact') }}</FormLabel>
-              <FormControl>
-                <Input v-model="field.value" />
-              </FormControl>
-            </FormItem>
-          </FormField>
+              <div class="flex flex-nowrap gap-4">
+                <FormField v-slot="{ field, meta, errorMessage }" name="openFrom" class="flex-1">
+                  <FormItem>
+                    <FormLabel>{{ t('add-POI-info.titles.open-from') }}</FormLabel>
+                    <FormControl>
+                      <Input type="time" v-bind="field" />
+                    </FormControl>
+                     <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                  </FormItem>
+                </FormField>
 
-          <!-- POI type -->
-          <FormField name="poiTypeId" v-slot="{ field }">
-            <FormItem class="mt-4">
-              <FormLabel>{{ t('add-poi.type') }}</FormLabel>
-              <FormControl>
-                <Select v-model="field.value">
-                  <SelectTrigger>
-                    <SelectValue :placeholder="t('admin.select-poi-type')" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem v-for="type in poiTypes" :value="type.id" :key="type.id">
-                        {{ type.name }}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-            </FormItem>
-          </FormField>
+                <FormField v-slot="{ field, meta, errorMessage }" name="openTo" class="flex-1">
+                  <FormItem>
+                    <FormLabel>{{ t('add-POI-info.titles.open-to') }}</FormLabel>
+                    <FormControl>
+                      <Input type="time" v-bind="field" />
+                    </FormControl>
+                     <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                  </FormItem>
+                </FormField>
+              </div>
 
-          <!-- Submit and delete buttons -->
-          <div class="form-actions mt-6">
-            <Button type="submit">{{ t('add-poi.submit') }}</Button>
-            <Button class="bg-red-600 ml-2" @click.prevent="deleteSelectedPoi">
-              {{ t('add-poi.delete') }}
-            </Button>
-          </div>
-        </form>
+              <FormField v-slot="{ field, meta, errorMessage }" name="contactInfo">
+                <FormItem>
+                  <FormLabel>{{ t('add-poi.contact') }}</FormLabel>
+                  <FormControl>
+                    <Input type="text" v-bind="field" />
+                  </FormControl>
+                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                </FormItem>
+              </FormField>
+
+              <FormField v-slot="{ field }" name="poiType">
+                <FormItem>
+                  <FormLabel>{{ t('add-poi.type') }}</FormLabel>
+                  <FormControl>
+                    <Input type="text" v-bind="field" readonly disabled/>
+                  </FormControl>
+                </FormItem>
+              </FormField>
+
+              <div class="flex gap-2 pt-4">
+                <Button type="submit">{{t('add-poi.submit')}}</Button>
+                <Button type="button" variant="destructive" @click="openDialog()">{{t('add-poi.delete')}}</Button>
+              </div>
+            </form>
+             <div v-else class="text-center p-4 text-muted-foreground">
+                {{t('add-poi.loading-schema')}}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <!-- Placeholder for map -->
-
-      <div class="map" v-if="selectedPoi">
-        <p>(Kart vises her senere)</p>
+      <div v-if="selectedPoi" class="map-placeholder rounded-lg border min-w-[300px] min-h-[400px] flex justify-center items-center flex-grow-2 max-w-xl">
+         {{ t('admin.map-placeholder') }}
       </div>
     </div>
+
+    <!-- Dialog for deleting a POI -->
+    <Dialog v-model:open="wantToDelete" v-if="selectedPoi">
+      <DialogTrigger></DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{{ t('add-poi.confirm-delete') }}</DialogTitle>
+          <DialogDescription>
+            {{ t('add-poi.delete-info') }}
+          </DialogDescription>
+          <DialogFooter>
+            <Button @click="confirmDeletePoi(selectedPoi.id)">
+              {{ t('add-poi.delete')}}
+            </Button>
+          </DialogFooter>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+
+
+
   </div>
 </template>
-
 <script setup lang="ts">
-/**
- * Imports: UI components, select dropdown,form components and breadcrumb.
- */
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { useForm } from 'vee-validate'
-import * as z from 'zod'
-import { toTypedSchema } from '@vee-validate/zod'
-import { fetchPublicPois } from '@/services/api/PoiService'
-import { editPoi, deletePoi } from '@/services/api/AdminServices'
+import { ref, onMounted, watch, computed, nextTick } from 'vue';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query';
+import { useI18n } from 'vue-i18n';
+import { toast } from 'vue-sonner';
+import type { PoiPreviewDto, PoiData, UpdatePoiDto } from '@/models/PoiData.ts'
+import { fetchPoiPreviews, fetchPoiById } from '@/services/api/PoiService';
+import { deletePoi } from '@/services/api/AdminServices';
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
+import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
+import { Separator } from '@/components/ui/separator';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem
-} from '@/components/ui/select'
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import * as z from 'zod';
+import { editPoi } from "@/services/api/AdminServices.ts";
 
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage
-} from '@/components/ui/form'
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator
-} from '@/components/ui/breadcrumb'
-
-const { t } = useI18n()
-const router = useRouter()
-
-const pois = ref<any[]>([])
+const { t } = useI18n();
+const queryClient = useQueryClient();
+const selectedPoi = ref<PoiData | null>(null);
+const updatedData = ref<UpdatePoiDto | null> (null);
+const form = ref();
+const onSubmitPoi = ref<(e?: Event) => void>();
+const wantToDelete = ref(false)
+const searchQuery = ref('');
 
 /**
- * Available POI types (translated for dropdown).
+ * Method for searching for a POI by name. If no search is done, show the full list.
  */
+const filteredPois = computed (() => {
+  const query = searchQuery.value.toLowerCase().trim();
+  if (!query) return allPois.value;
+  return allPois.value.filter(poi =>
+  poi.name.toLowerCase().includes(query)
+);
+});
 
-const poiTypes = ref([
-  { id: 1, name: t('map.shelter') },
-  { id: 2, name: t('map.defibrillator') }
-])
+const pageSize = 10;
+const {
+  data,
+  fetchNextPage,
+  isFetchingNextPage,
+  hasNextPage,
+} = useInfiniteQuery<PoiPreviewDto[], Error>({
+  queryKey: ['pois'],
+  queryFn: async ({ pageParam = 0 }) => {
+    const pageNumber = pageParam as number;
+    const page = await fetchPoiPreviews(pageNumber, 10);
+    console.log(`Workspaceing POIs page: ${pageParam}`);
+    return page.content;
+  },
+  getNextPageParam: (lastPage, allPages) => {
+    return lastPage.length < pageSize ? undefined :  allPages.length;
+  },
+  initialPageParam: 0
+});
 
 /**
- * The currently selected POI.
+ * FlatMap with fallback to create a list of all POI's
  */
-
-const selectedPoi = ref<any | null>(null)
+const allPois = computed<PoiPreviewDto[]>(() =>
+  data.value?.pages.flat() ?? []
+);
 
 /**
- * Fetch POI's on load.
+ * Retrieves details for a chosen POI based on id.
+ * @param id - the ID of the chosen POI.
  */
 
-onMounted(async () => {
-  const response = await fetchPublicPois()
-  pois.value = response
-})
-
-/**
- * Form validation schema.
- */
-
-const formSchema = toTypedSchema(z.object({
-  name: z.string().min(2),
-  description: z.string().optional(),
-  latitude: z.preprocess(val => val ? Number(val) : undefined, z.number().optional()),
-  longitude: z.preprocess(val => val ? Number(val) : undefined, z.number().optional()),
-  contactInfo: z.string().optional(),
-  openingFrom: z.string().optional(),
-  openingTo: z.string().optional(),
-  poiTypeId: z.preprocess(val => val ? Number(val) : undefined, z.number().optional())
-}))
-
-/**
- * Initialize the form.
- */
-
-const form = useForm({
-  validationSchema: formSchema,
-  initialValues: {
-    name: '',
-    description: '',
-    latitude: '',
-    longitude: '',
-    contactInfo: '',
-    openingFrom: '',
-    openingTo: '',
-    poiTypeId: undefined
+async function selectedAPoi(id: number) {
+  if (id == null || undefined) {
+    console.log('Wrong POI ID.')
+    return;
   }
-})
-
-/**
- * Populate form with POI data.
- * @param poi the selected POI-object.
- */
-
-function selectPoi(poi: any) {
-  selectedPoi.value = poi
-
-  const [openFrom, openTo] = poi.openingHours?.split('-').map((s: string) => s.trim()) || ['', '']
-
-  form.setValues({
-    name: poi.name || '',
-    description: poi.description || '',
-    latitude: poi.latitude?.toString() || '',
-    longitude: poi.longitude?.toString() || '',
-    contactInfo: poi.contactInfo || '',
-    openingFrom: openFrom,
-    openingTo: openTo,
-    poiTypeId: poi.poiTypeId?.toString() || ''
-  })
+  try {
+    const response = await fetchPoiById(id);
+    console.log('fetched poi details: ', response)
+    selectedPoi.value = response;
+  } catch (error) {
+    console.error('Error while fetching POI:' , error)
+  }
 }
 
 /**
- * Handle form submit to update POI.
- * @param values form values.
+ * Retrieves and sets up validation schema for editing a POI.
+ * Uses Zod and VeeValidate for validation.
  */
-async function onSubmit(values: any) {
-  if (!selectedPoi.value) return
 
-  const updateData = {
-    ...values,
-    openingHours: values.openingFrom && values.openingTo
-      ? `${values.openingFrom} - ${values.openingTo}`
-      : null
+function setupFormSchema() {
+  console.log("Setting up form schema...");
+
+  const schema = z.object({
+     name: z.string(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    address: z.string().optional(),
+    description: z.string().max(1000, t('add-poi.description-max')).optional(),
+    openFrom: z.string().optional(),
+    openTo: z.string().optional(),
+    contactInfo: z.string().max(100, t('add-poi.contact-max')).optional(),
+    poiType: z.string().optional()
+  });
+
+  form.value = useForm({
+    validationSchema: toTypedSchema(schema),
+  });
+
+  if (form.value) {
+    onSubmitPoi.value = form.value.handleSubmit(handleFormSubmitPoi);
+  } else {
+     console.error("Form instance could not be created in setupFormSchema.");
   }
+  console.log("Form schema setup complete.");
 
-  await editPoi(selectedPoi.value.id, updateData)
-  router.push('/admin-panel')
 }
 
 /**
- * Cancel update of current POI.
+ * Handles submission of schema and prepares data for updates.
+ * @param values - the values sent in from schema.
  */
+
+async function handleFormSubmitPoi(values: any) {
+    if (!selectedPoi.value) {
+        console.error('No point of interest selected');
+        return;
+    }
+    updatedData.value = {
+        name: values.name ?? selectedPoi.value.name,
+        latitude: values.latitude ?? selectedPoi.value.latitude,
+        longitude: values.longitude ?? selectedPoi.value.longitude,
+        description: values.description ?? selectedPoi.value.description,
+        openFrom: values.openFrom ?? selectedPoi.value.openFrom,
+        openTo: values.openTo ?? selectedPoi.value.openTo,
+        contactInfo: values.contactInfo ?? selectedPoi.value.contactInfo,
+        poiTypeId: values.poiTypeId ?? selectedPoi.value.poiTypeId,
+    };
+    console.log("Submitting update data:", updatedData.value);
+    updateSelectedPoi();
+}
+
+/**
+ * Method responsible for API-call to update a POI.
+ */
+async function updateSelectedPoi() {
+  if (!selectedPoi.value || !updatedData.value) {
+      console.log('No POI selected or updated.');
+      return;
+  }
+  try {
+    const response = await editPoi(selectedPoi.value.id, updatedData.value)
+
+    console.log('Point of interest updated successfully!', response.data);
+    callToast(t('add-poi.update-success'));;
+
+    selectedPoi.value = null;
+    updatedData.value = null;
+
+    await queryClient.invalidateQueries({queryKey: ['pois']});
+
+  } catch (error) {
+      callToast(t('add-poi.update-failed'));
+      console.error('Failed to update POI: ', error);
+  }
+}
+
+/**
+ * Cancels the editing and resets the schema.
+ */
+
 function cancelUpdate() {
-  selectedPoi.value = null
+  console.log("Update cancelled.");
+    selectedPoi.value = null;
+    updatedData.value = null;
+    form.value?.resetForm();
+
 }
 
 /**
- * Delete current POI (after conformation).
+ * Opens the dialog for deletion of a chosen POI.
  */
-async function deleteSelectedPoi() {
-  if (!selectedPoi.value) return
-  const confirmed = confirm(t('add-poi.confirm-delete') || 'Are you sure you want to delete this point of interest?')
-  if (!confirmed) return
-  await deletePoi(selectedPoi.value.id)
-  router.push('/admin-panel')
+
+function openDialog() {
+  wantToDelete.value = true
 }
+
+/**
+ * Performs deletion of a POI through API.
+ * @param poiId - the ID of the POI to be deleted.
+ */
+async function confirmDeletePoi(poiId: number) {
+  if (poiId === null || undefined) {
+    callToast(t('add-poi.deletion.failed'));
+    return;
+  }
+  console.log('Attempting to delete POI with ID:', poiId);
+  try {
+    const response = await deletePoi(poiId);
+    console.log("Deleted a POI: ", response)
+
+    callToast(t('add-poi.deletion.success'));
+    selectedPoi.value = null;
+    await queryClient.invalidateQueries({ queryKey: ['pois'] });
+
+    console.log("POI deleted successfully, query invalidated.");
+  } catch (error) {
+    console.error('Failed to delete POI:', error);
+  }
+  console.log("Deletion confirmed.");
+
+}
+
+/**
+ * Method to show toast-message to the user.
+ * @param message - the message to be shown.
+ */
+function callToast(message: string) {
+  console.log("Toast:", message);
+  toast(message);
+}
+
+onMounted(() => {
+  fetchNextPage;
+  setupFormSchema();
+});
+
+watch(selectedPoi, async(poi) => {
+  if( poi && form.value){
+    await nextTick();
+    form.value.setValues({
+      name: poi.name ?? '',
+      latitude: poi.latitude ?? '',
+      longitude: poi.longitude ??'',
+      address: poi.address ?? '',
+      description: poi.description ?? '',
+      openFrom: poi.openFrom ?? '',
+      openTo: poi.openTo ?? '',
+      contactInfo: poi.contactInfo ?? '',
+      poiType: poi.poiTypeName ?? ''
+    })
+  }
+});
 </script>
 
 <style scoped>
-h1 {
-  font-size: 2em;
-  margin: 20px;
+.card-content-padding {
+  padding: 1rem;
 }
-.page {
+.poi-tag {
+  padding: 2px 8px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-muted-foreground);
+  color: var(--color-background);
+  text-transform: capitalize;
+  flex-shrink: 0;
+}
+.map-placeholder {
+  background-color: var(--color-muted);
+  color: var(--color-muted-foreground);
+  border-color: var(--color-border);
+}
+:deep(.FormItem) {
   display: flex;
-  flex-flow: row wrap;
-  justify-content: space-evenly;
-  margin: 30px;
-  gap: 15px;
+  flex-direction: column;
+  gap: 0.25rem;
 }
-.container {
-  display: flex;
-  flex-flow: row nowrap;
-  gap: 10px;
-}
-.edit form > * + * {
-  margin-top: 1rem;
-}
-.map {
-  border-radius: 8px;
-  border: solid grey;
-  min-width: 300px;
-  min-height: 400px;
-  background-color: lightgreen;
+:deep(.FormLabel) {
+  font-weight: 500;
+  color: var(--color-foreground);
 }
 </style>

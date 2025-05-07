@@ -171,7 +171,7 @@
     "search-error": "Error searching for address.",
     "map-reset": "Map reset.",
     "edit-POI": "Edit point of interest",
-    "poi-details": "POI details",
+    "poi-details": "Point of interest details",
     "meeting-places": "Meeting places",
     "meeting-point": "Handle meeting points"
   },
@@ -360,6 +360,9 @@
     "directions": "Directions",
     "contact": "Contact",
     "filter": "Filter POIs",
+    "show-pois": "Points of interest",
+    "show-crisis": "Crises",
+    "show-meeting-places": "Meeting Places",
     "my-location": "Use my location",
     "your-location": "Your location",
     "household-location": "Your household",
@@ -380,7 +383,34 @@
     "find-nearest": "Find Nearest",
     "show-directions": "Show directions",
     "close-directions": "Close",
-    "need-location": "Please enable your location to show directions"
+    "need-location": "Please enable your location to show directions",
+    "legend": {
+                "user-location": "Your Location",
+                "household-location": "Household",
+                "crisis-level-1": "Crisis Level 1",
+                "crisis-level-2": "Crisis Level 2",
+                "crisis-level-3": "Crisis Level 3",
+                "fire-station": "Fire Station",
+                "police-station": "Police Station",
+                "hospital": "Hospital",
+                "pharmacy": "Pharmacy",
+                "gas-station": "Gas Station",
+                "grocery-store": "Grocery Store",
+                "water-point": "Water Point",
+                "meeting-point": "Meeting Point",
+                "shelter": "Shelter",
+                "default": "Other"
+              },
+    "poiTypes": {
+      "1": "Hospital",
+      "2": "Police Station",
+      "3": "Fire Station",
+      "4": "Shelter",
+      "5": "Grocery Store",
+      "6": "Water Distribution Point",
+      "7": "Gas Station",
+      "8": "Pharmacy"
+    }
   },
   "time-units": {
     "month": "1 month | {count} months",
@@ -815,9 +845,11 @@
       "type": "Type",
       "open-from": "Open from",
       "open-to": "Open until",
-      "contact-info": "Contact information"
+      "contact-info": "Contact information",
+      "choose-poi": "Choose Point Of Interest"
     },
     "POI-type": {
+      "undefined": "Select type",
       "defibrillator": "Defibrillator",
       "shelter": "Shelter",
       "water-source": "Water Source",
@@ -836,11 +868,27 @@
     "longitude": "Longitude",
     "opening-hours": "Opening Hours",
     "contact": "Contact Information",
+    "address":"Address",
     "type": "Type",
     "submit": "Save",
     "delete": "Delete",
     "confirm-delete": "Are you sure you want to delete this point of interest?",
-    "edit-POI": "Edit point of interest"
+    "edit-POI": "Edit point of interest",
+    "loading": "Loading more...",
+    "loading-complete": "All points of interest loaded.",
+    "loading-schema": "Loading schema...",
+    "deletion": {
+      "failed": "Failed to delete point of interest.",
+      "success": "Point of interest is now deleted."
+    },
+    "description-max": "The description cannot exceed 1000 characters",
+    "contact-max": "Contact information cannot exceed 100 characters.",
+    "confirm-delete": "Are you sure you want to permanently delete this point of interest?",
+    "delete-info": "This action cannot be undone.",
+    "update-success": "The point of interest has been updated successfully!",
+    "update-failed": "Failed to update point of interest with new values.",
+    "search-poi": "Search for a point of interest..."
+
   },
   "language": {
     "title": "Language",

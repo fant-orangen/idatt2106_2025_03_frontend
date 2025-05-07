@@ -1,8 +1,8 @@
 // src/stores/NotificationStore.ts
 import { defineStore } from 'pinia';
-import { ref, computed, onMounted } from 'vue'; // Import onMounted
+import { ref, computed } from 'vue';
 import type { NotificationMessage } from '@/models/NotificationMessage';
-import { getNotifications } from '@/services/NotificationService'; // Assuming this service exists and works
+import { getNotifications, markAllNotificationsAsRead, hasUnreadNotifications } from '@/services/NotificationService'; // Assuming this service exists and works
 import type { Page } from '@/types/Page'; // Import Page type if getNotifications returns it
 
 // --- Constants ---
@@ -22,6 +22,7 @@ export const useNotificationStore = defineStore('notification', () => {
   const currentPage = ref(0); // 0-based index
   const totalPages = ref(0);
   const pageSize = ref(DEFAULT_PAGE_SIZE);
+  const hasUnread = ref(false); // New state for unread notifications
 
   // --- Computed ---
   // Determines if there are more pages to load from the backend
@@ -39,15 +40,16 @@ export const useNotificationStore = defineStore('notification', () => {
 
       if (storedNotifications) {
         const parsedNotifications = JSON.parse(storedNotifications);
-        // Convert date strings back to Date objects
-        notifications.value = parsedNotifications.map((n: any) => ({
+        notifications.value = parsedNotifications.map((n: NotificationMessage) => ({
           ...n,
           notifyAt: new Date(n.notifyAt),
           sentAt: n.sentAt ? new Date(n.sentAt) : undefined,
           readAt: n.readAt ? new Date(n.readAt) : undefined,
           createdAt: new Date(n.createdAt)
         }));
-        console.log(`Loaded ${notifications.value.length} notifications from storage.`);
+        // Update hasUnread based on loaded notifications
+        hasUnread.value = notifications.value.some(n => !n.readAt);
+        console.log(`Loaded ${notifications.value.length} notifications from storage. Has unread: ${hasUnread.value}`);
       } else {
         notifications.value = []; // Ensure it's empty if nothing in storage
       }
@@ -80,10 +82,8 @@ export const useNotificationStore = defineStore('notification', () => {
         pageSize.value = DEFAULT_PAGE_SIZE;
       }
 
-
     } catch (err) {
       console.error('Failed to load notification state from localStorage:', err);
-      // Reset to defaults if loading fails
       resetStateRefs();
     }
   }
@@ -124,6 +124,7 @@ export const useNotificationStore = defineStore('notification', () => {
     currentPage.value = 0;
     totalPages.value = 0;
     pageSize.value = DEFAULT_PAGE_SIZE;
+    hasUnread.value = false; // Reset hasUnread state
   }
 
 
@@ -158,7 +159,7 @@ export const useNotificationStore = defineStore('notification', () => {
       const pageResult: Page<NotificationMessage> = await getNotifications(pageToFetch + 1, pageSize.value);
 
       // Convert date strings to Date objects *immediately* after fetch
-      const freshNotifications = pageResult.content.map((n: any) => ({
+      const freshNotifications = pageResult.content.map((n: NotificationMessage) => ({
         ...n,
         notifyAt: new Date(n.notifyAt),
         sentAt: n.sentAt ? new Date(n.sentAt) : undefined,
@@ -188,6 +189,9 @@ export const useNotificationStore = defineStore('notification', () => {
 
       console.log(`NotificationStore: Fetched page ${currentPage.value}. Total pages: ${totalPages.value}. Total Items in store: ${notifications.value.length}`);
 
+      // Add this after processing notifications
+      await checkUnreadNotifications(); // Check unread status after fetching
+
     } catch (err) {
       console.error(`NotificationStore: Failed to fetch notifications page ${pageToFetch}:`, err);
       error.value = err instanceof Error ? err.message : 'Failed to load notifications';
@@ -207,26 +211,33 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   }
 
-  // Action to add a new notification received via WebSocket (prepends)
+  // Modify addNotification to properly handle unread state
   function addNotification(newNotification: NotificationMessage) {
-    const exists = notifications.value.some(n => n.id === newNotification.id);
+    console.log('NotificationStore: Adding new notification:', newNotification);
+
+    // Ensure dates are properly converted to Date objects
+    const notificationWithDates = {
+      ...newNotification,
+      notifyAt: new Date(newNotification.notifyAt),
+      sentAt: newNotification.sentAt ? new Date(newNotification.sentAt) : undefined,
+      readAt: newNotification.readAt ? new Date(newNotification.readAt) : undefined,
+      createdAt: new Date(newNotification.createdAt)
+    };
+
+    const exists = notifications.value.some(n => n.id === notificationWithDates.id);
+
     if (!exists) {
-      // Ensure dates are Date objects if coming from WebSocket potentially as strings
-      const notificationWithDates = {
-        ...newNotification,
-        notifyAt: new Date(newNotification.notifyAt),
-        sentAt: newNotification.sentAt ? new Date(newNotification.sentAt) : undefined,
-        readAt: newNotification.readAt ? new Date(newNotification.readAt) : undefined,
-        createdAt: new Date(newNotification.createdAt)
-      };
-      notifications.value.unshift(notificationWithDates); // Add to the beginning
-      // Update pagination state? Maybe increment totalElements if backend doesn't handle this?
-      // For simplicity, we might rely on the next full fetch to correct counts,
-      // or adjust totalPages/totalElements if necessary, though it can get complex.
-      saveToLocalStorage(); // Persist the updated list
-      console.log('NotificationStore: Added new notification via WebSocket:', newNotification.id);
+      // Add to beginning of array
+      notifications.value.unshift(notificationWithDates);
+
+      // Update hasUnread based on ALL notifications including the new one
+      hasUnread.value = notifications.value.some(notification => !notification.readAt);
+      console.log('NotificationStore: Updated hasUnread state:', hasUnread.value);
+
+      // Save to localStorage after updating
+      saveToLocalStorage();
     } else {
-      console.log('NotificationStore: Notification already exists, skipping addition:', newNotification.id);
+      console.log('NotificationStore: Notification already exists, skipping addition');
     }
   }
 
@@ -254,6 +265,36 @@ export const useNotificationStore = defineStore('notification', () => {
     return sortedNotifications.slice(0, 3); // Keep limit to 3 for the popover
   });
 
+  // New function to check for unread notifications
+  async function checkUnreadNotifications() {
+    try {
+      console.log('NotificationStore: Checking unread notifications with backend');
+      const hasUnreadResult = await hasUnreadNotifications();
+      console.log('NotificationStore: Backend returned hasUnread:', hasUnreadResult);
+      hasUnread.value = hasUnreadResult;
+      return hasUnreadResult;
+    } catch (err) {
+      console.error('Failed to check unread notifications:', err);
+      return false;
+    }
+  }
+
+  // New function to mark all notifications as read
+  async function markAllAsRead() {
+    try {
+      await markAllNotificationsAsRead();
+      // Update local state
+      notifications.value = notifications.value.map(notification => ({
+        ...notification,
+        readAt: notification.readAt || new Date()
+      }));
+      hasUnread.value = false;
+      saveToLocalStorage();
+    } catch (err) {
+      console.error('Failed to mark all notifications as read:', err);
+      error.value = err instanceof Error ? err.message : 'Failed to mark notifications as read';
+    }
+  }
 
   return {
     // State refs
@@ -261,19 +302,25 @@ export const useNotificationStore = defineStore('notification', () => {
     isLoading,
     error,
     hasFetchedInitial,
-    currentPage, // Expose pagination state if needed elsewhere
+    currentPage,
     totalPages,
     pageSize,
-    hasMoreNotifications, // Expose computed flag
+    hasMoreNotifications,
+    hasUnread,
 
     // Actions
-    fetchNotifications, // Action to fetch specific page or refresh
-    fetchNextPage,      // Specific action for infinite scroll
+    fetchNotifications,
+    fetchNextPage,
     addNotification,
     resetStore,
+    markAllAsRead,
+    checkUnreadNotifications,
 
     // Computed Getters
     unreadCount,
-    latestNotifications // Limited list for popover
+    latestNotifications
   };
 });
+
+// Export the store type
+export type NotificationStore = ReturnType<typeof useNotificationStore>;
