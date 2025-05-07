@@ -10,11 +10,6 @@
       </div>
     </section>
 
-    <!-- Map Button Section -->
-    <section class="map-button-section w-full px-4">
-      <MapViewComponent />
-    </section>
-
     <!-- Crisis Theme Information (shown right under map when crisis in area) -->
     <section v-if="mainCrisis && mainCrisis.id" class="crisis-theme-section w-full px-4">
       <div class="crisis-theme-info bg-card p-6 rounded-lg border border-[var(--crisis-level-red)]/30">
@@ -46,6 +41,11 @@
           </Button>
         </div>
       </div>
+    </section>
+
+    <!-- Map Button Section -->
+    <section class="map-button-section w-full px-4">
+      <MapViewComponent />
     </section>
 
     <!-- Main Content Grid -->
