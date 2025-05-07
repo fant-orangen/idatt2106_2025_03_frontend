@@ -36,13 +36,21 @@
 
       <!-- List of POI's to choose from -->
       <div v-if="!selectedPoi" class="min-w-fit max-w-lg max-h-[600px] flex-grow">
+        <div class="mb-4">
+          <Input
+              type="text"
+              v-model="searchQuery"
+              :placeholder="t('add-poi.search-poi')"
+              class="w-full"
+          />
+        </div>
         <Card class="h-full flex flex-col">
           <CardHeader>
             <CardTitle>{{ t('add-POI-info.titles.choose-poi') }}</CardTitle>
           </CardHeader>
           <CardContent class="flex-grow overflow-y-auto card-content-padding">
-             <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage" class="h-full">
-                <div v-for="poi in allPois" :key="poi.id" @click="selectedAPoi(poi.id)"
+             <InfiniteScroll :is-loading="isFetchingNextPage" :has-more=" !searchQuery && hasNextPage" @load-more="fetchNextPage" class="h-full">
+                <div v-for="poi in filteredPois" :key="poi.id" @click="selectedAPoi(poi.id)"
                     class="text-sm cursor-pointer transition-colors hover:bg-muted/80 p-2 rounded-md">
                   <div class="flex flex-nowrap w-full justify-between items-center gap-2">
                     <span class="poi-tag truncate">{{ poi.name }}</span>
@@ -55,7 +63,7 @@
                   <div class="text-center p-4">{{ t('add-poi.loading') }}</div>
                 </template>
                 <template #end-message>
-                  <div class="text-center p-4 text-muted-foreground" v-if="!hasNextPage && allPois.length > 0">{{ t('add-poi.loading-complete') }}</div>
+                  <div class="text-center p-4 text-muted-foreground" v-if="!hasNextPage && allPois.length > 0 && !searchQuery">{{ t('add-poi.loading-complete') }}</div>
                 </template>
              </InfiniteScroll>
           </CardContent>
@@ -233,6 +241,18 @@ const updatedData = ref<UpdatePoiDto | null> (null);
 const form = ref();
 const onSubmitPoi = ref<(e?: Event) => void>();
 const wantToDelete = ref(false)
+const searchQuery = ref('');
+
+/**
+ * Method for searching for a POI by name. If no search is done, show the full list.
+ */
+const filteredPois = computed (() => {
+  const query = searchQuery.value.toLowerCase().trim();
+  if (!query) return allPois.value;
+  return allPois.value.filter(poi =>
+  poi.name.toLowerCase().includes(query)
+);
+});
 
 const pageSize = 10;
 const {
