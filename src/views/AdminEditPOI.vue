@@ -1,5 +1,9 @@
+<!-- Page for updating an existing point of interest -->
+
 <template>
   <div class="m-5">
+
+    <!-- Navigation for admin-panel -->
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
@@ -9,7 +13,7 @@
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink href="/admin-panel" class="hover:underline">
+          <BreadcrumbLink href="/admin/admin-panel" class="hover:underline">
             {{ t('navigation.admin-panel') }}
           </BreadcrumbLink>
         </BreadcrumbItem>
@@ -20,13 +24,17 @@
       </BreadcrumbList>
     </Breadcrumb>
 
+    <!-- Header for editing -->
     <h1 class="text-3xl font-semibold my-5">{{ t('admin.edit-POI') }}:</h1>
 
+    <!-- 'Go back' button after POI is chosen -->
     <div v-if="selectedPoi" class="mb-4">
       <Button @click="cancelUpdate()">{{ t('navigation.go-back') }}</Button>
     </div>
 
     <div class="flex flex-wrap justify-center gap-4">
+
+      <!-- List of POI's to choose from -->
       <div v-if="!selectedPoi" class="min-w-fit max-w-lg max-h-[600px] flex-grow">
         <Card class="h-full flex flex-col">
           <CardHeader>
@@ -44,15 +52,17 @@
                 </div>
 
                 <template #loading>
-                  <div class="text-center p-4">Laster flere...</div>
+                  <div class="text-center p-4">{{ t('add-poi.loading') }}</div>
                 </template>
                 <template #end-message>
-                  <div class="text-center p-4 text-muted-foreground" v-if="!hasNextPage && allPois.length > 0">Alle interessepunkter er lastet inn</div>
+                  <div class="text-center p-4 text-muted-foreground" v-if="!hasNextPage && allPois.length > 0">{{ t('add-poi.loading-complete') }}</div>
                 </template>
              </InfiniteScroll>
           </CardContent>
         </Card>
       </div>
+
+      <!-- Editing schema for chosen POI -->
 
       <div v-if="selectedPoi" class="min-w-[350px] max-w-lg flex-grow">
         <Card>
@@ -99,8 +109,6 @@
                   </FormControl>
                 </FormItem>
               </FormField>
-              <p class="text-xs text-muted-foreground">{{ t('add-event-info.coordinates') }}</p>
-
 
               <FormField v-slot="{ field, meta, errorMessage }" name="description">
                 <FormItem>
@@ -159,48 +167,45 @@
               </div>
             </form>
              <div v-else class="text-center p-4 text-muted-foreground">
-                Laster skjema...
+                {{t('add-poi.loading-schema')}}
             </div>
           </CardContent>
         </Card>
       </div>
 
+      <!-- Placeholder for map -->
       <div v-if="selectedPoi" class="map-placeholder rounded-lg border min-w-[300px] min-h-[400px] flex justify-center items-center flex-grow-2 max-w-xl">
          {{ t('admin.map-placeholder') }}
       </div>
     </div>
 
+    <!-- Dialog for deleting a POI -->
     <Dialog v-model:open="wantToDelete" v-if="selectedPoi">
-      <DialogTrigger>Open</DialogTrigger>
+      <DialogTrigger></DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+          <DialogTitle>{{ t('add-poi.confirm-delete') }}</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your account
-            and remove your data from our servers.
-
-            
+            {{ t('add-poi.delete-info') }}
           </DialogDescription>
           <DialogFooter>
             <Button @click="confirmDeletePoi(selectedPoi.id)">
-              Slett
+              {{ t('add-poi.delete')}}
             </Button>
           </DialogFooter>
         </DialogHeader>
       </DialogContent>
     </Dialog>
-    
+
 
 
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
-import { useRouter } from 'vue-router';
 import type { PoiPreviewDto, PoiData, UpdatePoiDto } from '@/models/PoiData.ts'
 import { fetchPoiPreviews, fetchPoiById } from '@/services/api/PoiService';
 import { deletePoi } from '@/services/api/AdminServices';
@@ -249,14 +254,21 @@ const {
   initialPageParam: 0
 });
 
-// Bruker flatMap med fallback for å lage en flat liste av alle POIs
+/**
+ * FlatMap with fallback to create a list of all POI's
+ */
 const allPois = computed<PoiPreviewDto[]>(() =>
   data.value?.pages.flat() ?? []
 );
 
+/**
+ * Retrieves details for a chosen POI based on id.
+ * @param id - the ID of the chosen POI.
+ */
+
 async function selectedAPoi(id: number) {
   if (id == null || undefined) {
-    console.log('Feil id !!!!')
+    console.log('Wrong POI ID.')
     return;
   }
   try {
@@ -264,33 +276,28 @@ async function selectedAPoi(id: number) {
     console.log('fetched poi details: ', response)
     selectedPoi.value = response;
   } catch (error) {
-    console.error('Feil skjedde under fetch av details for poi:' , error)
+    console.error('Error while fetching POI:' , error)
   }
 }
 
+/**
+ * Retrieves and sets up validation schema for editing a POI.
+ * Uses Zod and VeeValidate for validation.
+ */
+
 function setupFormSchema() {
   console.log("Setting up form schema...");
+
   const schema = z.object({
      name: z.string(),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
     address: z.string().optional(),
-    description: z.string().max(1000, t('add-poi.errors.description-max')).optional(),
+    description: z.string().max(1000, t('add-poi.description-max')).optional(),
     openFrom: z.string().optional(),
     openTo: z.string().optional(),
-    contactInfo: z.string().max(100, t('add-poi.errors.contact-max')).optional(),
+    contactInfo: z.string().max(100, t('add-poi.contact-max')).optional(),
     poiType: z.string().optional()
-  }).refine(data => {
-    // Tillater at begge koordinatene er undefined, men hvis én er satt, må begge være det.
-    const latIsNum = typeof data.latitude === 'number' && !isNaN(data.latitude);
-    const lonIsNum = typeof data.longitude === 'number' && !isNaN(data.longitude);
-    if (latIsNum !== lonIsNum) { // En er satt, den andre ikke
-         return false;
-    }
-    return true;
-  }, {
-    message: t('add-event-info.errors.coordinates-pair'),
-    path: ['latitude'],
   });
 
   form.value = useForm({
@@ -303,17 +310,23 @@ function setupFormSchema() {
      console.error("Form instance could not be created in setupFormSchema.");
   }
   console.log("Form schema setup complete.");
+
 }
+
+/**
+ * Handles submission of schema and prepares data for updates.
+ * @param values - the values sent in from schema.
+ */
 
 async function handleFormSubmitPoi(values: any) {
     if (!selectedPoi.value) {
-        console.error('No event selected');
+        console.error('No point of interest selected');
         return;
     }
     updatedData.value = {
         name: values.name ?? selectedPoi.value.name,
-        latitude: values.latitude ?? selectedPoi.value.latitude, // Bruker validert/prosessert verdi
-        longitude: values.longitude ?? selectedPoi.value.longitude, // Bruker validert/prosessert verdi
+        latitude: values.latitude ?? selectedPoi.value.latitude,
+        longitude: values.longitude ?? selectedPoi.value.longitude,
         description: values.description ?? selectedPoi.value.description,
         openFrom: values.openFrom ?? selectedPoi.value.openFrom,
         openTo: values.openTo ?? selectedPoi.value.openTo,
@@ -324,6 +337,9 @@ async function handleFormSubmitPoi(values: any) {
     updateSelectedPoi();
 }
 
+/**
+ * Method responsible for API-call to update a POI.
+ */
 async function updateSelectedPoi() {
   if (!selectedPoi.value || !updatedData.value) {
       console.log('No POI selected or updated.');
@@ -332,8 +348,8 @@ async function updateSelectedPoi() {
   try {
     const response = await editPoi(selectedPoi.value.id, updatedData.value)
 
-    console.log('Event updated successfully!', response.data);
-    callToast('Updated the event with your new values!');
+    console.log('Point of interest updated successfully!', response.data);
+    callToast(t('add-poi.update-success'));;
 
     selectedPoi.value = null;
     updatedData.value = null;
@@ -341,10 +357,14 @@ async function updateSelectedPoi() {
     await queryClient.invalidateQueries({queryKey: ['pois']});
 
   } catch (error) {
-      callToast('Failed to update POI details...');
+      callToast(t('add-poi.update-failed'));
       console.error('Failed to update POI: ', error);
   }
 }
+
+/**
+ * Cancels the editing and resets the schema.
+ */
 
 function cancelUpdate() {
   console.log("Update cancelled.");
@@ -354,23 +374,29 @@ function cancelUpdate() {
 
 }
 
+/**
+ * Opens the dialog for deletion of a chosen POI.
+ */
+
 function openDialog() {
   wantToDelete.value = true
 }
 
+/**
+ * Performs deletion of a POI through API.
+ * @param poiId - the ID of the POI to be deleted.
+ */
 async function confirmDeletePoi(poiId: number) {
   if (poiId === null || undefined) {
-    callToast(t('admin.errors.poi-delete-failed'));
+    callToast(t('add-poi.deletion.failed'));
     return;
   }
   console.log('Attempting to delete POI with ID:', poiId);
-  
-  console.log("Deletion confirmed.");// dette burde stå på slutten etter at det faktisk er sletta
   try {
     const response = await deletePoi(poiId);
     console.log("Deleted a POI: ", response)
 
-    callToast(t('admin.success.poi-deleted'));
+    callToast(t('add-poi.deletion.success'));
     selectedPoi.value = null;
     await queryClient.invalidateQueries({ queryKey: ['pois'] });
 
@@ -378,9 +404,14 @@ async function confirmDeletePoi(poiId: number) {
   } catch (error) {
     console.error('Failed to delete POI:', error);
   }
-  
+  console.log("Deletion confirmed.");
+
 }
 
+/**
+ * Method to show toast-message to the user.
+ * @param message - the message to be shown.
+ */
 function callToast(message: string) {
   console.log("Toast:", message);
   toast(message);
@@ -388,7 +419,7 @@ function callToast(message: string) {
 
 onMounted(() => {
   fetchNextPage;
-  setupFormSchema(); // Initialiser form
+  setupFormSchema();
 });
 
 watch(selectedPoi, async(poi) => {
