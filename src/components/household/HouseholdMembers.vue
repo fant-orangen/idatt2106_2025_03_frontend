@@ -8,7 +8,7 @@
           :variant="manageMode ? 'default' : 'outline'"
           size="sm"
           class="transition-all duration-300 ease-in-out flex items-center gap-1.5"
-          :class="{ 'bg-destructive/10 hover:bg-destructive/20 text-destructive': manageMode }"
+          :class="{ 'bg-primary/10 hover:bg-primary/20 text-primary': manageMode }"
           @click="toggleManageMode"
         >
           <span v-if="manageMode" class="flex items-center gap-1.5">
@@ -54,7 +54,7 @@
             <div class="flex items-center gap-1.5">
               <UsersIcon class="h-4 w-4" />
               <span>{{ $t('household.others') }}</span>
-              <Badge variant="secondary" size="sm" class="ml-1">{{ emptyMembers.length }}</Badge>
+              <Badge variant="secondary" class="ml-1 text-xs">{{ emptyMembers.length }}</Badge>
             </div>
           </button>
         </div>
@@ -110,7 +110,7 @@
                       {{ 'firstName' in member ? `${member.firstName} ${member.lastName}` : ('name' in member ? (member as any).name : (member as any).email || '') }}
                     </p>
                     <!-- Admin badge -->
-                    <Badge v-if="'isAdmin' in member && member.isAdmin" variant="default" class="text-xs ml-1 bg-primary text-primary-foreground font-bold">
+                    <Badge v-if="('isAdmin' in member && member.isAdmin) || ('admin' in member && member.admin)" variant="outline" class="text-xs ml-1 border border-black dark:border-white bg-white dark:bg-black text-black dark:text-white font-bold">
                       {{ $t('household.admin_badge') }}
                     </Badge>
                   </div>
@@ -243,11 +243,6 @@
           <MailIcon class="h-4 w-4" />
           <span>{{ $t('household.invite-user') }}</span>
         </Button>
-      </div>
-
-      <!-- Message for non-admin users -->
-      <div v-if="activeTab === 'people' && !isAdmin && showInviteInfo" class="mt-4 p-3 bg-muted/50 rounded-md text-sm text-muted-foreground">
-        <p>{{ $t('household.admin_only') }}</p>
       </div>
 
       <!-- Add empty member form -->
@@ -383,7 +378,6 @@ const showAddUser = ref(false);
 const showAddEmptyMember = ref(false);
 const manageMode = ref(false);
 const showInviteUser = ref(false);
-const showInviteInfo = ref(true); // Show info message for non-admin users
 const memberToRemove = ref<HouseholdMember | EmptyHouseholdMemberDto | null>(null);
 const householdMembers = ref<HouseholdMember[]>([]);
 const emptyMembers = ref<EmptyHouseholdMemberDto[]>([]);
