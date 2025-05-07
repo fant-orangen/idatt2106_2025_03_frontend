@@ -1016,7 +1016,8 @@
     "noInstructions": "Ingen instruksjoner tilgjengelig",
     "relatedCrises": "Relaterte krisehendelser",
     "noRelatedEvents": "Ingen relaterte krisehendelser funnet",
-    "themeNotFound": "Scenariotema ikke funnet"
+    "themeNotFound": "Scenariotema ikke funnet",
+    "readMore":"Les mer om krisescenariorer"
   },
   "gamification": {
     "quizCreator": {

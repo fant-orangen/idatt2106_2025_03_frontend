@@ -963,7 +963,8 @@
     "noInstructions": "No instructions available",
     "relatedCrises": "Related Crisis Events",
     "noRelatedEvents": "No related crisis events found",
-    "themeNotFound": "Scenario theme not found"
+    "themeNotFound": "Scenario theme not found",
+    "readMore":"Read More About Crisis Scenarios "
   },
   "common": {
     "back": "Back",
