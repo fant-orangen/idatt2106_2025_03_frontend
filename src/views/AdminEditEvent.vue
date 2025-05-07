@@ -49,7 +49,7 @@
               <!-- Crisis Level Badge -->
               <span
                 :class="['severity-tag', event.severity]"
-                class="flex items-center justify-center h-8 rounded-full text-sm font-semibold"
+                class="flex items-center justify-center h-8 rounded-full text-sm text-accent font-semibold"
               >
                 {{ $t('crisis.color.' + event.severity) }}
               </span>

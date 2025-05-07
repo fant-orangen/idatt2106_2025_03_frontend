@@ -78,9 +78,9 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
-  --crisis-level-green: #10b981;
-  --crisis-level-yellow: #f59e0b;
-  --crisis-level-red: #ef4444;
+  --crisis-level-green: #2E7D32;
+  --crisis-level-yellow: #F9A825;
+  --crisis-level-red: #C62828;
   --default-blue: #80b1ff;
   --gray: #b6b6b6;
 }
@@ -118,9 +118,9 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
-  --crisis-level-green: #16a34a;
-  --crisis-level-yellow: #d97706;
-  --crisis-level-red: #dc2626;
+  --crisis-level-green: #81C784;
+  --crisis-level-yellow: #FFD54F;
+  --crisis-level-red: #FF5C5C;
   --default-blue: #2c62b8;
   --gray: #5d5d5d;
 }
