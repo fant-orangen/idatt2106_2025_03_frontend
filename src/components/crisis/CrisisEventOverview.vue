@@ -211,12 +211,13 @@ const mapData = computed(() => {
   if (!selectedCrisis.value) {
     return null;
   }
+  const radiusInKm = typeof selectedCrisis.value.radius === 'number' ? selectedCrisis.value.radius : null;
   const lat = selectedCrisis.value.epicenterLatitude;
   const lng = selectedCrisis.value.epicenterLongitude;
   return {
     lat: lat,
     lng: lng,
-    radius: selectedCrisis.value.radius || 1000,
+    radius: radiusInKm !== null ? radiusInKm * 1000 : null,
     color: getSeverityColor(selectedCrisis.value.severity)
   };
 });

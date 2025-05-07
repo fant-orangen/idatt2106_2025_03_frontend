@@ -133,8 +133,12 @@ const isValidCoordinate = (coord: unknown): boolean => {
 const crisisDetails = computed(() => {
   if (!props.crisis) return null;
 
+  const radiusInKm = typeof props.crisis.radius === 'number' ? props.crisis.radius : null;
+
+
   return {
     ...props.crisis,
+    radius: radiusInKm !== null ? radiusInKm * 1000 : null,
     formattedStartTime: formatDateFull(props.crisis.startTime),
     formattedUpdateTime: formatDateFull(props.crisis.updatedAt),
     severityClass: getSeverityClass(props.crisis.severity),

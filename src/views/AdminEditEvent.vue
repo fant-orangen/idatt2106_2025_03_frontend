@@ -191,7 +191,7 @@
 										<SelectItem v-for="type in scenarioPreviews" :key="type.id"
 											:value="type.name">
 											{{ type.name }}
-										
+
 										</SelectItem>
 									</SelectContent>
 								</Select>
@@ -404,11 +404,16 @@ watch(selectedEvent, async (event)=> {
 		}
 		await nextTick();
 		scenarioName.value = getScenarioName(event.scenarioThemeId);
+
+    const radiusInMetersForForm = event.radius !== null && event.radius !== undefined
+      ? event.radius * 1000
+      : '';
+
 		form.value.setValues({
 			epicenterLatitude: event.epicenterLatitude ?? '',
 			epicenterLongitude: event.epicenterLongitude ?? '',
 			address: '',
-			radius: event.radius ?? '',
+			radius: radiusInMetersForForm,
 			severity: event.severity ?? '',
 			category: scenarioName.value,
 			description: event.description ?? '',
@@ -428,6 +433,14 @@ async function handleFormSubmit(values: any) {
 		console.error('No event selected');
 		return;
 	}
+  const radiusFromFormInMeters = values.radius !== undefined && values.radius !== null && values.radius !== ''
+    ? Number(values.radius)
+    : selectedEvent.value.radius !== null && selectedEvent.value.radius !== undefined
+      ? selectedEvent.value.radius * 1000
+      : null;
+  const radiusInKilometersForBackend = radiusFromFormInMeters !== null
+    ? radiusFromFormInMeters / 1000
+    : null;
 	updatedEvent.value = {
 		name: selectedEvent.value.name,
 		latitude: values.epicenterLatitude ?? selectedEvent.value.epicenterLatitude,

@@ -825,22 +825,23 @@ export default defineComponent({
         if (event.isActive === false) return;
 
         // Skip if required properties are missing
-        if (event.latitude === undefined || event.longitude === undefined || event.level === undefined) {
-          console.warn("Skipping crisis event with missing required properties:", event);
+        if (event.latitude === undefined || event.longitude === undefined || event.level === undefined || event.radius === undefined) {
+          console.warn("Skipping crisis event with missing required properties (lat, lon, level, or radius):", event);
           return;
         }
 
         const lat = typeof event.latitude === 'string' ? parseFloat(event.latitude) : event.latitude;
         const lon = typeof event.longitude === 'string' ? parseFloat(event.longitude) : event.longitude;
-        if (!isFinite(lat) || !isFinite(lon)) {
-          console.warn("Skipping invalid crisis event coords:", event);
+        const eventRadiusInKm = typeof event.radius === 'string' ? parseFloat(event.radius) : event.radius;
+
+        if (!isFinite(lat) || !isFinite(lon) || !isFinite(eventRadiusInKm)) {
+          console.warn("Skipping invalid crisis event coords or radius:", event);
           return;
         }
 
         const lvl = LEVEL_STYLES[event.level] ? event.level : 3;
         const { base, border } = LEVEL_STYLES[lvl];
-        const radius = lvl * 1000;
-        const fillOpacity = 0.4;
+        const radiusInMetersForDisplay = eventRadiusInKm * 1000;
 
         try {
           // Create popup content for crisis event
@@ -869,7 +870,7 @@ export default defineComponent({
           // a) main circle with pastel fill + dark border
           const circle = L.circle([lat, lon], {
                       renderer: crisisRenderer, // ← use our shared canvas renderer
-                      radius,
+                      radius: radiusInMetersForDisplay,
                       fillColor: base,
                       fillOpacity: 0.4,
                       color: border,

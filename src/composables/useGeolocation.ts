@@ -1,4 +1,3 @@
-// src/composables/useGeolocation.ts
 import { ref, onUnmounted, watch, computed } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
 import { useGeolocationStore } from '@/stores/GeolocationStore'; // Import the new store
