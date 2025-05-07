@@ -313,7 +313,10 @@
       "banner": "Ingen pågående krise for øyeblikket. Hold deg forberedt!"
     },
     "crisis_theme": {
-      "read_more_specific": "Les mer om {crisisType} her"
+      "read_more_specific": "Les mer om {crisisType} her",
+      "title": "Pågående krisescenario",
+      "description": "Les om dette scenarioet og hva du kan gjøre for å holde deg trygg",
+      "learn_more": "Lær mer om denne krisen"
     },
     "household": {
       "title": "Opprett din husholdning",
@@ -622,6 +625,11 @@
     "create_button": "Opprett nytt hushold",
     "no-household": "Du har ikke et hushold ennå",
     "no-household-description": "Opprett eller bli med i et hushold for å håndtere beredskap sammen med familie eller venner.",
+    "no_household": {
+      "title": "Ingen husholdning funnet",
+      "banner": "Uten en husholdning kan vi ikke oppdatere deg om aktive hendelser i nærheten.",
+      "create_now": "Opprett husholdning"
+    },
     "manage-household": "Administrer hushold",
     "leave-household": "Forlat hushold",
     "leave-confirm-title": "Forlat hushold",

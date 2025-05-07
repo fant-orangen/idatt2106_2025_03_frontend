@@ -20,11 +20,21 @@
       <div class="crisis-theme-info bg-card p-6 rounded-lg border border-[var(--crisis-level-red)]/30">
         <h2 class="text-xl font-bold mb-3 flex items-center">
           <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2 text-[var(--crisis-level-red)]" />
-          {{ t('home.crisis_theme.title', 'Current Crisis Information') }}
+          {{ t('home.crisis_theme.title', 'Ongoing Crisis Scenario') }}
         </h2>
         <p class="mb-4 text-muted-foreground">
-          {{ t('home.crisis_theme.read_more_specific', 'Read more about {crisisType} here', { crisisType: mainCrisis.name }) }}
+          {{ t('home.crisis_theme.description', 'Read about this scenario and what you can do to stay safe') }}
         </p>
+
+        <!-- Scenario Theme Under Instructions -->
+        <div v-if="scenarioUnderInstructions" class="mb-4 p-4 bg-[var(--crisis-level-red)]/10 rounded-lg border border-[var(--crisis-level-red)]/20">
+          <h3 class="font-medium mb-2 text-center">{{ mainCrisis.name }}</h3>
+          <div class="text-sm prose prose-sm max-w-none" v-html="markdownToHtml(scenarioUnderInstructions)"></div>
+        </div>
+        <div v-else-if="loadingInstructions" class="text-center py-4">
+          <div class="inline-block w-6 h-6 border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+          <p class="text-sm text-muted-foreground mt-2">{{ t('common.loading', 'Loading...') }}</p>
+        </div>
 
         <div class="mt-4 text-center">
           <Button
@@ -142,7 +152,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
@@ -155,6 +165,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTriangleExclamation, faBoxOpen, faUsers, faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { inventoryService } from '@/services/InventoryService';
 import { fetchCrisisEventsInRadius } from '@/services/CrisisEventService';
+import { fetchScenarioThemeUnderInstructions } from '@/services/api/ScenarioThemeService';
+import { marked } from 'marked';
 import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
 
 // Register FontAwesome icons
@@ -167,6 +179,8 @@ const { t } = useI18n();
 const daysOfFood = ref<number | null>(null);
 const daysOfWater = ref<number | null>(null);
 const mainCrisis = ref<CrisisEventPreviewDto | null>(null);
+const scenarioUnderInstructions = ref<string | null>(null);
+const loadingInstructions = ref(false);
 
 
 // Priority levels for color coding
@@ -267,6 +281,34 @@ const navigateToScenarioTheme = (themeId: number) => {
 };
 
 /**
+ * Fetches the 'under' instructions for the current crisis scenario theme
+ */
+const fetchScenarioInstructions = async () => {
+  if (!mainCrisis.value?.id) return;
+
+  loadingInstructions.value = true;
+  try {
+    const instructions = await fetchScenarioThemeUnderInstructions(mainCrisis.value.id);
+    scenarioUnderInstructions.value = instructions;
+  } catch (error) {
+    console.error('Failed to fetch scenario instructions:', error);
+    scenarioUnderInstructions.value = null;
+  } finally {
+    loadingInstructions.value = false;
+  }
+};
+
+/**
+ * Converts markdown text to HTML
+ * @param {string} markdown - The markdown text to convert
+ * @returns {string} The HTML representation of the markdown
+ */
+const markdownToHtml = (markdown: string): string => {
+  if (!markdown) return '';
+  return marked(markdown);
+};
+
+/**
  * Handles the selection of a crisis from the CrisisLevelOverview component
  * @param {number} crisisId - The ID of the selected crisis
  */
@@ -337,6 +379,15 @@ const fetchDaysRemaining = async () => {
   }
 };
 
+// Watch for changes in mainCrisis to fetch scenario instructions
+watch(() => mainCrisis.value?.id, (newId) => {
+  if (newId) {
+    fetchScenarioInstructions();
+  } else {
+    scenarioUnderInstructions.value = null;
+  }
+});
+
 // Initialize data on component mount
 onMounted(async () => {
   await Promise.all([
@@ -357,5 +408,40 @@ onMounted(async () => {
   width: 100vw;
   margin-left: calc(-50vw + 50%);
   margin-right: calc(-50vw + 50%);
+}
+
+/* Markdown content styling */
+.prose {
+  color: inherit;
+}
+
+.prose p {
+  margin-bottom: 0.75rem;
+}
+
+.prose ul, .prose ol {
+  margin-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ol {
+  list-style-type: decimal;
+}
+
+.prose a {
+  color: var(--crisis-level-red);
+  text-decoration: underline;
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose em {
+  font-style: italic;
 }
 </style>

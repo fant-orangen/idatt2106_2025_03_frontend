@@ -310,7 +310,10 @@
       "banner": "No ongoing crisis at the moment. Stay prepared!"
     },
     "crisis_theme": {
-      "read_more_specific": "Read more about {crisisType} here"
+      "read_more_specific": "Read more about {crisisType} here",
+      "title": "Ongoing Crisis Scenario",
+      "description": "Read about this scenario and what you can do to stay safe",
+      "learn_more": "Learn More About This Crisis"
     },
     "household": {
       "title": "Create Your Household",
@@ -511,6 +514,11 @@
     "create_button": "Create New Household",
     "no-household": "You don't have a household yet",
     "no-household-description": "Create or join a household to manage your emergency preparedness together with family members or friends.",
+    "no_household": {
+      "title": "No Household Found",
+      "banner": "Without a household, we won't be able to update you on active events nearby.",
+      "create_now": "Create Household"
+    },
     "manage-household": "Manage Household",
     "leave-household": "Leave Household",
     "stats": "Statistics",

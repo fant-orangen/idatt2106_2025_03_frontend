@@ -4,27 +4,30 @@
     <section class="hero-banner w-full px-4 mb-4">
       <div class="w-full rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-in-out border border-orange-300 bg-gradient-to-r from-orange-50 to-white">
         <div class="p-6">
-          <div class="flex items-center gap-3 mb-2">
-            <font-awesome-icon :icon="['fas', 'home']" class="text-2xl text-orange-600" />
-            <h2 class="text-xl font-bold text-gray-800">{{ t('home.no_household.title', 'No Household Found') }}</h2>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex-grow">
+              <div class="flex items-center gap-3 mb-2">
+                <font-awesome-icon :icon="['fas', 'home']" class="text-2xl text-orange-600" />
+                <h2 class="text-xl font-bold text-gray-800">{{ t('home.no_household.title', 'No Household Found') }}</h2>
+              </div>
+              <p class="mb-4 text-gray-600">{{ t('home.no_household.banner', 'Without a household, we won\'t be able to update you on active events nearby.') }}</p>
+              <Button
+                class="bg-orange-600 hover:bg-orange-700 text-white"
+                @click="navigateTo('/household')"
+              >
+                {{ t('home.no_household.create_now', 'Create Household') }}
+              </Button>
+            </div>
+            <div class="flex items-center">
+              <Button
+                @click="navigateTo('/crisis-event')"
+                class="flex items-center gap-2 bg-white hover:bg-gray-50 border border-orange-300 text-orange-600 transition-all hover:shadow-md"
+              >
+                {{ t('home.national_crisis.view_all', 'See All Crisis Events') }}
+                <font-awesome-icon :icon="['fas', 'arrow-right']" />
+              </Button>
+            </div>
           </div>
-          <p class="mb-4 text-gray-600">{{ t('home.no_household.banner', 'Create a household to see ongoing crises and manage your household resources') }}</p>
-          <Button
-            class="bg-orange-600 hover:bg-orange-700 text-white"
-            @click="navigateTo('/household')"
-          >
-            {{ t('home.no_household.create_now', 'Create Household') }}
-          </Button>
-        </div>
-        <div>
-          <Button
-            @click="navigateTo('/crisis-event')"
-            class="flex items-center gap-2 text-sm bg-white hover:bg-gray-50 border border-green-300 text-green-800"
-            size="sm"
-          >
-            {{ t('home.national_crisis.view_all', 'See All Crisis Events') }}
-            <font-awesome-icon :icon="['fas', 'arrow-right']" />
-          </Button>
         </div>
       </div>
     </section>
