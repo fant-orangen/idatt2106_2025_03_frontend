@@ -213,6 +213,20 @@ export async function fetchNewsArticleById(id: number) {
   }
 }
 
+/**
+ * Fetches news article drafts created by a user. 
+ * @param userId - identifying the user by ID
+ * @returns {Promise<Page<News>>} - A paginated list of drafts created by the user
+ */
+export async function fetchDraftsByUserId(userId: number) {
+  try {// endre url når endepunkt er laga 
+    const response = await api.get<Page<News>>('public/news/article/' + userId);
+    return response.data;
+  } catch (error) {
+    console.error('Error while trying to fetch a news article')
+  }
+}
+
 // Export convenience functions with specific page sizes
 export const fetchGeneralNewsSmall = (crisisId: number, page: number = 0) =>
   fetchPaginatedGeneralNews(crisisId, page, 2);
