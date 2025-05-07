@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Plus, Trash2, Pencil } from 'lucide-vue-next'
-import type { QuizPreview } from '@/models/Quiz'
+import { Plus, Trash2, Pencil, MoveUp } from 'lucide-vue-next'
+import type { QuizAttemptSummary } from '@/models/Quiz'
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-vue-next'
@@ -27,14 +27,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { useRouter } from 'vue-router'
 import Button from '@/components/ui/button/Button.vue'
+import { quizService } from '@/services/QuizService.ts'
 
-const quizzes = ref<QuizPreview[]>([]) // Explicitly define the type
 const quizStore = useQuizStore() // Using the QuizStore
 const userStore = useUserStore() // Using the UserStore
+const router = useRouter()
 
-onMounted(() => {
-  quizStore.fetchAllActiveQuizzes()
+type LastAttempt = {
+  attemptId: number
+  score: number
+  maxScore: number
+}
+
+const lastAttempts = ref<Record<number, LastAttempt | null>>({})
+
+onMounted(async () => {
+  try {
+    await quizStore.fetchAllActiveQuizzes() // Fetch quizzes
+    await fetchLastAttempts() // Fetch last attempts for each quiz
+  } catch (error) {
+    console.error('Error during initialization:', error)
+  }
 })
 
 /**
@@ -47,8 +62,70 @@ const scrollToTop = () => {
   })
 }
 
+/**
+ * Fetch the last attempt for each quiz
+ */
+const fetchLastAttempts = async () => {
+  for (const quiz of quizStore.quizzes) {
+    const lastAttempt = await fetchLastQuizAttempt(quiz.id)
+    if (lastAttempt === null) {
+      lastAttempts.value[quiz.id] = null
+      continue
+    }
+    try {
+      // Await the result of the asynchronous function
+      const score = await quizService.getTotalCorrectAnswersForAttempt(lastAttempt.id)
+
+      // Fetch the total number of questions (max score) for the quiz
+      const questions = await quizService.getQuizQuestionsByQuizId(quiz.id)
+      const maxScore = questions.length
+
+      // Save the score and max score in the `lastAttempts` object
+      lastAttempts.value[quiz.id] = {
+        attemptId: lastAttempt.id,
+        score: score,
+        maxScore: maxScore,
+      }
+
+      console.log(`Quiz ${quiz.id}: Score = ${score}, Max Score = ${maxScore}`)
+    } catch (error) {
+      console.error(`Error fetching data for quiz ${quiz.id}:`, error)
+      lastAttempts.value[quiz.id] = null
+    }
+  }
+
+  console.log('Last attempts:', lastAttempts.value)
+}
+
+const fetchLastQuizAttempt = async (quizId: number): Promise<QuizAttemptSummary | null> => {
+  try {
+    // Fetch the first page with a size of 1, sorted by `completedAt` in descending order
+    const response = await quizService.getLatestQuizAttempt(quizId)
+
+    if (response === null) {
+      console.error(`No attempts found for quiz ${quizId}`)
+      return null
+    }
+
+    return response
+  } catch (error) {
+    console.error(`Error fetching last attempt for quiz ${quizId}:`, error)
+    return null // Handle errors gracefully
+  }
+}
+
 const handleEdit = (quizId: number) => {
-  console.log(`Edit quiz with ID: ${quizId}`)
+  router.push({
+    name: 'EditQuiz',
+    params: { quizId },
+  })
+}
+
+const handleTakeQuiz = (quizId: number) => {
+  router.push({
+    name: 'Quiz',
+    params: { quizId },
+  })
 }
 
 const deleteQuiz = (quizId: number) => {
@@ -65,7 +142,11 @@ const deleteQuiz = (quizId: number) => {
 <template>
   <div class="flex flex-col items-center">
     <h1 class="text-2xl font-bold m-10">Quizzes</h1>
-    <Button v-if="userStore.isAdminUser" class="mb-10">
+    <Button
+      v-if="userStore.isAdminUser"
+      @click="router.push('/quizzes/admin/new-quiz')"
+      class="mb-10"
+    >
       <Plus :size="40" /> Create new quiz
     </Button>
     <!-- Search Input -->
@@ -100,10 +181,16 @@ const deleteQuiz = (quizId: number) => {
               </CardTitle>
               <CardDescription>{{ quiz.description }}</CardDescription>
             </CardHeader>
-            <CardContent> Last attempt: </CardContent>
+            <CardContent>
+              <p v-if="lastAttempts[quiz.id] !== null">
+                Last attempt score: {{ lastAttempts[quiz.id]?.score.correctAnswers }} /
+                {{ lastAttempts[quiz.id]?.maxScore }}
+              </p>
+              <p v-else>No attempts have been made yet.</p>
+            </CardContent>
             <CardFooter>
               <div class="flex w-full justify-between items-center">
-                <Button>
+                <Button @click="handleTakeQuiz(quiz.id)">
                   {{ $t('gamification.quiz.takeQuiz') }}
                 </Button>
                 <div>
@@ -157,12 +244,8 @@ const deleteQuiz = (quizId: number) => {
         </li>
       </ul>
     </InfiniteScroll>
-    <Button
-      v-if="quizzes.length > 0"
-      class="flex justify-center items-center m-5"
-      @click="scrollToTop"
-    >
-      Back to top
+    <Button class="flex justify-center items-center mb-10" @click="scrollToTop">
+      <MoveUp class="h-5 w-5" />Back to top
     </Button>
   </div>
 </template>
