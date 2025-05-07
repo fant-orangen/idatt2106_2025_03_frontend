@@ -3,8 +3,6 @@
  * Based on the PoiItemDto.java DTO.
  */
 export interface PoiData {
-  openFrom: string;
-  openTo: string;
   id: number;
   poiTypeId: number;
   poiTypeName: string;
@@ -31,9 +29,8 @@ export interface UpdatePoiDto {
   latitude: number;
   longitude: number;
   description: string | null;
-  openFrom: string;
-  openTo: string;
+  openFrom?: string;
+  openTo?: string;
   contactInfo: string;
   poiTypeId: number;
-
 }
