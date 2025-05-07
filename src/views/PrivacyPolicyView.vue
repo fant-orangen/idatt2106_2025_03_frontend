@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import PrivacyAgreement from '@/components/PrivacyAgreement.vue'
-import TermsOfService from '@/components/TermsOfService.vue'
 import {
   Breadcrumb,
   BreadcrumbItem,
