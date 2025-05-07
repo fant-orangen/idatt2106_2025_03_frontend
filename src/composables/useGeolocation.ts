@@ -1,4 +1,3 @@
-// src/composables/useGeolocation.ts
 import { ref, onUnmounted, watch, computed } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
 import { useGeolocationStore } from '@/stores/GeolocationStore'; // Import the new store
@@ -25,15 +24,56 @@ export function useGeolocation() {
   const error = computed(() => geolocationStore.locationError);       // Read from GeolocationStore
   const isLoading = computed(() => geolocationStore.isLocationLoading); // Read from GeolocationStore
   const status = computed(() => geolocationStore.locationStatus);     // Read from GeolocationStore
-  const locationSharingUserPref = computed(() => userStore); // Read preference from UserStore
+  const locationSharingUserPref = computed(() =>
+    userStore.profile?.locationSharingEnabled !== false
+  );
 
   // Track browser permission state
   const browserPermissionState = ref<PermissionState | null>(null);
 
   // Function to check browser's geolocation permission status
   async function checkBrowserPermission(): Promise<PermissionState | null> {
-    if (!hasPermissionsAPI) return null;
+    // If Permissions API isn't supported, use fallback method
+    if (!hasPermissionsAPI) {
+      // We can't directly check, so try a test location request with minimal timeout
+      return new Promise((resolve) => {
+        const testTimeout = setTimeout(() => {
+          console.log('Permission check timed out, assuming prompt');
+          resolve('prompt');
+        }, 200);
 
+        try {
+          navigator.geolocation.getCurrentPosition(
+            () => {
+              clearTimeout(testTimeout);
+              console.log('Test location request succeeded, permission is granted');
+              browserPermissionState.value = 'granted';
+              resolve('granted');
+            },
+            (error) => {
+              clearTimeout(testTimeout);
+              if (error.code === error.PERMISSION_DENIED) {
+                console.log('Test location request denied, permission is denied');
+                browserPermissionState.value = 'denied';
+                resolve('denied');
+              } else {
+                console.log('Test location request failed for other reasons, assume prompt');
+                browserPermissionState.value = 'prompt';
+                resolve('prompt');
+              }
+            },
+            { timeout: 100, maximumAge: 0 }
+          );
+        } catch (e) {
+          clearTimeout(testTimeout);
+          console.error('Error during test permission check', e);
+          browserPermissionState.value = null;
+          resolve(null);
+        }
+      });
+    }
+
+    // If Permissions API is supported, use it
     try {
       const permissionStatus = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
       console.log('Geolocation permission status:', permissionStatus.state);
@@ -43,12 +83,6 @@ export function useGeolocation() {
       permissionStatus.addEventListener('change', () => {
         console.log('Geolocation permission changed to:', permissionStatus.state);
         browserPermissionState.value = permissionStatus.state;
-        // Optionally re-evaluate watching state if permission changes
-        // if (isWatching.value && browserPermissionState.value !== 'granted') {
-        //   stopWatching();
-        // } else if (!isWatching.value && canShareLocation.value) {
-        //   startWatching(); // Or prompt user
-        // }
       });
 
       return permissionStatus.state;
@@ -188,8 +222,58 @@ export function useGeolocation() {
     }
   }
 
+  function resetBrowserPermissionState() {
+    console.log('Forcibly resetting browser permission state tracking');
+    browserPermissionState.value = null;
+
+    // Force a fresh check with browser - key change!
+    return new Promise((resolve) => {
+      // Use a very short-lived request to test real permission state
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          console.log('Permission test successful - permission is GRANTED');
+          browserPermissionState.value = 'granted';
+          resolve('granted');
+        },
+        (error) => {
+          if (error.code === 1) { // PERMISSION_DENIED
+            console.log('Permission test failed - permission is DENIED');
+            browserPermissionState.value = 'denied';
+            resolve('denied');
+          } else {
+            console.log('Permission test inconclusive - assuming PROMPT required');
+            browserPermissionState.value = 'prompt';
+            resolve('prompt');
+          }
+        },
+        { timeout: 1000, maximumAge: 0 } // Force fresh permission check
+      );
+    });
+  }
+
+  function resetGeolocationState() {
+    console.log('Resetting geolocation state');
+    stopWatching();
+
+    // Reset the geolocation store
+    geolocationStore.clearLocationState();
+
+    // Re-check permissions to get fresh state
+    checkBrowserPermission();
+  }
+
+
+
   async function getCurrentLocation(): Promise<UserLocation | null> {
     return new Promise(async (resolve) => {
+      // First, clear all state and force a fresh permission check
+      console.log('==== STARTING FRESH LOCATION REQUEST ====');
+      await resetBrowserPermissionState();
+
+      console.log('Current browser permission state:', browserPermissionState.value);
+      console.log('User login state:', userStore.loggedIn);
+      console.log('User location preference:', userStore.profile?.locationSharingEnabled);
+
       if (!('geolocation' in navigator)) {
         console.error('Geolocation is not supported.');
         geolocationStore.setLocationError({ error: null, status: 'Not Supported', isLoading: false });
@@ -197,39 +281,56 @@ export function useGeolocation() {
         return;
       }
 
-      await checkBrowserPermission(); // Check permission state
+      // Use the forced check result instead of canShareLocation computed
+      const currentPermission = browserPermissionState.value;
 
-      if (!canShareLocation.value) {
-        let statusMessage = 'Disabled by User';
-        if (browserPermissionState.value === 'denied') {
-          statusMessage = 'Permission Denied';
-        } else if (!locationSharingUserPref.value) {
-          statusMessage = 'Disabled by User';
-        } else if (browserPermissionState.value === 'prompt') {
-          statusMessage = 'Permission Required';
-        }
-        console.log(`Cannot get current location: ${statusMessage}`);
-        geolocationStore.setLocationError({ error: null, status: statusMessage, isLoading: false });
-        resolve(null); // Cannot get location if not allowed
+      if (currentPermission === 'denied') {
+        console.log('Browser permission is denied, cannot proceed');
+        geolocationStore.setLocationError({
+          error: { code: 1, message: 'Permission denied by browser' },
+          status: 'Permission Denied',
+          isLoading: false
+        });
+        resolve(null);
         return;
       }
 
+      // We've confirmed browser permission is either granted or prompt
+      // Now check user settings only if logged in
+      if (userStore.loggedIn && userStore.profile?.locationSharingEnabled === false) {
+        console.log('User has explicitly disabled location sharing in profile');
+        geolocationStore.setLocationError({
+          error: { code: 1, message: 'Disabled in user settings' },
+          status: 'Disabled by User',
+          isLoading: false
+        });
+        resolve(null);
+        return;
+      }
 
-      console.log('Requesting current location...');
+      // At this point, we've confirmed:
+      // 1. Browser permission is not denied
+      // 2. If user is logged in, they haven't disabled location
+      console.log('Permission checks passed, requesting location...');
       geolocationStore.setLocationLoading(true);
 
       try {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            successCallback(position); // Updates store
-            resolve(geolocationStore.currentUserLocation); // Resolve with location from store
+            console.log('Location request successful!', position);
+            successCallback(position);
+            resolve(geolocationStore.currentUserLocation);
           },
           (error) => {
-            errorCallback(error); // Updates store
+            console.error('Location request failed:', error);
+            errorCallback(error);
             resolve(null);
           },
-          // Use slightly different options for one-time fetch? Maybe shorter timeout?
-          { ...options, timeout: 8000 }
+          {
+            enableHighAccuracy: GEOLOCATION_HIGH_ACCURACY,
+            timeout: GEOLOCATION_TIMEOUT,
+            maximumAge: 0 // Force fresh location
+          }
         );
       } catch (err) {
         console.error('Unexpected error requesting geolocation:', err);
@@ -277,5 +378,7 @@ export function useGeolocation() {
     startWatching,      // Method to start the watch
     stopWatching,       // Method to stop the watch
     getCurrentLocation, // Method for one-time fetch
+    resetGeolocationState, // Method for reseting geolocation state
+    resetBrowserPermissionState
   };
 }
