@@ -22,6 +22,7 @@ onMounted(async () => {
     try {
       // Pass 0 to explicitly fetch the first page
       await notificationStore.fetchNotifications(0);
+      await notificationStore.markAllAsRead(); // Mark all notifications as read when the page is loaded
     } catch (error) {
       console.error('Failed to load initial notifications:', error);
     }

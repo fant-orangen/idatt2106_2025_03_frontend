@@ -89,9 +89,12 @@ export function useWebSocket() {
                   // Parse the JSON message body into our NotificationMessage type
                   const notification: NotificationMessage = JSON.parse(message.body);
                   console.log('Parsed notification:', notification);
+                  console.log('Notification readAt status:', notification.readAt);
 
                   // Add the notification to the store
+                  console.log('WebSocket: Adding notification to store. Current hasUnread:', notificationStore.hasUnread);
                   notificationStore.addNotification(notification);
+                  console.log('WebSocket: Notification added to store. New hasUnread:', notificationStore.hasUnread);
 
                   // *** Frontend Improvement: Handle specific notification types ***
                   if (notification.preferenceType === 'crisis_alert') {

@@ -156,7 +156,7 @@ export function convertPoiData(poiData: PoiData): POI {
     poiTypeId: poiData.poiTypeId,
     description: poiData.description || undefined,
     address: poiData.address || undefined,
-    openingHours: poiData.openingHours || undefined,
+    //openingHours: poiData.openingHours || undefined,
     contactInfo: poiData.contactInfo || undefined,
     latitude: typeof poiData.latitude === 'string'
       ? parseFloat(poiData.latitude)
