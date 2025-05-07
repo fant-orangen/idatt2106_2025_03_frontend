@@ -155,14 +155,12 @@ export async function fetchAllPreviewCrisisEvents(
   size = 10
 ): Promise<Page<CrisisEventPreviewDto>> {
   try {
-    console.log('Fetching paginated crisis events, page:', page);
     const response = await api.get<Page<CrisisEventPreviewDto>>('/public/crisis-events/all/previews', {
       params: { page, size },
       headers: {
         'Content-Type': 'application/json'
       }
     });
-    console.log("crisis events page:", response.data);
     return response.data;
   } catch (error) {
     console.error('Failed to fetch paginated crisis events', error);
@@ -170,6 +168,41 @@ export async function fetchAllPreviewCrisisEvents(
   }
 }
 
+export async function fetchCrisisEventsInRadius(
+  page = 0,
+  size = 5
+): Promise<Page<CrisisEventPreviewDto>> {
+  try {
+    const response = await api.get<Page<CrisisEventPreviewDto>>('/user/crisis-events/all/current-user', {
+      params: { page, size },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch paginated crisis events', error);
+    throw error;
+  }
+}
+
+export async function fetchInavtiveCrisisEvents(
+  page = 0,
+  size = 5
+): Promise<Page<CrisisEventPreviewDto>> {
+  try {
+    const response = await api.get<Page<CrisisEventPreviewDto>>('/public/crisis-events/inactive/previews', {
+      params: { page, size },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch paginated crisis events', error);
+    throw error;
+  }
+}
 /**
  * Fetches only the *active* crisis events from the backend API.
  * Fetches all events and filters them client-side.
