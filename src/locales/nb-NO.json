@@ -332,6 +332,9 @@
     "close-directions": "Lukk",
     "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse",
     "legend": {
+              "user-location": "Din Posisjon",
+              "household-location": "Husholdning",
+              "user-location": "Din Posisjon",
               "crisis-level-1": "Krisenivå 1",
               "crisis-level-2": "Krisenivå 2",
               "crisis-level-3": "Krisenivå 3",

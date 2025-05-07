@@ -188,10 +188,7 @@
     </div>
 
     <!-- Legend underneath the map -->
-      <MapLegend
-        class="mt-4"
-        :items="legendItems"
-      />
+    <MapLegend class="mt-4" />
   </div>
 </template>
 <script setup lang="ts">
@@ -204,8 +201,6 @@ import { useGeolocationStore } from '@/stores/GeolocationStore';
 import { useHouseholdStore } from '@/stores/HouseholdStore';
 import type { MeetingPlaceDto } from '@/types/meetingPlace'
 import { fetchMeetingPlacesNearby } from '@/services/api/MeetingPlaceService'
-import markerIconUrl        from 'leaflet/dist/images/marker-icon.png'
-
 import {
   fetchPublicPois,
   fetchPoisByType,
@@ -233,20 +228,6 @@ import { faHouseChimney, faChevronUp, faChevronDown, faLocationDot } from '@fort
 
 import MapLegend from './MapLegend.vue'
 
-/**
- * Import POI icon URLs for map markers
- */
-import firestationIconUrl   from '@/assets/mapicons/firestation.svg'
-import gasstationIconUrl     from '@/assets/mapicons/gasstation.svg'
-import grocerystoreIconUrl   from '@/assets/mapicons/grocerystore.svg'
-import hospitalIconUrl       from '@/assets/mapicons/hospital.svg'
-import meetingpointIconUrl   from '@/assets/mapicons/meetingpoint.svg'
-import pharmacyIconUrl       from '@/assets/mapicons/pharmacy.svg'
-import policestationIconUrl  from '@/assets/mapicons/policestation.svg'
-import shelterIconUrl        from '@/assets/mapicons/shelter.svg'
-import waterpointIconUrl     from '@/assets/mapicons/waterpoint.svg'
-import defaultPoiIconUrl     from '@/assets/mapicons/home.svg'
-
 // Register FontAwesome icons
 library.add(faHouseChimney, faChevronUp, faChevronDown, faLocationDot)
 
@@ -272,27 +253,7 @@ const {
   resetBrowserPermissionState,
 } = useGeolocation()
 
-const legendItems = [
-  { icon: markerIconUrl, label: t('map.legend.user-location',    'Your Location'),    extraClass: 'user-location-icon' },
-  {
-    icon: markerIconUrl,
-    label: t('map.legend.household-location','Home Location'),
-    extraClass: 'filter hue-rotate-300'
-  },
-  { iconClass: 'bg-yellow-400', label: t('map.legend.crisis-level-1','Crisis Level 1') },
-  { iconClass: 'bg-orange-400', label: t('map.legend.crisis-level-2','Crisis Level 2') },
-  { iconClass: 'bg-red-400',    label: t('map.legend.crisis-level-3','Crisis Level 3') },
-  { icon: firestationIconUrl,   label: t('map.legend.fire-station',   'Fire Station') },
-  { icon: policestationIconUrl,  label: t('map.legend.police-station', 'Police Station') },
-  { icon: hospitalIconUrl,       label: t('map.legend.hospital',       'Hospital') },
-  { icon: pharmacyIconUrl,       label: t('map.legend.pharmacy',       'Pharmacy') },
-  { icon: gasstationIconUrl,     label: t('map.legend.gas-station',    'Gas Station') },
-  { icon: grocerystoreIconUrl,   label: t('map.legend.grocery-store',  'Grocery Store') },
-  { icon: waterpointIconUrl,     label: t('map.legend.water-point',    'Water Point') },
-  { icon: meetingpointIconUrl,   label: t('map.legend.meeting-point',  'Meeting Point') },
-  { icon: shelterIconUrl,        label: t('map.legend.shelter',        'Shelter') },
-  { icon: defaultPoiIconUrl,     label: t('map.legend.default',        'Other') },
-]
+
 
 const mapComponentRef = ref<InstanceType<typeof MapComponent> | null>(null);
 
@@ -431,7 +392,8 @@ const locationStatusMessage = computed(() => {
  * Resets all location-related state when user logs out or manually resets
  */
 function handleLocationReset() {
-  console.log('Resetting location state due to user action or logout');
+  console.log
+  ('Resetting location state due to user action or logout');
 
   // Stop any active location watching
   stopWatching();

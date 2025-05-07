@@ -330,6 +330,8 @@
     "close-directions": "Close",
     "need-location": "Please enable your location to show directions",
     "legend": {
+                "user-location": "Your Location",
+                "household-location": "Household",
                 "crisis-level-1": "Crisis Level 1",
                 "crisis-level-2": "Crisis Level 2",
                 "crisis-level-3": "Crisis Level 3",
