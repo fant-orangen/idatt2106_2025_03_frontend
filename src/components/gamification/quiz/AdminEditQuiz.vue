@@ -30,7 +30,6 @@ import { quizService } from '@/services/QuizService'
 
 const props = defineProps<{
   quizId: number
-  quizName: string
 }>()
 
 const { t } = useI18n()
@@ -39,7 +38,11 @@ const newQuestionText = ref('')
 const options = ref<string[]>([''])
 const correctOption = ref<number[]>([])
 const fetchedQuestions = ref<
-  { questionBody: string; options: { answerBody: string; isCorrect: boolean }[] }[]
+  {
+    questionId: number
+    questionBody: string
+    options: { answerId: number; answerBody: string; isCorrect: boolean }[]
+  }[]
 >([])
 const editingQuestionId = ref<number | null>(null) // Tracks the question being edited
 
@@ -101,7 +104,7 @@ async function fetchQuestionsAndAnswers() {
 }
 
 async function submitQuestion() {
-  if (!newQuestionText.value.trim() || correctOption.value === null) {
+  if (!newQuestionText.value.trim() || correctOption.value.length === 0) {
     toast.error(t('gamification.quizCreator.questionValidationError'))
     console.log(newQuestionText.value, correctOption.value)
     return
@@ -389,23 +392,25 @@ onMounted(() => {
                         :class="[
                           'px-4 py-2 rounded-md',
                           option.isCorrect
-                            ? 'bg-muted font-medium text-foreground'
+                            ? 'bg-crisis-level-green font-medium text-foreground'
                             : 'text-foreground',
                         ]"
                       >
                         <div class="flex items-center">
-                          <span>{{ option.answerBody }}</span>
                           <Check
-                            v-if="option.isCorrect"
-                            class="w-5 h-5 ml-5 text-accent-foreground"
+                            :class="[
+                              'w-5 h-5 mr-5 text-accent-foreground',
+                              { invisible: !option.isCorrect },
+                            ]"
                           />
+                          <span>{{ option.answerBody }}</span>
                         </div>
                       </li>
                     </ul>
                   </CardContent>
                   <CardFooter>
                     <div class="flex justify-end w-full gap-2">
-                      <TooltipProvider delayDuration="350">
+                      <TooltipProvider :delayDuration="350">
                         <Tooltip>
                           <TooltipTrigger>
                             <Button
