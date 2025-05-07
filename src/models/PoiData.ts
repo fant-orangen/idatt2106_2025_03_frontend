@@ -3,6 +3,8 @@
  * Based on the PoiItemDto.java DTO.
  */
 export interface PoiData {
+  openFrom: string;
+  openTo: string;
   id: number;
   poiTypeId: number;
   poiTypeName: string;

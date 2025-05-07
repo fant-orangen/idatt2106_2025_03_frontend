@@ -548,23 +548,19 @@ const onSubmit = form.handleSubmit(async (values) => {
         throw new Error(t('add-event-info.errors.type') || 'Invalid POI type selected');
     }
 
-    // Format opening hours if both values are provided
-    let openingHours = '';
-    if (values.openfrom && values.opento) {
-      openingHours = `${values.openfrom} - ${values.opento}`;
-    }
 
-    // Prepare the payload matching the backend's CreatePOIDto
-    const poiData = {
-      name: values.title,
-      latitude: values.latitude !== undefined ? Number(values.latitude) : null,
-      longitude: values.longitude !== undefined ? Number(values.longitude) : null,
-      address: values.address || null,
-      poiTypeId: poiTypeId,
-      description: values.description || null,
-      openingHours: openingHours || null,
-      contactInfo: values.contactinfo || null,
-    };
+        // Prepare payload in the new required shape
+          const poiData = {
+            name: values.title,
+            latitude: values.latitude ?? null,
+            longitude: values.longitude ?? null,
+            poiTypeId: poiTypeId,
+            description: values.description,
+            address: values.address || null,
+            openFrom: values.openfrom || null,
+            openTo: values.opento || null,
+            contactInfo: values.contactinfo || null,
+          };
 
     console.log('Submitting POI data:', poiData);
     const response = await createPOI(poiData);
