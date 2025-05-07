@@ -1,5 +1,15 @@
 import api from '@/services/api/AxiosInstance.ts';
-import type { PoiData } from '@/models/PoiData.ts';
+import type { PoiData, PoiPreviewDto } from '@/models/PoiData.ts';
+
+import type {Page} from "@/types/Page.ts";
+
+export async function fetchPoiPreviews(page = 0, size = 10, sort = 'id,asc'): Promise<Page<PoiPreviewDto>> {
+  const response = await api.get<Page<PoiPreviewDto>>('/public/poi/previews', {
+    params: { page, size, sort }
+  })
+    console.log('poi list:', response.data)
+  return response.data
+}
 
 /**
  * Fetches all public Points of Interest (POIs) from the backend.

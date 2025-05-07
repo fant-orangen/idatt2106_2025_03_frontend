@@ -870,9 +870,11 @@
       "type": "Type",
       "open-from": "Åpent fra",
       "open-to": "Åpent til",
-      "contact-info": "Kontaktinformasjon"
+      "contact-info": "Kontaktinformasjon",
+      "choose-poi": "Velg Interessepunkt"
     },
     "POI-type": {
+      "undefined": "Velg type",
       "defibrillator": "Hjertestarter",
       "shelter": "Tilfluktsrom",
       "water-source": "Vannkilde",
@@ -889,12 +891,26 @@
     "description": "Beskrivelse",
     "latitude": "Breddegrad",
     "longitude": "Lengdegrad",
+    "address": "Adresse",
     "opening-hours": "Åpningstider",
     "contact": "Kontaktinformasjon",
     "type": "Type",
     "submit": "Lagre",
     "delete": "Slett",
-    "confirm-delete": "Er du sikker på at du vil slette dette interessepunktet?"
+    "confirm-delete": "Er du sikker på at du vil slette dette interessepunktet?",
+    "loading": "Laster flere...",
+    "loading.complete": "Alle interessepunkt er lastet inn.",
+    "loading.schema": "Laster inn skjema...",
+    "deletion": {
+      "failed": "Kunne ikke slette interessepunktet.",
+      "success": "Interessepunktet er nå slettet."
+    },
+    "description-max": "Beskrivelse kan ikke inneholde mer enn 1000 tegn.",
+    "contact-max": "Kontaktinformasjon kan ikke inneholde mer enn 100 tegn.",
+    "confirm-delete": "Er du sikker på at du ønsker å slette dette interessepunktet permanent?",
+    "delete-info": "Denne handlingen kan ikke angres.",
+    "update-success": "Interessepunktet er blitt oppdatert!",
+    "update-failed": "Kunne ikke oppdatere interessepunkt med nye verdier."
   },
   "language": {
     "title": "Språk",
