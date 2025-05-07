@@ -29,9 +29,8 @@ export interface UpdatePoiDto {
   latitude: number;
   longitude: number;
   description: string | null;
-  openFrom: string;
-  openTo: string;
+  openFrom?: string;
+  openTo?: string;
   contactInfo: string;
   poiTypeId: number;
-
 }

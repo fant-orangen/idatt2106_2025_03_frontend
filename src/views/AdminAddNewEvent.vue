@@ -151,7 +151,7 @@
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem v-for="type in scenarioPreviews" :key="type.id"
-                    :value="type.name"> 
+                    :value="type.name">
                     {{ type.name }}
                   </SelectItem>
                 </SelectContent>
@@ -161,7 +161,7 @@
             <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
           </FormItem>
         </FormField>
-        
+
         <br />
 
         <FormField v-slot="{ field, meta, errorMessage }" name="description">
@@ -564,16 +564,20 @@ const onSubmit = form.handleSubmit(async (values) => {
     const startTime = `${values.date}T${values.time}:00`; // Append seconds for potential backend requirements
 
     /**
-     * Prepare the payload matching the backend's CreateCrisisEventDto 
-     */ 
+     * Prepare the payload matching the backend's CreateCrisisEventDto
+     */
+
+    const radiusInMeters = typeof values.radius === 'number' ? values.radius : parseFloat(values.radius || '0');
+    const radiusInKilometers = radiusInMeters / 1000;
+
     const eventData: CreateCrisisEventDto = {
-      name: values.title, 
-      latitude: values.latitude, 
+      name: values.title,
+      latitude: values.latitude,
       longitude: values.longitude,
-      radius: typeof values.radius === 'number' ? values.radius : parseFloat(values.radius || '0'),
-      severity: values.priority, 
+      radius: radiusInKilometers,
+      severity: values.priority,
       scenarioThemeId: getScenarioId(values.category?? ''),
-      description: values.description, 
+      description: values.description,
       startTime: startTime,
     };
 
@@ -588,7 +592,7 @@ const onSubmit = form.handleSubmit(async (values) => {
   } catch (error: any) {
     console.error('An error occurred while submitting the event: ', error);
     const errorMessage = error.response?.data?.message || error.message || 'Ukjent feil oppstod.';
-    form.setFieldError('title', `Innsending feilet: ${errorMessage}`); // Example: show error near title
+    form.setFieldError('title', `Innsending feilet: ${errorMessage}`);
   }
 });
 

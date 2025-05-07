@@ -11,7 +11,9 @@
       <div class="crisis-components flex flex-col px-4 md:gap-20 md:px-0">
         <component :is="crisisComponents[currentStatus]" />
       </div>
-      <div class="map flex-grow px-4 md:px-0 max-h-[800px] min-h-[200px] md:min-h-[300px] rounded-lg overflow-hidden">
+      <div
+           class="map flex-grow px-4 md:px-0 rounded-lg"
+         >
         <MapOverviewComponent />
       </div>
     </div>
@@ -96,3 +98,4 @@ onMounted(async () => {
   await checkForOngoingCrises()
 })
 </script>
+
