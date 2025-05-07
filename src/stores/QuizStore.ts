@@ -61,6 +61,15 @@ export const useQuizStore = defineStore('quiz', () => {
     hasMore.value = true
   }
 
+  const deleteQuiz = async (quizId: number) => {
+    try {
+      await quizService.deleteQuiz(quizId)
+      quizzes.value = quizzes.value.filter((quiz) => quiz.id !== quizId)
+    } catch (error) {
+      console.error('Error deleting quiz:', error)
+    }
+  }
+
   return {
     quizzes,
     currentPage,
@@ -71,5 +80,6 @@ export const useQuizStore = defineStore('quiz', () => {
     filteredQuizzes,
     fetchAllActiveQuizzes,
     resetQuizzes,
+    deleteQuiz,
   }
 })

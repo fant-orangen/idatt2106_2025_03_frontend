@@ -23,6 +23,13 @@ class QuizService {
   }
 
   /**
+   * Delete a quiz (admin only)
+   */
+  async deleteQuiz(quizId: number): Promise<void> {
+    await api.delete(`/quizzes/admin/${quizId}`)
+  }
+
+  /**
    * Archive a quiz (admin only)
    */
   async archiveQuiz(quizId: number): Promise<void> {
