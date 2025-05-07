@@ -20,6 +20,7 @@
 
       <!-- Button for inviting household -->
       <button
+          v-if="isAdmin"
           @click="inviteHousehold"
           class="mt-4 bg-sidebar-accent text-sidebar-accent-foreground py-2 rounded-md text-sm font-medium"
       >
@@ -27,7 +28,7 @@
       </button>
 
       <!-- Create group section -->
-      <div class="mt-8 border-t border-sidebar-border pt-4">
+      <div v-if="isAdmin" class="mt-8 border-t border-sidebar-border pt-4">
         <button
             v-if="!showCreateGroupInput"
             @click="showCreateGroupInput = true"
@@ -86,11 +87,11 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
         <button
-          v-if="currentGroupId"
+          v-if="isAdmin && currentGroupId"
           @click="leaveCurrentGroup"
           class="text-sm text-destructive hover:text-destructive/90 transition"
         >
-          {{ t('group.leave-group') }} <!-- TODO: implement translation and only allow if the user is household admin -->
+          {{ t('group.leave-group') }}
         </button>
       </div>
 
@@ -123,6 +124,7 @@ import InventorySearchBar from '@/components/inventory/InventorySearchBar.vue';
 import GroupInventory from '@/components/group/GroupInventory.vue';
 import type { ProductType } from '@/models/Product';
 import type { Household } from '@/models/Group';
+import { isCurrentUserHouseholdAdmin } from '@/services/HouseholdService';
 
 const { t } = useI18n();
 const groupStore = useGroupStore();
@@ -139,6 +141,30 @@ const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
 const showCreateGroupInput = ref(false);
 const newGroupName = ref('');
+const isAdmin = ref(false);
+
+// Check if user is household admin when component mounts
+onMounted(async () => {
+  try {
+    isAdmin.value = await isCurrentUserHouseholdAdmin();
+  } catch (error) {
+    console.error('Error checking admin status:', error);
+    isAdmin.value = false;
+  }
+
+  const response = await groupService.getCurrentUserGroups();
+  if (response?.content?.length > 0) {
+    groups.value = response.content.map(group => ({
+      id: group.id,
+      name: group.name,
+      groupId: group.id
+    }));
+    // Set the first group as current
+    if (groups.value[0]) {
+      switchToGroup(groups.value[0].groupId);
+    }
+  }
+});
 
 // Watch for changes in search text and current group ID
 watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
@@ -196,21 +222,6 @@ watch(currentGroupId, async (newGroupId) => {
     households.value = [];
   }
 }, { immediate: true });
-
-onMounted(async () => {
-  const response = await groupService.getCurrentUserGroups();
-  if (response?.content?.length > 0) {
-    groups.value = response.content.map(group => ({
-      id: group.id,
-      name: group.name,
-      groupId: group.id
-    }));
-    // Set the first group as current
-    if (groups.value[0]) {
-      switchToGroup(groups.value[0].groupId);
-    }
-  }
-});
 
 function switchToGroup(groupId: number) {
   groupStore.setCurrentGroup(groupId);
