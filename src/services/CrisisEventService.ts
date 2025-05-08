@@ -53,84 +53,7 @@ export async function fetchAllCrisisEvents(pageable?: { page?: number; size?: nu
     };
   }
 }
-/**
- * Fetches all crisis events from the backend API.
- * Makes a GET request to the '/crisis-events/all/previews' endpoint.
- * Note: This includes both active and inactive events.
- *
- * @param {number} page - The page number to fetch (0-based index)
- * @param {number} size - The number of items per page
- * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing crisis event previews
- */
-export async function fetchAllPreviewCrisisEvents(
-  page = 0,
-  size = 10
-): Promise<Page<CrisisEventPreviewDto>> {
-  try {
-    const response = await api.get<Page<CrisisEventPreviewDto>>('/public/crisis-events/all/previews', {
-      params: { page, size },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch paginated crisis events', error);
-    throw error;
-  }
-}
 
-/**
- * Fetches crisis events within the radius of the current user's location.
- * Returns a paginated response with crisis events that are relevant to the user.
- *
- * @param {number} page - The page number to fetch (0-based index)
- * @param {number} size - The number of items per page
- * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing crisis events
- */
-export async function fetchCrisisEventsInRadius(
-  page = 0,
-  size = 5
-): Promise<Page<CrisisEventPreviewDto>> {
-  try {
-    const response = await api.get<Page<CrisisEventPreviewDto>>('/user/crisis-events/all/current-user', {
-      params: { page, size },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch paginated crisis events', error);
-    throw error;
-  }
-}
-
-/**
- * Fetches inactive crisis events from the backend API.
- * Makes a GET request to the '/public/crisis-events/inactive/previews' endpoint.
- *
- * @param {number} page - The page number to fetch (0-based index)
- * @param {number} size - The number of items per page
- * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing inactive crisis events
- */
-export async function fetchInactiveCrisisEvents(
-  page = 0,
-  size = 5
-): Promise<Page<CrisisEventPreviewDto>> {
-  try {
-    const response = await api.get<Page<CrisisEventPreviewDto>>('/public/crisis-events/inactive/previews', {
-      params: { page, size },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch paginated crisis events', error);
-    throw error;
-  }
-}
 /**
  * Fetches only the *active* crisis events from the backend API.
  * Fetches all events and filters them client-side.
@@ -147,41 +70,6 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
 
   } catch (error) {
     console.error('Error fetching active crisis events:', error);
-    return [];
-  }
-}
-
-/**
- * Fetches crisis events within a specific radius from given coordinates.
- * Note: Fetches *all active* events first and filters client-side.
- *
- * @param {number} latitude - The latitude coordinate.
- * @param {number} longitude - The longitude coordinate.
- * @param {number} radiusInMeters - The radius in meters to search within.
- * @returns {Promise<CrisisEvent[]>} Array of crisis events in the specified area.
- */
-export async function fetchCrisisEventsNearby(
-  latitude: number,
-  longitude: number,
-  radiusInMeters: number
-): Promise<CrisisEvent[]> {
-  try {
-    const activeEvents = await fetchActiveCrisisEvents();
-
-    const nearbyEvents = activeEvents.filter(event => {
-      if (typeof event.latitude !== 'number' || typeof event.longitude !== 'number' || isNaN(event.latitude) || isNaN(event.longitude)) {
-        console.warn(`Skipping event ID ${event.id} due to invalid coordinates during nearby check.`);
-        return false;
-      }
-      const distance = calculateDistance(latitude, longitude, event.latitude, event.longitude);
-      return distance <= radiusInMeters;
-    });
-
-    console.log(`Found ${nearbyEvents.length} active events nearby within ${radiusInMeters}m.`);
-    return nearbyEvents;
-
-  } catch (error) {
-    console.error('Error fetching nearby crisis events:', error);
     return [];
   }
 }
@@ -240,18 +128,18 @@ export async function fetchInactivePreviewCrisisEvents(
     throw error;
   }
 }
+
 /**
- * Fetches inactive crisis events from the backend API.
- * Makes a GET request to the '/crisis-events/inactive/previews' endpoint.
- * Note: This includes both active and inactive events.
+ * Fetches crisis events within the radius of the current user's location.
+ * Returns a paginated response with crisis events that are relevant to the user.
  *
  * @param {number} page - The page number to fetch (0-based index)
  * @param {number} size - The number of items per page
- * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing crisis event previews
+ * @returns {Promise<Page<CrisisEventPreviewDto>>} Paginated response containing crisis events
  */
-export async function fetchAffectingUserPreviewCrisisEvents(
+export async function fetchCrisisEventsInRadius(
   page = 0,
-  size = 10
+  size = 5
 ): Promise<Page<CrisisEventPreviewDto>> {
   try {
     const response = await api.get<Page<CrisisEventPreviewDto>>('/user/crisis-events/all/current-user', {
@@ -266,7 +154,6 @@ export async function fetchAffectingUserPreviewCrisisEvents(
     throw error;
   }
 }
-
 
 /**
  * Fetches a single crisis event by ID.
