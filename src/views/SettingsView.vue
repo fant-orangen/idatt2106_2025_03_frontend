@@ -40,13 +40,10 @@ const twoFactorAuthenticationEnabled = ref(false)
 const locationSharingEnabled = ref(false)
 
 // Email and password fields
-const newEmail = ref('')
-const changeEmailPassword = ref('')
 const currentPassword = ref('')
 const newPassword = ref('')
 
 // View toggles for password fields
-const isViewChangePasswordEmail = ref(false)
 const isViewCurrentPassword = ref(false)
 const isViewNewPassword = ref(false)
 
