@@ -209,11 +209,12 @@ function logOut() {
 
 <template>
   <div
-    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[1100]"
+  class="navbar text-secondary-foreground bg-secondary shadow-md p-4 sticky top-0 z-[1100]"
   >
-    <div class="navbar-left flex flex-row gap-4">
-      <!-- Logo -->
+    <div class="w-full max-w-screen-2xl mx-auto flex flex-row items-center justify-between">
+      <div class="navbar-left flex flex-row gap-4">
 
+    <!-- Logo -->
       <RouterLink to="/" class="hover:text-primary flex items-center">
         <img src="../assets/krisefikserNY.png" alt="Logo" class="h-8 w-auto" />
       </RouterLink>
@@ -366,6 +367,7 @@ function logOut() {
           </ul>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
