@@ -172,6 +172,38 @@ const routes = [
     component: () => import('@/views/PrivacyPolicyView.vue'),
   },
   {
+    path: '/quiz-overview',
+    name: 'QuizOverview',
+    component: () => import('@/views/gamification/QuizOverviewView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/quiz/id=:quizId',
+    name: 'Quiz',
+    component: () => import('@/views/gamification/QuizView.vue'),
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/history/id=:quizId',
+    name: 'QuizHistory',
+    component: () => import('@/views/gamification/QuizHistoryView.vue'),
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/admin/new-quiz',
+    name: 'NewQuiz',
+    component: () => import('@/views/gamification/admin/DefineQuizView.vue'),
+    props: true,
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/quiz-overview/admin/edit-quiz/id=:quizId',
+    name: 'EditQuiz',
+    component: () => import('@/views/gamification/admin/EditQuizView.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),

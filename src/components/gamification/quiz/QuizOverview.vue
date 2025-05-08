@@ -148,7 +148,7 @@ const deleteQuiz = (quizId: number) => {
     <h1 class="text-2xl font-bold m-10">Quizzes</h1>
     <Button
       v-if="userStore.isAdminUser"
-      @click="router.push('/quizzes/admin/new-quiz')"
+      @click="router.push('/quiz-overview/admin/new-quiz')"
       class="mb-10"
     >
       <Plus :size="40" /> Create new quiz

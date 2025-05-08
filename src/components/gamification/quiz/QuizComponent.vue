@@ -179,7 +179,7 @@ const restartQuiz = () => {
         </CardContent>
         <CardFooter class="flex gap-4">
           <Button class="flex-1" @click="restartQuiz">Restart Quiz</Button>
-          <Button class="flex-1" @click="$router.push('/quizzes/')"> Back to Quizzes </Button>
+          <Button class="flex-1" @click="$router.push('/quiz-overview/')"> Back to Quizzes </Button>
         </CardFooter>
       </Card>
     </div>

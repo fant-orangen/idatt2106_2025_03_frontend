@@ -106,7 +106,7 @@ function validateAndSubmit() {
             <Button class="flex-1" @click="validateAndSubmit()">
               {{ $t('gamification.quizCreator.createQuiz') }}
             </Button>
-            <Button class="flex-1" @click="router.push('/quizzes/')" variant="outline">
+            <Button class="flex-1" @click="router.push('/quiz-overview/')" variant="outline">
               {{ $t('gamification.quizCreator.cancelButton') }}
             </Button>
           </div>

@@ -18,7 +18,7 @@ import {
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbLink href="/quizzes"> Quiz Overview </BreadcrumbLink>
+        <BreadcrumbLink href="/quiz-overview"> Quiz Overview </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>

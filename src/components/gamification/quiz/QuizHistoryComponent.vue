@@ -100,7 +100,7 @@ onMounted(() => {
       <div class="space-y-4">
         <Card v-for="quizAttempt in quizStore.quizAttempts" :key="quizAttempt.id">
           <CardHeader>
-            <CardTitle> Attempt {{ quizAttempt.id - 1 }}</CardTitle>
+            <CardTitle> Attempt {{ quizAttempt.id }}</CardTitle>
             <CardDescription>
               Attempt Date: {{ format(new Date(quizAttempt.completedAt), 'yyyy-MM-dd HH:mm') }}
             </CardDescription>
