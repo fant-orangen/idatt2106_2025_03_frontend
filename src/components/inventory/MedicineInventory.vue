@@ -340,22 +340,50 @@ watch(
 )
 
 const toggleEdit = async (index) => {
-  const item = items.value[index]
-  item.edit = !item.edit
+  const item = items.value[index];
   if (item.edit) {
-    await loadBatchStates(item)
+    // We're saving changes
+    try {
+      // Save all modified batches
+      await Promise.all(item.batches.map(async (batch) => {
+        if (!batch.isNew && batch.amount) {
+          const newAmount = parseInt(batch.amount);
+          if (!isNaN(newAmount)) {
+            await inventoryService.updateBatchUnits(batch.id, newAmount);
+          }
+        }
+      }));
+
+      // Refresh the batch states to get updated data
+      await loadBatchStates(item);
+      await updateTotalUnits(item.id);
+    } catch (error) {
+      console.error('Error saving batch updates:', error);
+      toast('Error', {
+        description: 'Failed to save changes to one or more batches.',
+        duration: 3000
+      });
+      return; // Don't toggle edit mode if save failed
+    }
   } else {
-    const productId = productStore.getProductId(item.name)
+    // We're entering edit mode
+    await loadBatchStates(item);
+  }
+
+  item.edit = !item.edit;
+
+  if (!item.edit) {
+    const productId = productStore.getProductId(item.name);
     if (productId) {
-      const batchMap = productStore.batchMap['medicine']
+      const batchMap = productStore.batchMap['medicine'];
       for (const key of batchMap.keys()) {
         if (key.startsWith(`${productId}-`)) {
-          batchMap.delete(key)
+          batchMap.delete(key);
         }
       }
     }
   }
-}
+};
 
 // New function to load batch states
 const loadBatchStates = async (item) => {

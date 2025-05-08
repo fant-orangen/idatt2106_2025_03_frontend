@@ -293,10 +293,38 @@ watch(() => props.searchText, async (val) => {
 
 const toggleEdit = async (index) => {
   const item = items.value[index];
-  item.edit = !item.edit;
   if (item.edit) {
-    await loadBatchStates(item);
+    // We're saving changes
+    try {
+      // Save all modified batches
+      await Promise.all(item.batches.map(async (batch) => {
+        if (!batch.isNew && batch.amount) {
+          const newAmount = parseInt(batch.amount);
+          if (!isNaN(newAmount)) {
+            await inventoryService.updateBatchUnits(batch.id, newAmount);
+          }
+        }
+      }));
+
+      // Refresh the batch states to get updated data
+      await loadBatchStates(item);
+      await updateTotalUnits(item.id);
+    } catch (error) {
+      console.error('Error saving batch updates:', error);
+      toast('Error', {
+        description: 'Failed to save changes to one or more batches.',
+        duration: 3000
+      });
+      return; // Don't toggle edit mode if save failed
+    }
   } else {
+    // We're entering edit mode
+    await loadBatchStates(item);
+  }
+
+  item.edit = !item.edit;
+
+  if (!item.edit) {
     const productId = productStore.getProductId(item.name);
     if (productId) {
       const batchMap = productStore.batchMap['food'];
