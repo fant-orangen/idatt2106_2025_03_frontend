@@ -131,9 +131,6 @@ const navigateTo = (route: string) => {
       <div class="border-t border-gray-700 pt-4 flex flex-col md:flex-row justify-between items-center">
         <p class="text-sm">© {{ new Date().getFullYear() }} IDATT2106 Team 3. {{ t('footer.title') }}</p>
         <div class="flex space-x-4 mt-4 md:mt-0">
-          <a href="/privacy-policy" class="text-sm hover:underline">
-            {{ t('login.privacy-policy') }}
-          </a>
         </div>
       </div>
     </div>
