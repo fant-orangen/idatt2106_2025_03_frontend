@@ -188,6 +188,17 @@ class QuizService {
     const response = await api.get(`/quizzes/user/${quizId}/attempts/latest`)
     return response.data
   }
+
+  async getQuizNameById(quizId: number): Promise<string> {
+    try {
+      const response = await api.get(`/quizzes/${quizId}/name`)
+      console.log('Quiz name:', response.data.name)
+      return response.data.name // Extract and return the "name" field
+    } catch (error) {
+      console.error(`Error fetching quiz name for quizId ${quizId}:`, error)
+      return 'Unknown Quiz' // Return a fallback value in case of an error
+    }
+  }
 }
 
 export const quizService = new QuizService()

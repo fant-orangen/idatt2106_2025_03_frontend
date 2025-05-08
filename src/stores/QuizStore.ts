@@ -114,7 +114,7 @@ export const useQuizStore = defineStore('quiz', () => {
     filteredQuizzes,
     quizAttempts,
     fetchAllActiveQuizzes,
-    fetchQuizAttempts, // Export the new action
+    fetchQuizAttempts,
     resetQuizzes,
     deleteQuiz,
   }
