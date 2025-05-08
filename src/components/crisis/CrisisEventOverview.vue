@@ -1,5 +1,19 @@
 <template>
   <div class="container mx-auto p-4">
+    <!-- Search Component -->
+    <div class="mb-6">
+      <div class="relative w-full">
+        <Input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search crisis events..."
+          class="w-full pl-10 py-3 text-base h-14"
+          @input="handleSearch"
+        />
+        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Map Area -->
       <Card class="lg:col-span-2 z-50">
@@ -20,9 +34,41 @@
 
       <!-- Crisis Selection -->
       <Card class="flex flex-col h-full">
-        <CardHeader class="pb-2">
-          <CardTitle>{{ t('crisis.active_events', 'Active Events') }}</CardTitle>
-        </CardHeader>
+        <!-- Crisis Filter Buttons -->
+        <div class="mb-6">
+          <div class="grid grid-cols-1 gap-2">
+            <Button
+              class="w-full"
+              :variant="selectedFilter === 'all' ? 'default' : 'outline'"
+              @click="setFilter('all')"
+            >
+              {{ t('crisis.all_events', 'All Events') }}
+            </Button>
+
+            <div class="grid grid-cols-3 gap-2">
+              <Button
+                :variant="selectedFilter === 'history' ? 'default' : 'outline'"
+                @click="setFilter('history')"
+              >
+                {{ t('crisis.historical', 'History') }}
+              </Button>
+
+              <Button
+                :variant="selectedFilter === 'nearby' ? 'default' : 'outline'"
+                @click="setFilter('nearby')"
+              >
+                {{ t('crisis.for_you', 'For You') }}
+              </Button>
+
+              <Button
+                :variant="selectedFilter === 'active' ? 'default' : 'outline'"
+                @click="setFilter('active')"
+              >
+                {{ t('crisis.active', 'Active') }}
+              </Button>
+            </div>
+          </div>
+        </div>
         <CardContent class="p-0 flex-grow">
           <ScrollArea className="h-[400px] px-4">
             <InfiniteScroll
@@ -96,10 +142,18 @@ import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { watch } from 'vue';
 import {formatDateFull} from '@/utils/dateUtils.ts';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
+import { Search } from 'lucide-vue-next';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useGeolocation } from '@/composables/useGeolocation.ts';
 
 import {
   fetchAllPreviewCrisisEvents,
-  fetchCrisisEventById
+  fetchCrisisEventById,
+  fetchInactivePreviewCrisisEvents,
+  fetchAffectingUserPreviewCrisisEvents,
+  fetchActiveCrisisEvents,
+  searchCrisisEvents
 } from '@/services/CrisisEventService.ts';
 
 /**
@@ -124,9 +178,15 @@ const error = ref<string | null>(null);
 const page = ref(0);
 const size = 10;
 const hasMore = ref(true);
+const searchQuery = ref('');
+const selectedFilter = ref('all');
+const { coords } = useGeolocation();
+
+// Debounce search to avoid too many API calls
+let searchTimeout: number | null = null;
 
 /**
- * Loads a page of crisis events
+ * Loads a page of crisis events based on the selected filter
  */
 const loadCrisisEvents = async () => {
   if (loading.value || !hasMore.value) return;
@@ -135,8 +195,43 @@ const loadCrisisEvents = async () => {
     loading.value = true;
     error.value = null;
 
-    const response = await fetchAllPreviewCrisisEvents(page.value, size);
-    console.log("Crisis events page:", response);
+    let response;
+
+    switch (selectedFilter.value) {
+      case 'active':
+        response = await fetchActivePreviewCrisisEvents(page.value, size);
+        break;
+      case 'history':
+        response = await fetchInactivePreviewCrisisEvents(page.value, size);
+        break;
+      case 'nearby':
+        if (coords.value) {
+          response = await fetchNearbyPreviewCrisisEvents(
+            coords.value.latitude,
+            coords.value.longitude,
+            50, // 50km radius
+            page.value,
+            size
+          );
+        } else {
+          // Fallback to all events if location is not available
+          response = await fetchAllPreviewCrisisEvents(page.value, size);
+        }
+        break;
+      case 'search':
+        if (searchQuery.value.trim()) {
+          response = await searchCrisisEvents(searchQuery.value, page.value, size);
+        } else {
+          response = await fetchAllPreviewCrisisEvents(page.value, size);
+        }
+        break;
+      case 'all':
+      default:
+        response = await fetchAllPreviewCrisisEvents(page.value, size);
+        break;
+    }
+
+    console.log(`Crisis events page (${selectedFilter.value}):`, response);
 
     crisisEvents.value.push(...response.content);
     page.value++;
@@ -147,6 +242,36 @@ const loadCrisisEvents = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+/**
+ * Sets the filter type and reloads crisis events
+ */
+const setFilter = async (filter: string) => {
+  if (selectedFilter.value === filter) return;
+
+  selectedFilter.value = filter;
+  crisisEvents.value = [];
+  page.value = 0;
+  hasMore.value = true;
+  await loadCrisisEvents();
+};
+
+/**
+ * Handles search input changes
+ */
+const handleSearch = () => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+
+  searchTimeout = setTimeout(async () => {
+    selectedFilter.value = 'search';
+    crisisEvents.value = [];
+    page.value = 0;
+    hasMore.value = true;
+    await loadCrisisEvents();
+  }, 300) as unknown as number;
 };
 
 /**
