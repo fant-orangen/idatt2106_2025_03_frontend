@@ -10,7 +10,7 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useUserStore } from '@/stores/UserStore'
+import { useUserStore } from '@/stores/UserStore.ts'
 import type { AxiosResponse } from 'axios'
 
 // Helper function to create a proper AxiosResponse object

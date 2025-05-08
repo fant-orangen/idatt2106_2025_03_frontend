@@ -19,14 +19,14 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useNotificationStore } from '@/stores/NotificationStore'
+import { useNotificationStore } from '@/stores/NotificationStore.ts'
 import {
   getNotifications,
   markAllNotificationsAsRead,
   hasUnreadNotifications,
-} from '@/services/NotificationService'
-import type { NotificationMessage } from '@/models/NotificationMessage'
-import type { Page } from '@/types/Page'
+} from '@/services/NotificationService.ts'
+import type { NotificationMessage } from '@/models/NotificationMessage.ts'
+import type { Page } from '@/types/Page.ts'
 
 /**
  * Mock Setup

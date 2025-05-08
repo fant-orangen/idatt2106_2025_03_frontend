@@ -10,8 +10,8 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useProductStore } from '@/stores/ProductStore'
-import type { InventoryType } from '@/stores/ProductStore'
+import { useProductStore } from '@/stores/ProductStore.ts'
+import type { InventoryType } from '@/stores/ProductStore.ts'
 
 describe('ProductStore', () => {
   beforeEach(() => {
