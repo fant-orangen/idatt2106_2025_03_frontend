@@ -37,6 +37,13 @@ class QuizService {
   }
 
   /**
+   * Unarchive a quiz (admin only)
+   */
+  async unarchiveQuiz(quizId: number): Promise<void> {
+    await api.patch(`/quizzes/admin/${quizId}/unarchive`)
+  }
+
+  /**
    * Get all questions for a quiz
    */
   async getQuizQuestionsByQuizId(quizId: number): Promise<QuizQuestionResponse[]> {
@@ -112,6 +119,7 @@ class QuizService {
     const response = await api.get('/quizzes/user/all/previews/active', {
       params: { page, size },
     })
+    console.log('successfully fetched active quizzes:', response.data)
     return response.data
   }
 

@@ -104,6 +104,15 @@ export const useQuizStore = defineStore('quiz', () => {
     }
   }
 
+  const archiveQuiz = async (quizId: number) => {
+    try {
+      await quizService.archiveQuiz(quizId)
+      quizzes.value = quizzes.value.filter((quiz) => quiz.id !== quizId)
+    } catch (error) {
+      console.error('Error archiving quiz:', error)
+    }
+  }
+
   return {
     quizzes,
     currentPage,
@@ -117,5 +126,6 @@ export const useQuizStore = defineStore('quiz', () => {
     fetchQuizAttempts,
     resetQuizzes,
     deleteQuiz,
+    archiveQuiz,
   }
 })
