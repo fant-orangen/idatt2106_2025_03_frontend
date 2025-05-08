@@ -53,11 +53,9 @@ const showCreateForm = ref(false);
 
 const emit = defineEmits(['household-updated']);
 
-const handleHouseholdCreated = (household) => {
+const handleHouseholdCreated = (household: any) => {
   toast.success(t('household.created-success'));
-  // Update the household store
   if (household) {
-    // Refresh the household data from the backend instead of directly setting it
     householdStore.fetchCurrentHousehold();
   }
   emit('household-updated');

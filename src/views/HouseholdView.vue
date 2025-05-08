@@ -234,7 +234,7 @@ import { Button } from '@/components/ui/button';
 // Remove unused Badge import
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { HouseholdMember } from '@/models/Household';
+import type { HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household';
 import {
   Dialog,
   DialogContent,
@@ -282,7 +282,7 @@ const editHouseholdData = ref({
 });
 const showTransferAdminDialog = ref(false);
 const householdMembers = ref<HouseholdMember[]>([]);
-const emptyMembers = ref<HouseholdMember[]>([]);
+const emptyMembers = ref<EmptyHouseholdMemberDto[]>([]);
 const userInvitationsRef = ref<InstanceType<typeof UserInvitations> | null>(null);
 const pendingInvitationsRef = ref<InstanceType<typeof PendingInvitations> | null>(null);
 
@@ -290,7 +290,7 @@ const pendingInvitationsRef = ref<InstanceType<typeof PendingInvitations> | null
  * Computed property for all household members (real + empty).
  * @returns {Array} Combined array of regular and empty household members
  */
-const allHouseholdMembers = computed(() => {
+const allHouseholdMembers = computed<(HouseholdMember | EmptyHouseholdMemberDto)[]>(() => {
   return [...householdMembers.value, ...emptyMembers.value];
 });
 
@@ -308,7 +308,7 @@ const nonAdminMembers = ref<HouseholdMember[]>([]);
  * Handles when a member is selected in the HouseholdMembers component.
  * @param {HouseholdMember} member - The selected household member
  */
-const handleMemberSelected = (member: HouseholdMember) => {
+const handleMemberSelected = (member: HouseholdMember | EmptyHouseholdMemberDto) => {
 };
 
 /**
