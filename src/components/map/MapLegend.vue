@@ -20,8 +20,9 @@
           />
           <div
             v-else
-            :class="['w-6 h-6 rounded-full', item.iconClass]"
-          />
+            :style="item.style"
+            class="w-6 h-6 rounded-full"
+          ></div>
           <span class="text-sm">
             {{ t(item.labelKey) }}
           </span>
@@ -52,9 +53,9 @@ const { t } = useI18n()
 const items = [
   { icon: markerIconUrl,        labelKey: 'map.legend.user-location' },
   { icon: markerIconUrl,        labelKey: 'map.legend.household-location', extraClass: 'filter hue-rotate-300' },
-  { iconClass: 'bg-yellow-400',  labelKey: 'map.legend.crisis-level-1' },
-  { iconClass: 'bg-orange-400',  labelKey: 'map.legend.crisis-level-2' },
-  { iconClass: 'bg-red-400',     labelKey: 'map.legend.crisis-level-3' },
+  { style: { backgroundColor: 'var(--crisis-level-green)'}, labelKey: 'map.legend.crisis-level-1' },
+  { style: { backgroundColor: 'var(--crisis-level-yellow)'},  labelKey: 'map.legend.crisis-level-2' },
+  { style: { backgroundColor: 'var(--crisis-level-red)'},     labelKey: 'map.legend.crisis-level-3' },
   { icon: firestationIconUrl,    labelKey: 'map.legend.fire-station' },
   { icon: policestationIconUrl,  labelKey: 'map.legend.police-station' },
   { icon: hospitalIconUrl,       labelKey: 'map.legend.hospital' },
