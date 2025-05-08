@@ -1,4 +1,9 @@
 <script setup lang="ts">
+
+/**
+ * @component PrivacyPolicyView
+ * @description Displays the privacy policy page and includes a reusable PrivacyAgreement component for content.
+ */
 import PrivacyAgreement from '@/components/PrivacyAgreement.vue'
 import {
   Breadcrumb,
@@ -14,6 +19,8 @@ const { t } = useI18n()
 </script>
 
 <template>
+
+  <!-- Breadcrumb navigation -->
   <Breadcrumb class="m-5">
     <BreadcrumbList>
       <BreadcrumbItem>
@@ -25,5 +32,7 @@ const { t } = useI18n()
       </BreadcrumbItem>
     </BreadcrumbList>
   </Breadcrumb>
+
+  <!-- Renders the privacy policy content -->
   <PrivacyAgreement />
 </template>
