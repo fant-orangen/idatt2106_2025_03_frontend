@@ -1,4 +1,5 @@
 <template>
+
   <!-- Authenticated User with Household and Crisis View -->
   <div v-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises" class="content w-full max-w-7xl mx-auto pt-0">
     <AuthenticatedWithHouseholdCrisisHome />
@@ -21,6 +22,12 @@
 </template>
 
 <script setup lang="ts">
+
+/**
+ * @component HomeView
+ * @description Displays the Home page.
+ */
+
 import { useI18n } from 'vue-i18n'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -36,11 +43,12 @@ const router = useRouter()
 const { t } = useI18n()
 const userStore = useUserStore()
 
-// State for household and crisis status
+/**
+ * State for household and crisis status
+ */
+
 const hasHousehold = ref(false)
 const hasOngoingCrises = ref(false)
-
-
 
 /**
  * Checks if the current user has a household
