@@ -1,11 +1,11 @@
 <template>
   <div
-    class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-[var(--crisis-level-yellow)] bg-white"
+    class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-[var(--crisis-level-yellow)]"
   >
     <!-- Map Button Header -->
     <div
       @click="toggleMap"
-      class="w-full py-2 flex flex-col items-center cursor-pointer transition-colors bg-white hover:bg-gray-50 px-6"
+      class="w-full py-2 flex flex-col items-center cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800 px-6"
     >
       <div class="flex items-center justify-center">
         <font-awesome-icon :icon="['fas', 'map-location-dot']" class="text-2xl mr-3 text-[var(--crisis-level-yellow)]" />
@@ -20,7 +20,7 @@
     <!-- Expandable Map Section -->
     <div
       v-if="showMap"
-      class="map-container overflow-hidden transition-all duration-500 ease-in-out bg-white"
+      class="map-container overflow-hidden transition-all duration-500 ease-in-out"
       :class="{'h-auto': showMap, 'h-0': !showMap}"
     >
       <!-- Reusing MapOverviewComponent's filter-toggle section -->
@@ -31,7 +31,7 @@
             @click="fetchUserLocation"
             :disabled="isLoadingLocation"
             variant="outline"
-            class="flex items-center bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
           >
             <font-awesome-icon :icon="['fas', 'location-dot']" class="mr-2" />
             {{ isLoadingLocation
@@ -43,7 +43,7 @@
           <Button
             @click="findNearestShelter"
             variant="outline"
-            class="flex items-center bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
           >
             <font-awesome-icon :icon="['fas', 'house-chimney']" class="mr-2" />
             {{ t('map.nearest-shelter') }}
@@ -52,7 +52,7 @@
           <Button
             @click="isFilterMenuVisible = !isFilterMenuVisible"
             variant="outline"
-            class="flex items-center bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             :class="{ 'bg-gray-100': isFilterMenuVisible }"
           >
             <font-awesome-icon
@@ -64,7 +64,7 @@
 
           <Button
             variant="outline"
-            class="flex items-center bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             @click="togglePoiVisibility"
           >
             <font-awesome-icon :icon="['fas', 'map-pin']" class="mr-2" />
@@ -76,7 +76,7 @@
 
           <Button
             variant="outline"
-            class="flex items-center bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             @click="toggleCrisisVisibility"
           >
             <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2" />
@@ -88,7 +88,7 @@
 
           <Button
             variant="outline"
-            class="flex items-center bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             @click="toggleMeetingPlacesVisibility"
           >
             <span class="material-symbols-outlined scale-75 mr-2">recenter</span>
@@ -102,7 +102,7 @@
       </div>
 
       <!-- Filter Card -->
-      <Card v-if="isFilterMenuVisible" class="mb-4 filter-card relative z-20 mx-3 border-[var(--crisis-level-yellow)] bg-white">
+      <Card v-if="isFilterMenuVisible" class="mb-4 filter-card relative z-20 mx-3 border-[var(--crisis-level-yellow)]">
         <CardHeader>
           <CardTitle>{{ t('map.filter') }}</CardTitle>
         </CardHeader>
@@ -120,7 +120,7 @@
                 min="100"
                 max="50000"
                 step="100"
-                class="w-full border-[var(--crisis-level-yellow)] focus-visible:ring-[var(--crisis-level-yellow)] bg-white"
+                class="w-full border-[var(--crisis-level-yellow)] focus-visible:ring-[var(--crisis-level-yellow)]"
               />
             </div>
 
@@ -146,14 +146,14 @@
             <div class="flex flex-col md:flex-wrap md:flex-row gap-4 w-full">
               <Button
                 variant="outline"
-                class="w-full md:w-auto bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
+                class="w-full md:w-auto border-[var(--crisis-level-yellow)] hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
                 @click="resetFilters"
               >
                 {{ t('map.reset-filter') }}
               </Button>
               <Button
                 variant="outline"
-                class="w-full md:w-auto bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
+                class="w-full md:w-auto border-[var(--crisis-level-yellow)] hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
                 :class="{ 'opacity-50': !userLocation || !selectedPoiType }"
                 @click="findNearestPoi"
                 :disabled="!userLocation || !selectedPoiType"
@@ -163,7 +163,7 @@
             </div>
             <Button
               variant="outline"
-              class="w-full md:w-auto bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)] font-medium"
+              class="w-full md:w-auto border-[var(--crisis-level-yellow)] hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)] font-medium"
               @click="applyFilters"
             >
               {{ t('map.apply-filter') }}
@@ -188,18 +188,18 @@
         </div>
 
         <!-- Legend Toggle Button -->
-        <button
+        <Button
           @click="toggleLegend"
-          class="absolute bottom-3 right-3 z-30 bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors"
+          class="absolute bottom-3 right-3 z-30 rounded-full p-2 shadow-md bg-neutral-200 hover:bg-neutral-400 dark:bg-neutral-500 dark:hover:bg-neutral-700 hover:cursor-pointer transition-colors"
         >
-          <font-awesome-icon :icon="['fas', showLegend ? 'chevron-right' : 'chevron-left']" class="text-black" />
-        </button>
+          <font-awesome-icon :icon="['fas', showLegend ? 'chevron-right' : 'chevron-left']" class="text-black dark:text-white" />
+        </Button>
 
         <!-- Collapsible Legend Sidebar -->
         <div
-          class="absolute top-0 right-0 h-full bg-white border-l border-[var(--crisis-level-yellow)] p-3 transition-all duration-300 ease-in-out z-10"
+          class="absolute top-0 right-0 h-full border-l border-[var(--crisis-level-yellow)] p-3 transition-all duration-300 ease-in-out z-10 overflow-y-auto"
           :class="{ 'w-[250px]': showLegend, 'w-0 opacity-0': !showLegend }"
-        >
+          >
           <MapLegend />
         </div>
       </div>

@@ -1,7 +1,7 @@
 <template>
   <!-- Simplified legend without Card wrapper -->
   <div class="w-full map-legend">
-    <h3 class="text-base font-semibold text-[var(--default-blue)] mb-3">
+    <h3 class="text-base font-semibold text-[var(--default-blue2)] mb-3">
       {{ t('map.legend.title', 'Legend') }}
     </h3>
     <!-- Simplified layout with just a column -->
