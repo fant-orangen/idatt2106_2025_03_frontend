@@ -166,7 +166,7 @@
           </CardHeader>
           <CardContent class="max-h-[500px] overflow-y-auto pr-2">
             <InfiniteScroll :is-loading="isFetchingNextDraftsPage" :has-more="hasNextDraftsPage" @load-more="fetchNextDraftsPage">
-            <div v-for="draft in allDrafts" 
+            <div v-for="draft in allDrafts" :key="draft.id"
               class="flex flex-col gap-1 hover:bg-muted cursor-pointer rounded-md p-2"
               @click="selectArticle(draft)">
               <span><b>{{ draft.title }}</b></span>
@@ -181,14 +181,14 @@
         <Card v-if="relatedNews.length > 0" class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
           <CardHeader>
             <CardTitle>{{ $t('news.related_news') }}: </CardTitle>
-            <CardDescription>Nyhetsartikler relatert til denne hendelsen:testtest</CardDescription>
+            <CardDescription>Nyhetsartikler relatert til denne hendelsen:</CardDescription>
           </CardHeader>
           <CardContent class="overflow-y-auto max-h-[500px] pr-2">
             <InfiniteScroll :is-loading="isFetchingNextRelatedPage" 
             :has-more="hasNextRelatedPage" 
             @load-more="fetchNextRelatedPage"
             class="heigh max-h-56">
-              <div v-for="news in relatedNews" class="flex flex-col gap-3 hover:bg-muted p-2 rounded-md cursor-pointer justify-center">
+              <div v-for="news in relatedNews" :key="news.id" class="flex flex-col gap-3 hover:bg-muted p-2 rounded-md cursor-pointer justify-center">
                 <span><b>{{ news.title }}</b></span>
                 <span>{{ news.content }}</span>
                 <span>{{ formatDateFull(news.publishedAt) }}</span>
@@ -206,7 +206,7 @@
         </CardHeader>
         <CardContent class="overflow-y-auto max-h-[500px] pr-2">
           <InfiniteScroll :is-loading="isFetchingNextNewsPage" :has-more="hasNextNewsPage" @load-more="fetchNextNewsPage">
-            <div v-for="article in allNews" :key="article.id" 
+            <div v-for="article in allNews" :key="`${article.id}-${article.createdAt}`" 
             @click="selectArticle(article)"
             class="flex flex-col gap-3 hover:bg-muted p-2 rounded-md cursor-pointer justify-center">
               <span><b>{{ article.title }}</b></span>
@@ -303,6 +303,7 @@ function cancelInput() {
 }
 
 function setStatusOfArticle(inputStatus: string) {
+  console.log('Kalt med status:', inputStatus)
   status.value = inputStatus as Status
   
   if (inputStatus === Status.DRAFT || inputStatus === Status.PUBLISHED) {
@@ -310,7 +311,7 @@ function setStatusOfArticle(inputStatus: string) {
   } else if (inputStatus === Status.ARCHIVED) {
     if (selectedDraft.value) {
       onSubmit()
-    } else if( selectedNews.value) {
+    } else if(selectedNews.value) {
       archivePublishedArticle()
     }
   }
@@ -479,7 +480,7 @@ function handleFormSubmit(values: any) {
       const newArticle: CreateNewsDto = {
         title: values.title ?? '',
         content: values.content ?? '',
-        crisisEventId: selectedEvent.value?.id,
+        crisisEventId: selectedEvent.value.id,
         status: status.value as Status,
       }
       saveNewArticle(newArticle)
@@ -489,6 +490,10 @@ function handleFormSubmit(values: any) {
       return;
     }
   } else {
+    if(selectedNews.value) {
+      errorToast('Publiserte artikler kan ikke redigeres direkte. Lag en kopi som utkast.')
+      return;
+    }
     if (selectedDraft.value) {
       const updatedDraft: UpdateNewsArticle = {
         title: values.title ?? selectedDraft.value.title,
@@ -497,6 +502,7 @@ function handleFormSubmit(values: any) {
       }
       saveUpdatesOfArticle(selectedDraft.value.id, updatedDraft)
       selectedDraft.value = null
+      return;
     } else {
       errorToast('Det har skjedd en feil, prøv igjen.')
     }
@@ -536,12 +542,12 @@ async function archivePublishedArticle() {
 
 async function saveNewArticle(data: CreateNewsDto) {
   try {
-    const response = await adminAddNews(data)
-    console.log('Lagra et nytt varsel ', response)
+    await adminAddNews(data)
+    successToast('Published the new article!')
     cancelInput()
     updateLists()
   } catch (error) {
-    console.error('Failed to save the new article')
+    console.error('Failed to save the new article', error)
   }
 }
 
