@@ -91,7 +91,9 @@ const handleRegister = form.handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div class="register-wrapper flex justify-center items-center mt-[13rem] bg-background p-[1rem]">
+  <div
+    class="register-wrapper flex justify-center items-center mt-[10vh] mb-[10vh] bg-background p-[1rem]"
+  >
     <Card class="register-container min-w-5/6 md:min-w-xl">
       <CardHeader>
         <h1 class="text-xl font-bold text-center">{{ t('login.signup') }}</h1>

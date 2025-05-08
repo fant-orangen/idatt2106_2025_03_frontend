@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
+import type { UserBasicInfoDto } from '@/models/User'
+import { getUserProfile } from '@/services/UserService'
+import { toast } from 'vue-sonner'
 
 // Icon
 import {
@@ -51,6 +54,17 @@ const colorMode = useColorMode()
 // Langauge
 const englishSelected = ref(false)
 
+// Loading state
+const isLoading = ref(false)
+
+const profile = ref<UserBasicInfoDto>({
+  firstName: '',
+  lastName: '',
+  email: '',
+  householdName: '',
+  emailVerified: false,
+})
+
 function changeLanguage(code: string) {
   locale.value = code
   englishSelected.value = code === 'en-US'
@@ -64,19 +78,51 @@ const hasUnreadNotifications = computed(() => notificationStore.hasUnread)
 watch(
   () => notificationStore.notifications,
   async () => {
-    console.log('HeaderNavbar: Notifications changed, checking unread status'); // TODO: remove logs
-    await notificationStore.checkUnreadNotifications();
+    console.log('HeaderNavbar: Notifications changed, checking unread status') // TODO: remove logs
+    await notificationStore.checkUnreadNotifications()
   },
-  { deep: true }
-);
+  { deep: true },
+)
 
 // Watch hasUnread state for debugging
 watch(
   () => notificationStore.hasUnread,
   (newValue) => {
-    console.log('HeaderNavbar: hasUnread state changed to:', newValue);
+    console.log('HeaderNavbar: hasUnread state changed to:', newValue)
+  },
+)
+
+onMounted(async () => {
+  try {
+    isLoading.value = true
+    const userData = await getUserProfile()
+
+    // Map the extended profile to the basic info format
+    profile.value = {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      householdName: userData.householdName,
+      emailVerified: userData.emailVerified,
+    }
+  } catch (error) {
+    console.error('Failed to fetch user profile:', error)
+    toast.error(t('errors.unexpected-error'))
+  } finally {
+    isLoading.value = false
   }
-);
+
+  // Only fetch notifications if logged in and haven't fetched yet
+  if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
+    try {
+      await notificationStore.fetchNotifications()
+      await notificationStore.checkUnreadNotifications()
+      console.log('NavBar: Initial notifications fetched and checked for unread')
+    } catch (error) {
+      console.error('NavBar: Failed to fetch initial notifications via store:', error)
+    }
+  }
+})
 
 onMounted(async () => {
   // Only fetch if logged in and haven't fetched yet
@@ -162,7 +208,7 @@ function logOut() {
 
 <template>
   <div
-    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[1100]"
+    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[100]"
   >
     <div class="navbar-left flex flex-row gap-4">
       <!-- Logo -->
@@ -175,7 +221,7 @@ function logOut() {
 
       <Button variant="link" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
         <Globe class="h-4 w-4" />
-        {{ englishSelected ? 'Norsk bokmål' : 'English' }}
+        {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
       </Button>
     </div>
     <div class="navbar-right flex flex-row items-center gap-4">
@@ -203,8 +249,7 @@ function logOut() {
           <Button variant="ghost" class="cursor-pointer hover:bg-input dark:hover:bg-background/40">
             <User class="h-5 w-5" />
             <span class="hidden md:inline-flex">
-              {{ userStore.profile?.firstName || 'Ola' }}
-              {{ userStore.profile?.lastName || 'Nordmann' }}
+              {{ profile.firstName }} {{ profile.lastName }}
             </span>
           </Button>
         </DropdownMenuTrigger>
