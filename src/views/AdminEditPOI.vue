@@ -1,5 +1,3 @@
-<!-- Page for updating an existing point of interest -->
-
 <template>
   <div class="m-5">
 
@@ -49,8 +47,16 @@
             <CardTitle>{{ t('add-POI-info.titles.choose-poi') }}</CardTitle>
           </CardHeader>
           <CardContent class="flex-grow overflow-y-auto card-content-padding">
-             <InfiniteScroll :is-loading="isFetchingNextPage" :has-more=" !searchQuery && hasNextPage" @load-more="fetchNextPage" class="h-full">
-                <div v-for="poi in filteredPois" :key="poi.id" @click="selectedAPoi(poi.id)"
+                         <InfiniteScroll
+                           :is-loading="isFetchingNextPage"
+                           :has-more="hasNextPage"
+                           @load-more="fetchNextPage"
+                           class="h-full"
+                         >
+                           <div
+                             v-for="poi in poiList"
+                             :key="poi.id"
+                             @click="selectedAPoi(poi.id)"
                     class="text-sm cursor-pointer transition-colors hover:bg-muted/80 p-2 rounded-md">
                   <div class="flex flex-nowrap w-full justify-between items-center gap-2">
                     <span class="poi-tag truncate">{{ poi.name }}</span>
@@ -215,7 +221,7 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 import type { PoiPreviewDto, PoiData, UpdatePoiDto } from '@/models/PoiData.ts'
-import { fetchPoiPreviews, fetchPoiById } from '@/services/api/PoiService';
+import { fetchPoiPreviews, fetchPoiById, searchPoiPreviews } from '@/services/api/PoiService';
 import { deletePoi } from '@/services/api/AdminServices';
 
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
@@ -246,13 +252,9 @@ const searchQuery = ref('');
 /**
  * Method for searching for a POI by name. If no search is done, show the full list.
  */
-const filteredPois = computed (() => {
-  const query = searchQuery.value.toLowerCase().trim();
-  if (!query) return allPois.value;
-  return allPois.value.filter(poi =>
-  poi.name.toLowerCase().includes(query)
-);
-});
+const poiList = computed<PoiPreviewDto[]>(() =>
+    data.value?.pages.flat() ?? []
+  );
 
 const pageSize = 10;
 const {
@@ -261,13 +263,17 @@ const {
   isFetchingNextPage,
   hasNextPage,
 } = useInfiniteQuery<PoiPreviewDto[], Error>({
-  queryKey: ['pois'],
-  queryFn: async ({ pageParam = 0 }) => {
-    const pageNumber = pageParam as number;
-    const page = await fetchPoiPreviews(pageNumber, 10);
-    console.log(`Workspaceing POIs page: ${pageParam}`);
-    return page.content;
-  },
+    queryKey: computed(() => ['pois', searchQuery.value]),
+    queryFn: async ({ pageParam = 0 }) => {
+      const pageNumber = pageParam as number;
+      if (searchQuery.value.trim()) {
+          const page = await searchPoiPreviews(searchQuery.value, pageNumber, pageSize);
+          return page.content;
+        } else {
+          const page = await fetchPoiPreviews(pageNumber, pageSize, 'id,desc');
+          return page.content;
+        }
+    },
   getNextPageParam: (lastPage, allPages) => {
     return lastPage.length < pageSize ? undefined :  allPages.length;
   },

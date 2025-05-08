@@ -193,6 +193,7 @@ import {
   fetchPoisByType,
   fetchPoisNearby,
   fetchNearestPoiByType,
+  fetchPoiTypes
 } from '@/services/api/PoiService'
 import { fetchActiveCrisisEvents } from '@/services/CrisisEventService'
 import type { PoiData } from '@/models/PoiData'
@@ -227,6 +228,7 @@ const { t } = useI18n()
 const userStore = useUserStore();
 const geolocationStore = useGeolocationStore();
 const householdStore = useHouseholdStore();
+const poiTypes = ref<{ id: number; name: string }[]>([])
 
 const {
   coords: locationCoords,
@@ -319,22 +321,6 @@ const convertedPois = computed<POI[]>(() => {
   return pointsOfInterest.value.map((poi) => convertPoiData(poi))
 })
 
-/**
- * POI Types
- * Derives unique POI types from all loaded POIs
- */
-const poiTypes = computed(() => {
-  const types = new Map<number, string>()
-  allPois.value.forEach((poi: PoiData) => {
-    const typeId = Number(poi.poiTypeId)
-    if (!isNaN(typeId) && !types.has(typeId)) {
-      types.set(typeId, poi.poiTypeName || `Type ${typeId}`)
-    }
-  })
-  return Array.from(types.entries())
-  .map(([id, name]: [number, string]) => ({ id, name }))
-  .sort((a, b) => a.name.localeCompare(b.name))
-})
 
 /**
  * Location Status Message
@@ -730,6 +716,7 @@ onMounted(async () => {
     pointsOfInterest.value = [...pois];
     console.log("Initial POIs loaded:", pointsOfInterest.value.length);
     await loadCrisisEvents();
+    poiTypes.value = await fetchPoiTypes()
 
     // Fetch household data if user is logged in
     if (userStore.loggedIn) {
@@ -745,6 +732,7 @@ onMounted(async () => {
   } finally {
     isLoadingPois.value = false
   }
+
   // Geolocation is fetched on demand by user actions
   console.log('Geolocation will be fetched on user interaction.')
 })
