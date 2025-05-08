@@ -5,6 +5,8 @@ import { defineProps, onMounted, ref } from 'vue'
 import type { QuizAttemptSummary } from '@/models/Quiz'
 import { format } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { MoveUp } from 'lucide-vue-next'
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { quizService } from '@/services/QuizService'
@@ -15,6 +17,13 @@ const quizName = ref('') // Store the quiz name
 const props = defineProps<{
   quizId: number
 }>()
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth', // Smooth scrolling
+  })
+}
 
 const fetchQuizAttempts = async (quizId: number): Promise<QuizAttemptSummary[]> => {
   try {
@@ -98,7 +107,11 @@ onMounted(() => {
       class="w-full max-w-2xl mb-10 mt-10"
     >
       <div class="space-y-4">
-        <Card v-for="quizAttempt in quizStore.quizAttempts" :key="quizAttempt.id">
+        <Card
+          v-for="quizAttempt in quizStore.quizAttempts"
+          :key="quizAttempt.id"
+          class="hover:shadow-lg hover:shadow-gray-300 dark:hover:shadow-gray-800 transition-shadow duration-200"
+        >
           <CardHeader>
             <CardTitle> Attempt {{ quizAttempt.id }}</CardTitle>
             <CardDescription>
@@ -111,9 +124,10 @@ onMounted(() => {
                 backgroundColor:
                   quizAttempt.score >= 80
                     ? 'var(--crisis-level-green)'
-                    : quizAttempt.scxore >= 40
+                    : quizAttempt.score >= 40
                       ? 'var(--crisis-level-yellow)'
                       : 'var(--crisis-level-red)',
+                color: 'white', // Optional: Ensure text is readable
               }"
             >
               {{ quizAttempt.score }}%
@@ -122,5 +136,8 @@ onMounted(() => {
         </Card>
       </div>
     </InfiniteScroll>
+    <Button class="flex justify-center items-center mb-10" @click="scrollToTop">
+      <MoveUp class="h-5 w-5" />Back to top
+    </Button>
   </div>
 </template>
