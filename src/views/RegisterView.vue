@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'vue-sonner'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Eye, EyeOff } from 'lucide-vue-next'
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -209,13 +209,12 @@ const handleRegister = form.handleSubmit(async (values) => {
 
           <p v-if="successMessage" class="text-green-500 text-center mt-2">{{ successMessage }}</p>
           <p v-if="errorMessage" class="text-red-500 text-center mt-2">{{ errorMessage }}</p>
+
+          <Button type="submit" class="w-full bg-primary hover:bg-primary/90">
+            {{ t('login.signup') }}
+          </Button>
         </form>
       </CardContent>
-      <CardFooter>
-        <Button type="submit" class="w-full bg-primary hover:bg-primary/90">
-          {{ t('login.signup') }}
-        </Button>
-      </CardFooter>
     </Card>
   </div>
 </template>
