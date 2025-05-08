@@ -282,14 +282,17 @@ export async function askIfSafe(): Promise<void> {
  * Checks if a user is marked as safe
  *
  * @param userId The ID of the user to check
- * @returns Promise that resolves to the user's safety status
+ * @returns Promise that resolves to true if the user is safe, false otherwise
+ * @throws Error if the user doesn't exist or there's another issue
  */
-export async function isUserSafe(userId: number): Promise<{ isSafe: boolean; timestamp?: string }> {
+export async function isUserSafe(userId: number): Promise<boolean> {
   try {
-    const response = await api.get(`/user/confirm-safety/status/${userId}`);
+    const response = await api.get('/user/confirm-safety/is-safe', {
+      params: { userId }
+    });
     return response.data;
-  } catch (error) {
-    console.error('Error checking user safety status:', error);
-    return { isSafe: false };
+  } catch (error: unknown) {
+    console.error(`Error checking safety status for user ${userId}:`, error);
+    throw error;
   }
 }
