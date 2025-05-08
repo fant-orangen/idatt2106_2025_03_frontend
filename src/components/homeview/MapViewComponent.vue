@@ -86,6 +86,7 @@
             variant="outline"
             class="flex items-center bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
             @click="toggleMeetingPlacesVisibility"
+            :disabled="!userLocation"
           >
             <font-awesome-icon :icon="['fas', 'people-group']" class="mr-2" />
             {{ t('map.show-meeting-places', 'Meeting Places') }}
