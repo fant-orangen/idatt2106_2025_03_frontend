@@ -118,10 +118,10 @@
                     {{ member.email }}
                   </p>
                   <!-- Safety status (only shown for real members who are confirmed safe) -->
-                  <p v-if="'email' in member && member.safetyStatus === 'SAFE'" class="text-xs mt-1">
+                  <p v-if="'email' in member && (member as any).safetyStatus === 'SAFE'" class="text-xs mt-1">
                     <span class="text-green-600 dark:text-green-400 flex items-center gap-1">
                       <CheckIcon class="h-3 w-3" />
-                      {{ $t('household.safe', 'Safe') }} {{ member.safetyTimestamp ? formatSafetyTime(member.safetyTimestamp) : '' }}
+                      {{ $t('household.safe', 'Safe') }} {{ (member as any).safetyTimestamp ? formatSafetyTime((member as any).safetyTimestamp) : '' }}
                     </span>
                   </p>
                 </div>
@@ -146,7 +146,7 @@
 
               <!-- Safety status indicator (only for safe members) -->
               <div
-                v-if="'email' in member && member.safetyStatus === 'SAFE' && !manageMode"
+                v-if="'email' in member && (member as any).safetyStatus === 'SAFE' && !manageMode"
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-in-out"
               >
                 <div
@@ -488,11 +488,13 @@ const fetchMembers = async () => {
     for (const member of members) {
       try {
         const safetyStatus = await isUserSafe(member.id);
-        member.safetyStatus = safetyStatus.isSafe ? 'SAFE' : 'UNKNOWN';
-        member.safetyTimestamp = safetyStatus.timestamp;
+        // Use type assertion to avoid TypeScript errors
+        (member as any).safetyStatus = safetyStatus.isSafe ? 'SAFE' : 'UNKNOWN';
+        (member as any).safetyTimestamp = safetyStatus.timestamp;
       } catch (err) {
         console.error(`Error checking safety status for member ${member.id}:`, err);
-        member.safetyStatus = 'UNKNOWN';
+        // Use type assertion to avoid TypeScript errors
+        (member as any).safetyStatus = 'UNKNOWN';
       }
     }
 
