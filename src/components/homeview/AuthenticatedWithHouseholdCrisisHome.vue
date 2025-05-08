@@ -321,7 +321,8 @@ const fetchScenarioInstructions = async () => {
  */
 const markdownToHtml = (markdown: string): string => {
   if (!markdown) return '';
-  return marked(markdown);
+  // Cast the result to string since marked can return a Promise<string> in some cases
+  return marked.parse(markdown) as string;
 };
 
 /**

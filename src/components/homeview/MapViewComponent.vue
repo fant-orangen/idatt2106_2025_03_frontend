@@ -171,7 +171,7 @@
         <div class="absolute inset-0" :class="{ 'pr-[250px]': showLegend }">
           <MapComponent
             ref="mapComponentRef"
-            :pois="showPois ? pois : []"
+            :pois="showPois ? convertedPois : []"
             :crisisEvents="showCrisis ? crisisEvents : []"
             :meetingPlaces="showMeetingPlaces ? meetingPlaces : []"
             :userLocation="userLocation"
@@ -263,24 +263,24 @@ const { t } = useI18n();
 const showMap = ref(false);
 const showLegend = ref(true); // Legend is visible by default
 const legendHeight = ref(400); // Default height
-const mapComponentRef = ref(null);
+const mapComponentRef = ref<any>(null);
 
 // Map data
 const showPois = ref(true);
 const showCrisis = ref(true);
 const showMeetingPlaces = ref(false);
-const pois = ref([]);
-const crisisEvents = ref([]);
-const meetingPlaces = ref([]);
-const userLocation = ref(null);
-const householdLocation = ref(null);
+const pois = ref<PoiData[]>([]);
+const crisisEvents = ref<any[]>([]);
+const meetingPlaces = ref<any[]>([]);
+const userLocation = ref<{latitude: number, longitude: number} | null>(null);
+const householdLocation = ref<{latitude: number, longitude: number} | null>(null);
 
 // Filter state
 const isFilterMenuVisible = ref(false);
-const selectedPoiType = ref(null);
+const selectedPoiType = ref<number | null>(null);
 const distanceInMeters = ref(1000);
-const allPois = ref([]);
-const poiError = ref(null);
+const allPois = ref<PoiData[]>([]);
+const poiError = ref<string | null>(null);
 const isLoadingPois = ref(false);
 const isLoadingMeetings = ref(false);
 const isLoadingCrisisEvents = ref(false);
@@ -297,9 +297,13 @@ const {
  * Computed property to convert POI data to the format expected by MapComponent
  */
 const convertedPois = computed(() => {
-  return pois.value.map(poi => typeof poi.convertToMapFormat === 'function' ?
-    poi.convertToMapFormat() :
-    convertPoiData(poi));
+  return pois.value.map(poi => {
+    // Check if poi has the convertToMapFormat method
+    if (poi && typeof (poi as any).convertToMapFormat === 'function') {
+      return (poi as any).convertToMapFormat();
+    }
+    return convertPoiData(poi);
+  });
 });
 
 /**
@@ -308,9 +312,9 @@ const convertedPois = computed(() => {
 const poiTypes = computed(() => {
   const types = new Map();
   allPois.value.forEach((poi) => {
-    const typeId = Number(poi.poiTypeId);
+    const typeId = Number((poi as any).poiTypeId);
     if (!isNaN(typeId) && !types.has(typeId)) {
-      types.set(typeId, poi.poiTypeName || `Type ${typeId}`);
+      types.set(typeId, (poi as any).poiTypeName || `Type ${typeId}`);
     }
   });
   return Array.from(types.entries())
@@ -429,7 +433,7 @@ async function applyFilters() {
 
   isLoadingPois.value = true;
   try {
-    let fetchedResults = [];
+    let fetchedResults: PoiData[] = [];
     if (hasLocationFilter && currentLocation) {
       const lat = currentLocation.latitude;
       const lon = currentLocation.longitude;
@@ -439,7 +443,7 @@ async function applyFilters() {
         distanceInMeters.value,
         selectedPoiType.value ?? undefined,
       );
-    } else if (hasType) {
+    } else if (hasType && selectedPoiType.value !== null) {
       fetchedResults = await fetchPoisByType(selectedPoiType.value);
     }
     pois.value = [...fetchedResults];
