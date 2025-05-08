@@ -209,7 +209,7 @@ function logOut() {
 
 <template>
   <div
-    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0"
+    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[1100]"
   >
     <div class="navbar-left flex flex-row gap-4">
       <!-- Logo -->
@@ -259,9 +259,9 @@ function logOut() {
           <DropdownMenuLabel>{{ t('settings.account.myAccount') }}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem @select="goToPage('/profile')">
               <User class="mr-2 h-4 w-4" />
-              <span @click="goToPage('/profile')">{{ t('navigation.profile') }}</span>
+              <span>{{ t('navigation.profile') }}</span>
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToPage('/reflections')">
               <BookOpen class="mr-2 h-4 w-4" />

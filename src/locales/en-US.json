@@ -207,6 +207,8 @@
     "crisis-status": "Crisis Status",
     "more-crisis-info": "Read more about your current crisis situation",
     "no-crisis": "No ongoing crisis",
+    "all_clear": "All clear. No active crisis events at this time.",
+    "view_all_events": "View All Events",
     "color": {
       "green": "green",
       "yellow": "yellow",
@@ -237,7 +239,9 @@
     "updated": "Updated",
     "created_by": "Created By",
     "scenario_theme": "Scenario Theme",
+    "scenario": "Scenario",
     "view_scenario_theme": "View Scenario Theme",
+    "view_details": "View Details",
     "previous": "Previous",
     "new": "New",
     "by_user": "By user {user}",
@@ -289,6 +293,44 @@
     "read-info-preparations": "Read more about how you can prepare for a crisis",
     "info-current-crisis": "Read more about the current crisis",
     "info-scenario-type": "Read more about {scenario}"
+  },
+  "home": {
+    "hero": {
+      "title": "Be Prepared for Any Crisis",
+      "description": "Krisefikser helps you and your household stay informed, prepared, and safe during emergencies."
+    },
+    "view_map": "View Crisis Map",
+    "view_all_news": "View all news",
+    "learn_more": "Learn more",
+    "national_crisis": {
+      "title": "Crisis Events in Norway",
+      "description": "View all active crisis events across Norway",
+      "view_all": "See All Crisis Events"
+    },
+    "no_crisis": {
+      "banner": "No ongoing crisis at the moment. Stay prepared!"
+    },
+    "crisis_theme": {
+      "read_more_specific": "Read more about {crisisType} here",
+      "title": "Ongoing Crisis Scenario",
+      "description": "Read about this scenario and what you can do to stay safe",
+      "learn_more": "Learn More About This Crisis"
+    },
+    "household": {
+      "title": "Create Your Household",
+      "description": "Set up your household to better manage resources and stay connected with family members during emergencies.",
+      "feature1": "Track emergency supplies and get reminders when items expire",
+      "feature2": "Share important information with household members",
+      "feature3": "Receive location-specific alerts and guidance",
+      "create_button": "Create Household"
+    },
+    "crisis_info": {
+      "title": "Crisis Information Center",
+      "description": "Get real-time updates and practical guidance for all types of emergencies.",
+      "before": "Learn how to prepare before a crisis happens",
+      "during": "Get critical information during active emergencies",
+      "after": "Find recovery resources after a crisis has passed"
+    }
   },
   "news": {
     "title": "News",
@@ -348,7 +390,10 @@
     "reflection-for-crisis": "Reflection for crisis:",
     "selected-crisis": "Selected crisis",
     "unknown-crisis": "Unknown crisis",
-    "view-reflections": "View Reflections"
+    "view-reflections": "View Reflections",
+    "no-household-message": "You are not currently in a household. ",
+    "cannot-view-shared-reflections": "You need to be in a household to view shared reflections from other users.",
+    "join-household-prompt": "Join or create a household to connect with others and share reflections."
   },
   "map": {
     "defibrillator": "Defibrillator",
@@ -470,6 +515,11 @@
     "create_button": "Create New Household",
     "no-household": "You don't have a household yet",
     "no-household-description": "Create or join a household to manage your emergency preparedness together with family members or friends.",
+    "no_household": {
+      "title": "No Household Found",
+      "banner": "Without a household, we won't be able to update you on active events nearby.",
+      "create_now": "Create Household"
+    },
     "manage-household": "Manage Household",
     "leave-household": "Leave Household",
     "stats": "Statistics",
@@ -516,18 +566,18 @@
     "confirm-remove-member-description": "Are you sure you want to remove this member from the household?",
     "confirm-remove-multiple-title": "Confirm multiple member removal",
     "confirm-remove-multiple-description": "Are you sure you want to remove {count} members from the household?",
-    "transfer-admin-role": "Transfer admin role",
+    "transfer-admin-role": "Give admin rights",
     "leave-confirm-title": "Confirm leaving household",
     "leave-confirm": "Are you sure you want to leave this household?",
     "leave-admin-warning": "You are an administrator of this household. You must transfer the admin role before you can leave.",
     "transfer-admin-first": "Transfer the admin role to another member first.",
     "leave-success": "You have left the household",
     "leave-error": "Could not leave household",
-    "transfer-admin-title": "Transfer admin role",
-    "transfer-admin-description": "Select a member to give admin rights for the household.",
-    "no-members-to-transfer": "No members to transfer admin role to",
-    "admin-transferred-success": "Admin role transferred",
-    "admin-transferred-error": "Could not transfer admin role",
+    "transfer-admin-title": "Give admin rights",
+    "transfer-admin-description": "Select a member to give admin rights for the household. Multiple members can be admins.",
+    "no-members-to-transfer": "No members to give admin rights to",
+    "admin-transferred-success": "Admin rights given",
+    "admin-transferred-error": "Could not give admin rights",
     "already-admin-error": "This user is already an admin",
     "error-fetching-data": "Could not fetch household data",
     "delete_household": "Delete household",
@@ -538,6 +588,13 @@
     "confirm_delete": "Delete household",
     "delete_success": "Household deleted",
     "delete_error": "Could not delete household",
+    "edit-household": "Edit Household",
+    "edit-household-description": "Update your household information",
+    "name-placeholder": "Enter household name",
+    "address-placeholder": "Enter household address",
+    "address": "Address",
+    "update-success": "Household updated successfully",
+    "update-error": "Could not update household",
     "create": {
       "title": "Create new household",
       "description": "Create a new household to manage members and resources.",

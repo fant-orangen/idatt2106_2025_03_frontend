@@ -46,17 +46,21 @@
           </div>
 
           <div class="grid grid-cols-3 text-sm">
-            <span class="font-semibold">{{ t('crisis.scenario_theme', 'Scenario Theme') }}</span>
+            <span class="font-semibold">{{ t('crisis.scenario', 'Scenario') }}</span>
             <span class="col-span-2">
-              <Button
-                v-if="crisisDetails.scenarioThemeId"
-                variant="link"
-                class="p-0 h-auto text-sm font-normal"
-                @click="navigateToScenarioTheme(crisisDetails.scenarioThemeId)"
-              >
-                {{ t('crisis.view_scenario_theme', 'View Scenario Theme') }}
-                <ArrowRight class="ml-1 h-3 w-3" />
-              </Button>
+              <div v-if="crisisDetails.scenarioThemeId" class="flex items-center">
+                <span v-if="loadingScenarioTheme" class="text-muted-foreground text-sm">
+                  {{ t('common.loading', 'Loading') }}...
+                </span>
+                <Button
+                  v-else-if="scenarioTheme"
+                  variant="link"
+                  class="p-0 h-auto text-sm font-normal"
+                  @click="navigateToScenarioTheme(crisisDetails.scenarioThemeId)"
+                >
+                  {{ scenarioTheme.name }}
+                </Button>
+              </div>
 
               <Button
                 v-else
@@ -109,18 +113,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { ArrowRight, PencilIcon } from 'lucide-vue-next';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
 import type { CreateReflectionDto } from '@/models/Reflection';
+import type { ScenarioThemeDetailsDto } from '@/models/ScenarioTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 import { createReflection } from '@/services/ReflectionService';
+import { fetchScenarioThemeById } from '@/services/api/ScenarioThemeService';
 import { toast } from 'vue-sonner';
 import {
   Dialog,
@@ -209,6 +215,37 @@ function navigateToDefaultScenarioTheme() {
   router.push({
     name: 'Information'
   });
+}
+
+// Scenario theme state
+const scenarioTheme = ref<ScenarioThemeDetailsDto | null>(null);
+const loadingScenarioTheme = ref(false);
+
+// Fetch scenario theme when crisis changes
+watch(() => props.crisis?.scenarioThemeId, (newThemeId) => {
+  if (newThemeId) {
+    fetchScenarioThemeName(newThemeId);
+  } else {
+    scenarioTheme.value = null;
+  }
+}, { immediate: true });
+
+/**
+ * Fetches the scenario theme name by ID
+ *
+ * @param {number} themeId - The ID of the scenario theme to fetch
+ */
+async function fetchScenarioThemeName(themeId: number) {
+  loadingScenarioTheme.value = true;
+  try {
+    const theme = await fetchScenarioThemeById(themeId);
+    scenarioTheme.value = theme;
+  } catch (error) {
+    console.error(`Error fetching scenario theme with ID ${themeId}:`, error);
+    scenarioTheme.value = null;
+  } finally {
+    loadingScenarioTheme.value = false;
+  }
 }
 
 // Reflection dialog state

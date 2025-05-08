@@ -1,5 +1,3 @@
-<!-- Page for updating an existing point of interest -->
-
 <template>
   <div class="m-5">
 
@@ -49,8 +47,16 @@
             <CardTitle>{{ t('add-POI-info.titles.choose-poi') }}</CardTitle>
           </CardHeader>
           <CardContent class="flex-grow overflow-y-auto card-content-padding">
-             <InfiniteScroll :is-loading="isFetchingNextPage" :has-more=" !searchQuery && hasNextPage" @load-more="fetchNextPage" class="h-full">
-                <div v-for="poi in filteredPois" :key="poi.id" @click="selectedAPoi(poi.id)"
+                         <InfiniteScroll
+                           :is-loading="isFetchingNextPage"
+                           :has-more="hasNextPage"
+                           @load-more="fetchNextPage"
+                           class="h-full"
+                         >
+                           <div
+                             v-for="poi in poiList"
+                             :key="poi.id"
+                             @click="selectedAPoi(poi.id)"
                     class="text-sm cursor-pointer transition-colors hover:bg-muted/80 p-2 rounded-md">
                   <div class="flex flex-nowrap w-full justify-between items-center gap-2">
                     <span class="poi-tag truncate">{{ poi.name }}</span>
@@ -181,9 +187,16 @@
         </Card>
       </div>
 
-      <!-- Placeholder for map -->
-      <div v-if="selectedPoi" class="map-placeholder rounded-lg border min-w-[300px] min-h-[400px] flex justify-center items-center flex-grow-2 max-w-xl">
-         {{ t('admin.map-placeholder') }}
+      <div
+        v-if="selectedPoi"
+        class="min-w-[300px] max-w-xl flex-1 h-[400px] overflow-hidden rounded-lg border"
+      >
+        <StaticMapWithMarker
+          :lat="selectedPoi.latitude"
+          :lng="selectedPoi.longitude"
+          :poiTypeName="selectedPoi.poiTypeName"
+          :mapId="'poi-marker-map-' + selectedPoi.id"
+        />
       </div>
     </div>
 
@@ -215,8 +228,10 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query';
 import { useI18n } from 'vue-i18n';
 import { toast } from 'vue-sonner';
 import type { PoiPreviewDto, PoiData, UpdatePoiDto } from '@/models/PoiData.ts'
-import { fetchPoiPreviews, fetchPoiById } from '@/services/api/PoiService';
+import { fetchPoiPreviews, fetchPoiById, searchPoiPreviews } from '@/services/api/PoiService';
 import { deletePoi } from '@/services/api/AdminServices';
+import StaticMapWithMarker from '@/components/map/StaticMapWithMarker.vue'
+import 'leaflet/dist/leaflet.css'
 
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { Separator } from '@/components/ui/separator';
@@ -246,13 +261,9 @@ const searchQuery = ref('');
 /**
  * Method for searching for a POI by name. If no search is done, show the full list.
  */
-const filteredPois = computed (() => {
-  const query = searchQuery.value.toLowerCase().trim();
-  if (!query) return allPois.value;
-  return allPois.value.filter(poi =>
-  poi.name.toLowerCase().includes(query)
-);
-});
+const poiList = computed<PoiPreviewDto[]>(() =>
+    data.value?.pages.flat() ?? []
+  );
 
 const pageSize = 10;
 const {
@@ -261,13 +272,17 @@ const {
   isFetchingNextPage,
   hasNextPage,
 } = useInfiniteQuery<PoiPreviewDto[], Error>({
-  queryKey: ['pois'],
-  queryFn: async ({ pageParam = 0 }) => {
-    const pageNumber = pageParam as number;
-    const page = await fetchPoiPreviews(pageNumber, 10);
-    console.log(`Workspaceing POIs page: ${pageParam}`);
-    return page.content;
-  },
+    queryKey: computed(() => ['pois', searchQuery.value]),
+    queryFn: async ({ pageParam = 0 }) => {
+      const pageNumber = pageParam as number;
+      if (searchQuery.value.trim()) {
+          const page = await searchPoiPreviews(searchQuery.value, pageNumber, pageSize);
+          return page.content;
+        } else {
+          const page = await fetchPoiPreviews(pageNumber, pageSize, 'id,desc');
+          return page.content;
+        }
+    },
   getNextPageParam: (lastPage, allPages) => {
     return lastPage.length < pageSize ? undefined :  allPages.length;
   },

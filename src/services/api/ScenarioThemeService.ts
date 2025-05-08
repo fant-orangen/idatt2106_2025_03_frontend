@@ -56,6 +56,22 @@ export async function fetchScenarioThemeById(id: number): Promise<ScenarioThemeD
 }
 
 /**
+ * Fetches only the 'under' (during crisis) instructions for a specific scenario theme.
+ *
+ * @param {number} id - The ID of the scenario theme to fetch
+ * @returns {Promise<string | null>} The 'under' instructions or null if not found
+ */
+export async function fetchScenarioThemeUnderInstructions(id: number): Promise<string | null> {
+  try {
+    const theme = await fetchScenarioThemeById(id);
+    return theme?.under || null;
+  } catch (error) {
+    console.error(`Error fetching 'under' instructions for scenario theme with ID ${id}:`, error);
+    return null;
+  }
+}
+
+/**
  * Fetches active scenario themes (non-paginated).
  * This is useful for dropdowns and other UI elements that need all active themes.
  *
@@ -127,9 +143,9 @@ export async function deleteScenarioTheme(themeData: UpdateScenarioThemeDto): Pr
 }
 
 /**
- * Fetches a list of scenario theme previews. 
+ * Fetches a list of scenario theme previews.
  * Used when creating or editing an event when only the name and id of the scenario is needed.
- * 
+ *
  * @returns {Promise<ScenarioThemeDto[]>} Paginated response containing preview of scenarios
  */
 export async function getScenarioThemePreview(){
