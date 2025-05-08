@@ -24,192 +24,197 @@
   </div>
 
 <div class="p-5">
-  <h1 class="text-3xl p-3">Title</h1>
-  <div class="flex flex-row flex-wrap w-full gap-4 justify-evenly">
-    <!--Form to edit fields-->
-    <Card class="width min-w-fit max-h-fit">
-      <CardHeader>
-        <CardTitle>{{$t('navigation.admin-news')}}</CardTitle>
-      </CardHeader>
-      <CardContent class="width min-w-fit max-w-4/6">
-        <form @submit.prevent="onSubmit">
-          <div class="flex flex-col gap-5">
-            <!-- Tittel -->
-            <FormField v-slot="{ field, meta, errorMessage }" name="title">
-              <FormItem>
-                <FormLabel>{{$t('news.news-title')}}</FormLabel>
-                <FormControl>
-                  <Input type="text" v-bind="field" />
-                </FormControl>
-                <FormDescription>{{ $t('news.description.title') }}</FormDescription>
-                <FormMessage v-if="meta.touched && meta.validated">{{ errorMessage }}</FormMessage>
-              </FormItem>
-            </FormField>
-
-            <!--Innhold -->
-            <FormField v-slot="{ field, meta, errorMessage }" name="content">
-              <FormItem>
-                <FormLabel>{{$t('news.content')}}</FormLabel>
-                <FormControl>
-                  <Textarea v-bind="field" class="border rounded-md shadow w-full min-h-28" />
-                </FormControl>
-                <FormDescription>{{ $t('news.description.subject') }}</FormDescription>
-                <FormMessage v-if="meta.touched && meta.validated">{{ errorMessage }}</FormMessage>
-              </FormItem>
-            </FormField>
-            
-            <div class="flex flex-row flex-wrap gap-5 justify-evenly">
-              <!--Select / search field for a crisis event-->
-              <div>
-                <Combobox v-model="selectedEvent">
-                  <ComboboxAnchor as-child>
-                    <ComboboxTrigger as-child>
-                      <Button variant="outline" class="justify-between">
-                        {{ selectedEvent?.name ?? t('news.select')}}
-                        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </ComboboxTrigger>
-                  </ComboboxAnchor>
-
-                  <ComboboxList>
-                    <div class="relative w-full max-w-sm items-center">
-                      <ComboboxInput :placeholder="t('news.search')">
-                        <span class="absolute start-0 inset-y-0 flex item-center justify-center px-3">
-                          <Search class="size-4 text-muted-foreground"/>
-                        </span>   
-                      </ComboboxInput>
-                    </div>
-                    <ComboboxEmpty>
-                      {{ $t('common.not-found') }}
-                    </ComboboxEmpty>
-
-                    <ComboboxGroup>
-                      <ComboboxItem v-for="event in allEvents" 
-                        :key="event.id" :value="event">
-                        <span>{{ event.name }}</span>
-                        <span v-if="event.severity === 'red'" class="bg-chart-1 rounded-md p-0.25">{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
-                        <span v-if="event.severity === 'yellow'" class="bg-chart-4 rounded-md p-0.25" >{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
-                        <span v-if="event.severity === 'green'" class="bg-chart-2 rounded-md p-0.25" >{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
-                        <ComboboxItemIndicator>
-                          <Check class='ml-auto h-4 w-4'/>
-                        </ComboboxItemIndicator>
-                      </ComboboxItem>
-                    </ComboboxGroup>
-                  </ComboboxList>
-                </Combobox>
-                <p>{{ $t('news.description.event') }}</p>
-              </div>
-              <!--Last updated at: if it's a draft-->
-              <FormField v-if="selectedDraft" v-slot="{ field }" name="updatedAt">
-              <FormItem>
-                <FormLabel>{{$t('news.updated')}}</FormLabel>
-                <FormControl>
-                  <Input type="text" v-bind="field" readonly disabled/>
-                </FormControl>
-                <FormDescription>{{ $t('news.description.updated') }}</FormDescription>
-              </FormItem>
+  <h1 class="text-3xl p-3">Skriv eller rediger nyhetsvarsler</h1>
+  <div class="flex justify-center">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-evenly">
+      <!--Form to edit fields-->
+      <Card class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
+        <CardHeader>
+          <CardTitle>{{$t('navigation.admin-news')}}</CardTitle>
+        </CardHeader>
+        <CardContent class="max-h-[500px]">
+          <form @submit.prevent="onSubmit">
+            <div class="flex flex-col gap-5">
+              <!-- Tittel -->
+              <FormField v-slot="{ field, meta, errorMessage }" name="title">
+                <FormItem>
+                  <FormLabel>{{$t('news.news-title')}}</FormLabel>
+                  <FormControl>
+                    <Input type="text" v-bind="field" />
+                  </FormControl>
+                  <FormDescription>{{ $t('news.description.title') }}</FormDescription>
+                  <FormMessage v-if="meta.touched && meta.validated">{{ errorMessage }}</FormMessage>
+                </FormItem>
               </FormField>
 
-              <!--Published at: if it's a draft-->
-              <FormField v-if="selectedNews" v-slot="{ field }" name="publishedAt">
+              <!--Innhold -->
+              <FormField v-slot="{ field, meta, errorMessage }" name="content">
                 <FormItem>
-                  <FormLabel>{{$t('news.published')}}</FormLabel>
+                  <FormLabel>{{$t('news.content')}}</FormLabel>
+                  <FormControl>
+                    <Textarea v-bind="field" class="min-h-28" />
+                  </FormControl>
+                  <FormDescription>{{ $t('news.description.subject') }}</FormDescription>
+                  <FormMessage v-if="meta.touched && meta.validated">{{ errorMessage }}</FormMessage>
+                </FormItem>
+              </FormField>
+              
+              <div class="flex flex-row flex-wrap gap-5 justify-evenly">
+                <!--Select / search field for a crisis event-->
+                <div>
+                  <Combobox v-model="selectedEvent">
+                    <ComboboxAnchor as-child>
+                      <ComboboxTrigger as-child>
+                        <Button variant="outline" class="justify-between">
+                          {{ selectedEvent?.name ?? t('news.select')}}
+                          <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </ComboboxTrigger>
+                    </ComboboxAnchor>
+
+                    <ComboboxList>
+                      <div class="relative w-full max-w-sm items-center">
+                        <ComboboxInput :placeholder="t('news.search')">
+                          <span class="absolute start-0 inset-y-0 flex item-center justify-center px-3">
+                            <Search class="size-4 text-muted-foreground"/>
+                          </span>   
+                        </ComboboxInput>
+                      </div>
+                      <ComboboxEmpty>
+                        {{ $t('common.not-found') }}
+                      </ComboboxEmpty>
+
+                      <ComboboxGroup>
+                        <ComboboxItem v-for="event in allEvents" 
+                          :key="event.id" :value="event">
+                          <span>{{ event.name }}</span>
+                          <span v-if="event.severity === 'red'" class="bg-chart-1 rounded-md p-0.25">{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
+                          <span v-if="event.severity === 'yellow'" class="bg-chart-4 rounded-md p-0.25" >{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
+                          <span v-if="event.severity === 'green'" class="bg-chart-2 rounded-md p-0.25" >{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
+                          <ComboboxItemIndicator>
+                            <Check class='ml-auto h-4 w-4'/>
+                          </ComboboxItemIndicator>
+                        </ComboboxItem>
+                      </ComboboxGroup>
+                    </ComboboxList>
+                  </Combobox>
+                  <p class="text-muted-foreground text-sm">{{ $t('news.description.event') }}</p>
+                </div>
+                <!--Last updated at: if it's a draft-->
+                <FormField v-if="selectedDraft" v-slot="{ field }" name="updatedAt">
+                <FormItem>
+                  <FormLabel>{{$t('news.updated')}}</FormLabel>
                   <FormControl>
                     <Input type="text" v-bind="field" readonly disabled/>
                   </FormControl>
-                  <FormDescription>{{ $t('news.description.published') }}</FormDescription>
+                  <FormDescription>{{ $t('news.description.updated') }}</FormDescription>
                 </FormItem>
-              </FormField>
-            </div>  
-          </div>
-        </form>
+                </FormField>
 
-      </CardContent>
-      <CardFooter class="flex flex-row flex-wrap gap-5 m-auto">
-        <Button 
-          type="submit" 
-          @click="setStatusOfArticle('published')">
-          {{ $t('news.post') }}
-        </Button>
-        <Button v-if="status !== 'published'" 
-          type="button" 
-          variant="secondary"
-          @click="setStatusOfArticle('draft')">
-            Save draft
-        </Button>
-        <Button v-if="selectedDraft || selectedNews"
-          type="button" 
-          variant="destructive"
-          @click="setStatusOfArticle('archived')">
-          Archive
-        </Button>
-        <Button 
-          type="button" 
-          variant="outline" 
-          @click="cancelInput()">
-          {{ $t('common.cancel') }}
-        </Button>
-      </CardFooter>
-    </Card>
-    
-    <!--List of all drafts articles  -->
-    <Card class="width min-w-fit max-h-96">
-      <CardHeader>
-        <CardTitle>Saved drafts:</CardTitle>
-        <CardDescription>Velg en draft å redigere</CardDescription>
-      </CardHeader>
-      <CardContent class="max-h-56 overflow-y-auto pr-1">
-        <InfiniteScroll :is-loading="isFetchingNextDraftsPage" :has-more="hasNextDraftsPage" @load-more="fetchNextDraftsPage">
-        <div v-for="draft in allDrafts" 
-          class="flex flex-col gap-1 hover:bg-muted cursor-pointer rounded-md p-2"
-          @click="selectArticle(draft)">
-          <span><b>{{ draft.title }}</b></span>
-          <span>{{ draft.content }}</span>
-          <Separator />
-        </div>
-      </InfiniteScroll>
-      </CardContent>
-    </Card>
-    
-    <!--Related news articles to the selected crisis event-->
-    <Card v-if="relatedNews.length > 0"  class="width min-w-fit max-h-96">
-      <CardHeader>
-        <CardTitle>{{ $t('news.related_news') }}: </CardTitle>
-        <CardDescription>Nyhetsartikler relatert til denne hendelsen:testtest</CardDescription>
-      </CardHeader>
-      <CardContent class="overflow-y-auto pr-1">
-        <InfiniteScroll :is-loading="isFetchingNextRelatedPage" 
-        :has-more="hasNextRelatedPage" 
-        @load-more="fetchNextRelatedPage"
-        class="heigh max-h-56">
-          <div v-for="news in relatedNews" class="flex flex-col gap-3 hover:bg-muted p-2 rounded-md cursor-pointer justify-center">
-            <span><b>{{ news.title }}</b></span>
-            <span>{{ news.content }}</span>
-            <span>{{ formatDateFull(news.publishedAt) }}</span>
-            <Separator />
-        </div>
-        </InfiniteScroll>
-      </CardContent>
-    </Card>
-
-    <!--All published news articles-->
-    <Card class="min-w-fit max-h-96">
-      <CardHeader>
-        <CardTitle>Siste publiserte nyhetsartikler: </CardTitle>
-      </CardHeader>
-      <CardContent class="overflow-y-auto pr-1">
-        <InfiniteScroll :is-loading="isFetchingNextNewsPage" :has-more="hasNextNewsPage" @load-more="fetchNextNewsPage">
-          <div v-for="article in allNews" :key="article.id" 
-          @click="selectArticle(article.id)"
-          class="flex flex-col gap-3 hover:bg-muted p-2 rounded-md cursor-pointer justify-center">
-            <span><b>{{ article.title }}</b></span>
-            <span>{{ article.content }}</span>
-            <span>{{ formatDateFull(article.publishedAt) }}</span>
-            <Separator />
-          </div>
-        </InfiniteScroll>
-      </CardContent>
-    </Card>
+                <!--Published at: if it's a draft-->
+                <FormField v-if="selectedNews" v-slot="{ field }" name="publishedAt">
+                  <FormItem>
+                    <FormLabel>{{$t('news.published')}}</FormLabel>
+                    <FormControl>
+                      <Input type="text" v-bind="field" readonly disabled/>
+                    </FormControl>
+                    <FormDescription>{{ $t('news.description.published') }}</FormDescription>
+                  </FormItem>
+                </FormField>
+              </div>  
+            
+              <div class="flex flex-row flex-wrap gap-3 m-auto">
+                <Button 
+                  type="submit" 
+                  @click="setStatusOfArticle('published')">
+                  {{ $t('news.post') }}
+                </Button>
+                <Button v-if="status !== 'published'" 
+                  type="button" 
+                  variant="secondary"
+                  @click="setStatusOfArticle('draft')">
+                    Save draft
+                </Button>
+                <Button v-if="selectedDraft || selectedNews"
+                  type="button" 
+                  variant="destructive"
+                  @click="setStatusOfArticle('archived')">
+                  Archive
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  @click="cancelInput()">
+                  {{ $t('common.cancel') }}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </CardContent>
+        <CardFooter >
+          
+        </CardFooter>
+      </Card>
+      <div class="flex flex-col gap-5">
+        <!--List of all drafts articles  -->
+        <Card class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
+          <CardHeader>
+            <CardTitle>Saved drafts by you and other admins:</CardTitle>
+            <CardDescription>Velg en draft å redigere</CardDescription>
+          </CardHeader>
+          <CardContent class="max-h-[500px] overflow-y-auto pr-2">
+            <InfiniteScroll :is-loading="isFetchingNextDraftsPage" :has-more="hasNextDraftsPage" @load-more="fetchNextDraftsPage">
+            <div v-for="draft in allDrafts" 
+              class="flex flex-col gap-1 hover:bg-muted cursor-pointer rounded-md p-2"
+              @click="selectArticle(draft)">
+              <span><b>{{ draft.title }}</b></span>
+              <span>{{ draft.content }}</span>
+              <Separator />
+            </div>
+          </InfiniteScroll>
+          </CardContent>
+        </Card>
+        
+        <!--Related news articles to the selected crisis event-->
+        <Card v-if="relatedNews.length > 0" class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
+          <CardHeader>
+            <CardTitle>{{ $t('news.related_news') }}: </CardTitle>
+            <CardDescription>Nyhetsartikler relatert til denne hendelsen:testtest</CardDescription>
+          </CardHeader>
+          <CardContent class="overflow-y-auto max-h-[500px] pr-2">
+            <InfiniteScroll :is-loading="isFetchingNextRelatedPage" 
+            :has-more="hasNextRelatedPage" 
+            @load-more="fetchNextRelatedPage"
+            class="heigh max-h-56">
+              <div v-for="news in relatedNews" class="flex flex-col gap-3 hover:bg-muted p-2 rounded-md cursor-pointer justify-center">
+                <span><b>{{ news.title }}</b></span>
+                <span>{{ news.content }}</span>
+                <span>{{ formatDateFull(news.publishedAt) }}</span>
+                <Separator />
+            </div>
+            </InfiniteScroll>
+          </CardContent>
+        </Card>
+      </div>
+      <!--All published news articles-->
+      <Card class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
+        <CardHeader>
+          <CardTitle>Siste publiserte nyhetsartikler: </CardTitle>
+        </CardHeader>
+        <CardContent class="overflow-y-auto max-h-[500px] pr-2">
+          <InfiniteScroll :is-loading="isFetchingNextNewsPage" :has-more="hasNextNewsPage" @load-more="fetchNextNewsPage">
+            <div v-for="article in allNews" :key="article.id" 
+            @click="selectArticle(article)"
+            class="flex flex-col gap-3 hover:bg-muted p-2 rounded-md cursor-pointer justify-center">
+              <span><b>{{ article.title }}</b></span>
+              <span>{{ article.content }}</span>
+              <span>{{ formatDateFull(article.publishedAt) }}</span>
+              <Separator />
+            </div>
+          </InfiniteScroll>
+        </CardContent>
+      </Card>
+    </div>
   </div>
 </div>
 </template>
@@ -251,7 +256,6 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxList, ComboboxTrigger } from '@/components/ui/combobox'
 import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
 
-
 enum Status {
   DRAFT = 'draft',
   PUBLISHED = 'published',
@@ -269,10 +273,10 @@ const status = ref<Status | null>(null)
 
 
 onMounted(() => {
+  setUpForm();
   fetchNextEventPage;
   fetchNextDraftsPage;
   fetchNextNewsPage;
-  setUpForm();
 });
 
 function successToast(msg: string) {
@@ -462,10 +466,10 @@ async function selectArticle(article: News) {
 function setUpForm() {
   const formSchema = toTypedSchema(z.object({
     title: z.string().min(2).max(50),
-    content: z.string().max(500).optional(),
+    content: z.string().max(500),
     updatedAt: z.string().optional(),
     publishedAt: z.string().optional(),
-    status: z.enum(['draft', 'published', 'archived']).optional(),
+    status: z.enum(['draft', 'published', 'archived']),
   }))
   form.value = useForm({validationSchema: formSchema})
   onSubmit.value = form.value.handleSubmit(handleFormSubmit)
@@ -482,9 +486,11 @@ function handleFormSubmit(values: any) {
         status: status.value as Status,
       }
       saveNewArticle(newArticle)
+      return;
+    } else {
+      console.error('Need to select a draft first!')
+      return;
     }
-    console.error('Need to select a draft first!')
-    return;
   }
   if (selectedDraft.value) {
     const updatedDraft: UpdateNewsArticle = {
