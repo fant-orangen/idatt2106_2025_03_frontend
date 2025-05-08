@@ -53,5 +53,8 @@ export const useHouseholdStore = defineStore('household', () => {
     error,
     isMemberOfHousehold,
     fetchCurrentHousehold,
+    setCurrentHousehold,
+    setLoading,
+    setError,
   };
 });

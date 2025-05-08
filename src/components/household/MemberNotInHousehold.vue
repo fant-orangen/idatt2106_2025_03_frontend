@@ -43,16 +43,23 @@ import { toast } from 'vue-sonner';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { HomeIcon } from 'lucide-vue-next';
+import { useHouseholdStore } from '@/stores/HouseholdStore';
 
 import CreateNewHousehold from '@/components/household/CreateNewHousehold.vue';
 
 const { t } = useI18n();
+const householdStore = useHouseholdStore();
 const showCreateForm = ref(false);
 
 const emit = defineEmits(['household-updated']);
 
-const handleHouseholdCreated = () => {
+const handleHouseholdCreated = (household) => {
   toast.success(t('household.created-success'));
+  // Update the household store
+  if (household) {
+    // Refresh the household data from the backend instead of directly setting it
+    householdStore.fetchCurrentHousehold();
+  }
   emit('household-updated');
   showCreateForm.value = false;
 };

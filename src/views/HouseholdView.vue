@@ -252,6 +252,7 @@ import PendingInvitations from '@/components/household/PendingInvitations.vue';
 import HouseholdStats from '@/components/household/HouseholdStats.vue';
 // DeleteHousehold component no longer used - functionality integrated into edit dialog
 import { useUserStore } from '@/stores/UserStore';
+import { useHouseholdStore } from '@/stores/HouseholdStore';
 import {
   getCurrentHousehold,
   leaveHousehold,
@@ -265,14 +266,13 @@ import {
   deleteHousehold
 } from '@/services/HouseholdService'
 import { toast } from 'vue-sonner';
-// Using direct service calls instead of the store
 
 const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore();
-// Using direct service calls instead of the store
-const hasHousehold = ref(false);
-const household = ref<{ id: number; name: string; address?: string } | null>(null);
+const householdStore = useHouseholdStore();
+const hasHousehold = computed(() => !!householdStore.currentHousehold);
+const household = computed(() => householdStore.currentHousehold);
 const isAdmin = ref(false);
 const showLeaveDialog = ref(false);
 const showEditHouseholdDialog = ref(false);
@@ -381,6 +381,7 @@ const handleDeleteHousehold = async () => {
     toast.success(t('household.delete_success'));
     showConfirmDeleteDialog.value = false;
     showEditHouseholdDialog.value = false;
+    await householdStore.fetchCurrentHousehold();
     await refreshHouseholdData();
   } catch (error: any) {
     console.error('Error deleting household:', error);
@@ -402,9 +403,7 @@ const handleDeleteHousehold = async () => {
  */
 const refreshHouseholdData = async () => {
   try {
-    const householdData = await getCurrentHousehold();
-    hasHousehold.value = !!householdData;
-    household.value = householdData;
+    await householdStore.fetchCurrentHousehold();
 
     if (hasHousehold.value) {
       // Check if the current user is an admin
@@ -462,6 +461,9 @@ const leaveCurrentHousehold = async () => {
     await leaveHousehold();
     toast.success(t('household.leave-success'));
     showLeaveDialog.value = false;
+
+    // Update the household store to reflect that the user has left
+    await householdStore.fetchCurrentHousehold();
     await refreshHouseholdData();
   } catch (error: any) {
     console.error('Error leaving household:', error);

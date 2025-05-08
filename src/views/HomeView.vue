@@ -1,6 +1,14 @@
 <template>
+  <!-- Loading state -->
+  <div v-if="isLoading && userStore.isAuthenticated" class="content w-full max-w-7xl mx-auto pt-0 flex justify-center items-center min-h-[50vh]">
+    <div class="text-center">
+      <div class="inline-block w-8 h-8 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
+      <p>{{ t('common.loading', 'Loading...') }}</p>
+    </div>
+  </div>
+
   <!-- Authenticated User with Household and Crisis View -->
-  <div v-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises" class="content w-full max-w-7xl mx-auto pt-0">
+  <div v-else-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises" class="content w-full max-w-7xl mx-auto pt-0">
     <AuthenticatedWithHouseholdCrisisHome />
   </div>
 
@@ -22,9 +30,10 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/UserStore'
+import { useHouseholdStore } from '@/stores/HouseholdStore'
 import UnauthenticatedHome from '@/components/homeview/UnauthenticatedHome.vue'
 import AuthenticatedNoHouseholdHome from '@/components/homeview/AuthenticatedNoHouseholdHome.vue'
 import AuthenticatedWithHouseholdHome from '@/components/homeview/AuthenticatedWithHouseholdHome.vue'
@@ -35,15 +44,15 @@ import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService'
 const router = useRouter()
 const { t } = useI18n()
 const userStore = useUserStore()
+const householdStore = useHouseholdStore()
 
 // State for household and crisis status
-const hasHousehold = ref(false)
+const hasHousehold = computed(() => !!householdStore.currentHousehold)
 const hasOngoingCrises = ref(false)
-
-
+const isLoading = ref(true)
 
 /**
- * Checks if the current user has a household
+ * Checks if the current user has a household using the HouseholdStore
  *
  * @async
  * @function checkHouseholdStatus
@@ -52,14 +61,11 @@ const hasOngoingCrises = ref(false)
 const checkHouseholdStatus = async () => {
   if (userStore.isAuthenticated) {
     try {
-      const household = await getCurrentHousehold()
-      hasHousehold.value = !!household
+      await householdStore.fetchCurrentHousehold()
+      console.log('Household status checked:', !!householdStore.currentHousehold)
     } catch (error) {
       console.error('Failed to check household status:', error)
-      hasHousehold.value = false
     }
-  } else {
-    hasHousehold.value = false
   }
 }
 
@@ -81,6 +87,37 @@ const checkForOngoingCrises = async () => {
 }
 
 /**
+ * Refreshes all data needed for the home view
+ *
+ * @async
+ * @function refreshHomeData
+ * @returns {Promise<void>} Resolves when the refresh is complete.
+ */
+const refreshHomeData = async () => {
+  isLoading.value = true
+  try {
+    await Promise.all([
+      checkHouseholdStatus(),
+      checkForOngoingCrises()
+    ])
+  } catch (error) {
+    console.error('Error refreshing home data:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Watch for changes in authentication state
+watch(() => userStore.isAuthenticated, async (isAuthenticated) => {
+  console.log('Authentication state changed in HomeView:', isAuthenticated)
+  if (isAuthenticated) {
+    await refreshHomeData()
+  }
+  // No need to explicitly reset household status when user logs out
+  // The fetchCurrentHousehold method has a check for logged in status
+})
+
+/**
  * Lifecycle hook that runs when the component is mounted.
  * Checks if the user has a household and if there are ongoing crises.
  *
@@ -89,10 +126,8 @@ const checkForOngoingCrises = async () => {
  * @returns {Promise<void>} Resolves when the setup is complete.
  */
 onMounted(async () => {
-  await Promise.all([
-    checkHouseholdStatus(),
-    checkForOngoingCrises()
-  ])
+  console.log('HomeView mounted - Checking household and crisis status')
+  await refreshHomeData()
 })
 </script>
 
