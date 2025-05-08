@@ -11,6 +11,18 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useUserStore } from '@/stores/UserStore'
+import type { AxiosResponse } from 'axios'
+
+// Helper function to create a proper AxiosResponse object
+function createAxiosResponse<T = any>(data: T, status = 200): AxiosResponse<T> {
+  return {
+    data,
+    status,
+    statusText: status === 200 ? 'OK' : 'Error',
+    headers: {},
+    config: { headers: {} } as any
+  }
+}
 
 // Mock the AuthService module
 vi.mock('@/services/api/AuthService.ts', () => ({
@@ -82,8 +94,8 @@ describe('UserStore', () => {
      */
     it('should register a user successfully', async () => {
       const userStore = useUserStore()
-      vi.spyOn(mockAuthService, 'register').mockResolvedValue(undefined) // Simulate success
-      vi.spyOn(mockAuthService, 'fetchToken').mockResolvedValue({ status: 200, data: { token: 'fake-token' } })
+      vi.spyOn(mockAuthService, 'register').mockResolvedValue(createAxiosResponse(undefined)) // Simulate success
+      vi.spyOn(mockAuthService, 'fetchToken').mockResolvedValue(createAxiosResponse({ token: 'fake-token' }))
 
       const registrationData = {
         email: 'newuser@example.com',
@@ -147,8 +159,8 @@ describe('UserStore', () => {
      */
     it('should validate passwords according to the required regex', async () => {
       const userStore = useUserStore()
-      vi.spyOn(mockAuthService, 'register').mockResolvedValue(undefined)
-      vi.spyOn(mockAuthService, 'fetchToken').mockResolvedValue({ status: 200, data: { token: 'fake-token' } })
+      vi.spyOn(mockAuthService, 'register').mockResolvedValue(createAxiosResponse(undefined))
+      vi.spyOn(mockAuthService, 'fetchToken').mockResolvedValue(createAxiosResponse({ token: 'fake-token' }))
 
       // Helper function to create registration data with a specific password
       const createRegistrationData = (password: string) => ({
@@ -202,12 +214,10 @@ describe('UserStore', () => {
       const recaptchaToken = 'fake-recaptcha'
 
       // Mock the token response
-      const tokenResponse = {
-        status: 200,
-        data: {
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiVVNFUiIsInVzZXJJZCI6MTIzfQ.fake-signature'
-        }
+      const tokenData = {
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiVVNFUiIsInVzZXJJZCI6MTIzfQ.fake-signature'
       }
+      const tokenResponse = createAxiosResponse(tokenData)
 
       vi.spyOn(mockAuthService, 'fetchToken').mockResolvedValue(tokenResponse)
 
@@ -286,7 +296,7 @@ describe('UserStore', () => {
       const userStore = useUserStore()
       const email = 'user@example.com'
 
-      vi.spyOn(mockAuthService, 'send2FACode').mockResolvedValue(undefined)
+      vi.spyOn(mockAuthService, 'send2FACode').mockResolvedValue(createAxiosResponse(undefined))
 
       await userStore.send2FACodeToEmail(email)
 
@@ -304,7 +314,8 @@ describe('UserStore', () => {
       const userStore = useUserStore()
       const email = 'user@example.com'
       const code = 123456
-      const response = { status: 200, data: { verified: true } }
+      const responseData = { verified: true }
+      const response = createAxiosResponse(responseData)
 
       vi.spyOn(mockAuthService, 'verify2FACode').mockResolvedValue(response)
 
@@ -360,7 +371,7 @@ describe('UserStore', () => {
       // Set up the store as if the user is logged in
       userStore.username = email
 
-      vi.spyOn(mockAuthService, 'changePassword').mockResolvedValue(undefined)
+      vi.spyOn(mockAuthService, 'changePassword').mockResolvedValue(createAxiosResponse(undefined))
 
       await userStore.updatePassword(oldPassword, newPassword)
 
@@ -384,7 +395,7 @@ describe('UserStore', () => {
       // Set up the store as if the user is logged in
       userStore.username = oldEmail
 
-      vi.spyOn(mockAuthService, 'changeEmail').mockResolvedValue(undefined)
+      vi.spyOn(mockAuthService, 'changeEmail').mockResolvedValue(createAxiosResponse(undefined))
 
       await userStore.updateEmail(newEmail, password)
 
