@@ -1,6 +1,7 @@
 <template>
 	<div class="flex flex-col min-h-screen">
-	  <!-- Breadcrumb -->
+
+    <!-- Breadcrumb -->
 	  <div class="p-5">
 		<Breadcrumb>
 		  <BreadcrumbList>
@@ -22,7 +23,8 @@
 	  <!-- Main Content -->
 	  <div class="flex-grow p-5">
 		<div class="page flex flex-col lg:flex-row gap-8">
-		  <!-- Menu Buttons for Admin Actions -->
+
+      <!-- Menu Buttons for Admin Actions -->
 		  <div class="menu flex flex-col gap-4 w-full lg:w-1/3">
 			<h1 class="text-2xl font-bold text-primary">
 			  <span v-if="userStore.isSuperAdminUser">
@@ -33,6 +35,7 @@
 			  </span>
 			</h1>
 
+        <!-- Handle admins -->
 			<Button
 			  v-if="userStore.isSuperAdminUser"
 			  @click="router.push('/admin/handle-admins')"
@@ -41,6 +44,8 @@
 			  {{ $t('admin.edit-admin') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
+        <!-- Add new event -->
 			<Button
 			  @click="router.push('/admin/add-new-event')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
@@ -55,6 +60,8 @@
 			  {{ $t('admin.make-new-POI') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
+        <!-- Add new scenario theme -->
 			<Button
 			  @click="router.push('/admin/add-new-scenario-theme')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
@@ -62,6 +69,8 @@
 			  {{ $t('admin.make-new-scenario-theme') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
+        <!-- Add new activity -->
 			<Button
 			  @click="router.push('/admin/add-new-activity')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
@@ -69,6 +78,8 @@
 			  {{ $t('admin.make-new-activity') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
+        <!-- Edit event -->
 			<Button
 			  @click="router.push('/admin/edit-event')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
@@ -76,6 +87,8 @@
 			  {{ $t('admin.edit-event') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
+        <!-- Edit scenario theme -->
 			<Button
 			  @click="router.push('/admin/edit-scenario-theme')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
@@ -83,12 +96,16 @@
 			  {{ $t('admin.edit-scenario-theme') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
+        <!-- Edit point of interest  -->
 			<Button @click="router.push('/admin/edit-poi')"
 			class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 				{{ $t('admin.edit-POI') }}
 				<font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
+        <!-- Add and edit meeting point -->
 			<Button
 			  @click="router.push('/admin/meeting-point')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
@@ -113,6 +130,11 @@
   </template>
 
   <script setup lang="ts">
+  /**
+   * @component AdminPanel
+   * @description Displays the admin page with options to add and edit events, scenario themes,
+   * points of interest and meeting places etc.
+   */
   import router from '@/router'
   import { useUserStore } from '@/stores/UserStore'
   import { Button } from '@/components/ui/button'
