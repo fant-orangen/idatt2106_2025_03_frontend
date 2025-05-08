@@ -142,21 +142,7 @@
                 </div>
               </div>
 
-              <!-- Safety status checkbox (only shown for real members -->
-              <div
-                v-if="'email' in member && !manageMode"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-in-out"
-              >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  class="h-8 w-8 rounded-full hover:bg-primary/10"
-                  :class="{ 'text-green-600 dark:text-green-400': member.safetyStatus === 'SAFE', 'text-gray-400': member.safetyStatus !== 'SAFE' }"
-                  :title="member.safetyStatus === 'SAFE' ? $t('household.already-safe', 'Already marked as safe') : $t('household.mark-as-safe', 'Mark as safe')"
-                >
-                  <CheckIcon class="w-4 h-4" />
-                </Button>
-              </div>
+
 
               <!-- Safety status indicator (only for safe members) -->
               <div
