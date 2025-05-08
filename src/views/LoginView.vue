@@ -1,12 +1,23 @@
 <script setup lang="ts">
+
+/**
+ * @component LoginView
+ * @description Handles the user login flow including:
+ * - reCaptcha
+ * - login with email and password
+ * - 2FA via email
+ * - password reset dialog
+ *
+ * Uses the UserStore for authentication.
+ */
+
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 import { useI18n } from 'vue-i18n'
-import { AxiosError } from 'axios' // Import AxiosError type
+import { AxiosError } from 'axios'
 
 const { t } = useI18n()
 
-// Import shadcn-vue components
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'vue-sonner'
@@ -27,7 +38,10 @@ import { CardContent, Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { PinInputGroup, PinInputInput, PinInput } from '@/components/ui/pin-input'
 import { sendPasswordResetEmail } from '@/services/UserService.ts'
 
-// Reactive variables for form fields and error messages
+/**
+ * Reactive variables for form fields and error messages.
+ */
+
 const email = ref('')
 const password = ref('')
 const isView = ref(false)
@@ -36,7 +50,7 @@ const errorMessage = ref('')
 const resetEmail = ref('')
 const isTwoFactorAuthDialogOpen = ref(false)
 const pinValue = ref<string[]>([])
-/* global grecaptcha */
+
 
 /**
  * Handles the login process by verifying the user's credentials.
@@ -130,10 +144,12 @@ async function handleComplete() {
   }
 }
 
-//handle the reset password request
+/**
+ * Handle the password reset request.
+ */
 async function handleResetPassword() {
   try {
-    await sendPasswordResetEmail(resetEmail.value) // No need to check response.status
+    await sendPasswordResetEmail(resetEmail.value)
     toast.success(t('reset-password.email-sent'))
   } catch (error: unknown) {
     if (error instanceof AxiosError && error.response) {
@@ -151,13 +167,21 @@ async function handleResetPassword() {
 </script>
 
 <template>
+
+  <!-- Wrapper for login page layout -->
   <div class="login-wrapper flex justify-around mt-[13rem] bg-backround p-[1rem]">
     <Card class="min-w-5/6 md:min-w-xl">
+
+      <!-- Header with page title -->
       <CardHeader>
         <CardTitle class="text-xl font-bold text-center">{{ $t('login.login') }}</CardTitle>
       </CardHeader>
+
+      <!-- Login form -->
       <CardContent>
         <form @submit.prevent="handleLogin" class="space-y-4">
+
+          <!-- Email input field -->
           <div class="form-group">
             <Label for="email" class="block text-sm font-medium">{{ $t('login.email') }}</Label>
             <Input
@@ -173,7 +197,8 @@ async function handleResetPassword() {
               $t('login.password')
             }}</Label>
             <div class="relative">
-              <!-- Password Input -->
+
+              <!-- Password input -->
               <Input
                 :type="isView ? 'text' : 'password'"
                 id="password"
@@ -181,7 +206,7 @@ async function handleResetPassword() {
                 class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Password"
               />
-              <!-- Toggle Icon -->
+              <!-- Toggle icon -->
               <Button
                 type="button"
                 variant="ghost"
@@ -192,6 +217,8 @@ async function handleResetPassword() {
                 <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
               </Button>
             </div>
+
+            <!-- Forgot password dialog -->
             <Dialog>
               <DialogTrigger as-child>
                 <Button variant="link">{{ $t('login.forgot-password') }}</Button>
@@ -203,6 +230,8 @@ async function handleResetPassword() {
                     {{ $t('login.reset-password-description') }}
                   </DialogDescription>
                 </DialogHeader>
+
+                <!-- Email input inside dialog -->
                 <div class="grid gap-4 py-4">
                   <div class="grid grid-cols-4 items-center gap-4">
                     <Label for="email" class="text-right">
@@ -218,6 +247,8 @@ async function handleResetPassword() {
                     />
                   </div>
                 </div>
+
+                <!-- Submit reset email -->
                 <DialogFooter>
                   <DialogClose>
                     <Button type="submit" @click="handleResetPassword">
@@ -227,6 +258,8 @@ async function handleResetPassword() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
+
+            <!-- 2FA dialog for code input -->
             <Dialog v-model:open="isTwoFactorAuthDialogOpen">
               <DialogContent>
                 <DialogHeader>
@@ -237,6 +270,8 @@ async function handleResetPassword() {
                     {{ $t('login.2fa-login-description') }}
                   </DialogDescription>
                 </DialogHeader>
+
+                <!-- PIN input component -->
                 <PinInput
                   id="pin-input"
                   v-model="pinValue"
@@ -253,6 +288,7 @@ async function handleResetPassword() {
             </Dialog>
           </div>
 
+          <!-- Submit button -->
           <Button type="submit" class="w-full bg-primary hover:bg-primary/90">
             {{ $t('login.login') }}
           </Button>
