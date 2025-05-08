@@ -69,7 +69,9 @@
           >
             <font-awesome-icon :icon="['fas', 'map-pin']" class="mr-2" />
             {{ t('map.show-pois', 'POIs') }}
-            <div class="ml-1 w-3 h-3 rounded-full" :class="showPois ? 'bg-green-500' : 'bg-gray-300'"></div>
+            <div class="ml-1 w-3 h-3 rounded-full relative" :class="showPois ? 'bg-green-500' : 'bg-gray-300'">
+              <div v-if="showPois" class="absolute inset-0 m-auto w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
           </Button>
 
           <Button
@@ -79,7 +81,9 @@
           >
             <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2" />
             {{ t('map.show-crisis', 'Crisis') }}
-            <div class="ml-1 w-3 h-3 rounded-full" :class="showCrisis ? 'bg-green-500' : 'bg-gray-300'"></div>
+            <div class="ml-1 w-3 h-3 rounded-full relative" :class="showCrisis ? 'bg-green-500' : 'bg-gray-300'">
+              <div v-if="showCrisis" class="absolute inset-0 m-auto w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
           </Button>
 
           <Button
@@ -89,7 +93,9 @@
           >
             <span class="material-symbols-outlined scale-75 mr-2">recenter</span>
             {{ t('map.show-meeting-places', 'Meeting Places') }}
-            <div class="ml-1 w-3 h-3 rounded-full" :class="showMeetingPlaces ? 'bg-green-500' : 'bg-gray-300'"></div>
+            <div class="ml-1 w-3 h-3 rounded-full relative" :class="showMeetingPlaces ? 'bg-green-500' : 'bg-gray-300'">
+              <div v-if="showMeetingPlaces" class="absolute inset-0 m-auto w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
           </Button>
 
         </div>
