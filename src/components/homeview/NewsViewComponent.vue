@@ -24,7 +24,7 @@
       </div>
 
       <!-- News content with scrolling - using flex-grow to fill available space -->
-      <div v-else class="flex-grow overflow-y-auto pr-2">
+      <div v-else class="flex-grow overflow-y-auto pr-2 h-[450px]">
         <InfiniteScroll
           :is-loading="loading"
           :has-more="hasMore"
@@ -32,10 +32,10 @@
           :end-message="t('news.no_more_news', 'No more news to load')"
           @load-more="loadMoreNews"
         >
-          <ul class="timeline">
-            <li v-for="item in news" :key="item.id">
-              <div class="dot"></div>
-              <div class="timeline-content">
+          <ul class="relative my-6 pl-8 list-none border-l-2 border-[#e2e8f0]">
+            <li v-for="item in news" :key="item.id" class="relative mb-6 pl-6">
+              <div class="absolute left-[-2.4rem] top-[0.45rem] w-[0.75rem] h-[0.75rem] bg-primary rounded-full z-10"></div>
+              <div class="ml-6">
                 <div class="flex justify-between items-baseline">
                   <strong class="text-sm text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
                 </div>
@@ -129,50 +129,3 @@ const navigateTo = (route: string) => {
 // Load initial news data when component mounts
 onMounted(loadMoreNews);
 </script>
-
-<style scoped>
-.timeline {
-  position: relative;
-  margin: 1.5rem 0;
-  padding-left: 2rem;
-  list-style: none;
-  border-left: 2px solid var(--color-border, #e2e8f0);
-}
-
-.timeline li {
-  position: relative;
-  margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
-}
-
-.dot {
-  position: absolute;
-  left: -2.4rem;
-  top: 0.45rem;
-  width: 0.75rem;
-  height: 0.75rem;
-  background-color: var(--color-primary, #3b82f6);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-/* Custom scrollbar styling */
-.news-content .overflow-y-auto {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-muted, #9ca3af) transparent;
-  height: 450px; /* Fixed height for news content */
-}
-
-.news-content .overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
-}
-
-.news-content .overflow-y-auto::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.news-content .overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: var(--color-muted, #9ca3af);
-  border-radius: 6px;
-}
-</style>

@@ -1,7 +1,9 @@
 <template>
   <div class="flex flex-col w-full gap-8 pb-20">
     <!-- Notification Banner (Hero Style) -->
-    <section class="hero-banner py-6 md:py-8 relative overflow-hidden mt-0 w-full">
+    <section
+      class="relative overflow-hidden mt-0 w-screen ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)] py-6 md:py-8 bg-cover bg-center"
+    >
       <!-- Background with crisis colors - full width with no limit -->
       <div class="absolute inset-0 bg-gradient-to-r from-[var(--crisis-level-green)]/20 via-[var(--crisis-level-yellow)]/20 to-[var(--crisis-level-red)]/20 z-0 w-screen left-[calc(-50vw+50%)] right-0"></div>
 
@@ -12,9 +14,13 @@
               <div class="flex-grow">
                 <div class="flex items-center gap-3 mb-2">
                   <font-awesome-icon :icon="['fas', 'home']" class="text-2xl text-[var(--crisis-level-green)]" />
-                  <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">{{ t('home.no_household.title', 'No Household Found') }}</h2>
+                  <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+                    {{ t('home.no_household.title', 'No Household Found') }}
+                  </h2>
                 </div>
-                <p class="mb-4 text-gray-600 dark:text-gray-200">{{ t('home.no_household.banner', 'Without a household, we won\'t be able to update you on active events nearby.') }}</p>
+                <p class="mb-4 text-gray-600 dark:text-gray-200">
+                  {{ t('home.no_household.banner', 'Without a household, we won\'t be able to update you on active events nearby.') }}
+                </p>
                 <Button
                   class="bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/75"
                   @click="navigateTo('/household')"
@@ -38,19 +44,19 @@
     </section>
 
     <!-- Map Button Section -->
-    <section class="map-button-section w-full px-4">
+    <section class="w-full px-4">
       <MapViewComponent />
     </section>
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-8 px-4">
       <!-- News Section (2/5) -->
-      <section class="news-section md:col-span-2 h-full flex flex-col">
+      <section class="md:col-span-2 h-full flex flex-col">
         <NewsViewComponent class="flex-grow h-full" />
       </section>
 
       <!-- Information Sections (3/5) -->
-      <section class="info-sections md:col-span-3 space-y-8">
+      <section class="md:col-span-3 space-y-8">
         <!-- About Households -->
         <HouseholdInfoComponent @create="navigateTo('/household')" />
 
@@ -60,6 +66,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
@@ -88,13 +95,3 @@ const navigateTo = (route: string) => {
 };
 </script>
 
-<style scoped>
-.hero-banner {
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-}
-</style>

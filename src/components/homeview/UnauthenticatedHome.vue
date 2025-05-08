@@ -92,16 +92,3 @@ const navigateToRegisterOrHousehold = () => {
   router.push('/register');
 };
 </script>
-
-<style scoped>
-.hero-section {
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-}
-
-/* We're now using standard grid columns (2/5 and 3/5) */
-</style>

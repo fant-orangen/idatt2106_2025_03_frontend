@@ -17,7 +17,7 @@
         :class="getCrisisContainerClass(mainCrisis.severity)"
       >
         <h2 class="text-xl font-bold mb-3 flex items-center">
-          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2" :class="getCrisisIconClass(mainCrisis.severity)" />
+          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2 w-[18px] h-[18px]" :class="getCrisisIconClass(mainCrisis.severity)" />
           {{ t('home.crisis_theme.title', 'Ongoing Crisis Scenario') }}
         </h2>
         <p class="mb-4 text-muted-foreground">
@@ -33,13 +33,21 @@
           <h3 class="font-medium mb-2 text-center flex items-center justify-center gap-2">
             {{ mainCrisis.name }}
             <span
-              class="text-xs px-2 py-0.5 rounded-full uppercase font-bold"
-              :style="{ backgroundColor: getSeverityColor(mainCrisis.severity), color: 'white' }"
+              class="text-xs px-2 py-0.5 rounded-full uppercase font-bold text-white"
+              :style="{ backgroundColor: getSeverityColor(mainCrisis.severity) }"
             >
               {{ mainCrisis.severity }}
             </span>
           </h3>
-          <div class="text-sm prose prose-sm max-w-none" v-html="markdownToHtml(scenarioUnderInstructions)"></div>
+          <div
+            class="text-sm prose prose-sm max-w-none"
+            :class="{
+              'prose-a:text-[var(--crisis-level-red)]': mainCrisis.severity === 'red',
+              'prose-a:text-[var(--crisis-level-yellow)]': mainCrisis.severity === 'yellow',
+              'prose-a:text-[var(--crisis-level-green)]': mainCrisis.severity === 'green'
+            }"
+            v-html="markdownToHtml(scenarioUnderInstructions)"
+          ></div>
         </div>
         <div v-else-if="loadingInstructions" class="text-center py-4">
           <div class="inline-block w-6 h-6 border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
@@ -76,7 +84,7 @@
         <!-- Household Supplies -->
         <div class="household-supplies bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)]" />
+            <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)] w-[18px] h-[18px]" />
             {{ t('home.household.supplies', 'Household Supplies') }}
           </h2>
 
@@ -129,7 +137,7 @@
         <!-- Reflections & Groups -->
         <div class="reflections-groups bg-card p-6 rounded-lg border border-[var(--default-blue2)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'users']" class="mr-2 text-[var(--default-blue2)]" />
+            <font-awesome-icon :icon="['fas', 'users']" class="mr-2 text-[var(--default-blue2)] w-[18px] h-[18px]" />
             {{ t('home.community.title', 'Community Features') }}
           </h2>
           <p class="mb-4 text-muted-foreground">{{ t('home.community.description', 'Share experiences and resources with your community') }}</p>
@@ -166,6 +174,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
@@ -487,63 +496,3 @@ onMounted(async () => {
   ]);
 });
 </script>
-
-<style scoped>
-.mr-2 {
-  width: 18px;
-  height: 18px;
-}
-
-.notification-banner {
-  position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-}
-
-/* Markdown content styling */
-.prose {
-  color: inherit;
-}
-
-.prose p {
-  margin-bottom: 0.75rem;
-}
-
-.prose ul, .prose ol {
-  margin-left: 1.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.prose ul {
-  list-style-type: disc;
-}
-
-.prose ol {
-  list-style-type: decimal;
-}
-
-/* Link colors based on crisis severity */
-.border-\[var\(--crisis-level-red\)\]\/30 .prose a {
-  color: var(--crisis-level-red);
-  text-decoration: underline;
-}
-
-.border-\[var\(--crisis-level-yellow\)\]\/30 .prose a {
-  color: var(--crisis-level-yellow);
-  text-decoration: underline;
-}
-
-.border-\[var\(--crisis-level-green\)\]\/30 .prose a {
-  color: var(--crisis-level-green);
-  text-decoration: underline;
-}
-
-.prose strong {
-  font-weight: 600;
-}
-
-.prose em {
-  font-style: italic;
-}
-</style>

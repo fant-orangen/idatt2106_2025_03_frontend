@@ -1,9 +1,7 @@
 <template>
   <div class="flex flex-col w-full gap-8 pb-20 mt-8">
-    <!-- No Crisis Notification Banner is now handled by CrisisLevelOverview component -->
-
     <!-- Crisis Button Section -->
-    <section class="crisis-button-section w-full px-4">
+    <section class="w-full px-4">
       <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300">
         <div
           @click="navigateTo('/crisis-event')"
@@ -21,27 +19,26 @@
     </section>
 
     <!-- Map Button Section -->
-    <section class="map-button-section w-full px-4">
+    <section class="w-full px-4">
       <MapViewComponent />
     </section>
 
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-8 px-4">
-      <!-- News Section (2/5) -->
-      <section class="news-section md:col-span-2 h-full flex flex-col">
+      <!-- News Section -->
+      <section class="md:col-span-2 h-full flex flex-col">
         <NewsViewComponent class="flex-grow h-full" />
       </section>
 
-      <!-- Information Sections (3/5) -->
-      <section class="info-sections md:col-span-3 space-y-8">
+      <!-- Information Sections -->
+      <section class="md:col-span-3 space-y-8">
         <!-- Household Supplies -->
-        <div class="household-supplies bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
+        <div class="bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)]" />
+            <font-awesome-icon :icon="['fas', 'box-open']" class="mr-[6px] w-[18px] h-[18px] text-[var(--crisis-level-green)]" />
             {{ t('home.household.supplies', 'Household Supplies') }}
           </h2>
 
-          <!-- Status messages about food and water -->
           <div class="mb-4">
             <div v-if="!daysOfFood && !daysOfWater" class="text-center text-gray-500">
               {{ t('household.no-supplies', 'No supplies registered yet') }}
@@ -88,34 +85,43 @@
         </div>
 
         <!-- Reflections & Groups -->
-        <div class="reflections-groups bg-card p-6 rounded-lg border border-[var(--default-blue2)]/30">
+        <div class="bg-card p-6 rounded-lg border border-[var(--default-blue2)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'users']" class="mr-2 text-[var(--default-blue2)]" />
+            <font-awesome-icon :icon="['fas', 'users']" class="mr-[6px] w-[18px] h-[18px] text-[var(--default-blue2)]" />
             {{ t('home.community.title', 'Community Features') }}
           </h2>
-          <p class="mb-4 text-muted-foreground">{{ t('home.community.description', 'Share experiences and resources with your community') }}</p>
+          <p class="mb-4 text-muted-foreground">
+            {{ t('home.community.description', 'Share experiences and resources with your community') }}
+          </p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
             <div class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20">
               <h3 class="font-medium mb-2">{{ t('home.reflections.title', 'Reflections') }}</h3>
-              <p class="text-sm text-muted-foreground mb-3">{{ t('home.reflections.description', 'Share your experiences and learn from others') }}</p>
+              <p class="text-sm text-muted-foreground mb-3">
+                {{ t('home.reflections.description', 'Share your experiences and learn from others') }}
+              </p>
               <Button
                 variant="outline"
                 class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
                 @click="navigateTo('/reflections')"
               >
-                {{ t('home.reflections.view', 'View Reflections') }} <ChevronRight class="h-4 w-4 ml-1" />
+                {{ t('home.reflections.view', 'View Reflections') }}
+                <ChevronRight class="h-4 w-4 ml-1" />
               </Button>
             </div>
+
             <div class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20">
               <h3 class="font-medium mb-2">{{ t('home.groups.title', 'Groups') }}</h3>
-              <p class="text-sm text-muted-foreground mb-3">{{ t('home.groups.description', 'Collaborate and share resources with other households') }}</p>
+              <p class="text-sm text-muted-foreground mb-3">
+                {{ t('home.groups.description', 'Collaborate and share resources with other households') }}
+              </p>
               <Button
                 variant="outline"
                 class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
                 @click="navigateTo('/groups')"
               >
-                {{ t('home.groups.view', 'View Groups') }} <ChevronRight class="h-4 w-4 ml-1" />
+                {{ t('home.groups.view', 'View Groups') }}
+                <ChevronRight class="h-4 w-4 ml-1" />
               </Button>
             </div>
           </div>
@@ -134,7 +140,6 @@ import { ChevronRight } from 'lucide-vue-next';
 import { AlertTriangle } from 'lucide-vue-next';
 import MapViewComponent from '@/components/homeview/MapViewComponent.vue';
 import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue';
-import CrisisLevelOverview from '@/components/homeview/CrisisLevelOverview.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCheckCircle, faTriangleExclamation, faBoxOpen, faUsers, faMapLocationDot, faArrowRight } from '@fortawesome/free-solid-svg-icons';
@@ -269,16 +274,3 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped>
-.notification-banner {
-  position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-}
-
-.mr-2 {
-  width: 18px;
-  height: 18px;
-}
-</style>

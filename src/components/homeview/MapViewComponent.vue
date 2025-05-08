@@ -199,7 +199,7 @@
         <div
           class="absolute top-0 right-0 h-full border-l border-[var(--crisis-level-yellow)] p-3 transition-all duration-300 ease-in-out z-10 overflow-y-auto"
           :class="{ 'w-[250px]': showLegend, 'w-0 opacity-0': !showLegend }"
-          >
+        >
           <MapLegend />
         </div>
       </div>
@@ -635,106 +635,3 @@ onMounted(() => {
   });
 });
 </script>
-
-<style scoped>
-/* Ensure smooth transitions for the legend sidebar */
-.map-container {
-  position: relative;
-}
-
-/* Ensure the map takes up the full height of its container */
-.h-full {
-  height: 100%;
-}
-
-/* Prevent content overflow */
-.overflow-hidden {
-  overflow: hidden;
-}
-
-/* Ensure the legend scrolls if content is too long */
-.overflow-y-auto {
-  overflow-y: auto;
-}
-
-/* Horizontal scrollbar styling */
-.scrollbar-thin {
-  scrollbar-width: thin;
-}
-
-.scrollbar-thumb-orange-300::-webkit-scrollbar-thumb {
-  background-color: rgb(253, 186, 116);
-  border-radius: 9999px;
-}
-
-.scrollbar-track-transparent::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-
-::-webkit-scrollbar {
-  height: 8px; /* Slightly larger for better visibility */
-  width: 6px;
-}
-
-/* Hide horizontal scrollbar on mobile for the map buttons */
-@media (max-width: 767px) {
-  .map-buttons-container::-webkit-scrollbar:horizontal,
-  .filter-buttons-container::-webkit-scrollbar:horizontal {
-    display: none;
-  }
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgb(253, 186, 116);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-
-/* Responsive button layout */
-.map-buttons-container,
-.filter-buttons-container {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: 300px;
-  padding-right: 8px;
-  width: 100%;
-}
-
-.map-buttons-container button,
-.filter-buttons-container button {
-  flex-shrink: 0;
-  width: 100%;
-  justify-content: flex-start;
-  max-width: 100%;
-  white-space: normal;
-  text-align: left;
-}
-
-/* Switch to horizontal layout on medium screens and above */
-@media (min-width: 768px) {
-  .map-buttons-container,
-  .filter-buttons-container {
-    flex-direction: row;
-    flex-wrap: wrap;
-    overflow-x: visible;
-    overflow-y: visible;
-    max-height: none;
-    padding-right: 0;
-    width: auto;
-  }
-
-  .map-buttons-container button,
-  .filter-buttons-container button {
-    width: auto;
-    white-space: normal;
-    text-align: center;
-    justify-content: center;
-    margin-bottom: 4px;
-  }
-}
-</style>
