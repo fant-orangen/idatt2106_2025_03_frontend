@@ -36,37 +36,32 @@
       <Card class="flex flex-col h-full">
         <!-- Crisis Filter Buttons -->
         <div class="mb-6">
-          <div class="grid grid-cols-1 gap-2">
+          <div class="grid grid-cols-3 gap-2">
             <Button
-              class="w-full"
-              :variant="selectedFilter === 'all' ? 'default' : 'outline'"
-              @click="setFilter('all')"
+              :variant="selectedFilter === 'history' ? 'default' : 'outline'"
+              @click="setFilter('history')"
             >
-              {{ t('crisis.all_events', 'All Events') }}
+              {{ t('crisis.historical', 'History') }}
             </Button>
 
-            <div class="grid grid-cols-3 gap-2">
-              <Button
-                :variant="selectedFilter === 'history' ? 'default' : 'outline'"
-                @click="setFilter('history')"
-              >
-                {{ t('crisis.historical', 'History') }}
-              </Button>
+            <Button
+              :variant="selectedFilter === 'nearby' ? 'default' : 'outline'"
+              @click="setFilter('nearby')"
+            >
+              {{ t('crisis.for_you', 'For You') }}
+            </Button>
 
-              <Button
-                :variant="selectedFilter === 'nearby' ? 'default' : 'outline'"
-                @click="setFilter('nearby')"
-              >
-                {{ t('crisis.for_you', 'For You') }}
-              </Button>
+            <Button
+              :variant="selectedFilter === 'active' ? 'default' : 'outline'"
+              @click="setFilter('active')"
+            >
+              {{ t('crisis.active', 'Active') }}
+            </Button>
+          </div>
 
-              <Button
-                :variant="selectedFilter === 'active' ? 'default' : 'outline'"
-                @click="setFilter('active')"
-              >
-                {{ t('crisis.active', 'Active') }}
-              </Button>
-            </div>
+          <!-- Error message for 'For You' when not logged in -->
+          <div v-if="nearbyError" class="mt-2 text-sm text-red-500 px-2">
+            {{ nearbyError }}
           </div>
         </div>
         <CardContent class="p-0 flex-grow">
@@ -146,6 +141,7 @@ import { Search } from 'lucide-vue-next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useGeolocation } from '@/composables/useGeolocation.ts';
+import { useUserStore } from '@/stores/UserStore';
 
 import {
   fetchAllPreviewCrisisEvents,
@@ -174,12 +170,14 @@ const { t } = useI18n();
 const selectedCrisis = ref<CrisisEventDto | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
+const nearbyError = ref<string | null>(null);
 const page = ref(0);
 const size = 10;
 const hasMore = ref(true);
 const searchQuery = ref('');
-const selectedFilter = ref('all');
+const selectedFilter = ref('active'); // Default to active events
 const { coords } = useGeolocation();
+const userStore = useUserStore();
 
 // Debounce search to avoid too many API calls
 let searchTimeout: number | null = null;
@@ -193,22 +191,47 @@ const loadCrisisEvents = async () => {
   try {
     loading.value = true;
     error.value = null;
+    nearbyError.value = null;
 
     let response;
 
     switch (selectedFilter.value) {
       case 'active':
-        response = await fetchAllPreviewCrisisEvents(page.value, size);
+        // For active events, search in active events
+        if (searchQuery.value.trim()) {
+          response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+        } else {
+          response = await fetchAllPreviewCrisisEvents(page.value, size);
+        }
         break;
       case 'history':
-        response = await fetchInactivePreviewCrisisEvents(page.value, size);
+        // For history, search in inactive events
+        if (searchQuery.value.trim()) {
+          response = await searchCrisisEvents(searchQuery.value, page.value, size, false);
+        } else {
+          response = await fetchInactivePreviewCrisisEvents(page.value, size);
+        }
         break;
       case 'nearby':
+        // Check if user is logged in
+        if (!userStore.loggedIn) {
+          nearbyError.value = t('crisis.login_required', 'Please log in to see events near you');
+          // Fallback to active events if not logged in
+          if (searchQuery.value.trim()) {
+            response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+          } else {
+            response = await fetchAllPreviewCrisisEvents(page.value, size);
+          }
+          break;
+        }
+
+        // User is logged in, show nearby events
         response = await fetchCrisisEventsInRadius(page.value, size);
         break;
-      case 'search':
+      default:
+        // Default to active events
         if (searchQuery.value.trim()) {
-          response = await searchCrisisEvents(searchQuery.value, page.value, size);
+          response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
         } else {
           response = await fetchAllPreviewCrisisEvents(page.value, size);
         }
@@ -250,7 +273,7 @@ const handleSearch = () => {
   }
 
   searchTimeout = setTimeout(async () => {
-    selectedFilter.value = 'search';
+    // Keep the current filter but reset the data
     crisisEvents.value = [];
     page.value = 0;
     hasMore.value = true;
