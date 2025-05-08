@@ -5,7 +5,7 @@
     <!-- Map Button Header -->
     <div
       @click="toggleMap"
-      class="w-full py-2 flex flex-col items-center cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800 px-6"
+      class="w-full py-2 flex flex-col items-center cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800 px-6"
     >
       <div class="flex items-center justify-center">
         <font-awesome-icon :icon="['fas', 'map-location-dot']" class="text-2xl mr-3 text-[var(--crisis-level-yellow)]" />

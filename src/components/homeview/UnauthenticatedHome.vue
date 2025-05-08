@@ -3,14 +3,14 @@
     <!-- Hero Section -->
     <section class="hero-section py-10 md:py-16 relative overflow-hidden mt-0 w-full">
       <!-- Background with crisis colors - full width with no limit -->
-      <div class="absolute inset-0 bg-gradient-to-r from-[var(--crisis-level-green)]/10 via-[var(--crisis-level-yellow)]/10 to-[var(--crisis-level-red)]/10 z-0 w-screen left-[calc(-50vw+50%)] right-0"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-[var(--crisis-level-green)]/20 via-[var(--crisis-level-yellow)]/20 to-[var(--crisis-level-red)]/20 z-0 w-screen left-[calc(-50vw+50%)] right-0"></div>
 
       <div class="max-w-4xl mx-auto text-center relative z-10 px-4">
         <h1 class="text-3xl md:text-4xl font-bold mb-4">{{ t('home.hero.title') }}</h1>
         <p class="text-lg md:text-xl text-muted-foreground mb-8">
           {{ t('home.hero.description') }}
         </p>
-        <Button size="lg" class="bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/90 text-white" @click="navigateTo('/register')">
+        <Button size="lg" class="bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/90" @click="navigateTo('/register')">
           {{ t('login.signup') }}
         </Button>
       </div>
@@ -18,10 +18,10 @@
 
     <!-- Crisis Button Section -->
     <section class="crisis-button-section w-full px-4">
-      <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300 bg-white">
+      <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300">
         <div
           @click="navigateTo('/crisis-event')"
-          class="w-full py-2 flex items-center cursor-pointer transition-colors bg-white hover:bg-gray-50"
+          class="w-full py-2 flex items-center cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800"
         >
           <div class="flex items-center justify-between w-full px-6">
             <div class="flex items-center flex-1 justify-center">
