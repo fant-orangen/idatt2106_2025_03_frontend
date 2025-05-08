@@ -1,7 +1,7 @@
 <template>
   <!-- Compact Banner for No Crisis -->
-  <div v-if="!loading && !error && !hasOngoingCrises" class="crisis-status-banner w-full rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3 mb-4 transition-all duration-200 ease-in-out">
-    <div class="flex items-center justify-between">
+  <div v-if="!loading && !error && !hasOngoingCrises" class="crisis-status-banner full-width-banner bg-green-50 dark:bg-green-900/20 border-y border-green-200 dark:border-green-800 py-3 mb-4 transition-all duration-200 ease-in-out">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <font-awesome-icon :icon="['fas', 'check-circle']" class="text-green-500 dark:text-green-400" />
         <span class="font-medium text-green-700 dark:text-green-300">{{ t('crisis.no-crisis') }}</span>
@@ -226,3 +226,16 @@ const selectCrisis = (event: CrisisEventPreviewDto) => {
 
 onMounted(fetchCrisisEvents);
 </script>
+
+<style scoped>
+.crisis-status {
+  width: 100%;
+}
+
+.full-width-banner {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+}
+</style>

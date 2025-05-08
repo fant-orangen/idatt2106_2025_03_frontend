@@ -1,26 +1,6 @@
 <template>
   <div class="flex flex-col w-full gap-8 pb-20">
-    <!-- No Crisis Notification Banner (when no active crisis) -->
-    <section v-if="!hasOngoingCrises" class="notification-banner py-3 bg-green-100 border-b border-green-200 w-full">
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <div class="flex items-center gap-2 text-green-800">
-            <font-awesome-icon :icon="['fas', 'check-circle']" class="text-lg" />
-            <p>{{ t('home.no_crisis.banner', 'No ongoing crisis at the moment. Stay prepared!') }}</p>
-          </div>
-          <div>
-            <Button
-              @click="navigateTo('/crisis-event')"
-              class="flex items-center gap-2 text-sm bg-white hover:bg-gray-50 border border-green-300 text-green-800"
-              size="sm"
-            >
-              {{ t('home.national_crisis.view_all', 'See All Crisis Events') }}
-              <font-awesome-icon :icon="['fas', 'arrow-right']" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    </section>
+    <!-- No Crisis Notification Banner is now handled by CrisisLevelOverview component -->
 
     <!-- Crisis Button Section -->
     <section class="crisis-button-section w-full px-4">
