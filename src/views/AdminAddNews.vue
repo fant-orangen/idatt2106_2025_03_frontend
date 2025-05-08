@@ -258,7 +258,9 @@ import {
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Combobox, ComboboxAnchor, ComboboxEmpty, ComboboxGroup, ComboboxInput, ComboboxItem, ComboboxItemIndicator, ComboboxList, ComboboxTrigger } from '@/components/ui/combobox'
 import { Check, ChevronsUpDown, Search } from 'lucide-vue-next'
-
+/**
+ * Status type enum to easily convert between status types and sending correctly to the backend API.
+ */
 enum Status {
   DRAFT = 'draft',
   PUBLISHED = 'published',
@@ -272,29 +274,49 @@ const selectedDraft = ref<News | null>(null)
 const status = ref<Status | null>(null)
 const isReadonly = computed(() => !!selectedNews.value)
 
+/**
+ * The form schema initialization.
+ * The updatedAt and publishedAt form fields are optional because they 
+ * are set automatically in the backend API.
+ */
 const formSchema = toTypedSchema(z.object({
-  title: z.string().min(2).max(50),
-  content: z.string().max(500),
+  title: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
+  content: z.string().min(10, 'Innholdet må være minst 10 tegn').max(500, 'Innholdet er for langt, max 500 tegn'),
   updatedAt: z.string().optional(),
   publishedAt: z.string().optional(),
 }))
 const form = useForm({ validationSchema: formSchema})
 const onSubmit = form.handleSubmit(handleFormSubmit)
 
-
+/**
+ * Immediately fetch all latest news articles, article drafts and crisis events.
+ */
 onMounted(() => {
   fetchNextEventPage()
   fetchNextDraftsPage()
   fetchNextNewsPage()
 });
 
+/**
+ * Popup alert to tell the user that the action was done / finished successfully.
+ * @param msg - message to display in the popup alert
+ */
 function successToast(msg: string) {
   toast.success(msg)
 }
+
+/**
+ * Popup alert to tell the user that the action was not done / aborted 
+ * because something was wrong.
+ * @param msg - message to display in the popup alert.
+ */
 function errorToast(msg: string) {
   toast.error(msg)
 }
 
+/**
+ * Resets the form fields and all varaibles to "clear history" and start over.
+ */
 function cancelInput() {
   form.resetForm()
   selectedDraft.value = null
@@ -302,8 +324,13 @@ function cancelInput() {
   selectedEvent.value = null
 }
 
+/**
+ * Sets the 'status' variable to a Status type. Either 'draft', 'published' or 'archived'
+ * depending on what button the user clicks after editing in the form field.
+ * @param inputStatus - the status to set the 'status' variable to.
+ */
 function setStatusOfArticle(inputStatus: string) {
-  console.log('Kalt med status:', inputStatus)
+  console.log('Kalt med status:', inputStatus) // remove later
   status.value = inputStatus as Status
   
   if (inputStatus === Status.DRAFT || inputStatus === Status.PUBLISHED) {
@@ -318,7 +345,9 @@ function setStatusOfArticle(inputStatus: string) {
 }
 
 /**
- * For pagination of list of related news articles to a specific crisis event
+ * For pagination of list of related news articles to a specific crisis event.
+ * This infinite query method fetches paginated lists of News objects which are 
+ * news articles related tot he crisis event the user has selected in the form field. 
  */
 const queryClient = useQueryClient()
 const newsPageSize = 5
@@ -346,7 +375,8 @@ const relatedNews = computed<News[]>(() => newsData.value?.pages.flat() ?? [])
 
 /**
  * For pagination of list of all news article drafts.
- * Only used if the admin wants to edit a draft
+ * Fetches all drafts made by any admin or super admin for this user to 
+ * be able to edit, publish or archive the draft. 
  */
 const draftsPageSize = 5
 const {
@@ -369,7 +399,9 @@ const {
 const allDrafts = computed<News[]>(() => draftsData.value?.pages.flat() ?? [])
 
 /**
- * For pagination of list of all events:
+ * For pagination of list of all events.
+ * Paginated list of all crisis events shown in the combobox in the form.
+ * Fetches all crisis events from the backend API as previews.
  */
  const eventPageSize = 10
  const {
@@ -392,7 +424,10 @@ const allDrafts = computed<News[]>(() => draftsData.value?.pages.flat() ?? [])
 const allEvents = computed<CrisisEventPreviewDto[]>(() => eventData.value?.pages.flat() ?? [])
 
 /**
- * For pagination of list of all latest news articles
+ * For pagination of list of all latest news articles.
+ * Fetches all news articles posted - having status as 'published' - sorted by date
+ * with the latest published articles shown at the top. 
+ * This way the admin can see their newest published article immediately in the list.
  */
  const articlePageSize = 10
  const {
@@ -414,13 +449,20 @@ const allEvents = computed<CrisisEventPreviewDto[]>(() => eventData.value?.pages
 });
 const allNews = computed<News[]>(() => data.value?.pages.flat() ?? [])
 
-
+/**
+ * Watch for when a crisis event is selected in the form to immediately fetch the 
+ * related news articles to that crisis event from the backend API.
+ */
 watch(selectedEvent, async (event) => {
   if (event) {
     await queryClient.invalidateQueries({queryKey: ['news', event.id]});
   }
 })
 
+/**
+ * Watch for when a draft is selected to auto fill the form fields with 
+ * the saved draft details from the backend API
+ */
 watch(selectedDraft, async (draft) => {
   if (draft) {
     selectedNews.value = null
@@ -435,6 +477,12 @@ watch(selectedDraft, async (draft) => {
   }
 })
 
+/**
+ * Watch for when a published news article is selected to auto fill the form fields with
+ * the saved article details. Although the fields will be read only to not let 
+ * admins edit any published articles to cause confusion among readers. Selected
+ * published news articles can only be updated as 'archived'.
+ */
 watch(selectedNews, async (news) => {
   if(news) {
     selectedDraft.value = null
@@ -458,7 +506,11 @@ async function getEventFromArticle(crisisId: number) {
   }
 }
 
-
+/**
+ * Method selects an article from the list of either drafted articles or latest
+ * news articles. An article can be either 'selectedNews' or 'selectedDraft'.
+ * @param article - News object to set as selected 
+ */
 async function selectArticle(article: News) {
   if (!article) {
     console.error('The selected article doesnt exist')
@@ -473,7 +525,12 @@ async function selectArticle(article: News) {
   }
 }
 
-
+/**
+ * This method checks if the values in the form fields are connected to either 
+ * a published news article or a draft, if not the it has to be a new article.
+ * If so, the new article is saved separately. 
+ * @param values - values in the form field to be saved 
+ */
 function handleFormSubmit(values: any) {
   if (!selectedDraft.value && !selectedNews.value) {
     if (values && selectedEvent.value) {
@@ -509,6 +566,12 @@ function handleFormSubmit(values: any) {
   }
 }
 
+/**
+ * Method sends the updated data as an UpdateNewsArticle object to 
+ * the backend API to be saved.
+ * @param id - The ID of the article to update
+ * @param updatedData - The data object with the updated fields
+ */
 async function saveUpdatesOfArticle(id: number, updatedData: UpdateNewsArticle) {
   try {
     const response = await adminUpdateNews(id, updatedData)
@@ -521,6 +584,10 @@ async function saveUpdatesOfArticle(id: number, updatedData: UpdateNewsArticle) 
   }
 }
 
+/**
+ * Method calls the backend API to update an existing draft or published
+ * news article to be 'archived'. Not accessible to the users anymore.
+ */
 async function archivePublishedArticle() {
   if(!selectedNews.value) {
     errorToast("Velg et nyhetsvarsel for å kunne arkivere det!")
@@ -540,6 +607,11 @@ async function archivePublishedArticle() {
   }
 }
 
+/**
+ * Method sends a CreateNewsDto object to the backend API to save a new
+ * news article object. No matter what the status is.
+ * @param data - the form field data from the user in a CreateNewsDto object
+ */
 async function saveNewArticle(data: CreateNewsDto) {
   try {
     await adminAddNews(data)
@@ -551,6 +623,11 @@ async function saveNewArticle(data: CreateNewsDto) {
   }
 }
 
+/**
+ * Method to update the lists after an update has happened.
+ * Only updates the list of drafts and the list of latest news articles, as those are 
+ * the relevant ones after a successful action was performed.
+ */
 async function updateLists() {
   await queryClient.invalidateQueries({queryKey: ['articles']});
   await queryClient.invalidateQueries({queryKey: ['drafts']});
