@@ -29,11 +29,6 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 
 const { t } = useI18n()
 const userStore = useUserStore()
-
-/**
- * UI state
- */
-
 const successMessage = ref('')
 const errorMessage = ref('')
 const isView = ref(false)
@@ -123,9 +118,11 @@ const handleRegister = form.handleSubmit(async (values) => {
 </script>
 
 <template>
-  <div class="register-wrapper flex justify-center items-center mt-[13rem] bg-background p-[1rem]">
 
-    <!-- Registration card -->
+  <!-- Registration card -->
+  <div
+    class="register-wrapper flex justify-center items-center mt-[10vh] mb-[10vh] bg-background p-[1rem]"
+  >
     <Card class="register-container min-w-5/6 md:min-w-xl">
 
       <!-- Header with page title -->

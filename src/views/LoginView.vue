@@ -14,10 +14,11 @@
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 import { useI18n } from 'vue-i18n'
-import { AxiosError } from 'axios'
+import { AxiosError } from 'axios' // Import AxiosError type
 
 const { t } = useI18n()
 
+// Import shadcn-vue components
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'vue-sonner'
@@ -167,9 +168,8 @@ async function handleResetPassword() {
 </script>
 
 <template>
-
   <!-- Wrapper for login page layout -->
-  <div class="login-wrapper flex justify-around mt-[13rem] bg-backround p-[1rem]">
+  <div class="login-wrapper flex mt-[10vh] justify-center items-center bg-backround p-[1rem]">
     <Card class="min-w-5/6 md:min-w-xl">
 
       <!-- Header with page title -->
@@ -206,6 +206,7 @@ async function handleResetPassword() {
                 class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Password"
               />
+
               <!-- Toggle icon -->
               <Button
                 type="button"
@@ -247,8 +248,6 @@ async function handleResetPassword() {
                     />
                   </div>
                 </div>
-
-                <!-- Submit reset email -->
                 <DialogFooter>
                   <DialogClose>
                     <Button type="submit" @click="handleResetPassword">

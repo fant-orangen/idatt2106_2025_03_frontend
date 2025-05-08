@@ -5,7 +5,6 @@ import type { UserBasicInfoDto } from '@/models/User'
 import { getUserProfile } from '@/services/UserService'
 import { toast } from 'vue-sonner'
 
-
 // Icon
 import {
   Globe,
@@ -79,19 +78,19 @@ const hasUnreadNotifications = computed(() => notificationStore.hasUnread)
 watch(
   () => notificationStore.notifications,
   async () => {
-    console.log('HeaderNavbar: Notifications changed, checking unread status'); // TODO: remove logs
-    await notificationStore.checkUnreadNotifications();
+    console.log('HeaderNavbar: Notifications changed, checking unread status') // TODO: remove logs
+    await notificationStore.checkUnreadNotifications()
   },
-  { deep: true }
-);
+  { deep: true },
+)
 
 // Watch hasUnread state for debugging
 watch(
   () => notificationStore.hasUnread,
   (newValue) => {
-    console.log('HeaderNavbar: hasUnread state changed to:', newValue);
-  }
-);
+    console.log('HeaderNavbar: hasUnread state changed to:', newValue)
+  },
+)
 
 onMounted(async () => {
   try {
@@ -104,7 +103,7 @@ onMounted(async () => {
       lastName: userData.lastName,
       email: userData.email,
       householdName: userData.householdName,
-      emailVerified: userData.emailVerified
+      emailVerified: userData.emailVerified,
     }
   } catch (error) {
     console.error('Failed to fetch user profile:', error)
@@ -209,7 +208,7 @@ function logOut() {
 
 <template>
   <div
-    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[1100]"
+    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[100]"
   >
     <div class="navbar-left flex flex-row gap-4">
       <!-- Logo -->
@@ -222,7 +221,7 @@ function logOut() {
 
       <Button variant="link" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
         <Globe class="h-4 w-4" />
-        {{ englishSelected ? 'Norsk bokmål' : 'English' }}
+        {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
       </Button>
     </div>
     <div class="navbar-right flex flex-row items-center gap-4">
@@ -249,8 +248,7 @@ function logOut() {
         <DropdownMenuTrigger as-child>
           <Button variant="ghost" class="cursor-pointer hover:bg-input dark:hover:bg-background/40">
             <User class="h-5 w-5" />
-            <span 
-              class="hidden md:inline-flex">
+            <span class="hidden md:inline-flex">
               {{ profile.firstName }} {{ profile.lastName }}
             </span>
           </Button>

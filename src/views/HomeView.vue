@@ -1,17 +1,26 @@
 <template>
 
   <!-- Authenticated User with Household and Crisis View -->
-  <div v-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises" class="content w-full max-w-7xl mx-auto pt-0">
+  <div
+    v-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises"
+    class="content w-full max-w-7xl mx-auto pt-0"
+  >
     <AuthenticatedWithHouseholdCrisisHome />
   </div>
 
   <!-- Authenticated User with Household View (No Crisis) -->
-  <div v-else-if="userStore.isAuthenticated && hasHousehold" class="content w-full max-w-7xl mx-auto pt-0">
+  <div
+    v-else-if="userStore.isAuthenticated && hasHousehold"
+    class="content w-full max-w-7xl mx-auto pt-0"
+  >
     <AuthenticatedWithHouseholdHome />
   </div>
 
   <!-- Authenticated User without Household View -->
-  <div v-else-if="userStore.isAuthenticated && !hasHousehold" class="content w-full max-w-7xl mx-auto pt-0">
+  <div
+    v-else-if="userStore.isAuthenticated && !hasHousehold"
+    class="content w-full max-w-7xl mx-auto pt-0"
+  >
     <AuthenticatedNoHouseholdHome />
   </div>
 
@@ -97,10 +106,6 @@ const checkForOngoingCrises = async () => {
  * @returns {Promise<void>} Resolves when the setup is complete.
  */
 onMounted(async () => {
-  await Promise.all([
-    checkHouseholdStatus(),
-    checkForOngoingCrises()
-  ])
+  await Promise.all([checkHouseholdStatus(), checkForOngoingCrises()])
 })
 </script>
-
