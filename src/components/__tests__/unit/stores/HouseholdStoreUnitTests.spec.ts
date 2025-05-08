@@ -12,7 +12,7 @@
  * - Joining households with invitation tokens
  * - Tracking loading and error states
  *
- * @file HouseholdStore.spec.ts
+ * @file HouseholdStoreUnitTests.spec.ts
  * @version 1.0.0
  */
 
