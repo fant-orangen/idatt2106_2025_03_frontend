@@ -1106,7 +1106,18 @@
       "fetchErrorDescription": "An error occurred while fetching the questions.",
       "questionValidationErrorDescription": "Please provide a valid question and at least one correct answer.",
       "maxOptionsDescription": "You cannot add more than 5 options."
+    },
+    "quiz": {
+      "quizOverview": "Quiz Overview",
+      "takeQuiz": "Take Quiz",
+      "lastAttempt": "Last Attempt"
     }
+  },
+  "alert": {
+    "areYouSure": "Are you sure?",
+    "deleteQuiz": "This action is final and cannot be undone. This will delete this quiz and all relevant data. Do you want to proceed?",
+    "confirmDelete": "Confirm deletion",
+    "cancel": "Cancel"
   },
   "privacy": {
     "title": "Privacy Policy",
