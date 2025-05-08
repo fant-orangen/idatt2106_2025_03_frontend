@@ -1,7 +1,8 @@
 <script setup lang="ts">
 
 /**
- * This component handles the password reset flow after a user receives a token.
+ * @component ResetPasswordView
+ * @description This component handles the password reset flow after a user receives a token.
  * It includes a form with validation to input a new password and confirm it.
  * The form is powered by vee-validate and uses localized validation messages.
  */
