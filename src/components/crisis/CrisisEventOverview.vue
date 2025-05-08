@@ -21,9 +21,9 @@
 
       <!-- Crisis Selection -->
       <Card class="flex flex-col h-full">
-        <!-- Search Component -->
-        <div class="mb-2"> <!-- Changed mb-6 to mb-2 to reduce margin -->
-          <div class="relative w-full">
+        <CardHeader class="pb-2">
+          <!-- Search Component -->
+          <div class="relative w-full mb-4">
             <Input
               v-model="searchQuery"
               type="text"
@@ -33,9 +33,7 @@
             />
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           </div>
-        </div>
-        <!-- Crisis Filter Buttons -->
-        <div class="mb-4"> <!-- Changed mb-6 to mb-4 -->
+          <!-- Crisis Filter Buttons -->
           <div class="grid grid-cols-3 gap-2">
             <Button
               :variant="selectedFilter === 'history' ? 'default' : 'outline'"
@@ -48,7 +46,7 @@
               :variant="selectedFilter === 'nearby' ? 'default' : 'outline'"
               @click="setFilter('nearby')"
             >
-              {{ t('crisis.for_you', 'For You') }}
+              {{ t('crisis.for_you', 'In Your Area') }}
             </Button>
 
             <Button
@@ -63,7 +61,7 @@
           <div v-if="nearbyError" class="mt-2 text-sm text-red-500 px-2">
             {{ nearbyError }}
           </div>
-        </div>
+        </CardHeader>
         <CardContent class="p-0 flex-grow">
           <ScrollArea className="h-[400px] px-4">
             <InfiniteScroll
@@ -105,7 +103,8 @@
     </div>
 
     <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-      <CrisisDetails :crisis="selectedCrisis" />
+      <div class="lg:col-span-1">
+        <CrisisDetails :crisis="selectedCrisis" />
 
       <CrisisEventHistory
         :crisis-id="selectedCrisis.id"
@@ -118,6 +117,26 @@
         :page-size="3"
       />
     </div>
+
+    <!-- Reflection Dialog -->
+    <Dialog :open="isReflectionDialogOpen" @update:open="isReflectionDialogOpen = $event">
+      <DialogContent class="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>{{ t('reflect.add-reflection-for-crisis', 'Add Reflection') }}</DialogTitle>
+          <DialogDescription>
+            {{ t('reflect.reflection-description', 'Share your thoughts about this crisis event') }}
+          </DialogDescription>
+        </DialogHeader>
+        <div class="grid gap-4 py-4">
+          <ReflectionForm
+            :reflection="{ crisisEventId: selectedCrisis?.id, crisisEventName: selectedCrisis?.name }"
+            :is-editing="false"
+            @save="saveReflection"
+            @cancel="closeReflectionDialog"
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
