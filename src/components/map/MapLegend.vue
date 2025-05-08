@@ -1,14 +1,11 @@
 <template>
-  <!-- Wrapped legend in shadcn Card for consistent styling -->
-  <Card class="w-full">
-    <CardHeader class="pb-0">
-      <CardTitle class="text-lg">
-        {{ t('map.legend.title', 'Legend') }}
-      </CardTitle>
-    </CardHeader>
-    <CardContent class="pt-2">
-      <!-- Responsive grid: 2 cols on xs, 3 on sm, 4 on md, 6 on lg+ -->
-      <div class="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+  <!-- Simplified legend without Card wrapper -->
+  <div class="w-full map-legend">
+    <h3 class="text-base font-semibold text-[var(--default-blue)] mb-3">
+      {{ t('map.legend.title', 'Legend') }}
+    </h3>
+    <!-- Simplified layout with just a column -->
+    <div class="flex flex-col gap-3">
         <div
           v-for="item in items"
           :key="item.labelKey"
@@ -23,20 +20,19 @@
           />
           <div
             v-else
-            :class="['w-6 h-6 rounded-full', item.iconClass]"
-          />
+            :style="item.style"
+            class="w-6 h-6 rounded-full"
+          ></div>
           <span class="text-sm">
             {{ t(item.labelKey) }}
           </span>
         </div>
       </div>
-    </CardContent>
-  </Card>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 // Legend icons
 import markerIconUrl        from 'leaflet/dist/images/marker-icon.png'
@@ -57,9 +53,9 @@ const { t } = useI18n()
 const items = [
   { icon: markerIconUrl,        labelKey: 'map.legend.user-location' },
   { icon: markerIconUrl,        labelKey: 'map.legend.household-location', extraClass: 'filter hue-rotate-300' },
-  { iconClass: 'bg-yellow-400',  labelKey: 'map.legend.crisis-level-1' },
-  { iconClass: 'bg-orange-400',  labelKey: 'map.legend.crisis-level-2' },
-  { iconClass: 'bg-red-400',     labelKey: 'map.legend.crisis-level-3' },
+  { style: { backgroundColor: 'var(--crisis-level-green)'}, labelKey: 'map.legend.crisis-level-1' },
+  { style: { backgroundColor: 'var(--crisis-level-yellow)'},  labelKey: 'map.legend.crisis-level-2' },
+  { style: { backgroundColor: 'var(--crisis-level-red)'},     labelKey: 'map.legend.crisis-level-3' },
   { icon: firestationIconUrl,    labelKey: 'map.legend.fire-station' },
   { icon: policestationIconUrl,  labelKey: 'map.legend.police-station' },
   { icon: hospitalIconUrl,       labelKey: 'map.legend.hospital' },

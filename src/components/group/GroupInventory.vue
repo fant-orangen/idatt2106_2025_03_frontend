@@ -21,7 +21,7 @@
       >
         <!-- Product Overview -->
         <div class="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-2">
-          <div class="font-medium flex items-center">
+          <div class="font-medium">
             <Droplet v-if="item.category === 'water'" class="mr-2 w-4 h-4" />
             <Pill v-else-if="item.category === 'medicine'" class="mr-2 w-4 h-4" />
             <Utensils v-else class="mr-2 w-4 h-4" />
@@ -56,6 +56,7 @@
             <Button
               variant="destructive"
               @click="removeBatch(index, bIndex)"
+              :disabled="!batch.isContributed"
               class="text-sm w-full sm:w-auto"
             >
               {{ t('inventory.remove-from-group') }}
@@ -89,6 +90,7 @@ interface GroupBatch {
   amount: string;
   expires: string;
   isNew?: boolean;
+  isContributed: boolean;
 }
 
 const props = defineProps({
@@ -110,7 +112,7 @@ const { t } = useI18n();
 const fetchAllProductTypes = async () => {
   try {
     isLoading.value = true;
-    const response: Page<ProductType> = await groupService.getContributedProductTypes({
+    const response = await groupService.getContributedProductTypes({
       groupId: props.groupId
     });
 
@@ -121,6 +123,9 @@ const fetchAllProductTypes = async () => {
         batches: [],
         totalUnits: 0
       }));
+
+      // Fetch total units for each product type
+      await Promise.all(items.value.map(item => updateTotalUnits(item.id)));
 
       if (items.value.length > 0) {
         groupStore.addProductTypeIds(items.value);
@@ -191,11 +196,24 @@ const toggleEdit = async (index: number) => {
         productTypeId: item.id
       });
       if (response && response.content) {
+        // First map the basic batch info
         item.batches = response.content.map(batch => ({
           id: batch.id,
           amount: batch.number.toString(),
-          expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : ''
+          expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : '',
+          isContributed: false // Initialize as false
         }));
+
+        // Then check each batch's contribution status
+        await Promise.all(item.batches.map(async (batch) => {
+          try {
+            batch.isContributed = await groupService.isContributedToGroup(batch.id);
+          } catch (error) {
+            console.error('Error checking batch contribution status:', error);
+            batch.isContributed = false;
+          }
+        }));
+
         groupStore.addBatchIds(item.name, item.batches);
       }
     } catch (error) {
@@ -213,12 +231,12 @@ const removeBatch = async (productIndex: number, batchIndex: number) => {
     await groupService.removeContributedBatch(batch.id);
     // Remove the batch from the list
     product.batches.splice(batchIndex, 1);
+    // Update the total units for this product type
+    await updateTotalUnits(product.id);
     // If no more batches, close the edit view
     if (product.batches.length === 0) {
       product.edit = false;
     }
-    // Refresh the product types to update totals
-    await fetchAllProductTypes();
   } catch (error) {
     console.error('Error removing batch from group:', error);
     alert('Det oppstod en feil ved fjerning av batch fra gruppen');
@@ -228,5 +246,18 @@ const removeBatch = async (productIndex: number, batchIndex: number) => {
 const getTotalAmount = (item: GroupInventoryItem): string => {
   if (item.totalUnits === undefined) return "-";
   return `${item.totalUnits} ${item.unit}`;
+};
+
+// Add function to fetch total units for a product type
+const updateTotalUnits = async (productId: number) => {
+  try {
+    const total = await groupService.getTotalUnitsForProductType(productId, props.groupId);
+    const item = items.value.find(item => item.id === productId);
+    if (item) {
+      item.totalUnits = total;
+    }
+  } catch (error) {
+    console.error('Error fetching total units:', error);
+  }
 };
 </script>

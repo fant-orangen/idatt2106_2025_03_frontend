@@ -16,8 +16,8 @@ export default defineComponent({
  * @component
  */
 import { computed, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import { marked } from 'marked'
+import type { Token } from 'marked'
 import {
   Card,
   CardContent,
@@ -39,13 +39,17 @@ import {
 import { fetchScenarioThemeById } from '@/services/api/ScenarioThemeService'
 import type { ScenarioThemeDetailsDto } from '@/models/ScenarioTheme'
 
+// Configure marked with essential options
+marked.setOptions({
+  gfm: true,
+  breaks: true
+})
+
 const props = defineProps<{
   selectedTheme: string | null
   themeIcon: string
   selectedScenarioId: number | null
 }>()
-
-const router = useRouter()
 
 const isReadMoreOpen = ref(false)
 const isEmergencyContactsOpen = ref(false)
@@ -53,6 +57,25 @@ const isEmergencyContactsOpen = ref(false)
 const scenarioTheme = ref<ScenarioThemeDetailsDto | null>(null)
 const loadingScenario = ref(false)
 const scenarioError = ref<string | null>(null)
+
+// Create a safe markdown parser function
+const parseMarkdown = (content: string | null) => {
+  if (!content) return ''
+  const renderer = new marked.Renderer()
+
+  // Customize header rendering with proper types
+  renderer.heading = function({ tokens, depth }: { tokens: Token[]; depth: number }): string {
+    const text = tokens.map(t => (t as any).text || '').join('')
+    const fontSize = depth === 1 ? '3xl' : depth === 2 ? '2xl' : depth === 3 ? 'xl' : 'lg'
+    return `<h${depth} class="text-${fontSize} font-bold my-4">${text}</h${depth}>`
+  }
+
+  return marked.parse(content, {
+    gfm: true,
+    breaks: true,
+    renderer
+  })
+}
 
 /**
  * Gets the translation key for a theme based on its type
@@ -242,7 +265,7 @@ function closeEmergencyContacts() {
       </CardContent>
     </Card>
 
-  <!-- Before Crisis Instructions -->
+    <!-- Before Crisis Instructions -->
     <Card v-if="scenarioTheme.before" class="mb-6 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
@@ -253,8 +276,8 @@ function closeEmergencyContacts() {
 
       <CardContent>
         <div
-          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
-          v-html="marked.parse(scenarioTheme.before)"
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base"
+          v-html="parseMarkdown(scenarioTheme.before)"
         ></div>
       </CardContent>
     </Card>
@@ -270,8 +293,8 @@ function closeEmergencyContacts() {
 
       <CardContent>
         <div
-          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
-          v-html="marked.parse(scenarioTheme.under)"
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base"
+          v-html="parseMarkdown(scenarioTheme.under)"
         ></div>
       </CardContent>
     </Card>
@@ -287,8 +310,8 @@ function closeEmergencyContacts() {
 
       <CardContent>
         <div
-          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
-          v-html="marked.parse(scenarioTheme.after)"
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base"
+          v-html="parseMarkdown(scenarioTheme.after)"
         ></div>
       </CardContent>
     </Card>
@@ -326,8 +349,8 @@ function closeEmergencyContacts() {
 
       <CardContent>
         <div
-          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary"
-          v-html="marked.parse($t(renderedContent))"
+          class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base"
+          v-html="parseMarkdown($t(renderedContent))"
         ></div>
       </CardContent>
 
