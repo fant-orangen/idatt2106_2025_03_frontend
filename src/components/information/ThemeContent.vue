@@ -17,7 +17,7 @@ export default defineComponent({
  */
 import { computed, ref, watch } from 'vue'
 import { marked } from 'marked'
-import type { Heading } from 'marked'
+import type { Token } from 'marked'
 import {
   Card,
   CardContent,
@@ -64,8 +64,8 @@ const parseMarkdown = (content: string | null) => {
   const renderer = new marked.Renderer()
 
   // Customize header rendering with proper types
-  renderer.heading = function({ tokens, depth }: Heading): string {
-    const text = tokens.map(t => t.text).join('')
+  renderer.heading = function({ tokens, depth }: { tokens: Token[]; depth: number }): string {
+    const text = tokens.map(t => (t as any).text || '').join('')
     const fontSize = depth === 1 ? '3xl' : depth === 2 ? '2xl' : depth === 3 ? 'xl' : 'lg'
     return `<h${depth} class="text-${fontSize} font-bold my-4">${text}</h${depth}>`
   }
