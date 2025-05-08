@@ -1,18 +1,5 @@
 <template>
   <div class="container mx-auto p-4">
-    <!-- Search Component -->
-    <div class="mb-6">
-      <div class="relative w-full">
-        <Input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search crisis events..."
-          class="w-full pl-10 py-3 text-base h-14"
-          @input="handleSearch"
-        />
-        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-      </div>
-    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Map Area -->
@@ -34,8 +21,21 @@
 
       <!-- Crisis Selection -->
       <Card class="flex flex-col h-full">
+        <!-- Search Component -->
+        <div class="mb-2"> <!-- Changed mb-6 to mb-2 to reduce margin -->
+          <div class="relative w-full">
+            <Input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search crisis events..."
+              class="w-full pl-10 py-3 text-base h-10"
+              @input="handleSearch"
+            />
+            <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          </div>
+        </div>
         <!-- Crisis Filter Buttons -->
-        <div class="mb-6">
+        <div class="mb-4"> <!-- Changed mb-6 to mb-4 -->
           <div class="grid grid-cols-3 gap-2">
             <Button
               :variant="selectedFilter === 'history' ? 'default' : 'outline'"
