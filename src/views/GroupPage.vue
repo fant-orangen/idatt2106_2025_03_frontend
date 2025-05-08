@@ -125,6 +125,11 @@
 
 
 <script setup lang="ts">
+
+/**
+ * @component GroupPage
+ * @description Displays the Group page.
+ */
 import { ref, onMounted, computed, watch } from 'vue';
 import { groupService } from '@/services/api/GroupService';
 import { useGroupStore } from '@/stores/GroupStore';
