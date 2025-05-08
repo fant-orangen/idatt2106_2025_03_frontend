@@ -151,7 +151,7 @@ async function handleResetPassword() {
 </script>
 
 <template>
-  <div class="login-wrapper flex justify-around mt-[13rem] bg-backround p-[1rem]">
+  <div class="login-wrapper flex mt-[10vh] justify-center items-center bg-backround p-[1rem]">
     <Card class="min-w-5/6 md:min-w-xl">
       <CardHeader>
         <CardTitle class="text-xl font-bold text-center">{{ $t('login.login') }}</CardTitle>

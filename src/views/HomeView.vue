@@ -8,17 +8,24 @@
   </div>
 
   <!-- Authenticated User with Household and Crisis View -->
-  <div v-else-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises" class="content w-full max-w-7xl mx-auto pt-0">
-    <AuthenticatedWithHouseholdCrisisHome />
-  </div>
+  <div
+    v-else-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises"
+    class="content w-full max-w-7xl mx-auto pt-0"
+  >
 
   <!-- Authenticated User with Household View (No Crisis) -->
-  <div v-else-if="userStore.isAuthenticated && hasHousehold" class="content w-full max-w-7xl mx-auto pt-0">
+  <div
+    v-else-if="userStore.isAuthenticated && hasHousehold"
+    class="content w-full max-w-7xl mx-auto pt-0"
+  >
     <AuthenticatedWithHouseholdHome />
   </div>
 
   <!-- Authenticated User without Household View -->
-  <div v-else-if="userStore.isAuthenticated && !hasHousehold" class="content w-full max-w-7xl mx-auto pt-0">
+  <div
+    v-else-if="userStore.isAuthenticated && !hasHousehold"
+    class="content w-full max-w-7xl mx-auto pt-0"
+  >
     <AuthenticatedNoHouseholdHome />
   </div>
 
@@ -62,9 +69,7 @@ const checkHouseholdStatus = async () => {
   if (userStore.isAuthenticated) {
     try {
       await householdStore.fetchCurrentHousehold()
-      console.log('Household status checked:', !!householdStore.currentHousehold)
     } catch (error) {
-      console.error('Failed to check household status:', error)
     }
   }
 }
@@ -101,20 +106,16 @@ const refreshHomeData = async () => {
       checkForOngoingCrises()
     ])
   } catch (error) {
-    console.error('Error refreshing home data:', error)
   } finally {
     isLoading.value = false
   }
 }
 
-// Watch for changes in authentication state
 watch(() => userStore.isAuthenticated, async (isAuthenticated) => {
   console.log('Authentication state changed in HomeView:', isAuthenticated)
   if (isAuthenticated) {
     await refreshHomeData()
   }
-  // No need to explicitly reset household status when user logs out
-  // The fetchCurrentHousehold method has a check for logged in status
 })
 
 /**
@@ -126,8 +127,6 @@ watch(() => userStore.isAuthenticated, async (isAuthenticated) => {
  * @returns {Promise<void>} Resolves when the setup is complete.
  */
 onMounted(async () => {
-  console.log('HomeView mounted - Checking household and crisis status')
   await refreshHomeData()
 })
 </script>
-

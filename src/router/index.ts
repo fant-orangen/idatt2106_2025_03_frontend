@@ -119,16 +119,6 @@ const routes = [
     meta: { requiresSuperAdmin: true },
   },
   {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('@/views/404NotFoundView.vue'),
-  },
-  {
-    path: '/medicine-inventory',
-    name: 'MedicineInventory',
-    component: () => import('@/views/MedicineInventory.vue'),
-  },
-  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/ProfileView.vue'),
@@ -162,7 +152,7 @@ const routes = [
     path: '/group',
     name: 'GroupPage',
     component: () => import('@/views/GroupPage.vue'),
-    meta: { requiresAuth: true, requiresHousehold: true },
+    meta: { requiresAuth: true },
   },
   {
     path: '/reflections',
@@ -180,6 +170,39 @@ const routes = [
     path: '/privacy-policy',
     name: 'PrivacyPolicy',
     component: () => import('@/views/PrivacyPolicyView.vue'),
+  },
+  {
+    path: '/quiz-overview',
+    name: 'QuizOverview',
+    component: () => import('@/views/gamification/QuizOverviewView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/quiz/id=:quizId',
+    name: 'Quiz',
+    component: () => import('@/views/gamification/QuizView.vue'),
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/history/id=:quizId',
+    name: 'QuizHistory',
+    component: () => import('@/views/gamification/QuizHistoryView.vue'),
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/admin/new-quiz',
+    name: 'NewQuiz',
+    component: () => import('@/views/gamification/admin/DefineQuizView.vue'),
+    props: true,
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/quiz-overview/admin/edit-quiz/id=:quizId',
+    name: 'EditQuiz',
+    component: () => import('@/views/gamification/admin/EditQuizView.vue'),
+    props: true,
   },
   {
     path: '/:pathMatch(.*)*',
@@ -213,14 +236,26 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = ['Login', 'Register', 'Home', 'Household', 'Information', 'ScenarioTheme', 'CrisisEvent', 'NotFound', 'News', 'Notifications', 'ResetPassword', 'PrivacyPolicy', ];
+  const publicRoutes = [
+    'Login',
+    'Register',
+    'Home',
+    'Household',
+    'Information',
+    'ScenarioTheme',
+    'NotFound',
+    'News',
+    'Notifications',
+    'ResetPassword',
+    'PrivacyPolicy',
+    'QuizOverview',
+    'Quiz',
+  ]
 
-  // Define routes that require authentication but don't require a household
-  const noHouseholdRequiredRoutes = ['Reflections', 'Profile', 'Settings', ];
-
+  const noHouseholdRequiredRoutes = ['Reflections', 'Profile', 'Settings']
   // Allow immediate navigation if the target route is public
-  if (publicRoutes.includes(to.name as string)) { //
-    return next(); // Proceed to the public route
+  if (publicRoutes.includes(to.name as string)) {
+    return next() // Proceed to the public route
   }
 
   // Check if the user store indicates authentication.
