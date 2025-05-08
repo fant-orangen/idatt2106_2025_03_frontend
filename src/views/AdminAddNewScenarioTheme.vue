@@ -61,16 +61,16 @@
             <!-- Before Crisis Instructions field -->
             <FormField v-slot="{ field, meta, errorMessage }" name="before">
               <FormItem>
-                <FormLabel>{{ $t('admin.scenario-theme-before-instructions') }}</FormLabel>
+                <FormLabel>{{ $t('admin.scenario-theme-before') }}</FormLabel>
                 <FormControl>
                   <Textarea
                     v-bind="field"
-                    :placeholder="$t('admin.scenario-theme-before-instructions-placeholder')"
+                    :placeholder="$t('admin.scenario-theme-before-placeholder')"
                     class="min-h-[150px]"
                   />
                 </FormControl>
                 <FormDescription>
-                  {{ $t('admin.scenario-theme-before-instructions-help') }}
+                  {{ $t('admin.scenario-theme-before-help') }}
                   <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
                 </FormDescription>
                 <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
@@ -80,16 +80,16 @@
             <!-- During Crisis Instructions field -->
             <FormField v-slot="{ field, meta, errorMessage }" name="under">
               <FormItem>
-                <FormLabel>{{ $t('admin.scenario-theme-under-instructions') }}</FormLabel>
+                <FormLabel>{{ $t('admin.scenario-theme-under') }}</FormLabel>
                 <FormControl>
                   <Textarea
                     v-bind="field"
-                    :placeholder="$t('admin.scenario-theme-under-instructions-placeholder')"
+                    :placeholder="$t('admin.scenario-theme-under-placeholder')"
                     class="min-h-[150px]"
                   />
                 </FormControl>
                 <FormDescription>
-                  {{ $t('admin.scenario-theme-under-instructions-help') }}
+                  {{ $t('admin.scenario-theme-under-help') }}
                   <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
                 </FormDescription>
                 <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
@@ -99,16 +99,16 @@
             <!-- After Crisis Instructions field -->
             <FormField v-slot="{ field, meta, errorMessage }" name="after">
               <FormItem>
-                <FormLabel>{{ $t('admin.scenario-theme-after-instructions') }}</FormLabel>
+                <FormLabel>{{ $t('admin.scenario-theme-after') }}</FormLabel>
                 <FormControl>
                   <Textarea
                     v-bind="field"
-                    :placeholder="$t('admin.scenario-theme-after-instructions-placeholder')"
+                    :placeholder="$t('admin.scenario-theme-after-placeholder')"
                     class="min-h-[150px]"
                   />
                 </FormControl>
                 <FormDescription>
-                  {{ $t('admin.scenario-theme-after-instructions-help') }}
+                  {{ $t('admin.scenario-theme-after-help') }}
                   <span class="block mt-1 text-xs">{{ $t('admin.markdown-supported') }}</span>
                 </FormDescription>
                 <FormMessage v-if="meta.touched">{{ errorMessage }}</FormMessage>
@@ -279,7 +279,7 @@ const onSubmit = form.handleSubmit(async (values) => {
  */
 function navigateToAdminPanel() {
   isSuccessDialogOpen.value = false
-  router.push('/admin-panel')
+  router.push('/admin/admin-panel')
 }
 </script>
 
