@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
  * This file defines the settings page for the user account. It allows users to:
- *  * - update their email and password
- *  * - toggle security preferences like 2FA
- *  * - view and edit personal profile information
- *  * - manage notification preferences
- *  * - access all these settings through a tabbed UI layout
+ *  - update their email and password
+ *  - toggle security preferences like 2FA
+ *  - view and edit personal profile information
+ *  - manage notification preferences
+ *  - access all these settings through a tabbed UI layout
  */
 
 import { Button } from '@/components/ui/button'
