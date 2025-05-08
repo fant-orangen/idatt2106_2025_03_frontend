@@ -95,12 +95,13 @@
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="defibrillator">{{$t('add-POI-info.POI-type.defibrillator')}}</SelectItem>
-                  <SelectItem value="shelter">{{$t('add-POI-info.POI-type.shelter')}}</SelectItem>
-                  <SelectItem value="water-source">{{$t('add-POI-info.POI-type.water-source')}}</SelectItem>
-                  <SelectItem value="food-station">{{$t('add-POI-info.POI-type.food')}}</SelectItem>
-                </SelectGroup>
+                <SelectItem
+                  v-for="type in poiTypes"
+                  :key="type.id"
+                  :value="type.id"
+                >
+                  {{ t(`map.poiTypes.${type.id}`, type.name) }}
+                </SelectItem>
               </SelectContent>
             </Select>
             <FormDescription>{{ $t('add-POI-info.info.type') }}</FormDescription>
@@ -237,7 +238,7 @@
  * API calls are made via the AdminServices module.
  */
 
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { createPOI } from '@/services/api/AdminServices'
 import { useI18n } from 'vue-i18n';
@@ -282,6 +283,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { fetchPoiTypes } from '@/services/api/PoiService'
 
 /**
  * Represents geographical coordinates.
@@ -358,9 +360,13 @@ const formSchema = toTypedSchema(
     .optional(),
 
     // Type: required enum with POI types
-    type: z.enum(['defibrillator', 'shelter', 'water-source', 'food-station'], {
-      required_error: t('add-POI-info.errors.type') || 'POI type is required'
-    }),
+    type: z.preprocess(
+      (val) => (val == null ? undefined : Number(val)),
+      z.number({
+        required_error: t('add-POI-info.errors.type'),
+        invalid_type_error: t('add-POI-info.errors.type'),
+      })
+    ),
 
     // Contact info: optional string with phone number format validation
     contactinfo: z.string()
@@ -433,6 +439,11 @@ const form = useForm({
 const mapComponentInstance = computed(() => {
   return mapComponent.value || null;
 });
+
+/**
+ * Point of Interest types used in drop-down menu
+ */
+const poiTypes = ref<{ id: number; name: string }[]>([])
 
 // --- Map Interaction Functions ---
 
@@ -521,7 +532,7 @@ function updateMapMarker(lat: number, lng: number): void {
  */
 function navigateToAdminPanel(): void {
   isSuccessDialogOpen.value = false;
-  router.push('/admin-panel');
+  router.push('/admin/admin-panel');
 }
 
 // --- Form Submission Logic ---
@@ -538,33 +549,21 @@ const onSubmit = form.handleSubmit(async (values) => {
 
   try {
     // Map POI type to backend ID
-    let poiTypeId: number;
-    switch (values.type) {
-      case 'shelter': poiTypeId = 4; break;
-      case 'water-source': poiTypeId = 6; break;
-      case 'food-station': poiTypeId = 5; break;
-      case 'defibrillator': poiTypeId = 1; break;
-      default:
-        throw new Error(t('add-event-info.errors.type') || 'Invalid POI type selected');
-    }
+    const poiTypeId = values.type;
 
-    // Format opening hours if both values are provided
-    let openingHours = '';
-    if (values.openfrom && values.opento) {
-      openingHours = `${values.openfrom} - ${values.opento}`;
-    }
 
-    // Prepare the payload matching the backend's CreatePOIDto
-    const poiData = {
-      name: values.title,
-      latitude: values.latitude !== undefined ? Number(values.latitude) : null,
-      longitude: values.longitude !== undefined ? Number(values.longitude) : null,
-      address: values.address || null,
-      poiTypeId: poiTypeId,
-      description: values.description || null,
-      openingHours: openingHours || null,
-      contactInfo: values.contactinfo || null,
-    };
+        // Prepare payload in the new required shape
+          const poiData = {
+            name: values.title,
+            latitude: values.latitude ?? null,
+            longitude: values.longitude ?? null,
+            poiTypeId: poiTypeId,
+            description: values.description,
+            address: values.address || null,
+            openFrom: values.openfrom || null,
+            openTo: values.opento || null,
+            contactInfo: values.contactinfo || null,
+          };
 
     console.log('Submitting POI data:', poiData);
     const response = await createPOI(poiData);
@@ -585,6 +584,15 @@ const onSubmit = form.handleSubmit(async (values) => {
     isSubmitting.value = false;
   }
 });
+
+
+onMounted(async () => {
+  try {
+    poiTypes.value = await fetchPoiTypes()
+  } catch (err) {
+    console.error('Failed to load POI types', err)
+  }
+})
 
 // --- Watchers ---
 

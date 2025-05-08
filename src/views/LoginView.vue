@@ -77,8 +77,8 @@ async function handleLogin() {
 
     // Handle the response
     if (response.status === 200) {
+      await userStore.login(response.status, response.data.token, email.value);
       router.push('/')
-      userStore.login(response.status, response.data.token, email.value)
     } else if (response.status === 202) {
       userStore.send2FACodeToEmail(email.value)
       isTwoFactorAuthDialogOpen.value = true
@@ -117,12 +117,12 @@ async function handleComplete() {
     console.log('Pin as number:', pinAsNumber)
     const response = await userStore.verify2FACodeInput(email.value, pinAsNumber)
     if (response.status === 200) {
-      userStore.login(response.status, response.data.token, email.value)
       isTwoFactorAuthDialogOpen.value = false
+      await userStore.login(response.status, response.data.token, email.value);
+      router.push('/')
     } else {
       errorMessage.value = t('errors.invalid-2fa-code')
     }
-    router.push('/')
     console.log('User role is: ', userStore.role)
   } catch (error) {
     errorMessage.value = t('errors.login-failed')

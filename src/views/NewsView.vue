@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { News } from '@/models/News';
-import { fetchNewsDigest } from '@/services/api/NewsService';
+import { fetchGeneralNews } from '@/services/api/NewsService';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { formatDateFull } from '@/utils/dateUtils';
 
@@ -42,7 +42,7 @@ const loadMoreNews = async () => {
   loading.value = true;
   try {
     console.log('Loading more news, current page:', page.value);
-    const response = await fetchNewsDigest(page.value, pageSize);
+    const response = await fetchGeneralNews(page.value, pageSize);
     console.log('Received response:', response);
 
     if (response.content && response.content.length > 0) {

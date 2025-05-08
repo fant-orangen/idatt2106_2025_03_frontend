@@ -209,6 +209,8 @@
     "crisis-status": "Krisestatus",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
     "no-crisis": "Ingen pågående krise",
+    "all_clear": "Alt klart. Ingen aktive krisehendelser for øyeblikket.",
+    "view_all_events": "Se alle hendelser",
     "color": {
       "green": "grønn",
       "yellow": "gul",
@@ -240,7 +242,10 @@
     "updated": "Oppdatert",
     "created_by": "Opprettet av",
     "scenario_theme": "Scenariotema",
+    "scenario": "Scenario",
     "view_scenario_theme": "Vis scenariotema",
+    "view_scenario_themes": "Vis scenariotemaer",
+    "view_details": "Vis detaljer",
     "previous": "Tidligere",
     "new": "Ny",
     "by_user": "Av bruker {user}",
@@ -292,6 +297,44 @@
     "read-info-preparations": "Les mer om hvordan du kan forberede deg til en krise",
     "info-current-crisis": "Les mer om den nåværende krisetype",
     "info-scenario-type": "Les mer om {scenario}"
+  },
+  "home": {
+    "hero": {
+      "title": "Vær forberedt på enhver krise",
+      "description": "Krisefikser hjelper deg og din husholdning med å holde dere informert, forberedt og trygge under nødsituasjoner."
+    },
+    "view_map": "Vis krisekart",
+    "view_all_news": "Se alle nyheter",
+    "learn_more": "Lær mer",
+    "national_crisis": {
+      "title": "Krisehendelser i Norge",
+      "description": "Se alle aktive krisehendelser i Norge",
+      "view_all": "Se alle krisehendelser"
+    },
+    "no_crisis": {
+      "banner": "Ingen pågående krise for øyeblikket. Hold deg forberedt!"
+    },
+    "crisis_theme": {
+      "read_more_specific": "Les mer om {crisisType} her",
+      "title": "Pågående krisescenario",
+      "description": "Les om dette scenarioet og hva du kan gjøre for å holde deg trygg",
+      "learn_more": "Lær mer om denne krisen"
+    },
+    "household": {
+      "title": "Opprett din husholdning",
+      "description": "Sett opp din husholdning for å bedre administrere ressurser og holde kontakten med familiemedlemmer under nødsituasjoner.",
+      "feature1": "Spor nødforsyninger og få påminnelser når varer utløper",
+      "feature2": "Del viktig informasjon med husholdningsmedlemmer",
+      "feature3": "Motta stedsspesifikke varsler og veiledning",
+      "create_button": "Opprett husholdning"
+    },
+    "crisis_info": {
+      "title": "Kriseinformasjonssenter",
+      "description": "Få sanntidsoppdateringer og praktisk veiledning for alle typer nødsituasjoner.",
+      "before": "Lær hvordan du forbereder deg før en krise oppstår",
+      "during": "Få kritisk informasjon under aktive nødsituasjoner",
+      "after": "Finn ressurser for gjenoppretting etter at en krise har passert"
+    }
   },
   "news": {
     "title": "Nyheter",
@@ -351,7 +394,10 @@
     "reflection-for-crisis": "Refleksjon for krise:",
     "selected-crisis": "Valgt krise",
     "unknown-crisis": "Ukjent krise",
-    "view-reflections": "Se refleksjoner"
+    "view-reflections": "Se refleksjoner",
+    "no-household-message": "Du er ikke i en husholdning for øyeblikket.",
+    "cannot-view-shared-reflections": "Du må være i en husholdning for å se delte refleksjoner fra andre brukere.",
+    "join-household-prompt": "Bli med i eller opprett en husholdning for å koble til andre og dele refleksjoner."
   },
   "map": {
     "defibrillator": "Hjertestarter",
@@ -363,6 +409,9 @@
     "directions": "Veibeskrivelse",
     "contact": "Kontakt",
     "filter": "Filtrer POIer",
+    "show-pois": "Interessepunkt",
+    "show-crisis": "Kriser",
+    "show-meeting-places": "Møteplasser",
     "my-location": "Bruk min posisjon",
     "your-location": "Din posisjon",
     "household-location": "Din husholdning",
@@ -383,7 +432,35 @@
     "find-nearest": "Finn nærmeste",
     "show-directions": "Vis veibeskrivelse",
     "close-directions": "Lukk",
-    "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse"
+    "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse",
+    "legend": {
+              "user-location": "Din Posisjon",
+              "household-location": "Husholdning",
+              "user-location": "Din Posisjon",
+              "crisis-level-1": "Krisenivå 1",
+              "crisis-level-2": "Krisenivå 2",
+              "crisis-level-3": "Krisenivå 3",
+              "fire-station": "Brannstasjon",
+              "police-station": "Politistasjon",
+              "hospital": "Sykehus",
+              "pharmacy": "Apotek",
+              "gas-station": "Bensinstasjon",
+              "grocery-store": "Dagligvarebutikk",
+              "water-point": "Vannkilde",
+              "meeting-point": "Møtepunkt",
+              "shelter": "Tilfluktsrom",
+              "default": "Other"
+              },
+    "poiTypes": {
+      "1": "Sykehus",
+      "2": "Politistasjon",
+      "3": "Brannstasjon",
+      "4": "Tilfluktsrom",
+      "5": "Dagligvarebutikk",
+      "6": "Vannkilde",
+      "7": "Bensinstajon",
+      "8": "Apotek"
+    }
   },
   "time-units": {
     "month": "1 måned | {count} måneder",
@@ -550,6 +627,11 @@
     "create_button": "Opprett nytt hushold",
     "no-household": "Du har ikke et hushold ennå",
     "no-household-description": "Opprett eller bli med i et hushold for å håndtere beredskap sammen med familie eller venner.",
+    "no_household": {
+      "title": "Ingen husholdning funnet",
+      "banner": "Uten en husholdning kan vi ikke oppdatere deg om aktive hendelser i nærheten.",
+      "create_now": "Opprett husholdning"
+    },
     "manage-household": "Administrer hushold",
     "leave-household": "Forlat hushold",
     "leave-confirm-title": "Forlat hushold",
@@ -558,12 +640,12 @@
     "leave-error": "Kunne ikke forlate husholdet",
     "leave-admin-warning": "Du er administrator for dette husholdet. Du kan ikke forlate det før du overfører administratorrettigheter til et annet medlem.",
     "transfer-admin-first": "Vennligst overfør administratorrettigheter til et annet medlem først.",
-    "transfer-admin-role": "Overfør administratorrolle",
-    "transfer-admin-title": "Overfør administratorrolle",
-    "transfer-admin-description": "Velg et medlem å overføre administratorrettigheter til:",
-    "no-members-to-transfer": "Ingen medlemmer tilgjengelig for å overføre administratorrettigheter til.",
-    "admin-transferred-success": "Administratorrolle overført",
-    "admin-transferred-error": "Kunne ikke overføre administratorrolle",
+    "transfer-admin-role": "Gi administratorrettigheter",
+    "transfer-admin-title": "Gi administratorrettigheter",
+    "transfer-admin-description": "Velg et medlem å gi administratorrettigheter til. Flere medlemmer kan være administratorer.",
+    "no-members-to-transfer": "Ingen medlemmer tilgjengelig for å gi administratorrettigheter til.",
+    "admin-transferred-success": "Administratorrettigheter gitt",
+    "admin-transferred-error": "Kunne ikke gi administratorrettigheter",
     "error-fetching-data": "Feil ved henting av husholddata",
     "generate-invitation": "Generer invitasjonskode",
     "copy-invitation": "Kopier invitasjonskode",
@@ -871,9 +953,11 @@
       "type": "Type",
       "open-from": "Åpent fra",
       "open-to": "Åpent til",
-      "contact-info": "Kontaktinformasjon"
+      "contact-info": "Kontaktinformasjon",
+      "choose-poi": "Velg Interessepunkt"
     },
     "POI-type": {
+      "undefined": "Velg type",
       "defibrillator": "Hjertestarter",
       "shelter": "Tilfluktsrom",
       "water-source": "Vannkilde",
@@ -890,12 +974,27 @@
     "description": "Beskrivelse",
     "latitude": "Breddegrad",
     "longitude": "Lengdegrad",
+    "address": "Adresse",
     "opening-hours": "Åpningstider",
     "contact": "Kontaktinformasjon",
     "type": "Type",
     "submit": "Lagre",
     "delete": "Slett",
-    "confirm-delete": "Er du sikker på at du vil slette dette interessepunktet?"
+    "confirm-delete": "Er du sikker på at du vil slette dette interessepunktet?",
+    "loading": "Laster flere...",
+    "loading.complete": "Alle interessepunkt er lastet inn.",
+    "loading.schema": "Laster inn skjema...",
+    "deletion": {
+      "failed": "Kunne ikke slette interessepunktet.",
+      "success": "Interessepunktet er nå slettet."
+    },
+    "description-max": "Beskrivelse kan ikke inneholde mer enn 1000 tegn.",
+    "contact-max": "Kontaktinformasjon kan ikke inneholde mer enn 100 tegn.",
+    "confirm-delete": "Er du sikker på at du ønsker å slette dette interessepunktet permanent?",
+    "delete-info": "Denne handlingen kan ikke angres.",
+    "update-success": "Interessepunktet er blitt oppdatert!",
+    "update-failed": "Kunne ikke oppdatere interessepunkt med nye verdier.",
+    "search-poi": "Søk etter et interessepunkt..."
   },
   "language": {
     "title": "Språk",
