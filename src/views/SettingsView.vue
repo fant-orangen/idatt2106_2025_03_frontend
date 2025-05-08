@@ -1,4 +1,13 @@
 <script setup lang="ts">
+/**
+ * This file defines the settings page for the user account. It allows users to:
+ *  * - update their email and password
+ *  * - toggle security preferences like 2FA
+ *  * - view and edit personal profile information
+ *  * - manage notification preferences
+ *  * - access all these settings through a tabbed UI layout
+ */
+
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -26,22 +35,30 @@ const { t } = useI18n()
 const userStore = useUserStore()
 const router = useRouter()
 
-// User preferences
+/**
+ * User preferences
+ */
 const twoFactorAuthenticationEnabled = ref(false)
 const locationSharingEnabled = ref(false)
 
-// Email and password fields
+/**
+ * Email and passwords fields
+ */
 const newEmail = ref('')
 const changeEmailPassword = ref('')
 const currentPassword = ref('')
 const newPassword = ref('')
 
-// View toggles for password fields
+/**
+ * View toggles for password fields
+ */
 const isViewChangePasswordEmail = ref(false)
 const isViewCurrentPassword = ref(false)
 const isViewNewPassword = ref(false)
 
-// Profile data
+/**
+ * Profile data
+ */
 const profile = ref<ExtendedUserProfile>({
   id: null,
   email: '',
@@ -58,6 +75,11 @@ const profile = ref<ExtendedUserProfile>({
 
 const isProfileLoading = ref(false)
 
+/**
+ * Method to handle update of user preferences
+ * @param preference - the user preference to handle
+ * @param value - boolean value for 2FA
+ */
 function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boolean) {
   // Optimistically update the state
   if (preference === 'twoFactorAuthenticationEnabled') {
@@ -77,6 +99,10 @@ function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boo
     })
 }
 
+/**
+ * Method to get preferences.
+ */
+
 function getPreferences() {
   getUserPreferences()
     .then((preferences) => {
@@ -91,6 +117,11 @@ function getPreferences() {
     })
 }
 
+/**
+ * Method to handle updating a password.
+ * @param oldPasswordInput - the old password
+ * @param newPasswordInput - new password chosen by the user.
+ */
 function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string) {
   userStore
     .updatePassword(oldPasswordInput, newPasswordInput)
@@ -112,6 +143,11 @@ function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string
     })
 }
 
+/**
+ * Method to handle updating email.
+ * @param newEmailInput - the new email chosen by the user.
+ * @param passwordInput - the old password.
+ */
 function handleUpdateEmail(newEmailInput: string, passwordInput: string) {
   userStore
     .updateEmail(newEmailInput, passwordInput)
@@ -133,17 +169,25 @@ function handleUpdateEmail(newEmailInput: string, passwordInput: string) {
     })
 }
 
+/**
+ * Cancel update of email.
+ */
 function handleCancelEmailChange() {
   newEmail.value = ''
   changeEmailPassword.value = ''
 }
 
+/**
+ * Cancel changing a password.
+ */
 function handleCancelPasswordChange() {
   currentPassword.value = ''
   newPassword.value = ''
 }
 
-// Fetch user profile data
+/**
+ * Fetch user profile data.
+ */
 const fetchUserProfile = async () => {
   try {
     isProfileLoading.value = true
@@ -157,7 +201,9 @@ const fetchUserProfile = async () => {
   }
 }
 
-// Save profile changes
+/**
+ * Save profile changes.
+ */
 const saveProfile = async () => {
   try {
     isProfileLoading.value = true
@@ -199,8 +245,10 @@ onMounted(() => {
     {{ t('settings.title') }}
   </h1>
   <div class="page-content flex flex-col items-center mt-10 mb-20 w-full">
+
     <!-- Tabs -->
     <Tabs default-value="account" class="w-full max-w-2/3">
+
       <!-- Tabs List -->
       <TabsList class="grid grid-cols-3 w-2/3 mx-auto mb-4">
         <TabsTrigger value="account">{{ t('settings.tabs.account') }}</TabsTrigger>
@@ -218,6 +266,7 @@ onMounted(() => {
                 {{ t('settings.account.description') }}
               </CardDescription>
             </CardHeader>
+
             <!-- Change Email Setting -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.email.subtitle') }}</CardTitle>
@@ -262,6 +311,7 @@ onMounted(() => {
                 </Button>
               </div>
             </CardFooter>
+
             <!-- Change Password Setting -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.password.title') }}</CardTitle>
@@ -323,6 +373,7 @@ onMounted(() => {
                 </Button>
               </div>
             </CardFooter>
+
             <!-- Security Settings -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.security.title') }}</CardTitle>
@@ -353,6 +404,7 @@ onMounted(() => {
                 </Button>
               </div>
             </CardContent>
+
             <!-- Delete Account -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.delete.title') }}</CardTitle>
@@ -428,6 +480,7 @@ onMounted(() => {
               </CardDescription>
             </CardHeader>
             <CardContent class="space-y-6">
+
               <!-- Email Notifications -->
               <div class="flex items-center justify-between border-b pb-4">
                 <div>
