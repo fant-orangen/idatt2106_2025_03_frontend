@@ -160,7 +160,7 @@ const restartQuiz = () => {
 </script>
 
 <template>
-  <div class="page-contents flex flex-col flex-grow justify-center items-center">
+  <div class="page-contents flex flex-col flex-grow justify-center items-center mb-15">
     <h1 class="text-4xl font-bold text-foreground flex justify-center mb-15 mt-10 text-center">
       {{ quizName }}
     </h1>
