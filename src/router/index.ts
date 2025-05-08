@@ -161,16 +161,17 @@ const routes = [
     component: () => import('@/views/gamification/QuizOverviewView.vue'),
   },
   {
+    path: '/quizzes/history/id=:quizId',
+    name: 'QuizHistory',
+    component: () => import('@/views/gamification/QuizHistoryView.vue'),
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/quizzes/id=:quizId',
     name: 'Quiz',
     component: () => import('@/views/gamification/QuizView.vue'),
     props: true,
-  },
-  {
-    path: '/quizzes/history',
-    name: 'QuizHistory',
-    component: () => import('@/views/gamification/QuizHistoryView.vue'),
-    meta: { requiresAuth: true },
   },
   {
     path: '/quizzes/admin/new-quiz',
@@ -246,6 +247,8 @@ router.beforeEach(async (to, from, next) => {
     'Notifications',
     'ResetPassword',
     'PrivacyPolicy',
+    'QuizOverview',
+    'Quiz',
   ]
 
   // Allow immediate navigation if the target route is public
