@@ -289,10 +289,9 @@ export async function isUserSafe(userId: number): Promise<boolean> {
   try {
     const response = await api.get('/user/confirm-safety/is-safe', {
       params: { userId }
-    });
-    return response.data;
+    })
+    return response.data === true || (typeof response.data === 'object' && response.data.isSafe === true);
   } catch (error: unknown) {
-    console.error(`Error checking safety status for user ${userId}:`, error);
-    throw error;
+    return false;
   }
 }
