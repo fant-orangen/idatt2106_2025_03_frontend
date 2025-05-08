@@ -64,6 +64,7 @@
     "@types/leaflet": "^1.9.17",
     "@types/leaflet-routing-machine": "^3.2.8",
     "@types/leaflet.markercluster": "^1.5.5",
+    "@types/marked": "^5.0.2",
     "@types/node": "^22.14.1",
     "@types/sockjs-client": "^1.5.4",
     "@types/stompjs": "^2.3.9",
