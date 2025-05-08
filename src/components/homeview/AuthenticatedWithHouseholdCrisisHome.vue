@@ -12,9 +12,12 @@
 
     <!-- Crisis Theme Information (shown right under map when crisis in area) -->
     <section v-if="mainCrisis && mainCrisis.id" class="crisis-theme-section w-full px-4">
-      <div class="crisis-theme-info bg-card p-6 rounded-lg border border-[var(--crisis-level-red)]/30">
+      <div
+        class="crisis-theme-info bg-card p-6 rounded-lg"
+        :class="getCrisisContainerClass(mainCrisis.severity)"
+      >
         <h2 class="text-xl font-bold mb-3 flex items-center">
-          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2 text-[var(--crisis-level-red)]" />
+          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2" :class="getCrisisIconClass(mainCrisis.severity)" />
           {{ t('home.crisis_theme.title', 'Ongoing Crisis Scenario') }}
         </h2>
         <p class="mb-4 text-muted-foreground">
@@ -22,8 +25,20 @@
         </p>
 
         <!-- Scenario Theme Under Instructions -->
-        <div v-if="scenarioUnderInstructions" class="mb-4 p-4 bg-[var(--crisis-level-red)]/10 rounded-lg border border-[var(--crisis-level-red)]/20">
-          <h3 class="font-medium mb-2 text-center">{{ mainCrisis.name }}</h3>
+        <div
+          v-if="scenarioUnderInstructions"
+          class="mb-4 p-4 rounded-lg"
+          :class="getCrisisContentClass(mainCrisis.severity)"
+        >
+          <h3 class="font-medium mb-2 text-center flex items-center justify-center gap-2">
+            {{ mainCrisis.name }}
+            <span
+              class="text-xs px-2 py-0.5 rounded-full uppercase font-bold"
+              :style="{ backgroundColor: getSeverityColor(mainCrisis.severity), color: 'white' }"
+            >
+              {{ mainCrisis.severity }}
+            </span>
+          </h3>
           <div class="text-sm prose prose-sm max-w-none" v-html="markdownToHtml(scenarioUnderInstructions)"></div>
         </div>
         <div v-else-if="loadingInstructions" class="text-center py-4">
@@ -34,7 +49,7 @@
         <div class="mt-4 text-center">
           <Button
             variant="outline"
-            class="border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/5"
+            :class="getCrisisButtonClass(mainCrisis.severity)"
             @click="navigateToScenarioTheme(mainCrisis.id)"
           >
             {{ t('home.crisis_theme.learn_more', 'Learn More About This Crisis') }}
@@ -166,6 +181,7 @@ import { faTriangleExclamation, faBoxOpen, faUsers, faArrowRight, faCheckCircle 
 import { inventoryService } from '@/services/InventoryService';
 import { fetchCrisisEventsInRadius } from '@/services/CrisisEventService';
 import { fetchScenarioThemeUnderInstructions } from '@/services/api/ScenarioThemeService';
+import { getSeverityColor } from '@/utils/severityUtils';
 import { marked } from 'marked';
 import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
 
@@ -309,6 +325,78 @@ const markdownToHtml = (markdown: string): string => {
 };
 
 /**
+ * Returns CSS classes for the crisis container based on severity
+ * @param {string} severity - The severity level (red, yellow, green)
+ * @returns {string} CSS classes for the container
+ */
+const getCrisisContainerClass = (severity: string): string => {
+  switch (severity) {
+    case 'red':
+      return 'border border-[var(--crisis-level-red)]/30';
+    case 'yellow':
+      return 'border border-[var(--crisis-level-yellow)]/30';
+    case 'green':
+      return 'border border-[var(--crisis-level-green)]/30';
+    default:
+      return 'border border-[var(--crisis-level-red)]/30';
+  }
+};
+
+/**
+ * Returns CSS classes for the crisis content area based on severity
+ * @param {string} severity - The severity level (red, yellow, green)
+ * @returns {string} CSS classes for the content area
+ */
+const getCrisisContentClass = (severity: string): string => {
+  switch (severity) {
+    case 'red':
+      return 'bg-[var(--crisis-level-red)]/10 border border-[var(--crisis-level-red)]/20';
+    case 'yellow':
+      return 'bg-[var(--crisis-level-yellow)]/10 border border-[var(--crisis-level-yellow)]/20';
+    case 'green':
+      return 'bg-[var(--crisis-level-green)]/10 border border-[var(--crisis-level-green)]/20';
+    default:
+      return 'bg-[var(--crisis-level-red)]/10 border border-[var(--crisis-level-red)]/20';
+  }
+};
+
+/**
+ * Returns CSS classes for the crisis icon based on severity
+ * @param {string} severity - The severity level (red, yellow, green)
+ * @returns {string} CSS classes for the icon
+ */
+const getCrisisIconClass = (severity: string): string => {
+  switch (severity) {
+    case 'red':
+      return 'text-[var(--crisis-level-red)]';
+    case 'yellow':
+      return 'text-[var(--crisis-level-yellow)]';
+    case 'green':
+      return 'text-[var(--crisis-level-green)]';
+    default:
+      return 'text-[var(--crisis-level-red)]';
+  }
+};
+
+/**
+ * Returns CSS classes for the crisis button based on severity
+ * @param {string} severity - The severity level (red, yellow, green)
+ * @returns {string} CSS classes for the button
+ */
+const getCrisisButtonClass = (severity: string): string => {
+  switch (severity) {
+    case 'red':
+      return 'border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/5';
+    case 'yellow':
+      return 'border-[var(--crisis-level-yellow)]/30 text-[var(--crisis-level-yellow)] hover:bg-[var(--crisis-level-yellow)]/5';
+    case 'green':
+      return 'border-[var(--crisis-level-green)]/30 text-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/5';
+    default:
+      return 'border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/5';
+  }
+};
+
+/**
  * Handles the selection of a crisis from the CrisisLevelOverview component
  * @param {number} crisisId - The ID of the selected crisis
  */
@@ -432,8 +520,19 @@ onMounted(async () => {
   list-style-type: decimal;
 }
 
-.prose a {
+/* Link colors based on crisis severity */
+.border-\[var\(--crisis-level-red\)\]\/30 .prose a {
   color: var(--crisis-level-red);
+  text-decoration: underline;
+}
+
+.border-\[var\(--crisis-level-yellow\)\]\/30 .prose a {
+  color: var(--crisis-level-yellow);
+  text-decoration: underline;
+}
+
+.border-\[var\(--crisis-level-green\)\]\/30 .prose a {
+  color: var(--crisis-level-green);
   text-decoration: underline;
 }
 
