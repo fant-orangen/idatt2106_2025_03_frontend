@@ -202,6 +202,7 @@ const routes = [
     path: '/quiz-overview/admin/edit-quiz/id=:quizId',
     name: 'EditQuiz',
     component: () => import('@/views/gamification/admin/EditQuizView.vue'),
+    props: true,
   },
   {
     path: '/:pathMatch(.*)*',
