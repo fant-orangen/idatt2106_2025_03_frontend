@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-vue-next'
 import { useQuizStore } from '@/stores/QuizStore.ts'
 import { useUserStore } from '@/stores/UserStore.ts'
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardHeader,
@@ -74,7 +75,10 @@ const fetchLastAttempts = async () => {
     }
     try {
       // Await the result of the asynchronous function
-      const score = await quizService.getTotalCorrectAnswersForAttempt(lastAttempt.id)
+      const correctAnswersResponse = await quizService.getTotalCorrectAnswersForAttempt(
+        lastAttempt.id,
+      )
+      const score = correctAnswersResponse.correctAnswers // Assuming this is the correct answer count
 
       // Fetch the total number of questions (max score) for the quiz
       const questions = await quizService.getQuizQuestionsByQuizId(quiz.id)
@@ -183,16 +187,35 @@ const deleteQuiz = (quizId: number) => {
             </CardHeader>
             <CardContent>
               <p v-if="lastAttempts[quiz.id] !== null">
-                Last attempt score: {{ lastAttempts[quiz.id]?.score.correctAnswers }} /
-                {{ lastAttempts[quiz.id]?.maxScore }}
+                Last attempt:
+                <Badge
+                  :style="{
+                    backgroundColor:
+                      lastAttempts[quiz.id]?.score / lastAttempts[quiz.id]?.maxScore >= 0.8
+                        ? 'var(--crisis-level-green)'
+                        : lastAttempts[quiz.id]?.score / lastAttempts[quiz.id]?.maxScore >= 0.4
+                          ? 'var(--crisis-level-yellow)'
+                          : 'var(--crisis-level-red)',
+                  }"
+                >
+                  {{ (lastAttempts[quiz.id]?.score / lastAttempts[quiz.id]?.maxScore) * 100 }}%
+                </Badge>
               </p>
               <p v-else>No attempts have been made yet.</p>
             </CardContent>
             <CardFooter>
               <div class="flex w-full justify-between items-center">
-                <Button @click="handleTakeQuiz(quiz.id)">
-                  {{ $t('gamification.quiz.takeQuiz') }}
-                </Button>
+                <div class="flex flex-row gap-4">
+                  <Button @click="handleTakeQuiz(quiz.id)">
+                    {{ $t('gamification.quiz.takeQuiz') }}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    @click="router.push({ name: 'QuizHistory', params: { quizId: quiz.id } })"
+                  >
+                    {{ $t('gamification.quiz.history') }}
+                  </Button>
+                </div>
                 <div>
                   <TooltipProvider :delayDuration="350">
                     <Tooltip>
