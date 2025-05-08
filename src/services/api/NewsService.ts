@@ -15,7 +15,7 @@ export async function fetchNewsByCrisisEvent(
   size: number = 3
 ): Promise<Page<News>> {
   try {
-    const response = await api.get(`/public/news/${crisisEventId}`, {
+    const response = await api.get(`/public/news/crisis/${crisisEventId}`, {
       params: {
         page,
         size
@@ -220,22 +220,12 @@ export async function fetchNewsArticleById(id: number) {
  * @param size
  * @returns {Promise<Page<News>>} - A paginated list of drafts created by the user
  */
-export async function fetchDraftsByUserId(page: number, size: number): Promise<Page<News>> { // legg til userId senere slik at det tilhører en bruker
+export async function fetchDrafts(page: number, size: number): Promise<Page<News>> {
   try {
-    const response = await api.get<Page<News>>('public/news/article/', {
+    const response = await api.get<Page<News>>('public/news/drafts', {
       params: {page, size}
     });
-    if (response.data.content) {
-      return response.data;
-    } else {
-      return {
-      content: [],
-      totalElements: 0,
-      totalPages: 0,
-      size: size,
-      number: page
-    };
-    }
+    return response.data;
   } catch (error) {
     console.error('Error while trying to fetch a news article')
     return {
@@ -247,6 +237,26 @@ export async function fetchDraftsByUserId(page: number, size: number): Promise<P
     };
   }
 }
+
+
+export async function fetchLatestNews(page: number, size: number): Promise<Page<News>> {
+  try {
+    const response = await api.get<Page<News>>('/public/news/latest', {
+      params:{page, size}
+    })
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch the lates news from backend')
+    return {
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: size,
+      number: page
+    };
+  }
+}
+
 
 // Export convenience functions with specific page sizes
 export const fetchGeneralNewsSmall = (crisisId: number, page: number = 0) =>
