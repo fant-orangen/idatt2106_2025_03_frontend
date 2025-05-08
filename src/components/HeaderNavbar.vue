@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
-import { UserBasicInfoDto } from '@/models/User'
+import type { UserBasicInfoDto } from '@/models/User'
 import { getUserProfile } from '@/services/UserService'
 import { toast } from 'vue-sonner'
 
