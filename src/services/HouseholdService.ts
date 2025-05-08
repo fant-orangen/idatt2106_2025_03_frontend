@@ -31,13 +31,11 @@ export async function getCurrentHousehold(): Promise<Household | null> {
     const response = await api.get('/user/households/me');
     return response.data;
   } catch (error) {
-    // Check if it's a 404 error (no household)
     if (error instanceof Error && 'response' in error &&
       error.response && typeof error.response === 'object' &&
       'status' in error.response && error.response.status === 404) {
       return null;
     }
-    // For any other error, throw it
     throw error;
   }
 }
