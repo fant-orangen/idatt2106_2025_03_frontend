@@ -236,10 +236,10 @@ import { Separator } from "@/components/ui/separator"
 import { useForm, type SubmissionContext} from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { formatDateFull } from '@/utils/dateUtils.ts'
-import type { CreateNewsDto, News, UpdateNewsArticle } from '@/models/News'
+import type { CreateNewsDto, News, UpdateNewsArticleDTO } from '@/models/News'
 import type { CrisisEventPreviewDto } from '@/models/CrisisEvent'
 import { fetchAllPreviewCrisisEvents, fetchCrisisEventById } from '@/services/CrisisEventService'
-import { fetchNewsByCrisisEvent, adminUpdateNews, fetchDrafts, adminAddNews, fetchLatestNews } from '@/services/api/NewsService'
+import { fetchPaginatedNewsByCrisisEvent, adminUpdateNews, fetchDrafts, adminAddNews, fetchLatestNews } from '@/services/api/NewsService'
 import {
   Card,
   CardContent,
@@ -363,7 +363,7 @@ const {
     const eventId = selectedEvent.value?.id
     if (!eventId) return []
 		const pageNumber = pageParam as number;
-		const page = await fetchNewsByCrisisEvent(eventId, pageNumber, newsPageSize);
+		const page = await fetchPaginatedNewsByCrisisEvent(eventId, pageNumber, newsPageSize);
 		return page.content;
 	},
   getNextPageParam: (lastPage, allPages) => {
@@ -552,7 +552,7 @@ function handleFormSubmit(values: any) {
       return;
     }
     if (selectedDraft.value) {
-      const updatedDraft: UpdateNewsArticle = {
+      const updatedDraft: UpdateNewsArticleDTO = {
         title: values.title ?? selectedDraft.value.title,
         content: values.content ?? selectedDraft.value.content,
         status: status.value as Status,
@@ -572,7 +572,7 @@ function handleFormSubmit(values: any) {
  * @param id - The ID of the article to update
  * @param updatedData - The data object with the updated fields
  */
-async function saveUpdatesOfArticle(id: number, updatedData: UpdateNewsArticle) {
+async function saveUpdatesOfArticle(id: number, updatedData: UpdateNewsArticleDTO) {
   try {
     const response = await adminUpdateNews(id, updatedData)
     console.log('updated the draft: ', response.data)
@@ -595,7 +595,7 @@ async function archivePublishedArticle() {
   }
   if (status.value === Status.ARCHIVED) {
     try {
-      const archiveData: UpdateNewsArticle = {
+      const archiveData: UpdateNewsArticleDTO = {
         title: selectedNews.value.title,
         content: selectedNews.value.content,
         status: status.value

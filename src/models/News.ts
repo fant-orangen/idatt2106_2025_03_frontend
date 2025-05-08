@@ -25,7 +25,8 @@ export interface News {
 export interface CreateNewsDto {
   title: string;
   content: string;
-  createdByUserId: number;
+  crisisEventId: number;
+  status: 'draft' | 'published' | 'archived';
 }
 
 /**
