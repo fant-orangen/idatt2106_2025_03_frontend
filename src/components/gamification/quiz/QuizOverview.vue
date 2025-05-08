@@ -132,19 +132,19 @@ const handleTakeQuiz = (quizId: number) => {
   })
 }
 
-const deleteQuiz = (quizId: number) => {
+const archiveQuiz = (quizId: number) => {
   if (!userStore.isAdminUser) {
     console.error('User is not authorized to delete quizzes')
     return
   }
   console.log(`Delete quiz with ID: ${quizId}`)
-  quizStore.deleteQuiz(quizId)
+  quizStore.archiveQuiz(quizId)
   quizStore.fetchAllActiveQuizzes()
 }
 </script>
 
 <template>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center m-10">
     <h1 class="text-2xl font-bold m-10">Quizzes</h1>
     <Button
       v-if="userStore.isAdminUser"
@@ -177,7 +177,7 @@ const deleteQuiz = (quizId: number) => {
       <ul class="space-y-4">
         <li v-for="quiz in quizStore.filteredQuizzes" :key="quiz.id">
           <Card
-            class="hover:shadow-lg hover:shadow-gray-300 dark:hover:shadow-gray-800 transition-shadow duration-300"
+            class="hover:shadow-lg hover:shadow-gray-300 dark:hover:shadow-gray-800 transition-shadow duration-200"
           >
             <CardHeader>
               <CardTitle>
@@ -198,7 +198,11 @@ const deleteQuiz = (quizId: number) => {
                           : 'var(--crisis-level-red)',
                   }"
                 >
-                  {{ (lastAttempts[quiz.id]?.score / lastAttempts[quiz.id]?.maxScore) * 100 }}%
+                  {{
+                    Math.round(
+                      (lastAttempts[quiz.id]?.score / lastAttempts[quiz.id]?.maxScore) * 100,
+                    )
+                  }}%
                 </Badge>
               </p>
               <p v-else>No attempts have been made yet.</p>
@@ -250,7 +254,7 @@ const deleteQuiz = (quizId: number) => {
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel variant="destructive">Cancel</AlertDialogCancel>
-                              <AlertDialogAction @click="deleteQuiz(quiz.id)"
+                              <AlertDialogAction @click="archiveQuiz(quiz.id)"
                                 >Continue</AlertDialogAction
                               >
                             </AlertDialogFooter>
