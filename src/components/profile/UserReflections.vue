@@ -98,8 +98,8 @@
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{{ t('common.cancel') }}</AlertDialogCancel>
-          <AlertDialogAction @click="deleteReflection" class="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+          <AlertDialogCancel class="hover:cursor-pointer">{{ t('common.cancel') }}</AlertDialogCancel>
+          <AlertDialogAction @click="deleteReflection" class="bg-destructive hover:bg-destructive/80 hover:cursor-pointer">
             {{ t('common.delete') }}
           </AlertDialogAction>
         </AlertDialogFooter>

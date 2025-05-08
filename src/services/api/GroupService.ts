@@ -210,7 +210,29 @@ class GroupService {
       throw error;
     }
   }
+
+  /**
+   * Get the total number of units of a specific product type that have been contributed to a group across all households.
+   * @param productTypeId The ID of the product type
+   * @param groupId The ID of the group
+   * @returns Promise containing the total number of units contributed to the group
+   */
+  async getTotalUnitsForProductType(productTypeId: number, groupId: number): Promise<number> {
+    try {
+      const response = await api.get(`/user/groups/inventory/product-types/sum`, {
+        params: {
+          productTypeId,
+          groupId
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching total units for product type:', error);
+      throw error;
+    }
+  }
 }
+
 
 export const groupService = new GroupService();
 
