@@ -10,7 +10,8 @@
     "not-provided": "Not provided",
     "loading": "Loading",
     "not-found": "No match",
-    "all-is-loaded": "Everything is loaded"
+    "all-is-loaded": "Everything is loaded",
+    "edit":"Edit"
   },
   "actions": {
     "to-reflect": "to reflect",
@@ -341,7 +342,27 @@
     "related_news": "Related News",
     "no_news_found": "No news found",
     "published_at": "Published at",
-    "read_more": "Read more"
+    "read_more": "Read more",
+    "post": "Save & Publish",
+    "search": "Search for an event",
+    "select": "Select an event",
+    "content": "Content",
+    "news-title": "Title",
+    "updated": "Last updated at",
+    "save-draft": "Save draft",
+    "published": "Published on",
+    "archive": "Archive",
+    "description": {
+      "title": "This is the title of the news alert",
+      "subject": "This is the subject of the news alert, should be related to the crisis event",
+      "event": "Select a related event to this news alert",
+      "updated": "The draft was last updated at this date. The date and time will be set automatically when you save.",
+      "saved-drafts": "Saved drafts by you and other administrators",
+      "choose-draft": "Select a draft to edit",
+      "latest-news": "Latest published news articles",
+      "published": "Date and time this article was published"
+
+    }
   },
   "reflect": {
     "reflection": "Reflect After A Crisis",

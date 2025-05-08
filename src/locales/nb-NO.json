@@ -10,7 +10,8 @@
     "not-provided": "Ikke oppgitt",
     "loading": "Laster inn ",
     "not-found": "Fant ingenting",
-    "all-is-loaded": "Alt er lastet inn"
+    "all-is-loaded": "Alt er lastet inn",
+    "edit": "Rediger"
   },
   "actions": {
     "to-reflect": "for å reflektere",
@@ -344,7 +345,26 @@
     "related_news": "Relaterte nyheter",
     "no_news_found": "Ingen nyheter funnet",
     "published_at": "Publisert",
-    "read_more": "Les mer"
+    "read_more": "Les mer",
+    "post": "Lagre & Publiser",
+    "search": "Søk etter en hendelse",
+    "select": "Velg en hendelse",
+    "content": "Innhold",
+    "news-title": "Tittel",
+    "updated": "Sist oppdatert",
+    "save-draft": "Lagre utkast",
+    "published": "Publisert på",
+    "archive": "Arkiver",
+    "description": {
+      "title": "Dette er tittelen på nyhetsvarselet",
+      "subject": "Dette er temaet i nyhetsvarselet, og burde være relatert til hendelsen",
+      "event": "Velg en tilhørende hendelse til dette nyhetsvarselet",
+      "update": "Utkastet ble sist oppdatert på dette tidspunktet. Dato og tid vil bli satt automatisk når du lagrer.",
+      "saved-drafts": "Lagrede utkast av deg og andre adminbrukere",
+      "choose-draft": "Velg et utkast å redigere",
+      "latest-news": "Siste publiserte nyhetsartikler",
+      "published": "Dato og tidspunkt da denne artikkelen ble publisert"
+    }
   },
   "reflect": {
     "reflection": "Reflekter etter en krise.",
