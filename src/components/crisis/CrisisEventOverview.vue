@@ -105,6 +105,7 @@
     <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
       <div class="lg:col-span-1">
         <CrisisDetails :crisis="selectedCrisis" />
+      </div>
 
       <CrisisEventHistory
         :crisis-id="selectedCrisis.id"
@@ -117,26 +118,6 @@
         :page-size="3"
       />
     </div>
-
-    <!-- Reflection Dialog -->
-    <Dialog :open="isReflectionDialogOpen" @update:open="isReflectionDialogOpen = $event">
-      <DialogContent class="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>{{ t('reflect.add-reflection-for-crisis', 'Add Reflection') }}</DialogTitle>
-          <DialogDescription>
-            {{ t('reflect.reflection-description', 'Share your thoughts about this crisis event') }}
-          </DialogDescription>
-        </DialogHeader>
-        <div class="grid gap-4 py-4">
-          <ReflectionForm
-            :reflection="{ crisisEventId: selectedCrisis?.id, crisisEventName: selectedCrisis?.name }"
-            :is-editing="false"
-            @save="saveReflection"
-            @cancel="closeReflectionDialog"
-          />
-        </div>
-      </DialogContent>
-    </Dialog>
   </div>
 </template>
 
@@ -161,6 +142,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useGeolocation } from '@/composables/useGeolocation.ts';
 import { useUserStore } from '@/stores/UserStore';
+import { getCurrentHousehold } from '@/services/HouseholdService';
 
 import {
   fetchAllPreviewCrisisEvents,
@@ -244,7 +226,32 @@ const loadCrisisEvents = async () => {
           break;
         }
 
-        // User is logged in, show nearby events
+        // Check if user is in a household
+        try {
+          const household = await getCurrentHousehold();
+          if (!household) {
+            nearbyError.value = t('crisis.household_required', 'You need to be in a household to see events in your area');
+            // Fallback to active events if not in a household
+            if (searchQuery.value.trim()) {
+              response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+            } else {
+              response = await fetchAllPreviewCrisisEvents(page.value, size);
+            }
+            break;
+          }
+        } catch (err) {
+          console.error('Error checking household:', err);
+          nearbyError.value = t('crisis.error_checking_household', 'Error checking household status');
+          // Fallback to active events if there's an error
+          if (searchQuery.value.trim()) {
+            response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+          } else {
+            response = await fetchAllPreviewCrisisEvents(page.value, size);
+          }
+          break;
+        }
+
+        // User is logged in and in a household, show nearby events
         response = await fetchCrisisEventsInRadius(page.value, size);
         break;
       default:
