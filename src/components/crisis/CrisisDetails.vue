@@ -80,10 +80,14 @@
               variant="outline"
               class="w-full flex items-center justify-center gap-2"
               @click="openReflectionDialog"
+              :disabled="!userStore.loggedIn"
             >
               <PencilIcon class="h-4 w-4" />
               {{ t('reflect.add-reflection-for-crisis') }}
             </Button>
+            <p v-if="!userStore.loggedIn" class="text-sm text-red-500 mt-2 text-center">
+              {{ t('reflect.login-required', 'Please log in to add reflections') }}
+            </p>
           </div>
 
         </div>
@@ -116,6 +120,7 @@
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/UserStore';
 import { ArrowRight, PencilIcon } from 'lucide-vue-next';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
 import type { CreateReflectionDto } from '@/models/Reflection';
@@ -161,6 +166,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const router = useRouter();
+const userStore = useUserStore();
 
 /**
  * Validates if a coordinate value is valid (a finite number)
@@ -256,6 +262,10 @@ const isSubmitting = ref(false);
  * Opens the dialog to create a new reflection for this crisis event
  */
 function openReflectionDialog() {
+  if (!userStore.loggedIn) {
+    toast.error(t('reflect.login-required', 'Please log in to add reflections'));
+    return;
+  }
   isReflectionDialogOpen.value = true;
 }
 
