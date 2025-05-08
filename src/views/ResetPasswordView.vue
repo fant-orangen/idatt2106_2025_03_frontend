@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, defineProps } from 'vue'
 import { useForm } from 'vee-validate'
 import { useI18n } from 'vue-i18n'
 import { AxiosError } from 'axios'
@@ -14,13 +14,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'vue-sonner'
 import { CardContent, Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Eye, EyeOff } from 'lucide-vue-next'
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import router from '@/router'
 import { getPasswordValidationSchema } from '@/utils/passwordValidation'
 
@@ -34,21 +28,21 @@ const isView = ref(false)
 const passwordValidation = getPasswordValidationSchema(t)
 
 const resetPasswordSchema = toTypedSchema(
-  z.object({
-    token: z.string().nonempty(t('reset-password.token-required')),
-    password: passwordValidation,
-    confirmPassword: z.string(),
-  }).refine((data) => data.password === data.confirmPassword, {
-    message: t('reset-password.password-req-match'),
-    path: ['confirmPassword'],
-  })
+  z
+    .object({
+      password: passwordValidation,
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('reset-password.password-req-match'),
+      path: ['confirmPassword'],
+    }),
 )
 
 // Initialize the form with vee-validate
 const form = useForm({
   validationSchema: resetPasswordSchema,
   initialValues: {
-    token: '',
     password: '',
     confirmPassword: '',
   },
@@ -61,10 +55,14 @@ watch(tokenFromQuery, (newToken) => {
   }
 })
 
+const props = defineProps<{
+  token: string
+}>()
+
 // Set tokenFromQuery on component mount
 onMounted(() => {
-  tokenFromQuery.value = route.query.token as string || null
-  console.log("Token from query:", tokenFromQuery.value)
+  tokenFromQuery.value = (route.query.token as string) || null
+  console.log('Token from query:', tokenFromQuery.value)
 })
 
 /**
@@ -72,7 +70,7 @@ onMounted(() => {
  */
 const handleReset = form.handleSubmit(async (values) => {
   try {
-    await resetPassword(values.token, values.password)
+    await resetPassword(props.token, values.password)
     toast.success(t('reset-password.password-updated'))
     router.push('/login')
   } catch (error: unknown) {
@@ -97,26 +95,12 @@ const handleReset = form.handleSubmit(async (values) => {
   <div class="login-wrapper">
     <Card class="min-w-[20vw]">
       <CardHeader>
-        <CardTitle class="text-xl font-bold text-center">{{ $t('reset-password.title') }}</CardTitle>
+        <CardTitle class="text-xl font-bold text-center">{{
+          $t('reset-password.title')
+        }}</CardTitle>
       </CardHeader>
       <CardContent>
         <form @submit.prevent="handleReset" class="space-y-4">
-          <!-- Token Field -->
-          <FormField v-slot="{ field, meta, errorMessage }" name="token">
-            <FormItem>
-              <FormLabel for="token">{{ $t('reset-password.code') }}</FormLabel>
-              <FormControl>
-                <Input
-                  id="token"
-                  type="text"
-                  v-bind="field"
-                  :placeholder="$t('reset-password.code')"
-                />
-              </FormControl>
-              <FormMessage v-if="meta.touched || meta.validated" >{{ errorMessage }}</FormMessage>
-            </FormItem>
-          </FormField>
-
           <!-- Password Field -->
           <FormField v-slot="{ field, meta, errorMessage }" name="password">
             <FormItem>
@@ -147,7 +131,9 @@ const handleReset = form.handleSubmit(async (values) => {
           <!-- Confirm Password Field -->
           <FormField v-slot="{ field, meta, errorMessage }" name="confirmPassword">
             <FormItem>
-              <FormLabel for="confirmPassword">{{ $t('reset-password.confirm-new-password') }}</FormLabel>
+              <FormLabel for="confirmPassword">{{
+                $t('reset-password.confirm-new-password')
+              }}</FormLabel>
               <div class="relative">
                 <FormControl>
                   <Input
