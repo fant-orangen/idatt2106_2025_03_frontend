@@ -28,3 +28,15 @@ export interface CreateNewsDto {
   createdByUserId: number;
 }
 
+/**
+ * Data transfer object for updating a news article.
+ * Allows updating title, content, and status.
+ *
+ * @interface UpdateNewsArticleDTO
+ */
+export interface UpdateNewsArticleDTO {
+  title?: string;
+  content?: string;
+  status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+}
+
