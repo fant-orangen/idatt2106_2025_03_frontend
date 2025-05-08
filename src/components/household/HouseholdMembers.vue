@@ -117,6 +117,13 @@
                   <p v-if="member.email" class="text-xs text-muted-foreground truncate">
                     {{ member.email }}
                   </p>
+                  <!-- Safety status (only shown for real members who are confirmed safe) -->
+                  <p v-if="'email' in member && member.safetyStatus === 'SAFE'" class="text-xs mt-1">
+                    <span class="text-green-600 dark:text-green-400 flex items-center gap-1">
+                      <CheckIcon class="h-3 w-3" />
+                      {{ $t('household.safe', 'Safe') }} {{ member.safetyTimestamp ? formatSafetyTime(member.safetyTimestamp) : '' }}
+                    </span>
+                  </p>
                 </div>
 
               </div>
@@ -132,6 +139,35 @@
                   <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
                     <UserIcon class="h-4 w-4 text-accent-foreground" />
                   </div>
+                </div>
+              </div>
+
+              <!-- Safety status checkbox (only shown for real members -->
+              <div
+                v-if="'email' in member && !manageMode"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-in-out"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  class="h-8 w-8 rounded-full hover:bg-primary/10"
+                  :class="{ 'text-green-600 dark:text-green-400': member.safetyStatus === 'SAFE', 'text-gray-400': member.safetyStatus !== 'SAFE' }"
+                  :title="member.safetyStatus === 'SAFE' ? $t('household.already-safe', 'Already marked as safe') : $t('household.mark-as-safe', 'Mark as safe')"
+                >
+                  <CheckIcon class="w-4 h-4" />
+                </Button>
+              </div>
+
+              <!-- Safety status indicator (only for safe members) -->
+              <div
+                v-if="'email' in member && member.safetyStatus === 'SAFE' && !manageMode"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-in-out"
+              >
+                <div
+                  class="h-8 w-8 rounded-full flex items-center justify-center text-green-600 dark:text-green-400"
+                  :title="$t('household.confirmed-safe', 'Confirmed safe')"
+                >
+                  <CheckIcon class="w-4 h-4" />
                 </div>
               </div>
 
@@ -237,9 +273,15 @@
         </div>
       </div>
 
-      <!-- Action buttons (only shown in people tab and for admin users) -->
-      <div v-if="activeTab === 'people' && isAdmin" class="space-y-2 mt-4">
-        <Button variant="outline" class="w-full justify-start gap-2" @click="toggleInviteUser">
+      <!-- Action buttons (shown in people tab) -->
+      <div v-if="activeTab === 'people'" class="space-y-2 mt-4">
+        <!-- Safety check button (visible to all users) -->
+        <Button variant="outline" class="w-full justify-start gap-2" @click="sendSafetyCheck">
+          <CheckIcon class="h-4 w-4" />
+          <span>{{ $t('household.ask-if-safe', 'Ask if safe') }}</span>
+        </Button>
+        <!-- Admin-only buttons -->
+        <Button v-if="isAdmin" variant="outline" class="w-full justify-start gap-2" @click="toggleInviteUser">
           <MailIcon class="h-4 w-4" />
           <span>{{ $t('household.invite-user') }}</span>
         </Button>
@@ -353,9 +395,10 @@ import {
   getEmptyHouseholdMembers,
   addEmptyMember,
   removeEmptyMemberFromHousehold,
-  getCurrentHousehold,
   removeMemberFromHousehold,
-  isCurrentUserHouseholdAdmin
+  isCurrentUserHouseholdAdmin,
+  askIfSafe,
+  isUserSafe
 } from '@/services/HouseholdService.ts'
 import type { HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household.ts'
 import { toast } from 'vue-sonner';
@@ -448,11 +491,25 @@ const toggleMemberSelection = (member: HouseholdMember | EmptyHouseholdMemberDto
 /**
  * Fetches both regular and empty household members from the backend.
  * Also checks if the current user is an admin of the household.
+ * For each member, checks their safety status.
  * @async
  */
 const fetchMembers = async () => {
   try {
     const members = await getHouseholdMembers();
+
+    // Check safety status for each member
+    for (const member of members) {
+      try {
+        const safetyStatus = await isUserSafe(member.id);
+        member.safetyStatus = safetyStatus.isSafe ? 'SAFE' : 'UNKNOWN';
+        member.safetyTimestamp = safetyStatus.timestamp;
+      } catch (err) {
+        console.error(`Error checking safety status for member ${member.id}:`, err);
+        member.safetyStatus = 'UNKNOWN';
+      }
+    }
+
     householdMembers.value = members;
 
     const emptyMembersList = await getEmptyHouseholdMembers();
@@ -462,6 +519,43 @@ const fetchMembers = async () => {
   } catch (error) {
     console.error('Error fetching household members:', error);
     toast.error(t('household.error-fetching-members'));
+  }
+};
+
+/**
+ * Formats a safety timestamp for display
+ * @param timestamp ISO timestamp string
+ * @returns Formatted string like "at 14:30" or "on May 5"
+ */
+const formatSafetyTime = (timestamp: string): string => {
+  try {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+
+    if (isToday) {
+      return t('household.at-time', { time: date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) });
+    } else {
+      return t('household.on-date', { date: date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) });
+    }
+  } catch (e) {
+    return '';
+  }
+};
+
+/**
+ * Sends a safety check to all household members via email
+ * This sends emails with confirmation links to all household members
+ */
+const sendSafetyCheck = async () => {
+  try {
+    await askIfSafe();
+    toast.success(t('household.safety-check-sent', 'Safety check emails sent to all household members'));
+    // Refresh members to update safety status
+    await fetchMembers();
+  } catch (error) {
+    console.error('Error sending safety check:', error);
+    toast.error(t('household.safety-check-error', 'Failed to send safety check emails'));
   }
 };
 
