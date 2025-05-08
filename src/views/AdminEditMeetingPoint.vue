@@ -25,7 +25,7 @@
   <h1 class="text-3xl p-5">{{$t('admin.meeting-point')}}</h1>
 
 
-  <div class="grid flex-col gap-5 md:grid-cols-3">
+  <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
     <!--Overview of all meeting points-->
     <Card>
       <CardHeader>
@@ -133,17 +133,28 @@
       </CardContent>
     </Card>
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Map</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>MAp<3 </p>
-      </CardContent>
-      <CardFooter>
-        Card Footer
-      </CardFooter>
-    </Card>
+    <!-- third column -->
+    <div class="flex flex-col gap-5">
+      <!-- your existing controller (it already renders a <Card>) -->
+      <AdminMapController
+        :mapComponent="mapCompRef"
+        @location-selected="onLocationSelected"
+        @location-cleared="onLocationCleared"
+      />
+
+      <!-- the map container -->
+      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md">
+        <MapComponent
+          ref="mapCompRef"
+          :adminMode="true"
+          :showPois="false"
+          :showCrisis="false"
+          :showMeetingPlaces="false"
+          class="h-full w-full"
+          @map-clicked="handleMapClick"
+        />
+      </div>
+    </div>
 
   </div>
   <!--Handle meeting point drawer -->
@@ -169,6 +180,9 @@
 </template>
 
 <script setup lang="ts">
+import MapComponent from '@/components/map/MapComponent.vue'
+import AdminMapController from '@/components/admin/AdminMapController.vue'
+import * as L from 'leaflet'
 import { toast } from 'vue-sonner'
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -243,12 +257,56 @@ const isOpen = ref(false);
 const selectedMP = ref<MeetingPlacePreviewDto | null>(null);
 const newMeetingPoint = ref<CreateMeetingPlaceDto | null>(null);
 const searchQuery = ref('');
+const tempMarker = ref<L.Marker | null>(null)
 
 const allMPts = computed<MeetingPlacePreviewDto[]>(() => data.value?.pages.flat() ?? []);
 allMPts.value.forEach((event: MeetingPlacePreviewDto) => { console.log(event.name)});
 
+// A ref for your MapComponent instance
+const mapCompRef = ref<InstanceType<typeof MapComponent> | null>(null)
+
+// Called by both the controller and a map‐click
+function onLocationSelected(loc: { lat: number; lng: number }) {
+  // 1) update your form fields (you already have this)
+  form.setFieldValue('latitude', loc.lat)
+  form.setFieldValue('longitude', loc.lng)
+
+  // 2) remove any old temp marker
+  if (tempMarker.value && mapCompRef.value?.removeMarker) {
+    mapCompRef.value.removeMarker(tempMarker.value as L.Marker)
+    tempMarker.value = null
+  }
+
+  // 3) add a fresh one
+  if (mapCompRef.value?.addMarker) {
+    tempMarker.value = mapCompRef.value.addMarker(
+      loc.lat,
+      loc.lng,
+      'Valgt møteplass'
+    )
+  }
+}
+
+// Fired when the map itself is clicked:
+function handleMapClick(evt: { latlng: { lat: number; lng: number } }) {
+  onLocationSelected({ lat: evt.latlng.lat, lng: evt.latlng.lng })
+}
+
+// Fired when the location is cleared from the controller
+function onLocationCleared() {
+  // Clear form fields
+  form.setFieldValue('latitude', undefined)
+  form.setFieldValue('longitude', undefined)
+
+  // Remove any temp marker
+  if (tempMarker.value && mapCompRef.value?.removeMarker) {
+    mapCompRef.value.removeMarker(tempMarker.value as L.Marker)
+    tempMarker.value = null
+  }
+}
+
 onMounted(() => {
-  fetchNextPage;
+  fetchNextPage()
 })
 
 const filteredMPts = computed(() => {

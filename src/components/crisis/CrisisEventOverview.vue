@@ -1,5 +1,6 @@
 <template>
   <div class="container mx-auto p-4">
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Map Area -->
       <Card class="lg:col-span-2 z-50">
@@ -21,7 +22,45 @@
       <!-- Crisis Selection -->
       <Card class="flex flex-col h-full">
         <CardHeader class="pb-2">
-          <CardTitle>{{ t('crisis.active_events', 'Active Events') }}</CardTitle>
+          <!-- Search Component -->
+          <div class="relative w-full mb-4">
+            <Input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search crisis events..."
+              class="w-full pl-10 py-3 text-base h-10"
+              @input="handleSearch"
+            />
+            <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          </div>
+          <!-- Crisis Filter Buttons -->
+          <div class="grid grid-cols-3 gap-2">
+            <Button
+              :variant="selectedFilter === 'history' ? 'default' : 'outline'"
+              @click="setFilter('history')"
+            >
+              {{ t('crisis.historical', 'History') }}
+            </Button>
+
+            <Button
+              :variant="selectedFilter === 'nearby' ? 'default' : 'outline'"
+              @click="setFilter('nearby')"
+            >
+              {{ t('crisis.for_you', 'In Your Area') }}
+            </Button>
+
+            <Button
+              :variant="selectedFilter === 'active' ? 'default' : 'outline'"
+              @click="setFilter('active')"
+            >
+              {{ t('crisis.active', 'Active') }}
+            </Button>
+          </div>
+
+          <!-- Error message for 'For You' when not logged in -->
+          <div v-if="nearbyError" class="mt-2 text-sm text-red-500 px-2">
+            {{ nearbyError }}
+          </div>
         </CardHeader>
         <CardContent class="p-0 flex-grow">
           <ScrollArea className="h-[400px] px-4">
@@ -64,7 +103,9 @@
     </div>
 
     <div v-if="selectedCrisis" class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-      <CrisisDetails :crisis="selectedCrisis" />
+      <div class="lg:col-span-1">
+        <CrisisDetails :crisis="selectedCrisis" />
+      </div>
 
       <CrisisEventHistory
         :crisis-id="selectedCrisis.id"
@@ -96,10 +137,19 @@ import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { watch } from 'vue';
 import {formatDateFull} from '@/utils/dateUtils.ts';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
+import { Search } from 'lucide-vue-next';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useGeolocation } from '@/composables/useGeolocation.ts';
+import { useUserStore } from '@/stores/UserStore';
+import { getCurrentHousehold } from '@/services/HouseholdService';
 
 import {
   fetchAllPreviewCrisisEvents,
-  fetchCrisisEventById
+  fetchCrisisEventById,
+  fetchInactivePreviewCrisisEvents,
+  fetchCrisisEventsInRadius,
+  searchCrisisEvents
 } from '@/services/CrisisEventService.ts';
 
 /**
@@ -121,12 +171,20 @@ const { t } = useI18n();
 const selectedCrisis = ref<CrisisEventDto | null>(null);
 const loading = ref(false);
 const error = ref<string | null>(null);
+const nearbyError = ref<string | null>(null);
 const page = ref(0);
 const size = 10;
 const hasMore = ref(true);
+const searchQuery = ref('');
+const selectedFilter = ref('active'); // Default to active events
+const { coords } = useGeolocation();
+const userStore = useUserStore();
+
+// Debounce search to avoid too many API calls
+let searchTimeout: number | null = null;
 
 /**
- * Loads a page of crisis events
+ * Loads a page of crisis events based on the selected filter
  */
 const loadCrisisEvents = async () => {
   if (loading.value || !hasMore.value) return;
@@ -134,9 +192,79 @@ const loadCrisisEvents = async () => {
   try {
     loading.value = true;
     error.value = null;
+    nearbyError.value = null;
 
-    const response = await fetchAllPreviewCrisisEvents(page.value, size);
-    console.log("Crisis events page:", response);
+    let response;
+
+    switch (selectedFilter.value) {
+      case 'active':
+        // For active events, search in active events
+        if (searchQuery.value.trim()) {
+          response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+        } else {
+          response = await fetchAllPreviewCrisisEvents(page.value, size);
+        }
+        break;
+      case 'history':
+        // For history, search in inactive events
+        if (searchQuery.value.trim()) {
+          response = await searchCrisisEvents(searchQuery.value, page.value, size, false);
+        } else {
+          response = await fetchInactivePreviewCrisisEvents(page.value, size);
+        }
+        break;
+      case 'nearby':
+        // Check if user is logged in
+        if (!userStore.loggedIn) {
+          nearbyError.value = t('crisis.login_required', 'Please log in to see events near you');
+          // Fallback to active events if not logged in
+          if (searchQuery.value.trim()) {
+            response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+          } else {
+            response = await fetchAllPreviewCrisisEvents(page.value, size);
+          }
+          break;
+        }
+
+        // Check if user is in a household
+        try {
+          const household = await getCurrentHousehold();
+          if (!household) {
+            nearbyError.value = t('crisis.household_required', 'You need to be in a household to see events in your area');
+            // Fallback to active events if not in a household
+            if (searchQuery.value.trim()) {
+              response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+            } else {
+              response = await fetchAllPreviewCrisisEvents(page.value, size);
+            }
+            break;
+          }
+        } catch (err) {
+          console.error('Error checking household:', err);
+          nearbyError.value = t('crisis.error_checking_household', 'Error checking household status');
+          // Fallback to active events if there's an error
+          if (searchQuery.value.trim()) {
+            response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+          } else {
+            response = await fetchAllPreviewCrisisEvents(page.value, size);
+          }
+          break;
+        }
+
+        // User is logged in and in a household, show nearby events
+        response = await fetchCrisisEventsInRadius(page.value, size);
+        break;
+      default:
+        // Default to active events
+        if (searchQuery.value.trim()) {
+          response = await searchCrisisEvents(searchQuery.value, page.value, size, true);
+        } else {
+          response = await fetchAllPreviewCrisisEvents(page.value, size);
+        }
+        break;
+    }
+
+    console.log(`Crisis events page (${selectedFilter.value}):`, response);
 
     crisisEvents.value.push(...response.content);
     page.value++;
@@ -147,6 +275,36 @@ const loadCrisisEvents = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+/**
+ * Sets the filter type and reloads crisis events
+ */
+const setFilter = async (filter: string) => {
+  if (selectedFilter.value === filter) return;
+
+  selectedFilter.value = filter;
+  crisisEvents.value = [];
+  page.value = 0;
+  hasMore.value = true;
+  await loadCrisisEvents();
+};
+
+/**
+ * Handles search input changes
+ */
+const handleSearch = () => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+
+  searchTimeout = setTimeout(async () => {
+    // Keep the current filter but reset the data
+    crisisEvents.value = [];
+    page.value = 0;
+    hasMore.value = true;
+    await loadCrisisEvents();
+  }, 300) as unknown as number;
 };
 
 /**
