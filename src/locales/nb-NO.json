@@ -517,6 +517,7 @@
     "additional-info": "Tilleggsinformasjon",
     "save": "Lagre",
     "cancel": "Avbryt",
+    "invitation-canceled" : "Invitasjonen er blitt kansellert.",
     "beredskapslager": "Beredskapslager",
     "no-expiring-items": "Ingen varer nær utløpsdato.",
     "days-left": "dager igjen",

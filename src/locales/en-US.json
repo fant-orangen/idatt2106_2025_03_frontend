@@ -514,6 +514,7 @@
     "additional-info": "Additional information",
     "save": "Save",
     "cancel": "Cancel",
+    "invitation-canceled" : "The invitation has been canceled.",
     "beredskapslager": "Emergency Storage",
     "no-expiring-items": "No items near expiration date.",
     "days-left": "Days left",
