@@ -69,9 +69,9 @@ import { ChevronRight } from 'lucide-vue-next';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
 import { fetchGeneralNews } from '@/services/api/NewsService.ts';
-import type { News } from '@/models/News';
+import type { News } from '@/models/News.ts';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
-import { formatDateFull } from '@/utils/dateUtils';
+import { formatDateFull } from '@/utils/dateUtils.ts';
 
 // Register FontAwesome icons
 library.add(faNewspaper);

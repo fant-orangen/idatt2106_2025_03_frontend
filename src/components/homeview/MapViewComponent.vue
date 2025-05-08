@@ -5,15 +5,15 @@
     <!-- Map Button Header -->
     <div
       @click="toggleMap"
-      class="w-full py-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-white"
+      class="w-full py-2 flex flex-col items-center cursor-pointer transition-colors bg-white hover:bg-gray-50 px-6"
     >
-      <div class="flex items-center justify-center mb-3">
-        <font-awesome-icon :icon="['fas', 'map-location-dot']" class="text-3xl mr-3 text-orange-600" />
-        <span class="text-2xl font-medium">{{ t('home.view_map') }}</span>
+      <div class="flex items-center justify-center">
+        <font-awesome-icon :icon="['fas', 'map-location-dot']" class="text-2xl mr-3 text-orange-600" />
+        <span class="text-lg font-medium">{{ t('home.view_map') }}</span>
       </div>
-      <div>
-        <ChevronDown v-if="!showMap" class="h-6 w-6 text-orange-600" />
-        <ChevronUp v-else class="h-6 w-6 text-orange-600" />
+      <div class="mt-1">
+        <ChevronDown v-if="!showMap" class="h-5 w-5 text-orange-600" />
+        <ChevronUp v-else class="h-5 w-5 text-orange-600" />
       </div>
     </div>
 
@@ -233,17 +233,17 @@ import {
   faTriangleExclamation,
   faPeopleGroup
 } from '@fortawesome/free-solid-svg-icons';
-import { useGeolocation } from '@/composables/useGeolocation';
+import { useGeolocation } from '@/composables/useGeolocation.ts';
 import {
   fetchPublicPois,
   fetchPoisByType,
   fetchPoisNearby,
   fetchNearestPoiByType
-} from '@/services/api/PoiService';
-import { fetchActiveCrisisEvents } from '@/services/CrisisEventService';
-import { fetchMeetingPlacesNearby } from '@/services/api/MeetingPlaceService';
-import type { PoiData } from '@/models/PoiData';
-import { convertPoiData } from '@/types/map';
+} from '@/services/api/PoiService.ts';
+import { fetchActiveCrisisEvents } from '@/services/CrisisEventService.ts';
+import { fetchMeetingPlacesNearby } from '@/services/api/MeetingPlaceService.ts';
+import type { PoiData } from '@/models/PoiData.ts';
+import { convertPoiData } from '@/types/map.ts';
 
 // Register FontAwesome icons
 library.add(

@@ -172,8 +172,8 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-vue-next';
-import MapViewComponent from '@/components/shared/MapViewComponent.vue';
-import NewsViewComponent from '@/components/shared/NewsViewComponent.vue';
+import MapViewComponent from '@/components/homeview/MapViewComponent.vue';
+import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue';
 
 import CrisisLevelOverview from '@/components/homeview/CrisisLevelOverview.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';

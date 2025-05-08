@@ -21,19 +21,18 @@
       <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300 bg-white">
         <div
           @click="navigateTo('/crisis-event')"
-          class="w-full py-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-white hover:bg-gray-50"
+          class="w-full py-2 flex items-center cursor-pointer transition-colors bg-white hover:bg-gray-50"
         >
-          <div class="flex items-center justify-center mb-3">
-            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-3xl mr-3 text-orange-600" />
-            <span class="text-2xl font-medium">{{ t('home.view_crisis', 'View Crisis Events') }}</span>
-          </div>
-          <div>
-            <ChevronRight class="h-6 w-6 text-orange-600" />
+          <div class="flex items-center justify-between w-full px-6">
+            <div class="flex items-center flex-1 justify-center">
+              <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-2xl mr-3 text-orange-600" />
+              <span class="text-lg font-medium">{{ t('home.view_crisis', 'View Crisis Events') }}</span>
+            </div>
+            <ChevronRight class="h-5 w-5 text-orange-600" />
           </div>
         </div>
       </div>
     </section>
-
     <!-- Map Button Section -->
     <section class="map-button-section w-full px-4">
       <MapViewComponent />
@@ -63,10 +62,10 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-vue-next';
-import MapViewComponent from '@/components/shared/MapViewComponent.vue';
-import NewsViewComponent from '@/components/shared/NewsViewComponent.vue';
-import HouseholdInfoComponent from '@/components/shared/HouseholdInfoComponent.vue';
-import CrisisInfoComponent from '@/components/shared/CrisisInfoComponent.vue';
+import MapViewComponent from '@/components/homeview/MapViewComponent.vue';
+import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue';
+import HouseholdInfoComponent from '@/components/homeview/HouseholdInfoComponent.vue';
+import CrisisInfoComponent from '@/components/homeview/CrisisInfoComponent.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 

@@ -36,7 +36,7 @@ import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
-import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
+import type { CrisisEventPreviewDto } from '@/models/CrisisEvent.ts';
 
 // Register FontAwesome icons
 library.add(faTriangleExclamation);

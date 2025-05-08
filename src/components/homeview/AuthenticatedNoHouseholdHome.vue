@@ -60,10 +60,10 @@
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
-import MapViewComponent from '@/components/shared/MapViewComponent.vue';
-import NewsViewComponent from '@/components/shared/NewsViewComponent.vue';
-import HouseholdInfoComponent from '@/components/shared/HouseholdInfoComponent.vue';
-import CrisisInfoComponent from '@/components/shared/CrisisInfoComponent.vue';
+import MapViewComponent from '@/components/homeview/MapViewComponent.vue';
+import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue';
+import HouseholdInfoComponent from '@/components/homeview/HouseholdInfoComponent.vue';
+import CrisisInfoComponent from '@/components/homeview/CrisisInfoComponent.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 
