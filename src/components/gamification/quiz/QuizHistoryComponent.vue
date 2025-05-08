@@ -48,7 +48,7 @@ const fetchQuizAttempts = async (quizId: number): Promise<QuizAttemptSummary[]> 
           const correctAnswersResponse = await quizService.getTotalCorrectAnswersForAttempt(
             attempt.id,
           )
-          const correctAnswers = correctAnswersResponse.correctAnswers // Assuming this is the correct answer count
+          const correctAnswers = correctAnswersResponse
           console.log('Correct answers for attempt ', attempt.id, ': ', correctAnswers)
           const score = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
           console.log('Calculated score:', score)
@@ -122,9 +122,9 @@ onMounted(() => {
             <Badge
               :style="{
                 backgroundColor:
-                  quizAttempt.score >= 80
+                  (quizAttempt.score ?? 0) >= 80
                     ? 'var(--crisis-level-green)'
-                    : quizAttempt.score >= 40
+                    : (quizAttempt.score ?? 0) >= 40
                       ? 'var(--crisis-level-yellow)'
                       : 'var(--crisis-level-red)',
                 color: 'white', // Optional: Ensure text is readable

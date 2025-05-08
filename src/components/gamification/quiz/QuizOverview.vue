@@ -78,7 +78,7 @@ const fetchLastAttempts = async () => {
       const correctAnswersResponse = await quizService.getTotalCorrectAnswersForAttempt(
         lastAttempt.id,
       )
-      const score = correctAnswersResponse.correctAnswers // Assuming this is the correct answer count
+      const score = correctAnswersResponse // Assuming this is the correct answer count
 
       // Fetch the total number of questions (max score) for the quiz
       const questions = await quizService.getQuizQuestionsByQuizId(quiz.id)
@@ -191,16 +191,22 @@ const archiveQuiz = (quizId: number) => {
                 <Badge
                   :style="{
                     backgroundColor:
-                      lastAttempts[quiz.id]?.score / lastAttempts[quiz.id]?.maxScore >= 0.8
+                      (lastAttempts[quiz.id]?.score ?? 0) /
+                        (lastAttempts[quiz.id]?.maxScore ?? 1) >=
+                      0.8
                         ? 'var(--crisis-level-green)'
-                        : lastAttempts[quiz.id]?.score / lastAttempts[quiz.id]?.maxScore >= 0.4
+                        : (lastAttempts[quiz.id]?.score ?? 0) /
+                              (lastAttempts[quiz.id]?.maxScore ?? 1) >=
+                            0.4
                           ? 'var(--crisis-level-yellow)'
                           : 'var(--crisis-level-red)',
                   }"
                 >
                   {{
                     Math.round(
-                      (lastAttempts[quiz.id]?.score / lastAttempts[quiz.id]?.maxScore) * 100,
+                      ((lastAttempts[quiz.id]?.score ?? 0) /
+                        (lastAttempts[quiz.id]?.maxScore ?? 1)) *
+                        100,
                     )
                   }}%
                 </Badge>

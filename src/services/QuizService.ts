@@ -71,7 +71,7 @@ class QuizService {
   /**
    * Save a quiz question (admin only)
    */
-  async saveQuizQuestion(data: CreateQuizQuestionRequest): Promise<void> {
+  async saveQuizQuestion(data: CreateQuizQuestionRequest): Promise<QuizQuestionResponse> {
     const response = await api.post('/quizzes/admin/questions', data)
     return response.data
   }
@@ -189,7 +189,7 @@ class QuizService {
    */
   async getTotalCorrectAnswersForAttempt(attemptId: number): Promise<number> {
     const response = await api.get(`/quizzes/user/attempts/${attemptId}/correct-count`)
-    return response.data
+    return response.data.correctAnswers
   }
 
   async getLatestQuizAttempt(quizId: number): Promise<QuizAttemptSummary | null> {

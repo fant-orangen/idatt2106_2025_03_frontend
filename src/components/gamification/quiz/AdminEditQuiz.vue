@@ -39,23 +39,25 @@ const localQuestions = ref<
   {
     questionId: number | null
     questionBody: string
-    options: { answerId: number | null; answerBody: string; isCorrect: boolean }[]
+    options: { answerId: number; answerBody: string; isCorrect: boolean }[]
     deleted?: boolean
   }[]
 >([])
 
 const fetchedQuestions = ref<
   {
-    questionId: number
+    questionId: number | null
     questionBody: string
     options: { answerId: number; answerBody: string; isCorrect: boolean }[]
     deleted?: boolean
   }[]
 >([])
 
-const editingQuestionId = ref<number | null>(null) // Tracks the question being edited
+const editingQuestionId = ref<number | null>(null)
 
 const hasUnsavedChanges = ref(false)
+
+const quizName = ref('')
 
 const previewQuestions = computed(() => {
   // Combine fetchedQuestions and localQuestions, excluding deleted questions
@@ -64,7 +66,7 @@ const previewQuestions = computed(() => {
     ...localQuestions.value
       .filter((question) => !question.deleted)
       .map((question) => ({
-        questionId: question.questionId,
+        questionId: question.questionId ?? -1, // Use -1 as a fallback for null
         questionBody: question.questionBody,
         options: question.options.map((option) => ({
           answerId: option.answerId,
@@ -138,10 +140,10 @@ function submitQuestion() {
 
   // Add the new question to localQuestions
   localQuestions.value.push({
-    questionId: null, // New questions don't have an ID yet
+    questionId: -1, // New questions don't have an ID yet
     questionBody: newQuestionText.value,
     options: options.value.map((option, index) => ({
-      answerId: null, // New answers don't have an ID yet
+      answerId: -1, // New answers don't have an ID yet
       answerBody: option,
       isCorrect: correctOption.value.includes(index),
     })),
@@ -218,7 +220,7 @@ function saveEditedQuestion() {
       questionId: editingQuestionId.value,
       questionBody: newQuestionText.value,
       options: options.value.map((option, index) => ({
-        answerId: localQuestions.value[localQuestionIndex].options[index]?.answerId || null,
+        answerId: localQuestions.value[localQuestionIndex].options[index]?.answerId,
         answerBody: option,
         isCorrect: correctOption.value.includes(index), // Set isCorrect based on correctOption
       })),
@@ -241,7 +243,7 @@ function saveEditedQuestion() {
       questionId: editingQuestionId.value,
       questionBody: newQuestionText.value,
       options: options.value.map((option, index) => ({
-        answerId: fetchedQuestions.value[fetchedQuestionIndex].options[index]?.answerId || null,
+        answerId: fetchedQuestions.value[fetchedQuestionIndex].options[index]?.answerId,
         answerBody: option,
         isCorrect: correctOption.value.includes(index), // Set isCorrect based on correctOption
       })),
@@ -273,7 +275,7 @@ async function saveQuiz() {
         continue
       }
 
-      if (question.questionId === null) {
+      if (question.questionId === -1) {
         // Create a new question
         const questionResponse = await quizService.saveQuizQuestion({
           quizId: props.quizId,
@@ -293,18 +295,22 @@ async function saveQuiz() {
         }
       } else {
         // Update an existing question
-        await quizService.updateQuizQuestion(question.questionId, {
-          quizId: props.quizId,
-          questionBody: question.questionBody,
-        })
+        if (question.questionId !== null) {
+          await quizService.updateQuizQuestion(question.questionId, {
+            quizId: props.quizId,
+            questionBody: question.questionBody,
+          })
+        } else {
+          console.error('Invalid questionId: null')
+        }
 
         // Update or create answers
         for (const option of question.options) {
-          if (option.answerId === null) {
+          if (option.answerId === -1) {
             // Create a new answer
             await quizService.saveQuizAnswer({
               quizId: props.quizId,
-              questionId: question.questionId,
+              questionId: question.questionId ?? -1,
               answerBody: option.answerBody,
               isCorrect: option.isCorrect,
             })
@@ -312,7 +318,7 @@ async function saveQuiz() {
             // Update an existing answer
             await quizService.updateQuizAnswer(option.answerId, {
               quizId: props.quizId,
-              questionId: question.questionId,
+              questionId: question.questionId ?? -1,
               answerBody: option.answerBody,
               isCorrect: option.isCorrect,
             })
@@ -324,7 +330,11 @@ async function saveQuiz() {
     // Delete questions marked as deleted in fetchedQuestions
     for (const question of fetchedQuestions.value) {
       if (question.deleted) {
-        await quizService.deleteQuizQuestion(question.questionId)
+        if (question.questionId !== null) {
+          quizService.deleteQuizQuestion(question.questionId)
+        } else {
+          console.error('Invalid questionId: null')
+        }
       }
     }
 
@@ -340,14 +350,26 @@ async function saveQuiz() {
   }
 }
 
+function getQuizNameById(quizId: number) {
+  return quizService.getQuizNameById(quizId)
+}
+
 onMounted(() => {
   fetchQuestionsAndAnswers()
+  getQuizNameById(props.quizId)
+    .then((name) => {
+      quizName.value = name
+    })
+    .catch((error) => {
+      console.error('Error fetching quiz name:', error)
+      quizName.value = 'Unknown Quiz'
+    })
 })
 </script>
 
 <template>
   <div>
-    <h2 class="font-bold text-foreground text-center my-6">{{ props.quizName }}</h2>
+    <h2 class="font-bold text-foreground text-center my-6">{{ quizName }}</h2>
 
     <div class="flex flex-col items-center justify-center lg:flex-row lg:items-start gap-10 m-10">
       <!-- Question Form -->
@@ -509,7 +531,7 @@ onMounted(() => {
                               variant="ghost"
                               size="icon"
                               class="flex justify-center items-center"
-                              @click="editQuestion(question.questionId)"
+                              @click="editQuestion(question.questionId ?? -1)"
                             >
                               <Pencil class="w-4 h-4" />
                             </Button>
@@ -526,7 +548,7 @@ onMounted(() => {
                               variant="ghost"
                               size="icon"
                               class="flex justify-center items-center"
-                              @click="deleteQuestion(question.questionId)"
+                              @click="deleteQuestion(question.questionId ?? -1)"
                             >
                               <Trash2 class="w-4 h-4" />
                             </Button>
