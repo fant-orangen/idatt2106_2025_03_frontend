@@ -262,3 +262,34 @@ export async function deleteHousehold(): Promise<void> {
     throw error;
   }
 }
+
+/**
+ * Sends a safety check to all household members
+ * This will mark the sender as safe automatically
+ *
+ * @returns Promise that resolves when the safety check is sent
+ */
+export async function askIfSafe(): Promise<void> {
+  try {
+    await api.post('/user/confirm-safety/requests');
+  } catch (error: unknown) {
+    console.error('Error sending safety check:', error);
+    throw error;
+  }
+}
+
+/**
+ * Checks if a user is marked as safe
+ *
+ * @param userId The ID of the user to check
+ * @returns Promise that resolves to the user's safety status
+ */
+export async function isUserSafe(userId: number): Promise<{ isSafe: boolean; timestamp?: string }> {
+  try {
+    const response = await api.get(`/user/confirm-safety/status/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error checking user safety status:', error);
+    return { isSafe: false };
+  }
+}
