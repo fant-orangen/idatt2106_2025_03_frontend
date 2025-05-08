@@ -1,9 +1,30 @@
 <template>
-  <div class="crisis-status" :class="{'cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5': hasOngoingCrises, 'cursor-default': !hasOngoingCrises}" @click="hasOngoingCrises && navigateToCrisisPage()">
+  <!-- Compact Banner for No Crisis -->
+  <div v-if="!loading && !error && !hasOngoingCrises" class="crisis-status-banner w-full rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3 mb-4 transition-all duration-200 ease-in-out">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <font-awesome-icon :icon="['fas', 'check-circle']" class="text-green-500 dark:text-green-400" />
+        <span class="font-medium text-green-700 dark:text-green-300">{{ t('crisis.no-crisis') }}</span>
+        <span class="text-sm text-green-600/70 dark:text-green-400/70 hidden sm:inline">{{ t('crisis.all_clear', 'All clear. No active crisis events at this time.') }}</span>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        class="text-green-700 hover:text-green-800 hover:bg-green-100 dark:text-green-300 dark:hover:bg-green-800/30"
+        @click="navigateToCrisisPage"
+      >
+        {{ t('crisis.view_all_events', 'View All Events') }}
+        <ChevronRight class="h-4 w-4 ml-1" />
+      </Button>
+    </div>
+  </div>
+
+  <!-- Full Card for Crisis or Loading States -->
+  <div v-else class="crisis-status" :class="{'cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5': hasOngoingCrises, 'cursor-default': !hasOngoingCrises}" @click="hasOngoingCrises && navigateToCrisisPage()">
     <Card :class="`w-full max-w-20xl rounded-2xl p-4 transition-all duration-200 ease-in-out ${containerClass}`">
       <CardHeader class="items-center">
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
-          <font-awesome-icon :icon="hasOngoingCrises ? ['fas', 'triangle-exclamation'] : ['fas', 'check-circle']" :size="hasOngoingCrises ? '2xl' : 'xl'" :class="{'text-green-500 dark:text-green-400': !hasOngoingCrises}" />
+          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />
           <div>{{ t('crisis.crisis-status') }}</div>
         </CardTitle>
       </CardHeader>
@@ -35,16 +56,6 @@
               :style="{ backgroundColor: getSeverityColor(mainCrisis.severity) }"
             ></span>
           </div>
-        </div>
-
-        <div v-else class="main-crisis mb-4 w-full text-center">
-          <div class="text-base font-medium text-green-600 dark:text-green-400 py-2 px-4 rounded-md bg-green-50 dark:bg-green-900/20 inline-block">
-            <span class="flex items-center gap-2">
-              <font-awesome-icon :icon="['fas', 'check']" />
-              {{ t('crisis.no-crisis') }}
-            </span>
-          </div>
-          <div class="text-sm text-muted-foreground mt-2">{{ t('crisis.all_clear', 'All clear. No active crisis events at this time.') }}</div>
         </div>
 
         <!-- Other Crisis Events as Links -->
@@ -85,7 +96,14 @@ import {
   fetchCrisisEventsInRadius
 } from '@/services/CrisisEventService.ts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-vue-next';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils.ts';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faTriangleExclamation, faCheckCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+
+// Register FontAwesome icons
+library.add(faTriangleExclamation, faCheckCircle, faCheck);
 
 /**
  * CrisisLevelOverview component
@@ -103,6 +121,9 @@ const crisisEvents = ref<CrisisEventPreviewDto[]>([]);
 const maxDisplay = 4;
 const loading = ref(false);
 const error = ref<string | null>(null);
+
+// Add translation for view all events button
+t('crisis.view_all_events', 'View All Events');
 
 /**
  * Fetches all active crisis events
