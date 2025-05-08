@@ -288,19 +288,7 @@
     "related_news": "Related News",
     "no_news_found": "No news found",
     "published_at": "Published at",
-    "read_more": "Read more",
-    "post": "Save & Publish",
-    "search": "Search for an event",
-    "select": "Select an event",
-    "content": "Content",
-    "news-title": "Title",
-    "updated": "Last updated at",
-    "description": {
-      "title": "This is the title of the news alert",
-      "subject": "This is the subject of the news alert, should be realted to the crisis event",
-      "event": "Select a related event to this news alert",
-      "updated": "The draft was last updated at this date. The date and time will be set automatically when you save."
-    }
+    "read_more": "Read more"
   },
   "reflect": {
     "reflection": "Reflect after crisis",

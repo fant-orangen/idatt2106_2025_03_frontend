@@ -290,19 +290,7 @@
     "related_news": "Relaterte nyheter",
     "no_news_found": "Ingen nyheter funnet",
     "published_at": "Publisert",
-    "read_more": "Les mer",
-    "post": "Lagre & Publiser",
-    "search": "Søk etter en hendelse",
-    "select": "Velg en hendelse",
-    "content": "Innhold",
-    "news-title": "Tittel",
-    "updated": "Sist oppdatert",
-    "description": {
-      "title": "Dette er tittelen på nyhetsvarselet",
-      "subject": "Dette er temaet i nyhetsvarselet, og burde være relatert til hendelsen",
-      "event": "Velg en tilhørende hendelse til dette nyhetsvarselet",
-      "update": "Utkastet ble sist oppdatert på dette tidspunktet. Dato og tid vil bli satt automatisk når du lagrer."
-    }
+    "read_more": "Les mer"
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",
