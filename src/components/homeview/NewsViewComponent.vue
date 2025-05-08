@@ -1,8 +1,8 @@
 <template>
-  <div class="border border-[var(--default-blue)]/30 rounded-lg overflow-hidden h-full min-h-[600px] flex flex-col">
-    <div class="p-4 bg-[var(--default-blue)]/5">
+  <div class="border border-[var(--default-blue2)]/30 rounded-lg overflow-hidden h-full min-h-[600px] flex flex-col">
+    <div class="p-4 bg-[var(--default-blue2)]/5">
       <h2 class="text-2xl font-bold flex items-center">
-        <font-awesome-icon :icon="['fas', 'newspaper']" class="mr-2 text-[var(--default-blue)]" />
+        <font-awesome-icon :icon="['fas', 'newspaper']" class="mr-2 text-[var(--default-blue2)]" />
         {{ t('info.news') }}
       </h2>
     </div>
@@ -48,10 +48,10 @@
       </div>
     </div>
 
-    <div class="p-3 text-center border-t border-[var(--default-blue)]/20 bg-[var(--default-blue)]/5">
+    <div class="p-3 text-center border-t border-[var(--default-blue2)]/20 bg-[var(--default-blue2)]/5">
       <Button
         variant="outline"
-        class="text-[var(--default-blue)] border-[var(--default-blue)]/30 hover:bg-[var(--default-blue)]/10 w-full"
+        class="text-[var(--default-blue2)] border-[var(--default-blue2)]/30 hover:bg-[var(--default-blue2)]/10 dark:hover:bg-[var(--default-blue)]/30 w-full"
         @click="navigateTo('/news')"
       >
         {{ t('home.view_all_news') }} <ChevronRight class="h-4 w-4 ml-1" />
