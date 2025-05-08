@@ -125,7 +125,7 @@
                <!--Buttons -->
               <div class="flex flex-row flex-wrap gap-3 m-auto justify-evenly">
                 <Button
-                  type="submit" 
+                  type="button" 
                   @click="setStatusOfArticle('published')"
                   :disabled="isReadonly">
                   {{ $t('news.post') }}
