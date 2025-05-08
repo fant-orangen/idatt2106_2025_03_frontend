@@ -1,5 +1,6 @@
 <template>
   <div class="m-5">
+
     <!--Breadcrumb at the top left-->
     <Breadcrumb>
       <BreadcrumbList>
@@ -22,12 +23,13 @@
     </Breadcrumb>
   </div>
 
-  <!--Title-->
+  <!--Page title-->
   <h1 class="text-4xl text-center mb-6">{{ $t('admin.make-new-POI') }}:</h1>
 
   <div class="grid lg:grid-cols-2 grid-cols-1 gap-8 max-w-7xl mx-auto my-8 p-5">
     <div class="p-5 bg-background rounded-lg shadow-md flex flex-col">
       <form @submit="onSubmit" class="flex-grow flex flex-col justify-between">
+
         <!--Title of POI -->
         <FormField v-slot="{ componentField, meta, errorMessage }" name="title">
           <FormItem>
@@ -111,6 +113,7 @@
         <br>
 
         <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
+
           <!--Open from time-->
           <FormField v-slot="{ componentField, meta, errorMessage }" name="openfrom">
             <FormItem class="flex-1">
@@ -169,6 +172,7 @@
     </div>
 
     <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8">
+
       <!-- Add AdminMapController component -->
       <AdminMapController
         :mapComponent="mapComponentInstance"
@@ -232,7 +236,7 @@
 <script setup lang="ts">
 /**
  * @fileoverview This file defines the AdminAddPOI Vue component.
- * It provides an administrative interface for adding new points of interest (POIs) to the system.
+ * @description It provides an administrative interface for adding new points of interest (POIs) to the system.
  * It utilizes VeeValidate for form handling and validation, Zod for schema definition,
  * and integrates with MapComponent and AdminMapController for location selection.
  * API calls are made via the AdminServices module.
@@ -320,17 +324,24 @@ const isSuccessDialogOpen = ref(false);
 const createdPOIName = ref('');
 const isSubmitting = ref(false);
 
-// Initial center coordinates for Norway (fixed as number for MapComponent requirements)
+/**
+ * Initial center coordinates for Norway.
+ * Fixed as number for MapComponent requires.
+ */
 const initialCenter = ref<Location>({
   lat: 63.4305,
   lng: 10.3951,
 });
+/**
+ * Computed properties to safely map initialCenter to required number types.
+ */
 
-// Computed properties to safely map initialCenter to required number types
 const mapCenterLat = computed(() => initialCenter.value.lat ?? 63.4305);
 const mapCenterLng = computed(() => initialCenter.value.lng ?? 10.3951);
 
-// Form validation schema
+/**
+ * Form validation schema
+ */
 const formSchema = toTypedSchema(
   z.object({
     // Title: required string, min 2, max 50 chars
@@ -473,7 +484,7 @@ function handleLocationSelected(location: Location): void {
     form.setFieldValue('latitude', location.lat);
     form.setFieldValue('longitude', location.lng);
     updateMapMarker(location.lat, location.lng);
-    form.setFieldError('address', undefined); // Clear address validation error if coordinates are now set
+    form.setFieldError('address', undefined);
   }
 }
 
