@@ -173,9 +173,9 @@
       </Card>
 
       <!-- Map and Legend container with collapsible legend -->
-      <div class="relative" :style="{ height: legendHeight + 'px' }">
+      <div class="relative w-full h-[400px] md:h-[600px] lg:h-[800px]">
         <!-- Map Component -->
-        <div class="absolute inset-0" :class="{ 'pr-[250px]': showLegend }">
+        <div class="absolute inset-0 h-full w-full">
           <MapComponent
             ref="mapComponentRef"
             :pois="showPois ? convertedPois : []"
@@ -184,7 +184,7 @@
             :showMeetingPlaces="showMeetingPlaces"
             :userLocation="userLocation"
             :householdLocation="householdLocation"
-            class="h-full w-full z-0"
+            class="h-full w-full"
           />
         </div>
 
