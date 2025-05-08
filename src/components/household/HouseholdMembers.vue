@@ -149,12 +149,6 @@
                 v-if="'email' in member && (member as any).safetyStatus === 'SAFE' && !manageMode"
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-in-out"
               >
-                <div
-                  class="h-8 w-8 rounded-full flex items-center justify-center text-green-600 dark:text-green-400"
-                  :title="$t('household.confirmed-safe', 'Confirmed safe')"
-                >
-                  <CheckIcon class="w-4 h-4" />
-                </div>
               </div>
 
               <!-- Remove button - absolutely positioned -->
