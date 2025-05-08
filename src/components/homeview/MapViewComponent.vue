@@ -175,6 +175,7 @@
             :pois="showPois ? convertedPois : []"
             :crisisEvents="showCrisis ? crisisEvents : []"
             :meetingPlaces="showMeetingPlaces ? meetingPlaces : []"
+            :showMeetingPlaces="showMeetingPlaces"
             :userLocation="userLocation"
             :householdLocation="householdLocation"
             class="h-full w-full z-0"

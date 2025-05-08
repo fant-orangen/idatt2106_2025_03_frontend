@@ -16,7 +16,8 @@ export async function fetchPaginatedNewsByCrisisEvent(
   size: number = 3
 ): Promise<Page<News>> {
   try {
-    const response = await api.get(`/public/news/${crisisEventId}`, {
+    // Updated endpoint to match backend API
+    const response = await api.get(`/public/news/crisis/${crisisEventId}`, {
       params: { page, size }
     });
     return response.data;
