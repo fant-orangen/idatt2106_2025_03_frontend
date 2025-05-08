@@ -1,4 +1,11 @@
 <script setup lang="ts">
+
+/**
+ * This component handles the password reset flow after a user receives a token.
+ * It includes a form with validation to input a new password and confirm it.
+ * The form is powered by vee-validate and uses localized validation messages.
+ */
+
 import { ref, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { useI18n } from 'vue-i18n'
@@ -8,7 +15,10 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { resetPassword } from '@/services/UserService'
 import { useRoute } from 'vue-router'
 
-// Import shadcn-vue components
+/**
+ * Import UI components
+ */
+
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'vue-sonner'
@@ -28,10 +38,21 @@ const { t } = useI18n()
 const route = useRoute()
 const tokenFromQuery = ref<string | null>(null)
 
-// Reactive variables
+/**
+ * Toggle visibility of password fields.
+ */
+
 const isView = ref(false)
 
+/**
+ * Reusable password validation schema with translation support.
+ */
+
 const passwordValidation = getPasswordValidationSchema(t)
+
+/**
+ * Zod validation schema for the reset password form.
+ */
 
 const resetPasswordSchema = toTypedSchema(
   z.object({
@@ -44,7 +65,9 @@ const resetPasswordSchema = toTypedSchema(
   })
 )
 
-// Initialize the form with vee-validate
+/**
+ * Initialize the form using vee-validate.
+ */
 const form = useForm({
   validationSchema: resetPasswordSchema,
   initialValues: {
@@ -54,14 +77,20 @@ const form = useForm({
   },
 })
 
-// Watch for tokenFromQuery changes and update the form's token value
+/**
+ * Watch for token in query params and set it in the form.
+ */
+
 watch(tokenFromQuery, (newToken) => {
   if (newToken) {
     form.setFieldValue('token', newToken)
   }
 })
 
-// Set tokenFromQuery on component mount
+/**
+ * Set tokenFromQuery on component mount.
+ */
+
 onMounted(() => {
   tokenFromQuery.value = route.query.token as string || null
   console.log("Token from query:", tokenFromQuery.value)
@@ -70,6 +99,7 @@ onMounted(() => {
 /**
  * Handles the reset password process.
  */
+
 const handleReset = form.handleSubmit(async (values) => {
   try {
     await resetPassword(values.token, values.password)
@@ -101,6 +131,7 @@ const handleReset = form.handleSubmit(async (values) => {
       </CardHeader>
       <CardContent>
         <form @submit.prevent="handleReset" class="space-y-4">
+
           <!-- Token Field -->
           <FormField v-slot="{ field, meta, errorMessage }" name="token">
             <FormItem>
