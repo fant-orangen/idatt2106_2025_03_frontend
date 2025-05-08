@@ -57,6 +57,7 @@ export interface CreateQuizAnswerRequest {
 export interface QuizAttemptSummary {
   id: number
   completedAt: string // ISO string
+  score?: number
 }
 
 // For creating a user quiz answer
