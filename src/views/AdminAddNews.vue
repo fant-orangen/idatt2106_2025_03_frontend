@@ -27,119 +27,120 @@
   <h1 class="text-3xl p-3">Skriv eller rediger nyhetsvarsler</h1>
   <div class="flex justify-center">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-evenly">
+      
       <!--Form to edit fields-->
       <Card class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
         <CardHeader>
           <CardTitle>{{$t('navigation.admin-news')}}</CardTitle>
         </CardHeader>
-        <CardContent class="max-h-[500px]">
+        <CardContent class="max-h-fit">
           <form @submit.prevent="onSubmit">
             <div class="flex flex-col gap-5">
-              <!-- Tittel -->
+              <!-- Title -->
               <FormField v-slot="{ field, meta, errorMessage }" name="title">
                 <FormItem>
                   <FormLabel>{{$t('news.news-title')}}</FormLabel>
                   <FormControl>
-                    <Input type="text" v-bind="field" />
+                    <Input type="text" v-bind="field" :readonly="isReadonly" :disabled="isReadonly" />
                   </FormControl>
                   <FormDescription>{{ $t('news.description.title') }}</FormDescription>
                   <FormMessage v-if="meta.touched && meta.validated">{{ errorMessage }}</FormMessage>
                 </FormItem>
               </FormField>
 
-              <!--Innhold -->
+              <!--Content -->
               <FormField v-slot="{ field, meta, errorMessage }" name="content">
                 <FormItem>
                   <FormLabel>{{$t('news.content')}}</FormLabel>
                   <FormControl>
-                    <Textarea v-bind="field" class="min-h-28" />
+                    <Textarea v-bind="field" class="min-h-28" :readonly="isReadonly" :disabled="isReadonly" />
                   </FormControl>
                   <FormDescription>{{ $t('news.description.subject') }}</FormDescription>
                   <FormMessage v-if="meta.touched && meta.validated">{{ errorMessage }}</FormMessage>
                 </FormItem>
               </FormField>
               
-              <div class="flex flex-row flex-wrap gap-5 justify-evenly">
-                <!--Select / search field for a crisis event-->
-                <div>
-                  <Combobox v-model="selectedEvent">
-                    <ComboboxAnchor as-child>
-                      <ComboboxTrigger as-child>
-                        <Button variant="outline" class="justify-between">
-                          {{ selectedEvent?.name ?? t('news.select')}}
-                          <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </ComboboxTrigger>
-                    </ComboboxAnchor>
+              <!--Select / search field for a crisis event-->
+              <div>
+                <Combobox :disabled="isReadonly" v-model="selectedEvent">
+                  <ComboboxAnchor as-child>
+                    <ComboboxTrigger as-child :disabled="isReadonly">
+                      <Button variant="outline" class="justify-between">
+                        {{ selectedEvent?.name ?? t('news.select')}}
+                        <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </ComboboxTrigger>
+                  </ComboboxAnchor>
 
-                    <ComboboxList>
-                      <div class="relative w-full max-w-sm items-center">
-                        <ComboboxInput :placeholder="t('news.search')">
-                          <span class="absolute start-0 inset-y-0 flex item-center justify-center px-3">
-                            <Search class="size-4 text-muted-foreground"/>
-                          </span>   
-                        </ComboboxInput>
-                      </div>
-                      <ComboboxEmpty>
-                        {{ $t('common.not-found') }}
-                      </ComboboxEmpty>
+                  <ComboboxList>
+                    <div class="relative w-full max-w-sm items-center">
+                      <ComboboxInput :placeholder="t('news.search')" :disabled="isReadonly">
+                        <span class="absolute start-0 inset-y-0 flex item-center justify-center px-3">
+                          <Search class="size-4 text-muted-foreground"/>
+                        </span>   
+                      </ComboboxInput>
+                    </div>
+                    <ComboboxEmpty>
+                      {{ $t('common.not-found') }}
+                    </ComboboxEmpty>
 
-                      <ComboboxGroup>
-                        <ComboboxItem v-for="event in allEvents" 
-                          :key="event.id" :value="event">
-                          <span>{{ event.name }}</span>
-                          <span v-if="event.severity === 'red'" class="bg-chart-1 rounded-md p-0.25">{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
-                          <span v-if="event.severity === 'yellow'" class="bg-chart-4 rounded-md p-0.25" >{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
-                          <span v-if="event.severity === 'green'" class="bg-chart-2 rounded-md p-0.25" >{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
-                          <ComboboxItemIndicator>
-                            <Check class='ml-auto h-4 w-4'/>
-                          </ComboboxItemIndicator>
-                        </ComboboxItem>
-                      </ComboboxGroup>
-                    </ComboboxList>
-                  </Combobox>
-                  <p class="text-muted-foreground text-sm">{{ $t('news.description.event') }}</p>
-                </div>
-                <!--Last updated at: if it's a draft-->
-                <FormField v-if="selectedDraft" v-slot="{ field }" name="updatedAt">
+                    <ComboboxGroup>
+                      <ComboboxItem v-for="event in allEvents" 
+                        :key="event.id" :value="event">
+                        <span>{{ event.name }}</span>
+                        <span v-if="event.severity === 'red'" class="bg-chart-1 rounded-md p-0.25">{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
+                        <span v-if="event.severity === 'yellow'" class="bg-chart-4 rounded-md p-0.25" >{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
+                        <span v-if="event.severity === 'green'" class="bg-chart-2 rounded-md p-0.25" >{{ t('add-event-info.crisis-level.' + event.severity) }}</span>
+                        <ComboboxItemIndicator>
+                          <Check class='ml-auto h-4 w-4'/>
+                        </ComboboxItemIndicator>
+                      </ComboboxItem>
+                    </ComboboxGroup>
+                  </ComboboxList>
+                </Combobox>
+                <p class="text-muted-foreground text-sm">{{ $t('news.description.event') }}</p>
+              </div>
+              <!--Last updated at: if it's a draft-->
+              <FormField v-if="selectedDraft" v-slot="{ field }" name="updatedAt">
+              <FormItem>
+                <FormLabel>{{$t('news.updated')}}</FormLabel>
+                <FormControl>
+                  <Input class="max-w-fit" type="text" v-bind="field" readonly disabled/>
+                </FormControl>
+                <FormDescription>{{ $t('news.description.updated') }}</FormDescription>
+              </FormItem>
+              </FormField>
+
+              <!--Published at: if it's a published article -->
+              <FormField v-if="selectedNews" v-slot="{ field }" name="publishedAt">
                 <FormItem>
-                  <FormLabel>{{$t('news.updated')}}</FormLabel>
+                  <FormLabel>{{$t('news.published')}}</FormLabel>
                   <FormControl>
-                    <Input type="text" v-bind="field" readonly disabled/>
+                    <Input class="max-w-fit" type="text" v-bind="field" readonly disabled/>
                   </FormControl>
-                  <FormDescription>{{ $t('news.description.updated') }}</FormDescription>
+                  <FormDescription>{{ $t('news.description.published') }}</FormDescription>
                 </FormItem>
-                </FormField>
+              </FormField>
 
-                <!--Published at: if it's a draft-->
-                <FormField v-if="selectedNews" v-slot="{ field }" name="publishedAt">
-                  <FormItem>
-                    <FormLabel>{{$t('news.published')}}</FormLabel>
-                    <FormControl>
-                      <Input type="text" v-bind="field" readonly disabled/>
-                    </FormControl>
-                    <FormDescription>{{ $t('news.description.published') }}</FormDescription>
-                  </FormItem>
-                </FormField>
-              </div>  
-            
-              <div class="flex flex-row flex-wrap gap-3 m-auto">
-                <Button 
+               <!--Buttons -->
+              <div class="flex flex-row flex-wrap gap-3 m-auto justify-evenly">
+                <Button
                   type="submit" 
-                  @click="setStatusOfArticle('published')">
+                  @click="setStatusOfArticle('published')"
+                  :disabled="isReadonly">
                   {{ $t('news.post') }}
                 </Button>
-                <Button v-if="status !== 'published'" 
+                <Button v-if="!selectedNews" 
                   type="button" 
                   variant="secondary"
                   @click="setStatusOfArticle('draft')">
-                    Save draft
+                    {{ $t('news.save-draft') }}
                 </Button>
                 <Button v-if="selectedDraft || selectedNews"
                   type="button" 
                   variant="destructive"
                   @click="setStatusOfArticle('archived')">
-                  Archive
+                  {{ $t('news.archive') }}
                 </Button>
                 <Button 
                   type="button" 
@@ -155,6 +156,7 @@
           
         </CardFooter>
       </Card>
+
       <div class="flex flex-col gap-5">
         <!--List of all drafts articles  -->
         <Card class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
@@ -196,6 +198,7 @@
           </CardContent>
         </Card>
       </div>
+
       <!--All published news articles-->
       <Card class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
         <CardHeader>
@@ -230,7 +233,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Separator } from "@/components/ui/separator"
-import { useForm } from 'vee-validate'
+import { useForm, type SubmissionContext} from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { formatDateFull } from '@/utils/dateUtils.ts'
 import type { CreateNewsDto, News, UpdateNewsArticle } from '@/models/News'
@@ -262,21 +265,27 @@ enum Status {
   ARCHIVED = 'archived',
 }
 
-const form = ref()
-const onSubmit = ref<(e?: Event) => void>()
 const { t } = useI18n()
-
 const selectedEvent = ref<CrisisEventPreviewDto | null>(null)
 const selectedNews = ref<News | null>(null)
 const selectedDraft = ref<News | null>(null)
 const status = ref<Status | null>(null)
+const isReadonly = computed(() => !!selectedNews.value)
+
+const formSchema = toTypedSchema(z.object({
+  title: z.string().min(2).max(50),
+  content: z.string().max(500),
+  updatedAt: z.string().optional(),
+  publishedAt: z.string().optional(),
+}))
+const form = useForm({ validationSchema: formSchema})
+const onSubmit = form.handleSubmit(handleFormSubmit)
 
 
 onMounted(() => {
-  setUpForm();
-  fetchNextEventPage;
-  fetchNextDraftsPage;
-  fetchNextNewsPage;
+  fetchNextEventPage()
+  fetchNextDraftsPage()
+  fetchNextNewsPage()
 });
 
 function successToast(msg: string) {
@@ -287,22 +296,22 @@ function errorToast(msg: string) {
 }
 
 function cancelInput() {
+  form.resetForm()
   selectedDraft.value = null
   selectedNews.value = null
   selectedEvent.value = null
-  form.value?.resetForm()
 }
 
 function setStatusOfArticle(inputStatus: string) {
   status.value = inputStatus as Status
   
   if (inputStatus === Status.DRAFT || inputStatus === Status.PUBLISHED) {
-     handleFormSubmit(form.value)
+     onSubmit()
   } else if (inputStatus === Status.ARCHIVED) {
     if (selectedDraft.value) {
-      handleFormSubmit(form.value)
+      onSubmit()
     } else if( selectedNews.value) {
-      archivePublishedArticle(selectedNews.value.id)
+      archivePublishedArticle()
     }
   }
 }
@@ -413,13 +422,13 @@ watch(selectedEvent, async (event) => {
 
 watch(selectedDraft, async (draft) => {
   if (draft) {
+    selectedNews.value = null
     await nextTick()
-    form.value.resetForm()
-    form.value.setValues({
+    form.resetForm()
+    form.setValues({
       title: draft.title ?? '',
       content: draft.content ?? '',
-      status: draft.status ?? 'draft',
-      updatedAt: draft.updatedAt ?? '',
+      updatedAt: formatDateFull(draft.updatedAt) ?? '',
     })
     getEventFromArticle(draft.crisisEventId)
   }
@@ -427,12 +436,13 @@ watch(selectedDraft, async (draft) => {
 
 watch(selectedNews, async (news) => {
   if(news) {
+    selectedDraft.value = null
     await nextTick()
-    form.value.resetForm()
-    form.value.setValues({
+    form.resetForm()
+    form.setValues({
       title: news.title ?? '',
       content: news.content ?? '',
-      publishedAt: news.publishedAt ?? '',
+      publishedAt: formatDateFull(news.publishedAt) ?? '',
     })
     getEventFromArticle(news.crisisEventId)
   }
@@ -449,7 +459,7 @@ async function getEventFromArticle(crisisId: number) {
 
 
 async function selectArticle(article: News) {
-  if (!article || article == undefined || article == null) {
+  if (!article) {
     console.error('The selected article doesnt exist')
     return;
   }
@@ -460,19 +470,6 @@ async function selectArticle(article: News) {
     selectedDraft.value = article
     selectedNews.value = null
   }
-}
-
-
-function setUpForm() {
-  const formSchema = toTypedSchema(z.object({
-    title: z.string().min(2).max(50),
-    content: z.string().max(500),
-    updatedAt: z.string().optional(),
-    publishedAt: z.string().optional(),
-    status: z.enum(['draft', 'published', 'archived']),
-  }))
-  form.value = useForm({validationSchema: formSchema})
-  onSubmit.value = form.value.handleSubmit(handleFormSubmit)
 }
 
 
@@ -488,43 +485,52 @@ function handleFormSubmit(values: any) {
       saveNewArticle(newArticle)
       return;
     } else {
-      console.error('Need to select a draft first!')
+      errorToast('Du må assosiere et utkast med en hendelse før du lagrer!')
       return;
     }
-  }
-  if (selectedDraft.value) {
-    const updatedDraft: UpdateNewsArticle = {
-      title: values.title ?? selectedDraft.value.title,
-      content: values.content ?? selectedDraft.value.content,
-      status: status.value as Status,
+  } else {
+    if (selectedDraft.value) {
+      const updatedDraft: UpdateNewsArticle = {
+        title: values.title ?? selectedDraft.value.title,
+        content: values.content ?? selectedDraft.value.content,
+        status: status.value as Status,
+      }
+      saveUpdatesOfArticle(selectedDraft.value.id, updatedDraft)
+      selectedDraft.value = null
+    } else {
+      errorToast('Det har skjedd en feil, prøv igjen.')
     }
-    saveUpdatesOfArticle(updatedDraft)
   }
 }
 
-async function saveUpdatesOfArticle(updatedData: UpdateNewsArticle) {
-  if (!selectedDraft.value) {
-    console.warn('no selected draft to save!')
-    return;
-  }
+async function saveUpdatesOfArticle(id: number, updatedData: UpdateNewsArticle) {
   try {
-    const response = await adminUpdateNews(selectedDraft.value.id, updatedData)
+    const response = await adminUpdateNews(id, updatedData)
     console.log('updated the draft: ', response.data)
     successToast('Oppdaterte artikkelen!')
     cancelInput()
+    updateLists()
   } catch (error) {
     console.error('Failed to send updated data to backend API')
   }
 }
 
-async function archivePublishedArticle(id: number) {
-  try {
-    if (status.value !== Status.ARCHIVED) {
-      status.value = Status.ARCHIVED
+async function archivePublishedArticle() {
+  if(!selectedNews.value) {
+    errorToast("Velg et nyhetsvarsel for å kunne arkivere det!")
+    return;
+  }
+  if (status.value === Status.ARCHIVED) {
+    try {
+      const archiveData: UpdateNewsArticle = {
+        title: selectedNews.value.title,
+        content: selectedNews.value.content,
+        status: status.value
+      }
+      saveUpdatesOfArticle(selectedNews.value.id, archiveData)
+    } catch (error) {
+      console.error('Failed to archive the article')
     }
-    handleFormSubmit(form.value);
-  } catch (error) {
-    console.error('Failed to archive the article')
   }
 }
 
@@ -532,8 +538,15 @@ async function saveNewArticle(data: CreateNewsDto) {
   try {
     const response = await adminAddNews(data)
     console.log('Lagra et nytt varsel ', response)
+    cancelInput()
+    updateLists()
   } catch (error) {
     console.error('Failed to save the new article')
   }
+}
+
+async function updateLists() {
+  await queryClient.invalidateQueries({queryKey: ['articles']});
+  await queryClient.invalidateQueries({queryKey: ['drafts']});
 }
 </script>
