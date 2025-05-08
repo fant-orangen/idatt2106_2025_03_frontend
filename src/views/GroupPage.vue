@@ -158,7 +158,10 @@ const showCreateGroupInput = ref(false);
 const newGroupName = ref('');
 const isAdmin = ref(false);
 
-// Check if user is household admin when component mounts
+/**
+ * Check if the user is household admin when component mounts.
+ */
+
 onMounted(async () => {
   try {
     isAdmin.value = await isCurrentUserHouseholdAdmin();
@@ -181,7 +184,10 @@ onMounted(async () => {
   }
 });
 
-// Watch for changes in search text and current group ID
+/**
+ * Watch for changes in search text and current group ID.
+ */
+
 watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
   if (!newGroupId) return;
 
@@ -218,7 +224,10 @@ watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
   }
 }, { immediate: true });
 
-// Watch for changes in current group ID to update households
+/**
+ * Watch for changes in current group ID to update households
+ */
+
 watch(currentGroupId, async (newGroupId) => {
   if (!newGroupId) {
     households.value = [];
@@ -271,6 +280,10 @@ async function leaveCurrentGroup() {
   }
 }
 
+/**
+ * Method to create a group.
+ * Cancel creation of group by resetting the form.
+ */
 async function createGroup() {
   if (!newGroupName.value.trim()) return;
 
@@ -285,6 +298,7 @@ async function createGroup() {
         name: group.name,
         groupId: group.id
       }));
+
       // Switch to the newly created group
       const newGroup = groups.value.find(g => g.name === newGroupName.value.trim());
       if (newGroup) {
@@ -292,7 +306,6 @@ async function createGroup() {
       }
     }
 
-    // Reset the create group form
     cancelCreateGroup();
   } catch (error) {
     console.error('Error creating group:', error);
