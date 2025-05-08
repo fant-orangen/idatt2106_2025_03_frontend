@@ -78,13 +78,11 @@ export async function updateHousehold(updateData: HouseholdUpdateRequestDto): Pr
 export async function inviteUserToHousehold(email: string): Promise<HouseholdInviteResponseDto> {
   const payload: HouseholdInviteRequestDto = { email };
   try {
-    console.log('Sending invitation to:', email);
     const response = await api.post('/user/households/invite', payload, {
       headers: {
         'Content-Type': 'application/json'
       }
     });
-    console.log('Invitation response:', response.data);
     return response.data;
   } catch (error: any) {
     console.error('Error inviting user to household:', error);
@@ -122,7 +120,6 @@ export async function leaveHousehold(): Promise<void> {
  * @returns Array of household members
  */
 export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
-  console.log("trying to get household members");
   const response = await api.get('/user/households/members');
   return response.data;
 }
@@ -255,7 +252,6 @@ export async function isCurrentUserHouseholdAdmin(): Promise<boolean> {
  */
 export async function deleteHousehold(): Promise<void> {
   try {
-    console.log('Sending request to delete household');
     await api.delete('/user/households/delete');
   } catch (error) {
     console.error('Error deleting household:', error);
