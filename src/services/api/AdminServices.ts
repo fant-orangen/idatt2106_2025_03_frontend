@@ -124,7 +124,6 @@ export async function addNewAdmin(userID: number): Promise<AxiosResponse<any>> {
  */
 export async function revokeAdminRights(adminID: number) {
   const id = adminID.toString();
-  console.log('Admin id from AdminServices: ', id);
   return await api.put('/super-admin/revoke/' + id, {
     headers: {
       'Content-Type': 'application/json'
