@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
+import type { UserBasicInfoDto } from '@/models/User'
+import { getUserProfile } from '@/services/UserService'
+import { toast } from 'vue-sonner'
+
 
 // Icon
 import {
@@ -51,6 +55,17 @@ const colorMode = useColorMode()
 // Langauge
 const englishSelected = ref(false)
 
+// Loading state
+const isLoading = ref(false)
+
+const profile = ref<UserBasicInfoDto>({
+  firstName: '',
+  lastName: '',
+  email: '',
+  householdName: '',
+  emailVerified: false,
+})
+
 function changeLanguage(code: string) {
   locale.value = code
   englishSelected.value = code === 'en-US'
@@ -77,6 +92,38 @@ watch(
     console.log('HeaderNavbar: hasUnread state changed to:', newValue);
   }
 );
+
+onMounted(async () => {
+  try {
+    isLoading.value = true
+    const userData = await getUserProfile()
+
+    // Map the extended profile to the basic info format
+    profile.value = {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      householdName: userData.householdName,
+      emailVerified: userData.emailVerified
+    }
+  } catch (error) {
+    console.error('Failed to fetch user profile:', error)
+    toast.error(t('errors.unexpected-error'))
+  } finally {
+    isLoading.value = false
+  }
+
+  // Only fetch notifications if logged in and haven't fetched yet
+  if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
+    try {
+      await notificationStore.fetchNotifications()
+      await notificationStore.checkUnreadNotifications()
+      console.log('NavBar: Initial notifications fetched and checked for unread')
+    } catch (error) {
+      console.error('NavBar: Failed to fetch initial notifications via store:', error)
+    }
+  }
+})
 
 onMounted(async () => {
   // Only fetch if logged in and haven't fetched yet
@@ -202,9 +249,9 @@ function logOut() {
         <DropdownMenuTrigger as-child>
           <Button variant="ghost" class="cursor-pointer hover:bg-input dark:hover:bg-background/40">
             <User class="h-5 w-5" />
-            <span class="hidden md:inline-flex">
-              {{ userStore.profile?.firstName || 'Ola' }}
-              {{ userStore.profile?.lastName || 'Nordmann' }}
+            <span 
+              class="hidden md:inline-flex">
+              {{ profile.firstName }} {{ profile.lastName }}
             </span>
           </Button>
         </DropdownMenuTrigger>
