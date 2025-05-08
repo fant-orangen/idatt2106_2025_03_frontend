@@ -87,10 +87,11 @@
             class="flex items-center bg-white border-[var(--crisis-level-yellow)] text-black hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
             @click="toggleMeetingPlacesVisibility"
           >
-            <font-awesome-icon :icon="['fas', 'people-group']" class="mr-2" />
+            <span class="material-symbols-outlined scale-75 mr-2">recenter</span>
             {{ t('map.show-meeting-places', 'Meeting Places') }}
             <div class="ml-1 w-3 h-3 rounded-full" :class="showMeetingPlaces ? 'bg-green-500' : 'bg-gray-300'"></div>
           </Button>
+
         </div>
       </div>
 
