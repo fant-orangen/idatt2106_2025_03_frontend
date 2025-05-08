@@ -84,6 +84,14 @@ export interface EmptyHouseholdMemberCreateDto {
 }
 
 /**
+ * Data required to update a household (HouseholdUpdateRequestDto)
+ */
+export interface HouseholdUpdateRequestDto {
+  name: string;
+  address: string;
+}
+
+/**
  * Type alias for convenience
  */
 export type Member = HouseholdMember | EmptyHouseholdMemberDto;

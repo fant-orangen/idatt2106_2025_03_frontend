@@ -213,24 +213,14 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
 
   // Define routes accessible without authentication or household checks
-  const publicRoutes = [
-    'Login',
-    'Register',
-    'Home',
-    'Household',
-    'Information',
-    'ScenarioTheme',
-    'NotFound',
-    'News',
-    'Notifications',
-    'ResetPassword',
-    'PrivacyPolicy',
-  ]
+  const publicRoutes = ['Login', 'Register', 'Home', 'Household', 'Information', 'ScenarioTheme', 'CrisisEvent', 'NotFound', 'News', 'Notifications', 'ResetPassword', 'PrivacyPolicy', ];
+
+  // Define routes that require authentication but don't require a household
+  const noHouseholdRequiredRoutes = ['Reflections', 'Profile', 'Settings', ];
 
   // Allow immediate navigation if the target route is public
-  if (publicRoutes.includes(to.name as string)) {
-    //
-    return next() // Proceed to the public route
+  if (publicRoutes.includes(to.name as string)) { //
+    return next(); // Proceed to the public route
   }
 
   // Check if the user store indicates authentication.
