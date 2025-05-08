@@ -180,13 +180,13 @@
       </form>
     </div>
 
-    <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8">
+    <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8 z-50">
       <AdminMapController
         :mapComponent="mapComponentInstance"
         @location-selected="handleLocationSelected"
         @location-cleared="handleLocationCleared"
       />
-      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md">
+      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md z-50">
         <MapComponent
           ref="mapComponent"
           :adminMode="true"

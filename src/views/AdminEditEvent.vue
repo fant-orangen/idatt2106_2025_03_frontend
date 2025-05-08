@@ -261,7 +261,7 @@
         </Card>
       </div>
 
-      <div class="map-area" v-if="selectedEvent">
+      <div class="map-area z-50" v-if="selectedEvent">
         <StaticMapWithCircle
           v-if="
             selectedEvent.epicenterLatitude != null && selectedEvent.epicenterLongitude != null
