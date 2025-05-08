@@ -16,7 +16,8 @@ import type {
   HouseholdInviteRequestDto,
   HouseholdInviteResponseDto,
   HouseholdJoinRequestDto,
-  HouseholdSwitchRequestDto
+  HouseholdSwitchRequestDto,
+  HouseholdUpdateRequestDto
 } from '@/models/Household'
 import type { Invitation } from '@/models/Invitation'
 
@@ -49,6 +50,22 @@ export async function getCurrentHousehold(): Promise<Household | null> {
 export async function createHousehold(householdData: HouseholdCreateRequestDto): Promise<Household> {
   const response = await api.post('/user/households', householdData);
   return response.data;
+}
+
+/**
+ * Update an existing household (admin only)
+ * @param updateData The updated household data
+ * @returns The updated household
+ * @throws Error if the user is not an admin or the update fails
+ */
+export async function updateHousehold(updateData: HouseholdUpdateRequestDto): Promise<Household> {
+  try {
+    const response = await api.put('/user/households/update', updateData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating household:', error);
+    throw error;
+  }
 }
 
 /**
@@ -105,7 +122,26 @@ export async function leaveHousehold(): Promise<void> {
  * @returns Array of household members
  */
 export async function getHouseholdMembers(): Promise<HouseholdMember[]> {
+  console.log("trying to get household members");
   const response = await api.get('/user/households/members');
+  return response.data;
+}
+
+/**
+ * Get all non-admin members of the current household
+ * @returns Array of non-admin household members
+ */
+export async function getNonAdminHouseholdMembers(): Promise<HouseholdMember[]> {
+  const response = await api.get('/user/households/members/non-admin');
+  return response.data;
+}
+
+/**
+ * Get all members of the current household
+ * @returns Array of household members
+ */
+export async function getHouseholdNotAdminMembers(): Promise<HouseholdMember[]> {
+  const response = await api.get('/user/households/members/non-admin');
   return response.data;
 }
 
@@ -152,15 +188,17 @@ export async function removeMemberFromHousehold(memberId: number): Promise<void>
 }
 
 /**
- * Decline a household invitation (deprecated - use InvitationService.declineInvitation instead)
+ * Cancel a household invitation that was sent to another user
  * @param token The invitation token
  * @returns Promise that resolves when operation is successful
- * @deprecated This endpoint has been removed. Use InvitationService.declineInvitation instead.
  */
-export async function declineHouseholdInvitation(token: string): Promise<void> {
-  console.warn('declineHouseholdInvitation is deprecated. Use InvitationService.declineInvitation instead.');
-  const payload: HouseholdJoinRequestDto = { token };
-  await api.post('/user/invitations/decline', payload);
+export async function cancelHouseholdInvitation(token: string): Promise<void> {
+  try {
+    await api.delete(`/user/households/invitations/${token}`);
+  } catch (error) {
+    console.error('Error canceling invitation:', error);
+    throw error;
+  }
 }
 
 /**
@@ -217,8 +255,8 @@ export async function isCurrentUserHouseholdAdmin(): Promise<boolean> {
  */
 export async function deleteHousehold(): Promise<void> {
   try {
-    const response = await api.delete('/user/households');
-    console.log('Household deleted successfully:', response.data);
+    console.log('Sending request to delete household');
+    await api.delete('/user/households/delete');
   } catch (error) {
     console.error('Error deleting household:', error);
     throw error;

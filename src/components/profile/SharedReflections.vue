@@ -9,11 +9,22 @@
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{{ t('reflect.all-shared') }}</SelectItem>
-            <SelectItem value="household">{{ t('reflect.household-only') }}</SelectItem>
+            <SelectItem v-if="hasHousehold" value="household">{{ t('reflect.household-only') }}</SelectItem>
             <SelectItem value="group">{{ t('reflect.group-only') }}</SelectItem>
           </SelectContent>
         </Select>
       </div>
+    </div>
+
+    <!-- No household message -->
+    <div v-if="!hasHousehold" class="bg-muted p-3 rounded-md mb-4 text-sm">
+      <p>{{ t('reflect.no-household-message', 'You are not currently in a household. You can still view shared reflections from the community.') }}</p>
+    </div>
+
+    <!-- Cannot view shared reflections message -->
+    <div v-if="!hasHousehold && reflections.length === 0 && !isLoading" class="bg-accent p-4 rounded-md mb-4 text-sm border border-accent-foreground/10">
+      <p class="font-medium">{{ t('reflect.cannot-view-shared-reflections', 'You need to be in a household to view shared reflections from other users.') }}</p>
+      <p class="mt-2">{{ t('reflect.join-household-prompt', 'Join or create a household to connect with others and share reflections.') }}</p>
     </div>
 
     <InfiniteScroll
@@ -24,7 +35,7 @@
       :end-message="t('reflect.no_more_reflections', 'No more reflections to load')"
       :threshold="100"
     >
-      <div v-if="reflections.length === 0 && !isLoading" class="text-center text-muted-foreground py-4">
+      <div v-if="reflections.length === 0 && !isLoading && hasHousehold" class="text-center text-muted-foreground py-4">
         {{ t('reflect.no-shared-reflections') }}
       </div>
 
@@ -61,7 +72,7 @@
  * @description Displays shared reflections from household members or group members.
  * Allows filtering by scope (all, household, group) and supports infinite scrolling.
  */
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { toast } from 'vue-sonner';
@@ -100,7 +111,18 @@ const currentPage = ref(0);
 const pageSize = 5;
 const hasMore = ref(true);
 const isLoading = ref(false);
-const selectedScope = ref<'all' | 'household' | 'group'>(props.defaultScope || 'all');
+
+// Determine if user has a household
+const hasHousehold = computed(() => !!props.householdId);
+
+// Set default scope based on household status
+const defaultScope = computed(() => {
+  if (props.defaultScope) return props.defaultScope;
+  if (props.defaultScope === 'household' && !hasHousehold.value) return 'all';
+  return 'all';
+});
+
+const selectedScope = ref<'all' | 'household' | 'group'>(defaultScope.value);
 
 // Format date for display
 const formatDate = (dateString: string): string => {

@@ -21,10 +21,10 @@
       >
         <!-- Product Overview -->
         <div class="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-2">
-          <div class="font-medium">
-            <span v-if="item.category === 'water'" class="mr-2">💧</span>
-            <span v-else-if="item.category === 'medicine'" class="mr-2">💊</span>
-            <span v-else class="mr-2">🍽️</span>
+          <div class="font-medium flex items-center">
+            <Droplet v-if="item.category === 'water'" class="mr-2 w-4 h-4" />
+            <Pill v-else-if="item.category === 'medicine'" class="mr-2 w-4 h-4" />
+            <Utensils v-else class="mr-2 w-4 h-4" />
             {{ item.name }}
           </div>
           <div class="text-left sm:text-left">{{ getTotalAmount(item) }}</div>
@@ -76,6 +76,7 @@ import { Button } from '@/components/ui/button';
 import type { ProductType } from '@/models/Product';
 import type { Page } from '@/types/Page';
 import { useI18n } from 'vue-i18n';
+import { Droplet, Pill, Utensils } from 'lucide-vue-next';
 
 interface GroupInventoryItem extends ProductType {
   edit: boolean;
