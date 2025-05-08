@@ -1,6 +1,27 @@
 <template>
-  <div class="crisis-status cursor-pointer" @click="navigateToCrisisPage()">
-    <Card :class="`crisis-status-card w-[100%] md:w-120 ${containerClass}`">
+  <!-- Compact Banner for No Crisis -->
+  <div v-if="!loading && !error && !hasOngoingCrises" class="crisis-status-banner full-width-banner bg-green-50 dark:bg-green-900/20 border-y border-green-200 dark:border-green-800 py-3 mb-4 transition-all duration-200 ease-in-out">
+    <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <font-awesome-icon :icon="['fas', 'check-circle']" class="text-green-500 dark:text-green-400" />
+        <span class="font-medium text-green-700 dark:text-green-300">{{ t('crisis.no-crisis') }}</span>
+        <span class="text-sm text-green-600/70 dark:text-green-400/70 hidden sm:inline">{{ t('crisis.all_clear', 'All clear. No active crisis events at this time.') }}</span>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        class="text-green-700 hover:text-green-800 hover:bg-green-100 dark:text-green-300 dark:hover:bg-green-800/30"
+        @click="navigateToCrisisPage"
+      >
+        {{ t('crisis.view_all_events', 'View All Events') }}
+        <ChevronRight class="h-4 w-4 ml-1" />
+      </Button>
+    </div>
+  </div>
+
+  <!-- Full Card for Crisis or Loading States -->
+  <div v-else class="crisis-status" :class="{'cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5': hasOngoingCrises, 'cursor-default': !hasOngoingCrises}" @click="hasOngoingCrises && navigateToCrisisPage()">
+    <Card :class="`w-full max-w-20xl rounded-2xl p-4 transition-all duration-200 ease-in-out ${containerClass}`">
       <CardHeader class="items-center">
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
           <font-awesome-icon :icon="['fas', 'triangle-exclamation']" size="2xl" />
@@ -24,11 +45,9 @@
         <!-- Main Crisis (Highest Severity) -->
         <div v-else-if="mainCrisis" class="main-crisis mb-4 w-full text-center">
           <div
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-colors cursor-pointer dark:text-white"
-            :style="{
-              backgroundColor: `${getSeverityColor(mainCrisis.severity)}20`,
-              borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}`
-            }"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-all duration-200 ease-in-out cursor-pointer dark:text-white hover:scale-[1.03] hover:shadow-md"
+            :class="'bg-(--crisis-level-${mainCrisis.severity}) bg-opacity-20'"
+            :style="{ borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}`}"
             @click.stop="selectCrisis(mainCrisis)"
           >
             <span class="text-base font-semibold">{{ mainCrisis.name }}</span>
@@ -39,19 +58,15 @@
           </div>
         </div>
 
-        <div v-else class="main-crisis mb-4 w-full text-center">
-          <div class="text-base font-semibold">{{ t('crisis.no-crisis') }}</div>
-        </div>
-
         <!-- Other Crisis Events as Links -->
-        <div v-if="!loading && !error && otherEvents.length > 0" class="other-events w-full mt-3">
+        <div v-if="!loading && !error && otherEvents.length > 0" class="other-events w-full mt-3 max-w-full py-2 border-t border-black/10 dark:border-white/10">
           <div class="text-sm font-medium mb-2 text-center">{{ t('crisis.other_events', 'Other active events') }}</div>
           <div class="flex flex-wrap justify-center gap-3">
             <a
               v-for="event in otherEvents"
               :key="event.id"
               href="#"
-              class="text-sm text-primary hover:underline flex items-center gap-1 px-2"
+              class="relative text-sm text-primary hover:underline flex items-center gap-1 px-2 dark:text-white/90"
               @click.prevent.stop="selectCrisis(event)"
             >
               <span class="truncate max-w-[120px]">{{ event.name }}</span>
@@ -75,10 +90,20 @@
 import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import type { CrisisEventPreviewDto } from '@/models/CrisisEvent';
-import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService';
+import type { CrisisEventPreviewDto } from '@/models/CrisisEvent.ts';
+import {
+  fetchAllPreviewCrisisEvents,
+  fetchCrisisEventsInRadius
+} from '@/services/CrisisEventService.ts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-vue-next';
+import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils.ts';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faTriangleExclamation, faCheckCircle, faCheck } from '@fortawesome/free-solid-svg-icons';
+
+// Register FontAwesome icons
+library.add(faTriangleExclamation, faCheckCircle, faCheck);
 
 /**
  * CrisisLevelOverview component
@@ -97,6 +122,9 @@ const maxDisplay = 4;
 const loading = ref(false);
 const error = ref<string | null>(null);
 
+// Add translation for view all events button
+t('crisis.view_all_events', 'View All Events');
+
 /**
  * Fetches all active crisis events
  */
@@ -105,7 +133,7 @@ const fetchCrisisEvents = async () => {
     loading.value = true;
     error.value = null;
 
-    const response = await fetchAllPreviewCrisisEvents(0, 4);
+    const response = await fetchCrisisEventsInRadius(0, 4);
     crisisEvents.value = response.content;
   } catch (err) {
     console.error('Failed to fetch crisis events:', err);
@@ -158,19 +186,19 @@ const hasOngoingCrises = computed(() => crisisEvents.value.length > 0)
 /**
  * Returns the CSS class for the container based on highest severity
  */
-const containerClass = computed(() => {
-  if (crisisEvents.value.length === 0) return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
+ const containerClass = computed(() => {
+  if (crisisEvents.value.length === 0) return 'bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-800 shadow-sm';
 
   if (mainCrisis.value) {
     const severity = mainCrisis.value.severity;
 
     switch (severity) {
       case 'red':
-        return 'bg-white dark:bg-gray-800 border border-red-300 dark:border-red-700';
+        return 'bg-white dark:bg-gray-800 border border-[var(--crisis-level-red)]';
       case 'yellow':
-        return 'bg-white dark:bg-gray-800 border border-yellow-300 dark:border-yellow-700';
+        return 'bg-white dark:bg-gray-800 border border-[var(--crisis-level-yellow)]';
       case 'green':
-        return 'bg-white dark:bg-gray-800 border border-green-300 dark:border-green-700';
+        return 'bg-white dark:bg-gray-800 border border-[var(--crisis-level-green)]';
       default:
         return 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700';
     }
@@ -200,48 +228,14 @@ onMounted(fetchCrisisEvents);
 </script>
 
 <style scoped>
-.crisis-status-card {
-  border-radius: 1rem;
-  padding: 1rem;
-  transition: all 0.2s ease-in-out;
-}
-
 .crisis-status {
-  transition: transform 0.2s ease;
+  width: 100%;
 }
 
-.crisis-status:hover {
-  transform: translateY(-2px);
-}
-
-.main-crisis > div {
-  transition: all 0.2s ease;
-}
-
-.main-crisis > div:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.other-events {
-  max-width: 100%;
-  padding: 0.5rem 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.dark .other-events {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.other-events a {
+.full-width-banner {
   position: relative;
-}
-
-.other-events a:hover {
-  text-decoration: underline;
-}
-
-.dark .other-events a {
-  color: rgba(255, 255, 255, 0.9);
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
 }
 </style>

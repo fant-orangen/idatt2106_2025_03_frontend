@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
+import type { UserBasicInfoDto } from '@/models/User'
+import { getUserProfile } from '@/services/UserService'
+import { toast } from 'vue-sonner'
 
 // Icon
 import {
@@ -14,6 +17,7 @@ import {
   LogOut,
   Menu,
   X,
+  BookOpen,
 } from 'lucide-vue-next'
 
 import {
@@ -50,6 +54,17 @@ const colorMode = useColorMode()
 // Langauge
 const englishSelected = ref(false)
 
+// Loading state
+const isLoading = ref(false)
+
+const profile = ref<UserBasicInfoDto>({
+  firstName: '',
+  lastName: '',
+  email: '',
+  householdName: '',
+  emailVerified: false,
+})
+
 function changeLanguage(code: string) {
   locale.value = code
   englishSelected.value = code === 'en-US'
@@ -57,18 +72,83 @@ function changeLanguage(code: string) {
 
 // Notifications
 const topNotifications = computed(() => notificationStore.latestNotifications)
+const hasUnreadNotifications = computed(() => notificationStore.hasUnread)
+
+// Watch for changes in notifications and update unread status
+watch(
+  () => notificationStore.notifications,
+  async () => {
+    console.log('HeaderNavbar: Notifications changed, checking unread status') // TODO: remove logs
+    await notificationStore.checkUnreadNotifications()
+  },
+  { deep: true },
+)
+
+// Watch hasUnread state for debugging
+watch(
+  () => notificationStore.hasUnread,
+  (newValue) => {
+    console.log('HeaderNavbar: hasUnread state changed to:', newValue)
+  },
+)
+
+onMounted(async () => {
+  try {
+    isLoading.value = true
+    const userData = await getUserProfile()
+
+    // Map the extended profile to the basic info format
+    profile.value = {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      householdName: userData.householdName,
+      emailVerified: userData.emailVerified,
+    }
+  } catch (error) {
+    console.error('Failed to fetch user profile:', error)
+    toast.error(t('errors.unexpected-error'))
+  } finally {
+    isLoading.value = false
+  }
+
+  // Only fetch notifications if logged in and haven't fetched yet
+  if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
+    try {
+      await notificationStore.fetchNotifications()
+      await notificationStore.checkUnreadNotifications()
+      console.log('NavBar: Initial notifications fetched and checked for unread')
+    } catch (error) {
+      console.error('NavBar: Failed to fetch initial notifications via store:', error)
+    }
+  }
+})
 
 onMounted(async () => {
   // Only fetch if logged in and haven't fetched yet
   if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
     try {
       await notificationStore.fetchNotifications()
-      console.log('NavBar: Initial notifications fetched via store.')
+      await notificationStore.checkUnreadNotifications()
+      console.log('NavBar: Initial notifications fetched and checked for unread')
     } catch (error) {
       console.error('NavBar: Failed to fetch initial notifications via store:', error)
     }
   }
 })
+
+// Handle notification bell click
+async function handleNotificationClick() {
+  if (notificationStore.hasUnread) {
+    try {
+      await notificationStore.markAllAsRead()
+      await notificationStore.checkUnreadNotifications() // Recheck after marking as read
+      console.log('NavBar: Marked all notifications as read')
+    } catch (error) {
+      console.error('NavBar: Failed to mark notifications as read:', error)
+    }
+  }
+}
 
 // Mobile menu
 const isMenuOpen = ref(false)
@@ -91,6 +171,7 @@ const menuLinks = computed<MenuLink[]>(() => {
     const links: MenuLink[] = [
       { label: t('navigation.home'), route: '/' },
       { label: t('navigation.profile'), route: '/profile' },
+      { label: t('reflect.reflections'), route: '/reflections' },
       { label: t('settings.settings'), route: '/settings' },
       { label: t('notifications.notifications'), route: '/notifications' },
     ]
@@ -127,7 +208,7 @@ function logOut() {
 
 <template>
   <div
-    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0"
+    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[100]"
   >
     <div class="navbar-left flex flex-row gap-4">
       <!-- Logo -->
@@ -140,7 +221,7 @@ function logOut() {
 
       <Button variant="link" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
         <Globe class="h-4 w-4" />
-        {{ englishSelected ? 'Norsk bokmål' : 'English' }}
+        {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
       </Button>
     </div>
     <div class="navbar-right flex flex-row items-center gap-4">
@@ -168,8 +249,7 @@ function logOut() {
           <Button variant="ghost" class="cursor-pointer hover:bg-input dark:hover:bg-background/40">
             <User class="h-5 w-5" />
             <span class="hidden md:inline-flex">
-              {{ userStore.profile?.firstName || 'Ola' }}
-              {{ userStore.profile?.lastName || 'Nordmann' }}
+              {{ profile.firstName }} {{ profile.lastName }}
             </span>
           </Button>
         </DropdownMenuTrigger>
@@ -177,9 +257,13 @@ function logOut() {
           <DropdownMenuLabel>{{ t('settings.account.myAccount') }}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem @select="goToPage('/profile')">
               <User class="mr-2 h-4 w-4" />
-              <span @click="goToPage('/profile')">{{ t('navigation.profile') }}</span>
+              <span>{{ t('navigation.profile') }}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/reflections')">
+              <BookOpen class="mr-2 h-4 w-4" />
+              <span>{{ t('reflect.reflections') }}</span>
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToPage('/settings')">
               <Settings class="mr-2 h-4 w-4" />
@@ -188,7 +272,7 @@ function logOut() {
             <DropdownMenuSeparator v-if="userStore.isAdminUser" />
             <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin/admin-panel')">
               <ShieldUser class="mr-2 h-4 w-4" />
-              <span>{{ t('admin.adminPanel') }}</span>
+              <span>{{ t('navigation.admin-panel') }}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="logOut()">
@@ -201,16 +285,17 @@ function logOut() {
 
       <!-- Notifications -->
 
-      <Popover>
+      <Popover v-if="userStore.loggedIn">
         <PopoverTrigger as="button" class="no-border relative">
           <Button
             variant="ghost"
             size="icon"
             class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            @click="handleNotificationClick"
           >
             <Bell class="h-5 w-5" />
             <span
-              v-if="notificationStore.unreadCount > 0"
+              v-if="hasUnreadNotifications"
               class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-secondary"
             ></span>
           </Button>

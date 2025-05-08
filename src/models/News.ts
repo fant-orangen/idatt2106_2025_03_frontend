@@ -25,12 +25,17 @@ export interface News {
 export interface CreateNewsDto {
   title: string;
   content: string;
-  crisisEventId: number;
-  status: 'draft' | 'published' | 'archived';
+  createdByUserId: number;
 }
 
-export interface UpdateNewsArticle {
-  title: string;
-  content: string;
-  status: 'draft' | 'published' | 'archived';
+/**
+ * Data transfer object for updating a news article.
+ * Allows updating title, content, and status.
+ *
+ * @interface UpdateNewsArticleDTO
+ */
+export interface UpdateNewsArticleDTO {
+  title?: string;
+  content?: string;
+  status?: 'draft' | 'published' | 'archived';
 }

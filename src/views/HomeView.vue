@@ -1,98 +1,107 @@
 <template>
-  <div class="content flex justify-center items-center w-full pt-5 flex-col gap-0 md:pt-20 md:gap-15">
-    <div class="crisis-status w-full px-2 md:w-auto">
-      <CrisisLevelOverview
-        :max-display="3"
-        @select-crisis="handleCrisisSelect"
-      />
+  <!-- Loading state -->
+  <div v-if="isLoading && userStore.isAuthenticated" class="content w-full max-w-7xl mx-auto pt-0 flex justify-center items-center min-h-[50vh]">
+    <div class="text-center">
+      <div class="inline-block w-8 h-8 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
+      <p>{{ t('common.loading', 'Loading...') }}</p>
     </div>
-    <div class="container flex flex-col gap-10 w-full max-w-7xl md:flex-row md:gap-40">
-      <!-- Dynamic Buttons -->
-      <div class="crisis-components flex flex-col px-4 md:gap-20 md:px-0">
-        <component :is="crisisComponents[currentStatus]" />
-      </div>
-      <div class="map flex-grow px-4 md:px-0 min-h-[200px] md:min-h-[300px] rounded-lg overflow-hidden">
-        <MapOverviewComponent />
-      </div>
-    </div>
+  </div>
+
+  <!-- Authenticated User with Household and Crisis View -->
+  <div v-else-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises"
+       class="content w-full max-w-7xl mx-auto pt-0">
+    <AuthenticatedWithHouseholdCrisisHome />
+  </div>
+
+  <!-- Authenticated User with Household View (No Crisis) -->
+  <div v-else-if="userStore.isAuthenticated && hasHousehold"
+       class="content w-full max-w-7xl mx-auto pt-0">
+    <AuthenticatedWithHouseholdHome />
+  </div>
+
+  <!-- Authenticated User without Household View -->
+  <div v-else-if="userStore.isAuthenticated && !hasHousehold"
+       class="content w-full max-w-7xl mx-auto pt-0">
+    <AuthenticatedNoHouseholdHome />
+  </div>
+
+  <!-- Unauthenticated User View -->
+  <div v-else class="content w-full max-w-7xl mx-auto pt-0">
+    <UnauthenticatedHome />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
-import CrisisLevelOverview from '@/components/crisis/CrisisLevelOverview.vue'
+import { ref, onMounted, watch, computed } from 'vue'
+import { useUserStore } from '@/stores/UserStore'
+import { useHouseholdStore } from '@/stores/HouseholdStore'
+import UnauthenticatedHome from '@/components/homeview/UnauthenticatedHome.vue'
+import AuthenticatedNoHouseholdHome from '@/components/homeview/AuthenticatedNoHouseholdHome.vue'
+import AuthenticatedWithHouseholdHome from '@/components/homeview/AuthenticatedWithHouseholdHome.vue'
+import AuthenticatedWithHouseholdCrisisHome from '@/components/homeview/AuthenticatedWithHouseholdCrisisHome.vue'
 import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService'
 
-const router = useRouter()
 const { t } = useI18n()
+const userStore = useUserStore()
+const householdStore = useHouseholdStore()
 
-// State for ongoing crises and dynamic components
+// State for household and crisis status
+const hasHousehold = computed(() => !!householdStore.currentHousehold)
 const hasOngoingCrises = ref(false)
-const currentStatus = ref('crisis.no-crisis') // Default to no crisis
-const crisisComponents = ref<Record<string, any>>({})
+const isLoading = ref(true)
 
 /**
- * Checks for ongoing crises by fetching crisis events.
- * Updates the `currentStatus` based on whether there are ongoing crises.
- *
- * @async
- * @function checkForOngoingCrises
- * @returns {Promise<void>} Resolves when the check is complete.
+ * Checks if the current user has a household using the HouseholdStore
+ */
+const checkHouseholdStatus = async () => {
+  if (userStore.isAuthenticated) {
+    try {
+      await householdStore.fetchCurrentHousehold()
+    } catch (err) {
+      console.error('Error fetching household:', err)
+    }
+  }
+}
+
+/**
+ * Checks for ongoing crises by fetching crisis events
  */
 const checkForOngoingCrises = async () => {
   try {
     const response = await fetchAllPreviewCrisisEvents(0, 10)
     hasOngoingCrises.value = response.content.length > 0
-    currentStatus.value = hasOngoingCrises.value ? 'crisis.during' : 'crisis.no-crisis'
-  } catch (error) {
-    console.error('Failed to fetch crisis events:', error)
-    currentStatus.value = 'crisis.no-crisis' // Fallback to no crisis
+  } catch (err) {
+    console.error('Failed to fetch crisis events:', err)
+    hasOngoingCrises.value = false
   }
 }
 
 /**
- * Dynamically loads the components for different crisis states.
- * Maps `crisis.no-crisis` and `crisis.during` to their respective components.
- *
- * @async
- * @function loadCrisisComponents
- * @returns {Promise<void>} Resolves when the components are loaded.
+ * Refreshes all data needed for the home view
  */
-const loadCrisisComponents = async () => {
-  crisisComponents.value = {
-    'crisis.no-crisis': (await import('@/components/homeview/NoCrisisButtons.vue')).default,
-    'crisis.during': (await import('@/components/homeview/DuringCrisisButtons.vue')).default,
+const refreshHomeData = async () => {
+  isLoading.value = true
+  try {
+    await Promise.all([
+      checkHouseholdStatus(),
+      checkForOngoingCrises()
+    ])
+  } catch (err) {
+    console.error('Error refreshing home data:', err)
+  } finally {
+    isLoading.value = false
   }
 }
 
-/**
- * Handles the selection of a crisis from the `CrisisLevelOverview` component.
- * Navigates to the crisis event page with the selected crisis ID as a query parameter.
- *
- * @function handleCrisisSelect
- * @param {number} crisisId - The ID of the selected crisis.
- */
-const handleCrisisSelect = (crisisId: number) => {
-  console.log('Selected crisis:', crisisId)
-  router.push({
-    path: '/crisis-event',
-    query: { id: crisisId.toString() }
-  })
-}
+watch(() => userStore.isAuthenticated, async (isAuthenticated) => {
+  console.log('Authentication state changed in HomeView:', isAuthenticated)
+  if (isAuthenticated) {
+    await refreshHomeData()
+  }
+})
 
-/**
- * Lifecycle hook that runs when the component is mounted.
- * Loads the dynamic components and checks for ongoing crises.
- *
- * @async
- * @function onMounted
- * @returns {Promise<void>} Resolves when the setup is complete.
- */
 onMounted(async () => {
-  await loadCrisisComponents()
-  await checkForOngoingCrises()
+  await refreshHomeData()
 })
 </script>

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
-import { getCurrentHousehold, getHouseholdMembers, getEmptyHouseholdMembers, joinWithToken } from '@/services/HouseholdService';
+import { getCurrentHousehold } from '@/services/HouseholdService';
 import type { Household, HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household';
 
 // Type alias for convenience
@@ -19,18 +19,6 @@ export const useHouseholdStore = defineStore('household', () => {
 
   function setCurrentHousehold(household: Household | null): void {
     currentHousehold.value = household;
-  }
-
-  function setMembers(newMembers: Member[]): void {
-    members.value = newMembers;
-  }
-
-  function addMember(member: Member): void {
-    members.value.push(member);
-  }
-
-  function removeMember(memberId: number): void {
-    members.value = members.value.filter(member => member.id !== memberId);
   }
 
   function setLoading(loading: boolean): void {
@@ -58,75 +46,15 @@ export const useHouseholdStore = defineStore('household', () => {
     }
   }
 
-  async function fetchHouseholdMembers(): Promise<void> {
-    if (!currentHousehold.value) return;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const regularMembers = await getHouseholdMembers();
-      const emptyMembers = await getEmptyHouseholdMembers();
-      setMembers([...regularMembers, ...emptyMembers]);
-    } catch (err: Error | unknown) {
-      console.error('Error fetching household members:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch household members');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  /**
-   * Join a household using an invitation token
-   * @param token The invitation token
-   * @returns Promise that resolves when the operation is successful
-   */
-  async function joinHouseholdWithToken(token: string): Promise<void> {
-    if (!token.trim()) {
-      throw new Error('Token is required');
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const household = await joinWithToken(token);
-      setCurrentHousehold(household);
-    } catch (err: Error | unknown) {
-      console.error('Error joining household with token:', err);
-      setError(err instanceof Error ? err.message : 'Failed to join household');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  /**
-   * Resets all household-related state in the store
-   * Useful when logging out or cleaning up state
-   */
-  function cleanHousehold(): void {
-    setCurrentHousehold(null);
-    setMembers([]);
-    setError(null);
-    setLoading(false);
-  }
-
   return {
     currentHousehold,
     members,
     isLoading,
     error,
     isMemberOfHousehold,
+    fetchCurrentHousehold,
     setCurrentHousehold,
-    setMembers,
-    addMember,
-    removeMember,
     setLoading,
     setError,
-    fetchCurrentHousehold,
-    fetchHouseholdMembers,
-    joinHouseholdWithToken,
-    cleanHousehold
   };
 });

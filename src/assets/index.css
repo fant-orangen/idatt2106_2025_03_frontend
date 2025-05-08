@@ -42,6 +42,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+  --color-crisis-level-green: var(--crisis-level-green);
+  --color-crisis-level-yellow: var(--crisis-level-yellow);
+  --color-crisis-level-red: var(--crisis-level-red);
+  --default-blue: var(--default-blue);
+  --color-gray: var(--gray);
 }
 
 :root {
@@ -78,6 +83,11 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
+  --crisis-level-green: #2e7d32;
+  --crisis-level-yellow: #f9a825;
+  --crisis-level-red: #c62828;
+  --default-blue: #80b1ff;
+  --gray: #b6b6b6;
 }
 
 .dark {
@@ -113,6 +123,11 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
+  --crisis-level-green: #81c784;
+  --crisis-level-yellow: #ffd54f;
+  --crisis-level-red: #ff5c5c;
+  --default-blue: #2c62b8;
+  --gray: #5d5d5d;
 }
 
 @layer base {

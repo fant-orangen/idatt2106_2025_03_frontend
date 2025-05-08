@@ -8,7 +8,7 @@
       <div v-if="crisisDetails" class="space-y-4">
         <h3 class="text-lg font-semibold flex items-center gap-2">
           {{ crisisDetails.name || 'Unnamed Crisis' }}
-          <Badge :class="crisisDetails.severityClass || 'bg-gray-500 text-white'">
+          <Badge :style="{ backgroundColor: getSeverityColor(crisisDetails.severity) }">
             {{ crisisDetails.severity ? crisisDetails.severity.toUpperCase() : 'UNKNOWN' }}
           </Badge>
         </h3>
@@ -46,17 +46,21 @@
           </div>
 
           <div class="grid grid-cols-3 text-sm">
-            <span class="font-semibold">{{ t('crisis.scenario_theme', 'Scenario Theme') }}</span>
+            <span class="font-semibold">{{ t('crisis.scenario', 'Scenario') }}</span>
             <span class="col-span-2">
-              <Button
-                v-if="crisisDetails.scenarioThemeId"
-                variant="link"
-                class="p-0 h-auto text-sm font-normal"
-                @click="navigateToScenarioTheme(crisisDetails.scenarioThemeId)"
-              >
-                {{ t('crisis.view_scenario_theme', 'View Scenario Theme') }}
-                <ArrowRight class="ml-1 h-3 w-3" />
-              </Button>
+              <div v-if="crisisDetails.scenarioThemeId" class="flex items-center">
+                <span v-if="loadingScenarioTheme" class="text-muted-foreground text-sm">
+                  {{ t('common.loading', 'Loading') }}...
+                </span>
+                <Button
+                  v-else-if="scenarioTheme"
+                  variant="link"
+                  class="p-0 h-auto text-sm font-normal"
+                  @click="navigateToScenarioTheme(crisisDetails.scenarioThemeId)"
+                >
+                  {{ scenarioTheme.name }}
+                </Button>
+              </div>
 
               <Button
                 v-else
@@ -70,23 +74,74 @@
             </span>
           </div>
 
+          <!-- Add Reflection Button -->
+          <div class="mt-6">
+            <Button
+              variant="outline"
+              class="w-full flex items-center justify-center gap-2"
+              @click="openReflectionDialog"
+              :disabled="!userStore.loggedIn"
+            >
+              <PencilIcon class="h-4 w-4" />
+              {{ t('reflect.add-reflection-for-crisis') }}
+            </Button>
+            <p v-if="!userStore.loggedIn" class="text-sm text-red-500 mt-2 text-center">
+              {{ t('reflect.login-required', 'Please log in to add reflections') }}
+            </p>
+          </div>
+
         </div>
       </div>
     </CardContent>
   </Card>
+
+  <!-- Create Reflection Dialog -->
+  <Dialog :open="isReflectionDialogOpen" @update:open="isReflectionDialogOpen = $event" class="z-[1000]">
+    <DialogContent class="sm:max-w-[500px] z-[1000]">
+      <DialogHeader>
+        <DialogTitle>{{ t('reflect.add-reflection-for-crisis') }}</DialogTitle>
+        <DialogDescription>
+          {{ t('reflect.reflection-for-crisis-description') }}
+        </DialogDescription>
+      </DialogHeader>
+      <div class="grid gap-4 py-4">
+        <ReflectionForm
+          :reflection="{ crisisEventId: crisis?.id }"
+          :is-editing="false"
+          @save="saveReflection"
+          @cancel="isReflectionDialogOpen = false"
+        />
+      </div>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { ArrowRight } from 'lucide-vue-next';
+import { useUserStore } from '@/stores/UserStore';
+import { ArrowRight, PencilIcon } from 'lucide-vue-next';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
+import type { CreateReflectionDto } from '@/models/Reflection';
+import type { ScenarioThemeDetailsDto } from '@/models/ScenarioTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateFull } from '@/utils/dateUtils.ts';
-import { getSeverityClass } from '@/utils/severityUtils';
+import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
+import { createReflection } from '@/services/ReflectionService';
+import { fetchScenarioThemeById } from '@/services/api/ScenarioThemeService';
+import { toast } from 'vue-sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@/components/ui/dialog';
+import ReflectionForm from '@/components/profile/ReflectionForm.vue';
+
 
 /**
  * CrisisDetails component
@@ -111,6 +166,7 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const router = useRouter();
+const userStore = useUserStore();
 
 /**
  * Validates if a coordinate value is valid (a finite number)
@@ -133,8 +189,12 @@ const isValidCoordinate = (coord: unknown): boolean => {
 const crisisDetails = computed(() => {
   if (!props.crisis) return null;
 
+  const radiusInKm = typeof props.crisis.radius === 'number' ? props.crisis.radius : null;
+
+
   return {
     ...props.crisis,
+    radius: radiusInKm !== null ? radiusInKm * 1000 : null,
     formattedStartTime: formatDateFull(props.crisis.startTime),
     formattedUpdateTime: formatDateFull(props.crisis.updatedAt),
     severityClass: getSeverityClass(props.crisis.severity),
@@ -161,5 +221,79 @@ function navigateToDefaultScenarioTheme() {
   router.push({
     name: 'Information'
   });
+}
+
+// Scenario theme state
+const scenarioTheme = ref<ScenarioThemeDetailsDto | null>(null);
+const loadingScenarioTheme = ref(false);
+
+// Fetch scenario theme when crisis changes
+watch(() => props.crisis?.scenarioThemeId, (newThemeId) => {
+  if (newThemeId) {
+    fetchScenarioThemeName(newThemeId);
+  } else {
+    scenarioTheme.value = null;
+  }
+}, { immediate: true });
+
+/**
+ * Fetches the scenario theme name by ID
+ *
+ * @param {number} themeId - The ID of the scenario theme to fetch
+ */
+async function fetchScenarioThemeName(themeId: number) {
+  loadingScenarioTheme.value = true;
+  try {
+    const theme = await fetchScenarioThemeById(themeId);
+    scenarioTheme.value = theme;
+  } catch (error) {
+    console.error(`Error fetching scenario theme with ID ${themeId}:`, error);
+    scenarioTheme.value = null;
+  } finally {
+    loadingScenarioTheme.value = false;
+  }
+}
+
+// Reflection dialog state
+const isReflectionDialogOpen = ref(false);
+const isSubmitting = ref(false);
+
+/**
+ * Opens the dialog to create a new reflection for this crisis event
+ */
+function openReflectionDialog() {
+  if (!userStore.loggedIn) {
+    toast.error(t('reflect.login-required', 'Please log in to add reflections'));
+    return;
+  }
+  isReflectionDialogOpen.value = true;
+}
+
+/**
+ * Handles saving a new reflection
+ *
+ * @param {CreateReflectionDto} reflectionData - The reflection data to save
+ */
+async function saveReflection(reflectionData: CreateReflectionDto) {
+  if (!props.crisis) return;
+
+  try {
+    isSubmitting.value = true;
+
+    // Ensure the crisis event ID is set
+    const dataWithCrisisId: CreateReflectionDto = {
+      ...reflectionData,
+      crisisEventId: props.crisis.id
+    };
+
+    await createReflection(dataWithCrisisId);
+    toast.success(t('reflect.created-success'));
+    isReflectionDialogOpen.value = false;
+  } catch (error) {
+    console.error('Error creating reflection:', error);
+    toast.error(t('reflect.save-error'));
+  } finally {
+    isSubmitting.value = false;
+  }
 }
 </script>

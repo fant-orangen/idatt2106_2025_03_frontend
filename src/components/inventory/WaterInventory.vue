@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1 class="text-3xl font-bold mb-6">Vann</h1>
+    <h1 class="text-3xl font-bold mb-6">{{ t('inventory.water.title') }}</h1>
     <div class="mb-4 text-lg font-medium text-primary">
-      Totalt vann i husholdningen: {{ totalWater }} liter
+      {{ t('inventory.water.total') }}: {{ totalWater }} {{ t('inventory.water.liters') }}
     </div>
     <!-- Product list -->
     <div
@@ -23,88 +23,121 @@
           {{ getTotalAmount(item) }}
         </div>
         <div class="text-right sm:text-center">
-          <button
+          <Button
+            variant="link"
             @click="toggleEdit(index)"
             class="text-sm text-primary hover:underline hover:cursor-pointer"
           >
-            {{ item?.edit ? 'Lagre' : 'Rediger' }}
-          </button>
+            {{ item?.edit ? t('inventory.save') : t('inventory.edit') }}
+          </Button>
         </div>
       </div>
       <!-- Batch editing -->
       <div v-if="item.edit" class="space-y-4 mt-4">
+        <!-- Group selector -->
+        <div class="border-b pb-4 mb-4">
+          <h3 class="text-sm font-medium mb-2">{{ t('inventory.common.share-with-group') }}:</h3>
+          <div class="flex gap-2 items-center">
+            <Select v-model="selectedGroupId" class="w-full sm:w-64">
+              <SelectTrigger>
+                <SelectValue :placeholder="groups.length > 0 ? t('inventory.common.select-group') : t('inventory.common.no-groups')" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem v-for="group in groups" :key="group.id" :value="group.id">
+                  {{ group.name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
         <div
           v-for="(batch, bIndex) in item.batches"
           :key="bIndex"
-          class="flex flex-col sm:grid sm:grid-cols-5 gap-3 items-center"
+          class="flex flex-col sm:grid sm:grid-cols-6 gap-3 items-center"
         >
           <input
             v-model="batch.amount"
             type="number"
             class="bg-input text-foreground py-2 px-3 text-center rounded-md w-full"
-            placeholder="Mengde"
+            :placeholder="t('inventory.water.amount')"
           />
-          <div class="text-sm text-center sm:text-left">{{ item.unit === 'l' ? 'liter' : item.unit }}</div>
+          <div class="text-sm text-center sm:text-left">{{ item.unit === 'l' ? t('inventory.water.liters') : item.unit }}</div>
           <template v-if="batch.isNew">
             <input
               v-model="batch.expires"
               class="bg-input text-foreground py-2 px-3 text-center rounded-md w-full"
-              placeholder="Utløp"
+              :placeholder="t('inventory.water.expiry')"
               :readonly="true"
             />
           </template>
           <template v-else>
             <div class="text-sm text-center sm:text-left w-full">{{ batch.expires }}</div>
           </template>
-          <button
+          <Button
             v-if="batch.isNew"
+            variant="link"
             @click="() => { saveBatch(index, bIndex); }"
-            class="text-sm text-primary underline w-full sm:w-auto"
+            class="text-sm text-primary w-full sm:w-auto"
           >
-            Lagre
-          </button>
-          <button
+            {{ t('inventory.save') }}
+          </Button>
+          <Button
+            variant="destructive"
             @click="() => { removeBatch(index, bIndex); }"
-            class="text-sm text-destructive underline w-full sm:w-auto"
+            class="text-sm w-full sm:w-auto"
           >
-            Slett
-          </button>
+            {{ t('inventory.remove-from-group') }}
+          </Button>
+
+          <Button
+            v-if="!batch.isNew"
+            variant="secondary"
+            size="sm"
+            @click="addBatchToGroup(batch.id)"
+            :disabled="!selectedGroupId || addingBatchToGroup || batch.isContributed"
+            class="text-xs w-full sm:w-auto"
+          >
+            {{ batch.isContributed ? t('inventory.water.already-shared') : t('inventory.water.share') }}
+          </Button>
         </div>
         <!-- Add new batch -->
         <div class="flex flex-col sm:flex-row justify-between items-center mt-2 gap-2">
-          <button
+          <Button
+            variant="link"
             @click="addBatch(index)"
-            class="text-sm text-primary hover:underline"
+            class="text-sm text-primary"
           >
-            + Legg til
-          </button>
-          <button
+            + {{ t('inventory.water.add') }}
+          </Button>
+          <Button
+            variant="destructive"
             v-if="item.edit"
             @click="deleteProductType(index)"
-            class="text-sm text-destructive hover:underline"
+            class="text-sm"
           >
-            Slett produkttype
-          </button>
+            {{ t('inventory.water.delete-type') }}
+          </Button>
         </div>
       </div>
     </div>
     <!-- Add New Product -->
     <div class="pt-6 space-y-4">
-      <h2 class="text-lg font-semibold">Legg til</h2>
+      <h2 class="text-lg font-semibold">{{ t('inventory.water.add-new') }}</h2>
       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
         <Input
           v-model="newProductName"
-          placeholder="Produktnavn"
+          :placeholder="t('inventory.water.product-name')"
         />
         <div class="bg-input text-foreground py-2 px-3 rounded-md text-center select-none">
-          liter
+          {{ t('inventory.water.liters') }}
         </div>
         <Button
           variant="link"
           @click="addProduct"
           class="text-sm text-primary hover:underline"
         >
-          + Legg til
+          + {{ t('inventory.water.add') }}
         </Button>
       </div>
     </div>
@@ -114,14 +147,14 @@
       class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground border border-destructive p-6 rounded-lg shadow-xl"
     >
       <p class="text-center">
-        <strong>Denne produkttypen finnes allerede.</strong><br>
-        Du kan ikke legge til den samme typen flere ganger.<br>
-        Trykk på "Rediger" for å legge til en ny batch.
+        <strong>{{ t('inventory.water.exists.title') }}</strong><br>
+        {{ t('inventory.water.exists.message') }}<br>
+        {{ t('inventory.water.exists.action') }}
       </p>
       <div class="text-right mt-4">
-        <button @click="showExistsModal = false" class="text-sm text-primary underline">
+        <Button @click="showExistsModal = false" variant="link" class="text-sm text-primary">
           OK
-        </button>
+        </Button>
       </div>
     </div>
   </div>
@@ -131,10 +164,15 @@
 import { ref, onMounted, watch } from 'vue';
 import { format } from 'date-fns';
 import { inventoryService } from '@/services/InventoryService';
+import { groupService } from '@/services/api/GroupService';
 import { useProductStore } from '@/stores/ProductStore';
-import { useI18n } from 'vue-i18n';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { toast } from 'vue-sonner';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
   searchText: {
@@ -152,6 +190,22 @@ const newProductUnit = ref("");
 const showExistsModal = ref(false);
 const isLoading = ref(true);
 const totalWater = ref('-');
+
+// Group-related state
+const groups = ref([]);
+const selectedGroupId = ref(null);
+const addingBatchToGroup = ref(false);
+
+const fetchGroups = async () => {
+  try {
+    const response = await groupService.getCurrentUserGroups();
+    if (response?.content) {
+      groups.value = response.content;
+    }
+  } catch (error) {
+    console.error('Error fetching groups:', error);
+  }
+};
 
 const fetchTotalWater = async () => {
   try {
@@ -191,6 +245,7 @@ const fetchProductTypes = async () => {
 onMounted(() => {
   fetchProductTypes();
   fetchTotalWater();
+  fetchGroups();
 });
 
 let searchTimeout;
@@ -231,19 +286,7 @@ const toggleEdit = async (index) => {
   const item = items.value[index];
   item.edit = !item.edit;
   if (item.edit) {
-    try {
-      const response = await inventoryService.getProductBatches(item.id);
-      if (response && response.content) {
-        item.batches = response.content.map(batch => ({
-          id: batch.id,
-          amount: batch.number.toString(),
-          expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : ''
-        }));
-        productStore.addBatchIds(item.name, item.batches);
-      }
-    } catch {
-      item.batches = [];
-    }
+    await loadBatchStates(item);
   } else {
     const productId = productStore.getProductId(item.name);
     if (productId) {
@@ -254,6 +297,36 @@ const toggleEdit = async (index) => {
         }
       }
     }
+  }
+};
+
+// New function to load batch states
+const loadBatchStates = async (item) => {
+  try {
+    const response = await inventoryService.getProductBatches(item.id);
+    if (response && response.content) {
+      // First map the basic batch info
+      item.batches = response.content.map(batch => ({
+        id: batch.id,
+        amount: batch.number.toString(),
+        expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : '',
+        isContributed: false // Add this field
+      }));
+
+      // Then check each batch's contribution status
+      await Promise.all(item.batches.map(async (batch) => {
+        try {
+          batch.isContributed = await groupService.isContributedToGroup(batch.id);
+        } catch (error) {
+          console.error('Error checking batch contribution status:', error);
+          batch.isContributed = false;
+        }
+      }));
+
+      productStore.addBatchIds(item.name, item.batches);
+    }
+  } catch {
+    item.batches = [];
   }
 };
 
@@ -299,17 +372,9 @@ const saveBatch = async (productIndex, batchIndex) => {
     Number(batch.amount),
     batch.expires || undefined
   );
-  // Fetch updated batches after adding
-  const response = await inventoryService.getProductBatches(productId);
-  if (response && response.content) {
-    product.batches = response.content.map(batch => ({
-      id: batch.id,
-      amount: batch.number.toString(),
-      expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : ''
-    }));
-    productStore.addBatchIds(product.name, product.batches);
-  }
-  batch.isNew = false;
+
+  // Reload all batch states after adding
+  await loadBatchStates(product);
   await updateTotalUnits(product.id);
   await fetchTotalWater();
 };
@@ -380,6 +445,47 @@ const deleteProductType = async (index) => {
         batchMap.delete(key);
       }
     }
+  }
+};
+
+// Add a batch to a group
+const addBatchToGroup = async (batchId) => {
+  if (!selectedGroupId.value || !batchId) return;
+
+  addingBatchToGroup.value = true;
+  try {
+    await groupService.addBatchToGroup({
+      batchId: batchId,
+      groupId: selectedGroupId.value
+    });
+
+    // Find the item containing this batch and reload its states
+    const item = items.value.find(item =>
+      item.batches.some(batch => batch.id === batchId)
+    );
+    if (item) {
+      await loadBatchStates(item);
+    }
+
+    toast('Suksess!', {
+      description: 'Produktet ble lagt til i gruppen.',
+      duration: 3000
+    });
+  } catch (error) {
+    console.error('Error adding batch to group:', error);
+    if (error.message) {
+      toast('Feil', {
+        description: error.message,
+        duration: 5000
+      });
+    } else {
+      toast('Feil', {
+        description: 'Det oppstod en feil ved deling av produkt med gruppen.',
+        duration: 5000
+      });
+    }
+  } finally {
+    addingBatchToGroup.value = false;
   }
 };
 </script>

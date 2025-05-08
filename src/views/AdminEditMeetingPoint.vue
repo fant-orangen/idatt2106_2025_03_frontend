@@ -25,7 +25,7 @@
   <h1 class="text-3xl p-5">{{$t('admin.meeting-point')}}</h1>
 
 
-  <div class="grid grid-cols-3 gap-5">
+  <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
     <!--Overview of all meeting points-->
     <Card>
       <CardHeader>
@@ -41,8 +41,8 @@
           </span>
         </div>
         <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
-          <div v-for="meetingPoint in filteredMPts" 
-            :key="meetingPoint.id" 
+          <div v-for="meetingPoint in filteredMPts"
+            :key="meetingPoint.id"
             @click="selectMeetingPoint(meetingPoint.id)"
             class="h-full w-full rounded-md border p-2 cursor-pointer hover:bg-muted transition-colors m-2 min-w-fit">
             <div class="cursor-pointer min-w-fit flex flex-row flex-nowrap">
@@ -55,7 +55,7 @@
           </div>
         </InfiniteScroll>
       </CardContent>
-      
+
       <CardFooter>
         <template #loading>
           <div class="text-center p-4">{{ $t('common.loading') }}</div>
@@ -78,36 +78,38 @@
             <FormItem>
               <FormLabel>{{$t('add-event-info.titles.title')}}</FormLabel>
               <FormControl>
-                <Input type="text" v-bind="field" />
+                <Input type="text" v-bind="field" class="w-full" />
               </FormControl>
               <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
               <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
             </FormItem>
           </FormField>
 
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col gap-5">
             <!--Latitude field-->
-            <div class="flex flex-row flex-wrap gap-3 justify-evenly">
-              <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
-                <FormItem>
-                  <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
-                  <FormControl>
-                    <Input class="w-[100px]" type="number" step="any" v-bind="field" />
-                  </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-                </FormItem>
-              </FormField>
+            <div class="flex flex-col gap-5">
+              <div class="flex flex-col gap-5 md:flex-row">
+                <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
+                  <FormItem>
+                    <FormLabel>{{$t('add-event-info.titles.latitude')}}</FormLabel>
+                    <FormControl>
+                      <Input class="w-full" type="number" step="any" v-bind="field" />
+                    </FormControl>
+                    <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                  </FormItem>
+                </FormField>
 
-              <!--Longitude field-->
-              <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
-                <FormItem>
-                  <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
-                  <FormControl>
-                    <Input class="w-[100px]" type="number" step="any" v-bind="field" />
-                  </FormControl>
-                  <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
-                </FormItem>
-              </FormField>
+                <!--Longitude field-->
+                <FormField v-slot="{ field, meta, errorMessage }" name="longitude">
+                  <FormItem>
+                    <FormLabel>{{$t('add-event-info.titles.longitude')}}</FormLabel>
+                    <FormControl>
+                      <Input class="w-full" type="number" step="any" v-bind="field" />
+                    </FormControl>
+                    <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
+                  </FormItem>
+                </FormField>
+              </div>
 
               <!--Address field-->
               <FormField v-slot="{ field, meta, errorMessage }" name="address">
@@ -131,17 +133,28 @@
       </CardContent>
     </Card>
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Map</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>MAp <3</p>
-      </CardContent>
-      <CardFooter>
-        Card Footer
-      </CardFooter>
-    </Card>
+    <!-- third column -->
+    <div class="flex flex-col gap-5">
+      <!-- your existing controller (it already renders a <Card>) -->
+      <AdminMapController
+        :mapComponent="mapCompRef"
+        @location-selected="onLocationSelected"
+        @location-cleared="onLocationCleared"
+      />
+
+      <!-- the map container -->
+      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md">
+        <MapComponent
+          ref="mapCompRef"
+          :adminMode="true"
+          :showPois="false"
+          :showCrisis="false"
+          :showMeetingPlaces="false"
+          class="h-full w-full"
+          @map-clicked="handleMapClick"
+        />
+      </div>
+    </div>
 
   </div>
   <!--Handle meeting point drawer -->
@@ -167,6 +180,9 @@
 </template>
 
 <script setup lang="ts">
+import MapComponent from '@/components/map/MapComponent.vue'
+import AdminMapController from '@/components/admin/AdminMapController.vue'
+import * as L from 'leaflet'
 import { toast } from 'vue-sonner'
 import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -241,12 +257,56 @@ const isOpen = ref(false);
 const selectedMP = ref<MeetingPlacePreviewDto | null>(null);
 const newMeetingPoint = ref<CreateMeetingPlaceDto | null>(null);
 const searchQuery = ref('');
+const tempMarker = ref<L.Marker | null>(null)
 
 const allMPts = computed<MeetingPlacePreviewDto[]>(() => data.value?.pages.flat() ?? []);
 allMPts.value.forEach((event: MeetingPlacePreviewDto) => { console.log(event.name)});
 
+// A ref for your MapComponent instance
+const mapCompRef = ref<InstanceType<typeof MapComponent> | null>(null)
+
+// Called by both the controller and a map‐click
+function onLocationSelected(loc: { lat: number; lng: number }) {
+  // 1) update your form fields (you already have this)
+  form.setFieldValue('latitude', loc.lat)
+  form.setFieldValue('longitude', loc.lng)
+
+  // 2) remove any old temp marker
+  if (tempMarker.value && mapCompRef.value?.removeMarker) {
+    mapCompRef.value.removeMarker(tempMarker.value as L.Marker)
+    tempMarker.value = null
+  }
+
+  // 3) add a fresh one
+  if (mapCompRef.value?.addMarker) {
+    tempMarker.value = mapCompRef.value.addMarker(
+      loc.lat,
+      loc.lng,
+      'Valgt møteplass'
+    )
+  }
+}
+
+// Fired when the map itself is clicked:
+function handleMapClick(evt: { latlng: { lat: number; lng: number } }) {
+  onLocationSelected({ lat: evt.latlng.lat, lng: evt.latlng.lng })
+}
+
+// Fired when the location is cleared from the controller
+function onLocationCleared() {
+  // Clear form fields
+  form.setFieldValue('latitude', undefined)
+  form.setFieldValue('longitude', undefined)
+
+  // Remove any temp marker
+  if (tempMarker.value && mapCompRef.value?.removeMarker) {
+    mapCompRef.value.removeMarker(tempMarker.value as L.Marker)
+    tempMarker.value = null
+  }
+}
+
 onMounted(() => {
-  fetchNextPage;
+  fetchNextPage()
 })
 
 const filteredMPts = computed(() => {
@@ -302,12 +362,12 @@ async function selectMeetingPoint(id: number) {
       isOpen.value = true
       break;
 	  }
-  } 
+  }
 }
 
 /**
- * Create a new meeting point 
- * @param data 
+ * Create a new meeting point
+ * @param data
  */
 async function createNewMP(data: CreateMeetingPlaceDto) {
   try {
@@ -325,7 +385,7 @@ async function createNewMP(data: CreateMeetingPlaceDto) {
 
 /**
  * Archive (deactivate) a meeting point.
- * @param id 
+ * @param id
  */
 async function archiveMP(id: number) {
   try {
@@ -343,14 +403,14 @@ async function archiveMP(id: number) {
 
 /**
  * Activate a meeting point
- * @param id 
+ * @param id
  */
 async function activateMP(id: number) {
   try {
     const response = await meetingPlaceService.activateMeetingPlace(id)
     console.log('Activating the meeting place ...', response)
     callToast('Activated the meeting point!');
-    
+
     selectedMP.value = null;
     await queryClient.invalidateQueries({queryKey: ['allMPts']});
   } catch (error) {
