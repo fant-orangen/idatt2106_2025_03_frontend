@@ -99,7 +99,7 @@ const handleRegister = form.handleSubmit(async (values) => {
         <h1 class="text-xl font-bold text-center">{{ t('login.signup') }}</h1>
       </CardHeader>
       <CardContent>
-        <form @submit.prevent="handleRegister" class="space-y-4">
+        <form id="registerForm" @submit.prevent="handleRegister" class="space-y-4">
           <FormField v-slot="{ field, meta, errorMessage }" name="firstName">
             <FormItem>
               <FormLabel>{{ t('login.first-name') }}*</FormLabel>
@@ -214,7 +214,7 @@ const handleRegister = form.handleSubmit(async (values) => {
         </form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" class="w-full bg-primary hover:bg-primary/90">
+        <Button type="submit" form="registerForm" class="w-full bg-primary hover:bg-primary/90">
           {{ t('login.signup') }}
         </Button>
       </CardFooter>
