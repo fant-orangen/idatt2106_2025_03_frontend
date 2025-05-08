@@ -68,13 +68,13 @@ const routes = [
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
     component: () => import('@/views/FoodAndDrinksView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/medicine-inventory',
     name: 'MedicineInventory',
     component: () => import('@/views/MedicineInventory.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/admin/admin-panel',
@@ -144,25 +144,25 @@ const routes = [
     path: '/inventory/water',
     name: 'WaterInventory',
     component: () => import('@/views/FoodAndDrinksView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/inventory/food',
     name: 'FoodInventory',
     component: () => import('@/views/FoodAndDrinksView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/inventory/medicine',
     name: 'MedicineInventory',
     component: () => import('@/views/FoodAndDrinksView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/group',
     name: 'GroupPage',
     component: () => import('@/views/GroupPage.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/reflections',
@@ -263,8 +263,8 @@ router.beforeEach(async (to, from, next) => {
     return next({ name: 'Login' })
   }
 
-  // For authenticated, non-admin users, check for household association.
-  if (!userStore.isAdminUser && !userStore.isSuperAdminUser) {
+  // For authenticated, non-admin users, check for household association ONLY if route requires it
+  if (to.meta.requiresHousehold && !userStore.isAdminUser && !userStore.isSuperAdminUser) {
     try {
       // Attempt to fetch the user's current household information from the backend.
       const household = await getCurrentHousehold()
@@ -281,23 +281,23 @@ router.beforeEach(async (to, from, next) => {
       }
     } catch (error) {
       // Catch errors during the household check (e.g., network, API errors)
-      console.error('Error checking household:', error) // Log the error for debugging
+      console.error('Error checking household:', error)
 
       // Check if the error is an Axios error with a 401 (Unauthorized) status.
-      // This indicates the user's token might be invalid or expired.
-      const axiosError = error as AxiosError // Assert error type
+      const axiosError = error as AxiosError
       if (axiosError.response?.status === 401) {
         console.log('Unauthorized check for household, redirecting to login.')
-        userStore.logout() // Log out the user and clear auth state
-        return next({ name: 'Login' }) // Redirect to login
+        userStore.logout()
+        return next({ name: 'Login' })
       }
 
-      // For other errors during the household check, allow navigation to prevent
-      return next() // Proceed, potentially to a route that might show an error state
+      // For other errors during the household check, allow navigation
+      return next()
     }
   }
-  // User is authenticated, not an admin, and has a household. Allow navigation.
-  return next() // Proceed to the requested route
+
+  // User is authenticated and meets all requirements. Allow navigation.
+  return next()
 })
 
 export default router
