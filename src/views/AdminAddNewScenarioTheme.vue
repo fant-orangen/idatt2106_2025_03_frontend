@@ -234,7 +234,7 @@ const formSchema = toTypedSchema(
 )
 
 /**
- * Initialize form with validation schema and default values
+ * Initialize form with validation schema and default values.
  */
 const form = useForm({
   validationSchema: formSchema,
