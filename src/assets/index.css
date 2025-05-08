@@ -42,7 +42,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
-  --color-correct: var(--correct);
+  --crisis-level-green: var(--crisis-level-green);
+  --crisis-level-yellow: var(--crisis-level-yellow);
+  --crisis-level-red: var(--crisis-level-red);
+  --default-blue: var(--default-blue);
+  --gray: var(--gray);
 }
 
 :root {
