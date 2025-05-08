@@ -120,14 +120,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Crisis Information -->
-        <div class="w-full">
-          <CrisisLevelOverview
-            :max-display="3"
-            @select-crisis="navigateTo('/crisis-event')"
-          />
-        </div>
       </section>
     </div>
   </div>
