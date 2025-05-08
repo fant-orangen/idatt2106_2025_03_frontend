@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
- * This file defines the settings page for the user account. It allows users to:
+ * @component SettingsView
+ * @description This file defines the settings page for the user account. It allows users to:
  *  - update their email and password
  *  - toggle security preferences like 2FA
  *  - view and edit personal profile information
