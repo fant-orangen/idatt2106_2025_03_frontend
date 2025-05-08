@@ -26,7 +26,7 @@ import {
   getEmptyHouseholdMembers,
   joinWithToken
 } from '@/services/HouseholdService.ts'
-import type { Household, HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household'
+import type { Household, HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household.ts'
 
 /**
  * Mock Setup
