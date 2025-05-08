@@ -1,20 +1,20 @@
 <template>
-  <div class="flex flex-col w-full gap-8 pb-20">
+  <div class="flex flex-col w-full gap-8 pb-20 mt-8">
     <!-- No Crisis Notification Banner is now handled by CrisisLevelOverview component -->
 
     <!-- Crisis Button Section -->
     <section class="crisis-button-section w-full px-4">
-      <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300 bg-white">
+      <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300">
         <div
           @click="navigateTo('/crisis-event')"
-          class="w-full py-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-white hover:bg-gray-50"
+          class="w-full py-2 flex items-center cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800"
         >
-          <div class="flex items-center justify-center mb-3">
-            <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-3xl mr-3 text-orange-600" />
-            <span class="text-2xl font-medium">{{ t('home.view_crisis', 'View Crisis Events') }}</span>
-          </div>
-          <div>
-            <ChevronRight class="h-6 w-6 text-orange-600" />
+          <div class="flex items-center justify-between w-full px-6">
+            <div class="flex items-center flex-1 justify-center">
+              <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-2xl mr-3 text-orange-600" />
+              <span class="text-lg font-medium">{{ t('home.view_crisis', 'View Crisis Events') }}</span>
+            </div>
+            <ChevronRight class="h-5 w-5 text-orange-600" />
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@
 
           <div class="flex flex-col sm:flex-row gap-3 mt-4">
             <Button
-              class="flex-1 bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/90 text-white"
+              class="flex-1 bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/90"
               @click="navigateTo('/food-and-drinks')"
             >
               {{ t('household.manage-supplies', 'Manage Supplies') }}
@@ -88,34 +88,34 @@
         </div>
 
         <!-- Reflections & Groups -->
-        <div class="reflections-groups bg-card p-6 rounded-lg border border-[var(--default-blue)]/30">
+        <div class="reflections-groups bg-card p-6 rounded-lg border border-[var(--default-blue2)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'users']" class="mr-2 text-[var(--default-blue)]" />
+            <font-awesome-icon :icon="['fas', 'users']" class="mr-2 text-[var(--default-blue2)]" />
             {{ t('home.community.title', 'Community Features') }}
           </h2>
           <p class="mb-4 text-muted-foreground">{{ t('home.community.description', 'Share experiences and resources with your community') }}</p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div class="text-center p-4 bg-[var(--default-blue)]/10 rounded-lg border border-[var(--default-blue)]/20">
+            <div class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20">
               <h3 class="font-medium mb-2">{{ t('home.reflections.title', 'Reflections') }}</h3>
               <p class="text-sm text-muted-foreground mb-3">{{ t('home.reflections.description', 'Share your experiences and learn from others') }}</p>
               <Button
                 variant="outline"
-                class="w-full border-[var(--default-blue)]/30 text-[var(--default-blue)] hover:bg-[var(--default-blue)]/5"
+                class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
                 @click="navigateTo('/reflections')"
               >
-                {{ t('home.reflections.view', 'View Reflections') }}
+                {{ t('home.reflections.view', 'View Reflections') }} <ChevronRight class="h-4 w-4 ml-1" />
               </Button>
             </div>
-            <div class="text-center p-4 bg-[var(--default-blue)]/10 rounded-lg border border-[var(--default-blue)]/20">
+            <div class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20">
               <h3 class="font-medium mb-2">{{ t('home.groups.title', 'Groups') }}</h3>
               <p class="text-sm text-muted-foreground mb-3">{{ t('home.groups.description', 'Collaborate and share resources with other households') }}</p>
               <Button
                 variant="outline"
-                class="w-full border-[var(--default-blue)]/30 text-[var(--default-blue)] hover:bg-[var(--default-blue)]/5"
+                class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
                 @click="navigateTo('/groups')"
               >
-                {{ t('home.groups.view', 'View Groups') }}
+                {{ t('home.groups.view', 'View Groups') }} <ChevronRight class="h-4 w-4 ml-1" />
               </Button>
             </div>
           </div>
@@ -197,18 +197,18 @@ const getWaterPriority = (days: number): Priority => {
  * @param {Priority} priority - The priority level
  * @returns {string} CSS classes
  */
-const getItemClasses = (priority: Priority): string => {
+ const getItemClasses = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'bg-red-100 text-red-700';
+      return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
     case Priority.MEDIUM:
-      return 'bg-orange-100 text-orange-700';
+      return 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
     case Priority.LOW:
-      return 'bg-yellow-100 text-yellow-700';
+      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
     case Priority.GOOD:
-      return 'bg-green-100 text-green-700';
+      return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
     default:
-      return 'bg-gray-100 text-gray-700';
+      return 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300';
   }
 };
 
@@ -220,15 +220,15 @@ const getItemClasses = (priority: Priority): string => {
 const getIconClass = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'text-red-700';
+      return 'text-red-700 dark:text-red-300';
     case Priority.MEDIUM:
-      return 'text-orange-700';
+      return 'text-orange-700 dark:text-orange-300';
     case Priority.LOW:
-      return 'text-yellow-700';
+      return 'text-yellow-700 dark:text-yellow-300';
     case Priority.GOOD:
-      return 'text-green-700';
+      return 'text-green-700 dark:text-green-300';
     default:
-      return 'text-gray-700';
+      return 'text-gray-700 dark:text-gray-300';
   }
 };
 
