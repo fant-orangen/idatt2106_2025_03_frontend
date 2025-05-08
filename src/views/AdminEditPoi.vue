@@ -222,7 +222,12 @@
 
   </div>
 </template>
+
 <script setup lang="ts">
+/**
+ * @component AdminEditPOI
+ * @description displays page to edit an existing point of interest.
+ */
 import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query';
 import { useI18n } from 'vue-i18n';
