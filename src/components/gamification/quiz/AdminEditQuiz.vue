@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { toast } from 'vue-sonner'
 import {
@@ -15,12 +15,8 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { useUserStore } from '@/stores/UserStore'
-import type {
-  QuizAnswerAdminResponse,
-  CreateQuizQuestionRequest,
-  CreateQuizAnswerRequest,
-} from '@/models/Quiz.ts'
+import { useRouter } from 'vue-router'
+import type { QuizAnswerAdminResponse } from '@/models/Quiz.ts'
 
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 
@@ -28,6 +24,7 @@ import { Check, Pencil, Trash2 } from 'lucide-vue-next'
 
 import { quizService } from '@/services/QuizService'
 
+const router = useRouter()
 const props = defineProps<{
   quizId: number
 }>()
@@ -37,16 +34,46 @@ const { t } = useI18n()
 const newQuestionText = ref('')
 const options = ref<string[]>([''])
 const correctOption = ref<number[]>([])
+
+const localQuestions = ref<
+  {
+    questionId: number | null
+    questionBody: string
+    options: { answerId: number | null; answerBody: string; isCorrect: boolean }[]
+    deleted?: boolean
+  }[]
+>([])
+
 const fetchedQuestions = ref<
   {
     questionId: number
     questionBody: string
     options: { answerId: number; answerBody: string; isCorrect: boolean }[]
+    deleted?: boolean
   }[]
 >([])
+
 const editingQuestionId = ref<number | null>(null) // Tracks the question being edited
 
-const userStore = useUserStore()
+const hasUnsavedChanges = ref(false)
+
+const previewQuestions = computed(() => {
+  // Combine fetchedQuestions and localQuestions, excluding deleted questions
+  return [
+    ...fetchedQuestions.value.filter((question) => !question.deleted),
+    ...localQuestions.value
+      .filter((question) => !question.deleted)
+      .map((question) => ({
+        questionId: question.questionId,
+        questionBody: question.questionBody,
+        options: question.options.map((option) => ({
+          answerId: option.answerId,
+          answerBody: option.answerBody,
+          isCorrect: option.isCorrect,
+        })),
+      })),
+  ]
+})
 
 function addOption() {
   if (options.value.length < 5) {
@@ -103,73 +130,63 @@ async function fetchQuestionsAndAnswers() {
   }
 }
 
-async function submitQuestion() {
+function submitQuestion() {
   if (!newQuestionText.value.trim() || correctOption.value.length === 0) {
     toast.error(t('gamification.quizCreator.questionValidationError'))
-    console.log(newQuestionText.value, correctOption.value)
     return
   }
 
-  try {
-    // Step 1: Create the question
-    console.log('Creating question:', newQuestionText.value)
-    console.log('Quiz ID:', props.quizId)
-    const questionResponse = await quizService.saveQuizQuestion({
-      quizId: props.quizId,
-      questionBody: newQuestionText.value,
-    })
+  // Add the new question to localQuestions
+  localQuestions.value.push({
+    questionId: null, // New questions don't have an ID yet
+    questionBody: newQuestionText.value,
+    options: options.value.map((option, index) => ({
+      answerId: null, // New answers don't have an ID yet
+      answerBody: option,
+      isCorrect: correctOption.value.includes(index),
+    })),
+  })
 
-    const questionId = questionResponse.id
-    console.log('Created question ID:', questionId)
+  hasUnsavedChanges.value = true
+  toast.success(t('gamification.quizCreator.questionAdded'))
 
-    // Step 2: Add answers for the question
-    for (let i = 0; i < options.value.length; i++) {
-      const answerBody = options.value[i]
-      const isCorrect = correctOption.value.includes(i)
-
-      console.log('Answer:', answerBody, 'Is correct:', isCorrect)
-
-      await quizService.saveQuizAnswer({
-        quizId: props.quizId,
-        questionId,
-        answerBody,
-        isCorrect,
-      })
-    }
-
-    toast.success(t('gamification.quizCreator.questionAdded'))
-
-    // Reset the form
-    newQuestionText.value = ''
-    options.value = ['']
-    correctOption.value = []
-
-    // Fetch the updated questions and answers
-    await fetchQuestionsAndAnswers()
-  } catch (error) {
-    console.error('Error creating question or answers:', error)
-    toast.error(t('gamification.quizCreator.questionCreationError'))
-    console.log('user is admin: ', userStore.isAdminUser)
-  }
+  // Reset the form
+  resetForm()
 }
 
-async function deleteQuestion(questionId: number) {
-  try {
-    console.log('Deleting question with ID:', questionId)
-    await quizService.deleteQuizQuestion(questionId)
+function deleteQuestion(questionId: number) {
+  // Check if the question exists in localQuestions
+  const localQuestion = localQuestions.value.find((question) => question.questionId === questionId)
+
+  if (localQuestion) {
+    localQuestion.deleted = true // Mark as deleted
+    hasUnsavedChanges.value = true // Mark as having unsaved changes
     toast.success(t('gamification.quizCreator.questionDeleted'))
-    // Refresh the questions list
-    await fetchQuestionsAndAnswers()
-  } catch (error) {
-    console.error('Error deleting question:', error)
-    toast.error(t('gamification.quizCreator.deleteError'))
+    return
   }
+
+  // Check if the question exists in fetchedQuestions
+  const fetchedQuestion = fetchedQuestions.value.find(
+    (question) => question.questionId === questionId,
+  )
+
+  if (fetchedQuestion) {
+    fetchedQuestion.deleted = true // Mark as deleted
+    hasUnsavedChanges.value = true // Mark as having unsaved changes
+    toast.success(t('gamification.quizCreator.questionDeleted'))
+    return
+  }
+
+  // If the question is not found in either array
+  console.error('Failed to find the question to delete in localQuestions or fetchedQuestions.')
+  toast.error(t('gamification.quizCreator.deleteQuestionError'))
 }
 
 function editQuestion(questionId: number) {
-  const questionToEdit = fetchedQuestions.value.find(
-    (question) => question.questionId === questionId,
-  )
+  const questionToEdit =
+    localQuestions.value.find((question) => question.questionId === questionId) ||
+    fetchedQuestions.value.find((question) => question.questionId === questionId)
+
   if (questionToEdit) {
     newQuestionText.value = questionToEdit.questionBody
     options.value = questionToEdit.options.map((option) => option.answerBody)
@@ -184,67 +201,60 @@ function editQuestion(questionId: number) {
   }
 }
 
-async function saveEditedQuestion() {
+function saveEditedQuestion() {
   if (!newQuestionText.value.trim() || correctOption.value.length === 0) {
     toast.error(t('gamification.quizCreator.questionValidationError'))
     return
   }
 
-  try {
-    console.log('Saving edited question:', editingQuestionId.value)
+  // Check if the question exists in localQuestions
+  const localQuestionIndex = localQuestions.value.findIndex(
+    (question) => question.questionId === editingQuestionId.value,
+  )
 
-    // Prepare the data for the API
-    const data: CreateQuizQuestionRequest = {
-      quizId: props.quizId,
+  if (localQuestionIndex !== -1) {
+    // Update the question in localQuestions
+    localQuestions.value[localQuestionIndex] = {
+      questionId: editingQuestionId.value,
       questionBody: newQuestionText.value,
+      options: options.value.map((option, index) => ({
+        answerId: localQuestions.value[localQuestionIndex].options[index]?.answerId || null,
+        answerBody: option,
+        isCorrect: correctOption.value.includes(index), // Set isCorrect based on correctOption
+      })),
     }
 
-    await quizService.updateQuizQuestion(editingQuestionId.value!, data)
+    hasUnsavedChanges.value = true
+    toast.success(t('gamification.quizCreator.questionUpdated'))
+    resetForm() // Reset the form after saving
+    return
+  }
 
-    const questionToEdit = fetchedQuestions.value.find(
-      (question) => question.questionId === editingQuestionId.value,
-    )
+  // Check if the question exists in fetchedQuestions
+  const fetchedQuestionIndex = fetchedQuestions.value.findIndex(
+    (question) => question.questionId === editingQuestionId.value,
+  )
 
-    console.log(editingQuestionId.value, questionToEdit)
-
-    if (questionToEdit) {
-      for (let i = 0; i < options.value.length; i++) {
-        const answerBody = options.value[i]
-        const isCorrect = correctOption.value.includes(i)
-
-        // Check if the answer already exists
-        const existingAnswer = questionToEdit.options[i]
-
-        if (existingAnswer) {
-          // Update the existing answer
-          const answerData: CreateQuizAnswerRequest = {
-            quizId: props.quizId,
-            questionId: editingQuestionId.value!,
-            answerBody,
-            isCorrect,
-          }
-          await quizService.updateQuizAnswer(existingAnswer.answerId, answerData)
-        } else {
-          // Add a new answer if it doesn't exist
-          await quizService.saveQuizAnswer({
-            quizId: props.quizId,
-            questionId: editingQuestionId.value!,
-            answerBody,
-            isCorrect,
-          })
-        }
-      }
+  if (fetchedQuestionIndex !== -1) {
+    // Update the question in fetchedQuestions
+    fetchedQuestions.value[fetchedQuestionIndex] = {
+      questionId: editingQuestionId.value,
+      questionBody: newQuestionText.value,
+      options: options.value.map((option, index) => ({
+        answerId: fetchedQuestions.value[fetchedQuestionIndex].options[index]?.answerId || null,
+        answerBody: option,
+        isCorrect: correctOption.value.includes(index), // Set isCorrect based on correctOption
+      })),
     }
 
     toast.success(t('gamification.quizCreator.questionUpdated'))
-
-    resetForm()
-
-    await fetchQuestionsAndAnswers()
-  } catch (error) {
-    console.error('Error saving edited question:', error)
-    toast.error(t('gamification.quizCreator.updateError'))
+    resetForm() // Reset the form after saving
+    return
   }
+
+  // If the question is not found in either array
+  console.error('Failed to find the question to edit in localQuestions or fetchedQuestions.')
+  toast.error(t('gamification.quizCreator.editQuestionError'))
 }
 
 function resetForm() {
@@ -252,6 +262,82 @@ function resetForm() {
   options.value = ['']
   correctOption.value = []
   editingQuestionId.value = null
+}
+
+async function saveQuiz() {
+  try {
+    // Save or update questions in localQuestions
+    for (const question of localQuestions.value) {
+      if (question.deleted) {
+        // Skip saving deleted questions
+        continue
+      }
+
+      if (question.questionId === null) {
+        // Create a new question
+        const questionResponse = await quizService.saveQuizQuestion({
+          quizId: props.quizId,
+          questionBody: question.questionBody,
+        })
+
+        const questionId = questionResponse.id
+
+        // Save answers for the new question
+        for (const option of question.options) {
+          await quizService.saveQuizAnswer({
+            quizId: props.quizId,
+            questionId,
+            answerBody: option.answerBody,
+            isCorrect: option.isCorrect,
+          })
+        }
+      } else {
+        // Update an existing question
+        await quizService.updateQuizQuestion(question.questionId, {
+          quizId: props.quizId,
+          questionBody: question.questionBody,
+        })
+
+        // Update or create answers
+        for (const option of question.options) {
+          if (option.answerId === null) {
+            // Create a new answer
+            await quizService.saveQuizAnswer({
+              quizId: props.quizId,
+              questionId: question.questionId,
+              answerBody: option.answerBody,
+              isCorrect: option.isCorrect,
+            })
+          } else {
+            // Update an existing answer
+            await quizService.updateQuizAnswer(option.answerId, {
+              quizId: props.quizId,
+              questionId: question.questionId,
+              answerBody: option.answerBody,
+              isCorrect: option.isCorrect,
+            })
+          }
+        }
+      }
+    }
+
+    // Delete questions marked as deleted in fetchedQuestions
+    for (const question of fetchedQuestions.value) {
+      if (question.deleted) {
+        await quizService.deleteQuizQuestion(question.questionId)
+      }
+    }
+
+    // Optionally unarchive the quiz if needed
+    await quizService.unarchiveQuiz(props.quizId)
+
+    hasUnsavedChanges.value = false // Reset unsaved changes
+    toast.success(t('gamification.quizCreator.quizSaved'))
+    router.push({ name: 'QuizOverview' }) // Redirect to the quiz overview page
+  } catch (error) {
+    console.error('Error saving quiz:', error)
+    toast.error(t('gamification.quizCreator.saveQuizError'))
+  }
 }
 
 onMounted(() => {
@@ -265,7 +351,7 @@ onMounted(() => {
 
     <div class="flex flex-col items-center justify-center lg:flex-row lg:items-start gap-10 m-10">
       <!-- Question Form -->
-      <div class="flex add-question w-full md:w-full">
+      <div class="flex flex-col gap-10 add-question w-full md:w-full">
         <Card class="w-full md:w-full">
           <CardHeader>
             <CardTitle>
@@ -347,6 +433,12 @@ onMounted(() => {
             </div>
           </CardFooter>
         </Card>
+        <Button @click="saveQuiz">
+          {{ t('gamification.quizCreator.saveQuizButton') }}
+        </Button>
+        <div v-if="hasUnsavedChanges" class="unsaved-warning text-crisis-level-red">
+          {{ t('gamification.quizCreator.unsavedWarning') }}
+        </div>
       </div>
 
       <!-- Preview Panel -->
@@ -372,7 +464,7 @@ onMounted(() => {
               <!-- Questions List -->
               <div v-else class="space-y-6">
                 <Card
-                  v-for="(question, index) in fetchedQuestions"
+                  v-for="(question, index) in previewQuestions"
                   :key="index"
                   class="p-6 border rounded-2xl shadow-sm bg-card hover:shadow-md transition-shadow"
                 >
@@ -392,14 +484,14 @@ onMounted(() => {
                         :class="[
                           'px-4 py-2 rounded-md',
                           option.isCorrect
-                            ? 'bg-crisis-level-green font-medium text-foreground'
+                            ? 'bg-crisis-level-green font-medium text-background'
                             : 'text-foreground',
                         ]"
                       >
                         <div class="flex items-center">
                           <Check
                             :class="[
-                              'w-5 h-5 mr-5 text-accent-foreground',
+                              'w-5 h-5 mr-5 text-background',
                               { invisible: !option.isCorrect },
                             ]"
                           />
@@ -414,7 +506,7 @@ onMounted(() => {
                         <Tooltip>
                           <TooltipTrigger>
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               size="icon"
                               class="flex justify-center items-center"
                               @click="editQuestion(question.questionId)"
@@ -427,11 +519,11 @@ onMounted(() => {
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                      <TooltipProvider delayDuration="350">
+                      <TooltipProvider :delayDuration="350">
                         <Tooltip>
                           <TooltipTrigger>
                             <Button
-                              variant="outline"
+                              variant="ghost"
                               size="icon"
                               class="flex justify-center items-center"
                               @click="deleteQuestion(question.questionId)"

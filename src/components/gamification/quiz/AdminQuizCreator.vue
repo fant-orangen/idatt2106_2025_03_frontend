@@ -52,6 +52,8 @@ function validateAndSubmit() {
       description: quizDescription.value,
     })
     .then((response) => {
+      // unarchive before publishing
+      quizService.unarchiveQuiz(response.quizId)
       // Assuming the response contains the created quiz's ID
       const createdQuizId = response.quizId
       toast.success(t('gamification.quizCreator.quizCreated') + ': ' + createdQuizId)
