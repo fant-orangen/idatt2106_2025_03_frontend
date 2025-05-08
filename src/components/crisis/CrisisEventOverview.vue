@@ -151,8 +151,7 @@ import {
   fetchAllPreviewCrisisEvents,
   fetchCrisisEventById,
   fetchInactivePreviewCrisisEvents,
-  fetchAffectingUserPreviewCrisisEvents,
-  fetchActiveCrisisEvents,
+  fetchCrisisEventsInRadius,
   searchCrisisEvents
 } from '@/services/CrisisEventService.ts';
 
@@ -199,24 +198,13 @@ const loadCrisisEvents = async () => {
 
     switch (selectedFilter.value) {
       case 'active':
-        response = await fetchActivePreviewCrisisEvents(page.value, size);
+        response = await fetchAllPreviewCrisisEvents(page.value, size);
         break;
       case 'history':
         response = await fetchInactivePreviewCrisisEvents(page.value, size);
         break;
       case 'nearby':
-        if (coords.value) {
-          response = await fetchNearbyPreviewCrisisEvents(
-            coords.value.latitude,
-            coords.value.longitude,
-            50, // 50km radius
-            page.value,
-            size
-          );
-        } else {
-          // Fallback to all events if location is not available
-          response = await fetchAllPreviewCrisisEvents(page.value, size);
-        }
+        response = await fetchCrisisEventsInRadius(page.value, size);
         break;
       case 'search':
         if (searchQuery.value.trim()) {
@@ -224,10 +212,6 @@ const loadCrisisEvents = async () => {
         } else {
           response = await fetchAllPreviewCrisisEvents(page.value, size);
         }
-        break;
-      case 'all':
-      default:
-        response = await fetchAllPreviewCrisisEvents(page.value, size);
         break;
     }
 
