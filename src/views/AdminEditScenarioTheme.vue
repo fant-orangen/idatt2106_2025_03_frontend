@@ -1,5 +1,7 @@
 <template>
   <div style="margin: 20px;">
+
+    <!-- Breadcrumb -->
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
@@ -20,6 +22,7 @@
       </BreadcrumbList>
     </Breadcrumb>
 
+    <!-- Page title -->
     <h1>{{ $t('admin.edit-scenario-themes') }}</h1>
 
     <!-- Go back button shows up when a theme is chosen -->
@@ -28,6 +31,7 @@
     </div>
 
     <div class="page">
+
       <!-- List of scenario themes -->
       <div v-if="!selectedTheme" class="w-full max-w-3xl mx-auto">
         <Card>
@@ -35,13 +39,19 @@
             <CardTitle>{{ $t('admin.select-scenario-theme') }}</CardTitle>
           </CardHeader>
           <CardContent>
+
+            <!-- Loading indicator -->
             <div v-if="loadingThemes" class="flex justify-center py-8">
               <Loader class="h-8 w-8 animate-spin text-primary" />
               <span class="sr-only">{{ $t('admin.loading-scenario-themes') }}</span>
             </div>
+
+            <!-- No themes available -->
             <div v-else-if="scenarioThemes.length === 0" class="text-center py-8 text-muted-foreground">
               {{ $t('admin.no-scenario-themes') }}
             </div>
+
+            <!-- Scrollable theme list -->
             <ScrollArea v-else class="h-[400px]">
               <div class="space-y-2 p-1">
                 <Button
@@ -63,7 +73,8 @@
       <div v-if="selectedTheme" class="w-full max-w-3xl mx-auto">
         <h2 class="text-xl font-semibold mb-4">{{ $t('admin.scenario-theme-details') }}</h2>
         <form @submit.prevent="onSubmit" class="space-y-6">
-            <!-- Name field -->
+
+          <!-- Name field -->
             <FormField v-slot="{ field, meta, errorMessage }" name="name">
               <FormItem>
                 <FormLabel>{{ $t('admin.scenario-theme-name') }}</FormLabel>
@@ -220,13 +231,12 @@
 </template>
 
 <script setup lang="ts">
+
 /**
- * AdminEditScenarioTheme component
- *
- * This component provides functionality to edit or delete existing scenario themes.
+ * @component AdminEditScenarioTheme
+ * @description This component provides functionality to edit or delete existing scenario themes.
  * It includes a list of themes to select from, a form for editing, and confirmation dialogs.
  *
- * @component
  */
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -325,7 +335,9 @@ const formSchema = toTypedSchema(
   })
 )
 
-// Initialize form
+/**
+ * Initialize form.
+ */
 const form = useForm({
   validationSchema: formSchema,
   initialValues: {
@@ -337,7 +349,9 @@ const form = useForm({
   }
 })
 
-// Load all scenario themes
+/**
+ * Load all scenario themes.
+ */
 onMounted(async () => {
   try {
     const response = await fetchAllScenarioThemes()
@@ -349,7 +363,10 @@ onMounted(async () => {
   }
 })
 
-// Select a theme to edit
+/**
+ * Select theme to edit
+ * @param theme - the theme to edit.
+ */
 function selectTheme(theme: ScenarioThemeDto) {
   selectedTheme.value = theme
 
@@ -370,13 +387,17 @@ function selectTheme(theme: ScenarioThemeDto) {
   })
 }
 
-// Cancel editing and go back to theme list
+/**
+ * Cancel editing a theme and return to list.
+ */
 function cancelEdit() {
   selectedTheme.value = null
   form.resetForm()
 }
 
-// Form submission handler for updating a theme
+/**
+ * Form submission handler for updating a theme.
+ */
 const onSubmit = form.handleSubmit(async (values) => {
   if (!selectedTheme.value) return
 
@@ -402,11 +423,16 @@ const onSubmit = form.handleSubmit(async (values) => {
   }
 })
 
-// Open delete confirmation dialog
+/**
+ * Open delete confirmation dialog.
+ */
 function confirmDelete() {
   isDeleteConfirmOpen.value = true
 }
 
+/**
+ * Delete a scenario theme.
+ */
 async function deleteTheme() {
   if (!selectedTheme.value) return
 
@@ -435,7 +461,9 @@ async function deleteTheme() {
   }
 }
 
-// Navigate back to admin panel after successful operation
+/**
+ * Navigate back to admin panel after successful operation.
+ */
 function navigateToAdminPanel() {
   isSuccessDialogOpen.value = false
   isDeleteSuccessDialogOpen.value = false
