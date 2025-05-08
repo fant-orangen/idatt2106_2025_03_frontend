@@ -439,7 +439,7 @@ async function deleteTheme() {
 function navigateToAdminPanel() {
   isSuccessDialogOpen.value = false
   isDeleteSuccessDialogOpen.value = false
-  router.push('/admin-panel')
+  router.push('/admin/admin-panel')
 }
 </script>
 
