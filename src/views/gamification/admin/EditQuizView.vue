@@ -9,7 +9,6 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb'
-import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{ quizId: number }>()
 console.log('Quiz ID:', props.quizId)
