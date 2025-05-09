@@ -341,7 +341,7 @@
       "feature3": "Motta stedsspesifikke varsler og veiledning",
       "create_button": "Opprett husholdning",
       "supplies": "Husholdningsartikler",
-      "users":"Medlemmer"
+      "users": "Medlemmer"
     },
     "crisis_info": {
       "title": "Kriseinformasjonssenter",
@@ -1137,5 +1137,60 @@
       "noRelatedEvents": "Ingen relaterte krisehendelser funnet",
       "themeNotFound": "Scenariotema ikke funnet"
     }
+  },
+  "household": {
+    "supplies": "Husholdningsartikler",
+    "no-supplies": "No supplies registered yet.",
+    "members": "Medlemmer",
+    "manage-members": "Administrer medlemmer",
+    "done": "Ferdig",
+    "remove-selected": "Fjern valgte",
+    "user": "Bruker",
+    "users": "Brukere",
+    "others": "Andre",
+    "other_members": "andre medlemmer",
+    "no-members-found": "Ingen medlemmer funnet.",
+    "admin_badge": "Admin",
+    "safe": "Trygg",
+    "no-empty-members-found": "Ingen tomme brukere funnet.",
+    "add-empty-member": "Legg til tom bruker",
+    "ask-if-safe": "Etterspør trygghetsstatus",
+    "invite-user": "Inviter bruker",
+    "confirm-remove-member": "Bekreft fjerning av medlem.",
+    "confirm-remove-member-description": "Denne handlingen kan ikke angres.",
+    "confirm-remove-multiple-title": "Bekreft fjerning av flere medlemmer.",
+    "confirm-remove-multiple-description": "Denne handlingen kan ikke angres.",
+    "transfer-admin-role": "Overfør administrator-rolle",
+    "leave-household": "Forlat husholdning",
+    "go-to-groups": "Gå til grupper",
+    "in-household": "i husholdningen",
+    "beredskapslager": "Husholdningens beredskapslager",
+    "your-shelter-store": "Gå til beredskaplager",
+    "pending-invitations": "Ventende invitasjoner",
+    "no-pending-invitations": "ingen ventende invitasjoner",
+    "check-back-later": "Kom tilbake senere.",
+    "email-address": "Epost",
+    "enter-email": "Skriv inn epost til personen du ønsker å invitere...",
+    "send-invitation": "Send invitasjon",
+    "stats": "Husholdningsstatistikk",
+    "total_members": "Totalt antall medlemmer",
+    "adults": "Voksne",
+    "children": "Barn",
+    "pets": "Dyr",
+    "cancel-invitation": "Angre invitasjon",
+    "invitation-sent-success": "Invitasjon ble sendt.",
+    "transfer-admin-title": "Overføring av administrator-rolle",
+    "transfer-admin-description": "Overfør administrator-rollen til et annet medlem i husholdningen",
+    "admin-transferred-success": "Administrator-rollen er nå overført.",
+    "leave-admin-warning": "Advarsel: Administrator",
+    "transfer-admin-first": "En husholdning må ha en administrator. Overfør rollen før du forlater husholdningen.",
+    "food-days-left": "dager igjen med mat",
+    "water-days-left": "dager igjen med vann"
+
+
+
+
   }
 }
+
+

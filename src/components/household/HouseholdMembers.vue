@@ -1,7 +1,7 @@
 <template>
   <Card class="household-members">
     <CardHeader class="flex flex-row items-center justify-between pb-2">
-      <CardTitle>{{ householdName || $t('household.members') }}</CardTitle>
+      <CardTitle>{{ householdName || t('household.members') }}</CardTitle>
       <div class="flex items-center gap-2">
         <Button
           v-if="isAdmin"
@@ -13,11 +13,11 @@
         >
           <span v-if="manageMode" class="flex items-center gap-1.5">
             <CheckIcon class="h-4 w-4" />
-            {{ $t('household.done') }}
+            {{ t('household.done') }}
           </span>
           <span v-else class="flex items-center gap-1.5">
             <UsersIcon class="h-4 w-4" />
-            {{ $t('household.manage-members') }}
+            {{ t('household.manage-members') }}
           </span>
         </Button>
         <Button
@@ -27,7 +27,7 @@
           @click="confirmRemoveSelected"
         >
           <TrashIcon class="h-4 w-4 mr-1" />
-          {{ $t('household.remove_selected', { count: selectedMembers.length }) }}
+          {{ t('household.remove_selected', { count: selectedMembers.length }) }}
         </Button>
       </div>
     </CardHeader>
@@ -42,7 +42,7 @@
           >
             <div class="flex items-center gap-1.5">
               <UserIcon class="h-4 w-4" />
-              <span>{{ $t('household.users') }}</span>
+              <span>{{ t('household.users') }}</span>
               <Badge variant="secondary" size="sm" class="ml-1">{{ realMembers.length }}</Badge>
             </div>
           </button>
@@ -53,7 +53,7 @@
           >
             <div class="flex items-center gap-1.5">
               <UsersIcon class="h-4 w-4" />
-              <span>{{ $t('household.others') }}</span>
+              <span>{{ t('household.others') }}</span>
               <Badge variant="secondary" class="ml-1 text-xs">{{ emptyMembers.length }}</Badge>
             </div>
           </button>
@@ -62,6 +62,7 @@
 
       <!-- People tab content -->
       <div v-if="activeTab === 'people'" class="space-y-4">
+
         <!-- Household count -->
         <div class="mb-2 text-sm text-muted-foreground flex items-center gap-1">
           <UserIcon class="h-3.5 w-3.5" />
@@ -111,7 +112,7 @@
                     </p>
                     <!-- Admin badge -->
                     <Badge v-if="('isAdmin' in member && member.isAdmin) || ('admin' in member && member.admin)" variant="outline" class="text-xs ml-1 border border-black dark:border-white bg-white dark:bg-black text-black dark:text-white font-bold">
-                      {{ $t('household.admin_badge') }}
+                      {{ t('household.admin_badge') }}
                     </Badge>
                   </div>
                   <p v-if="member.email" class="text-xs text-muted-foreground truncate">
@@ -121,7 +122,7 @@
                   <p v-if="'email' in member && (member as any).safetyStatus === 'SAFE'" class="text-xs mt-1">
                     <span class="text-green-600 dark:text-green-400 flex items-center gap-1">
                       <CheckIcon class="h-3 w-3" />
-                      {{ $t('household.safe', 'Safe') }}
+                      {{ t('household.safe', 'Safe') }}
                     </span>
                   </p>
                 </div>
@@ -178,7 +179,7 @@
         <div class="mb-2 text-sm text-muted-foreground flex items-center gap-1">
           <UsersIcon class="h-3.5 w-3.5" />
           <span>
-            {{ emptyMembers.length }} {{ emptyMembers.length === 1 ? $t('household.other_member') : $t('household.other_members') }} {{ $t('household.in-household') }}
+            {{ emptyMembers.length }} {{ emptyMembers.length === 1 ? t('household.other_member') : t('household.other_members') }} {{ $t('household.in-household') }}
           </span>
         </div>
 
