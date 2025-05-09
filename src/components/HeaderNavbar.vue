@@ -19,6 +19,7 @@ import {
   Menu,
   X,
   BookOpen,
+  BookCheck,
   House,
   Siren,
   Phone,
@@ -195,16 +196,19 @@ const menuLinks = computed<MenuLink[]>(() => {
   if (!userStore.loggedIn) {
     return [
       { label: t('navigation.home'), route: '/' },
+      { label: t('info.info'), route: '/info' },
       { label: t('login.login'), route: '/login' },
       { label: t('login.signup'), route: '/register' },
     ]
   } else {
     const links: MenuLink[] = [
       { label: t('navigation.home'), route: '/' },
+      { label: t('info.info'), route: '/info' },
       { label: t('navigation.profile'), route: '/profile' },
       { label: t('reflect.reflections'), route: '/reflections' },
       { label: t('settings.settings'), route: '/settings' },
       { label: t('notifications.notifications'), route: '/notifications' },
+      { label: 'Quiz', route: '/quiz-overview' },
     ]
 
     if (userStore.isAdminUser) {
@@ -263,8 +267,10 @@ function logOut() {
             v-tooltip="t('infoPage.emergencyContacts')"
             class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
           >
-            <Siren class="h-4 w-4" />
-            {{ t('infoPage.emergencyContacts') }}
+            <Siren class="h-4 w-4 hidden sm:inline" />
+            <span class="hidden lg:inline-flex">
+              {{ t('infoPage.emergencyContacts') }}
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent class="z-101">
@@ -296,8 +302,8 @@ function logOut() {
         class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
         v-tooltip="t('info.info')"
         @click="goToPage('/info')">
-        <Info class="h-5 w-5" />
-        <span class="hidden md:inline-flex">
+        <Info class="h-5 w-5 hidden md:inline-flex" />
+        <span class="hidden lg:inline-flex">
           {{ $t('info.info') }}
         </span>
       </Button>
@@ -330,19 +336,19 @@ function logOut() {
         class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
         v-tooltip="t('household.my-household')"
         @click="goToPage('/household')">
-        <House class="h-5 w-5" />
-        <span class="hidden md:inline-flex">
+        <House class="h-5 w-5 hidden md:inline-flex" />
+        <span class="hidden lg:inline-flex">
           {{ t('household.my-household') }}
         </span>
       </Button>
 
-      <Button v-if='userStore.isAdminUser'
+      <Button v-if="userStore.isAdminUser"
         variant="ghost"
         class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
         v-tooltip="t('navigation.admin-panel')"
         @click="goToPage('/admin/admin-panel')">
         <ShieldUser class="h-5 w-5" />
-        <span class="hidden md:inline-flex">
+        <span class="hidden lg:inline-flex">
           {{ $t('navigation.admin-panel') }}
         </span>
       </Button>
@@ -354,7 +360,7 @@ function logOut() {
             variant="ghost"
             class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
             v-tooltip="t('settings.account.myAccount')">
-            <User class="h-5 w-5" />
+            <User class="h-5 w-5 hidden md:inline-flex" />
             <span class="hidden md:inline-flex">
               {{ isLoading ? t('loading') : `${profile.firstName} ${profile.lastName}` }}
             </span>
@@ -371,6 +377,10 @@ function logOut() {
             <DropdownMenuItem @click="goToPage('/reflections')">
               <BookOpen class="mr-2 h-4 w-4" />
               <span>{{ t('reflect.reflections') }}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/quiz-overview')">
+              <BookCheck class="mr-2 h-4 w-4" />
+              <span>Quiz</span>
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToPage('/settings')">
               <Settings class="mr-2 h-4 w-4" />
@@ -396,7 +406,7 @@ function logOut() {
             class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
             @click="handleNotificationClick"
           >
-            <Bell class="h-5 w-5" />
+            <Bell class="h-5 w-5 hidden md:inline-flex" />
             <span
               v-if="hasUnreadNotifications"
               class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-secondary"
