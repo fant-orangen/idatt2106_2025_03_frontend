@@ -2,15 +2,22 @@
   <div class="flex flex-col w-full gap-8 pb-20 mt-8">
     <!-- Crisis Button Section -->
     <section class="w-full px-4">
-      <div class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300">
+      <div
+        class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300"
+      >
         <div
           @click="navigateTo('/crisis-event')"
           class="w-full py-2 flex items-center cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800"
         >
           <div class="flex items-center justify-between w-full px-6">
             <div class="flex items-center flex-1 justify-center">
-              <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-2xl mr-3 text-orange-600" />
-              <span class="text-lg font-medium">{{ t('home.view_crisis', 'View Crisis Events') }}</span>
+              <font-awesome-icon
+                :icon="['fas', 'triangle-exclamation']"
+                class="text-2xl mr-3 text-orange-600"
+              />
+              <span class="text-lg font-medium">{{
+                t('home.view_crisis', 'View Crisis Events')
+              }}</span>
             </div>
             <ChevronRight class="h-5 w-5 text-orange-600" />
           </div>
@@ -35,7 +42,10 @@
         <!-- Household Supplies -->
         <div class="bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'box-open']" class="mr-[6px] w-[18px] h-[18px] text-[var(--crisis-level-green)]" />
+            <font-awesome-icon
+              :icon="['fas', 'box-open']"
+              class="mr-[6px] w-[18px] h-[18px] text-[var(--crisis-level-green)]"
+            />
             {{ t('household.supplies', 'Household Supplies') }}
           </h2>
 
@@ -49,7 +59,10 @@
                 class="mb-2 p-2 rounded-md flex items-center"
                 :class="getItemClasses(getFoodPriority(daysOfFood))"
               >
-                <AlertTriangle class="mr-2 flex-shrink-0" :class="getIconClass(getFoodPriority(daysOfFood))" />
+                <AlertTriangle
+                  class="mr-2 flex-shrink-0"
+                  :class="getIconClass(getFoodPriority(daysOfFood))"
+                />
                 <p class="text-sm">
                   {{ t('household.food-days-left', { days: Math.round(daysOfFood) }) }}
                 </p>
@@ -59,7 +72,10 @@
                 class="mb-2 p-2 rounded-md flex items-center"
                 :class="getItemClasses(getWaterPriority(daysOfWater))"
               >
-                <AlertTriangle class="mr-2 flex-shrink-0" :class="getIconClass(getWaterPriority(daysOfWater))" />
+                <AlertTriangle
+                  class="mr-2 flex-shrink-0"
+                  :class="getIconClass(getWaterPriority(daysOfWater))"
+                />
                 <p class="text-sm">
                   {{ t('household.water-days-left', { days: Math.round(daysOfWater) }) }}
                 </p>
@@ -87,18 +103,27 @@
         <!-- Reflections & Groups -->
         <div class="bg-card p-6 rounded-lg border border-[var(--default-blue2)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'users']" class="mr-[6px] w-[18px] h-[18px] text-[var(--default-blue2)]" />
+            <font-awesome-icon
+              :icon="['fas', 'users']"
+              class="mr-[6px] w-[18px] h-[18px] text-[var(--default-blue2)]"
+            />
             {{ t('home.community.title', 'Community Features') }}
           </h2>
           <p class="mb-4 text-muted-foreground">
-            {{ t('home.community.description', 'Share experiences and resources with your community') }}
+            {{
+              t('home.community.description', 'Share experiences and resources with your community')
+            }}
           </p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20">
+            <div
+              class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20"
+            >
               <h3 class="font-medium mb-2">{{ t('home.reflections.title', 'Reflections') }}</h3>
               <p class="text-sm text-muted-foreground mb-3">
-                {{ t('home.reflections.description', 'Share your experiences and learn from others') }}
+                {{
+                  t('home.reflections.description', 'Share your experiences and learn from others')
+                }}
               </p>
               <Button
                 variant="outline"
@@ -110,10 +135,17 @@
               </Button>
             </div>
 
-            <div class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20">
+            <div
+              class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20"
+            >
               <h3 class="font-medium mb-2">{{ t('home.groups.title', 'Groups') }}</h3>
               <p class="text-sm text-muted-foreground mb-3">
-                {{ t('home.groups.description', 'Collaborate and share resources with other households') }}
+                {{
+                  t(
+                    'home.groups.description',
+                    'Collaborate and share resources with other households',
+                  )
+                }}
               </p>
               <Button
                 variant="outline"
@@ -128,41 +160,105 @@
         </div>
       </section>
     </div>
+    <div class="reflections-groups bg-card p-6 rounded-lg border border-[var(--default-blue2)]/30">
+      <h2 class="text-xl font-bold mb-3 flex items-center">
+        <font-awesome-icon
+          :icon="['fas', 'users']"
+          class="mr-2 text-[var(--default-blue2)] w-[18px] h-[18px]"
+        />
+        {{ t('home.community.title', 'Community Features') }}
+      </h2>
+      <p class="mb-4 text-muted-foreground">
+        {{ t('home.community.description', 'Share experiences and resources with your community') }}
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+        <div
+          class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20"
+        >
+          <h3 class="font-medium mb-2">{{ t('home.reflections.title', 'Reflections') }}</h3>
+          <p class="text-sm text-muted-foreground mb-3">
+            {{ t('home.reflections.description', 'Share your experiences and learn from others') }}
+          </p>
+          <Button
+            variant="outline"
+            class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
+            @click="navigateTo('/reflections')"
+          >
+            {{ t('home.reflections.view', 'View Reflections') }}
+            <ChevronRight class="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+        <div
+          class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20"
+        >
+          <h3 class="font-medium mb-2">{{ t('home.groups.title', 'Groups') }}</h3>
+          <p class="text-sm text-muted-foreground mb-3">
+            {{
+              t('home.groups.description', 'Collaborate and share resources with other households')
+            }}
+          </p>
+          <Button
+            variant="outline"
+            class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
+            @click="navigateTo('/group')"
+          >
+            {{ t('home.groups.view', 'View Groups') }} <ChevronRight class="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      </div>
+    </div>
+    <QuizHomeviewComponent />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { Button } from '@/components/ui/button';
-import { ChevronRight } from 'lucide-vue-next';
-import { AlertTriangle } from 'lucide-vue-next';
-import MapViewComponent from '@/components/homeview/MapViewComponent.vue';
-import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { Button } from '@/components/ui/button'
+import { ChevronRight } from 'lucide-vue-next'
+import { AlertTriangle } from 'lucide-vue-next'
+import MapViewComponent from '@/components/homeview/MapViewComponent.vue'
+import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue'
+import QuizHomeviewComponent from '@/components/gamification/quiz/QuizHomeViewComponent.vue'
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faCheckCircle, faTriangleExclamation, faBoxOpen, faUsers, faMapLocationDot, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { inventoryService } from '@/services/InventoryService';
-import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faCheckCircle,
+  faTriangleExclamation,
+  faBoxOpen,
+  faUsers,
+  faMapLocationDot,
+  faArrowRight,
+} from '@fortawesome/free-solid-svg-icons'
+import { inventoryService } from '@/services/InventoryService'
+import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService'
 
 // Register FontAwesome icons
-library.add(faCheckCircle, faTriangleExclamation, faBoxOpen, faUsers, faMapLocationDot, faArrowRight);
+library.add(
+  faCheckCircle,
+  faTriangleExclamation,
+  faBoxOpen,
+  faUsers,
+  faMapLocationDot,
+  faArrowRight,
+)
 
-const router = useRouter();
-const { t } = useI18n();
+const router = useRouter()
+const { t } = useI18n()
 
 // State
-const hasOngoingCrises = ref(false);
-const daysOfFood = ref<number | null>(null);
-const daysOfWater = ref<number | null>(null);
+const hasOngoingCrises = ref(false)
+const daysOfFood = ref<number | null>(null)
+const daysOfWater = ref<number | null>(null)
 
 // Priority levels for color coding
 enum Priority {
   HIGH = 'high',
   MEDIUM = 'medium',
   LOW = 'low',
-  GOOD = 'good'
+  GOOD = 'good',
 }
 
 /**
@@ -171,11 +267,11 @@ enum Priority {
  * @returns {Priority} Priority level
  */
 const getFoodPriority = (days: number): Priority => {
-  if (days < 3) return Priority.HIGH;
-  if (days < 7) return Priority.MEDIUM;
-  if (days < 14) return Priority.LOW;
-  return Priority.GOOD;
-};
+  if (days < 3) return Priority.HIGH
+  if (days < 7) return Priority.MEDIUM
+  if (days < 14) return Priority.LOW
+  return Priority.GOOD
+}
 
 /**
  * Returns the priority level based on days of water remaining
@@ -183,31 +279,31 @@ const getFoodPriority = (days: number): Priority => {
  * @returns {Priority} Priority level
  */
 const getWaterPriority = (days: number): Priority => {
-  if (days < 3) return Priority.HIGH;
-  if (days < 7) return Priority.MEDIUM;
-  if (days < 14) return Priority.LOW;
-  return Priority.GOOD;
-};
+  if (days < 3) return Priority.HIGH
+  if (days < 7) return Priority.MEDIUM
+  if (days < 14) return Priority.LOW
+  return Priority.GOOD
+}
 
 /**
  * Returns CSS classes for an item based on its priority
  * @param {Priority} priority - The priority level
  * @returns {string} CSS classes
  */
- const getItemClasses = (priority: Priority): string => {
+const getItemClasses = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+      return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
     case Priority.MEDIUM:
-      return 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
+      return 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'
     case Priority.LOW:
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
     case Priority.GOOD:
-      return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
+      return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
     default:
-      return 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300';
+      return 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300'
   }
-};
+}
 
 /**
  * Returns CSS classes for an icon based on its priority
@@ -217,17 +313,17 @@ const getWaterPriority = (days: number): Priority => {
 const getIconClass = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'text-red-700 dark:text-red-300';
+      return 'text-red-700 dark:text-red-300'
     case Priority.MEDIUM:
-      return 'text-orange-700 dark:text-orange-300';
+      return 'text-orange-700 dark:text-orange-300'
     case Priority.LOW:
-      return 'text-yellow-700 dark:text-yellow-300';
+      return 'text-yellow-700 dark:text-yellow-300'
     case Priority.GOOD:
-      return 'text-green-700 dark:text-green-300';
+      return 'text-green-700 dark:text-green-300'
     default:
-      return 'text-gray-700 dark:text-gray-300';
+      return 'text-gray-700 dark:text-gray-300'
   }
-};
+}
 
 /**
  * Navigates to the specified route
@@ -235,21 +331,21 @@ const getIconClass = (priority: Priority): string => {
  * @param {string} route - The route to navigate to
  */
 const navigateTo = (route: string) => {
-  router.push(route);
-};
+  router.push(route)
+}
 
 /**
  * Checks for ongoing crises by fetching crisis events
  */
 const checkForOngoingCrises = async () => {
   try {
-    const response = await fetchAllPreviewCrisisEvents(0, 10);
-    hasOngoingCrises.value = response.content.length > 0;
+    const response = await fetchAllPreviewCrisisEvents(0, 10)
+    hasOngoingCrises.value = response.content.length > 0
   } catch (error) {
-    console.error('Failed to fetch crisis events:', error);
-    hasOngoingCrises.value = false;
+    console.error('Failed to fetch crisis events:', error)
+    hasOngoingCrises.value = false
   }
-};
+}
 
 /**
  * Fetches the days remaining for food and water from the backend
@@ -258,19 +354,18 @@ const fetchDaysRemaining = async () => {
   try {
     const [foodDays, waterDays] = await Promise.all([
       inventoryService.getFoodDaysRemaining(),
-      inventoryService.getWaterDaysRemaining()
-    ]);
-    daysOfFood.value = foodDays;
-    daysOfWater.value = waterDays;
+      inventoryService.getWaterDaysRemaining(),
+    ])
+    daysOfFood.value = foodDays
+    daysOfWater.value = waterDays
   } catch (error) {
-    console.error('Error fetching days remaining:', error);
+    console.error('Error fetching days remaining:', error)
   }
-};
+}
 
 // Initialize data on component mount
 onMounted(async () => {
-  await checkForOngoingCrises();
-  await fetchDaysRemaining();
-});
+  await checkForOngoingCrises()
+  await fetchDaysRemaining()
+})
 </script>
-
