@@ -1,5 +1,7 @@
 <template>
   <div class="m-5">
+
+    <!-- Breadcrumb navigation -->
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
@@ -21,11 +23,17 @@
     </Breadcrumb>
   </div>
 
+  <!-- Page title -->
   <h1 class="text-4xl text-center mb-8">{{ $t('admin.make-new-event') }}:</h1>
 
+  <!-- Main layout: form and map -->
   <div class="grid lg:grid-cols-2 grid-cols-1 gap-8 max-w-7xl mx-auto my-8 p-5">
+
+    <!-- Event form -->
     <div class="p-5 bg-background rounded-lg shadow-md flex flex-col">
       <form @submit.prevent="onSubmit" class="flex-grow flex flex-col justify-between">
+
+        <!-- Title input -->
         <FormField v-slot="{ field, meta, errorMessage }" name="title">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.title') }}</FormLabel>
@@ -38,10 +46,12 @@
         </FormField>
         <br />
 
+        <!-- Location section -->
         <div class="mb-4 pb-2.5 border-b border-border">
           <h2 class="text-xl font-semibold m-0">{{ $t('admin.location-info') || 'Plassering' }}</h2>
         </div>
 
+        <!-- Latitude and longitude (readonly) -->
         <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
           <FormField v-slot="{ field, meta, errorMessage }" name="latitude">
             <FormItem class="flex-1">
@@ -64,6 +74,7 @@
           </FormField>
         </div>
 
+        <!-- Address input -->
         <FormField v-slot="{ field, meta, errorMessage }" name="address">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.address') }}</FormLabel>
@@ -76,6 +87,7 @@
         </FormField>
         <br />
 
+        <!-- Basic information section -->
         <div class="mb-4 pb-2.5 border-b border-border">
           <h2 class="text-xl font-semibold m-0">{{ $t('admin.basic-info') || 'Hendelsesdetaljer' }}</h2>
         </div>
@@ -92,6 +104,7 @@
         </FormField>
         <br />
 
+        <!-- Time and date inputs -->
         <div class="flex sm:flex-row flex-col sm:gap-4 gap-2.5 mb-4">
           <FormField v-slot="{ field, meta, errorMessage }" name="time">
             <FormItem class="flex-1">
@@ -117,6 +130,7 @@
         </div>
         <br />
 
+        <!-- Priority selection -->
         <FormField v-slot="{ field, meta, errorMessage }" name="priority">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.priority') }}</FormLabel>
@@ -140,7 +154,7 @@
         </FormField>
         <br>
 
-        <!--Category of event-->
+        <!-- Event category selection -->
         <FormField v-slot="{ field, meta, errorMessage }" name="category">
           <FormItem>
             <FormLabel>{{$t('add-event-info.titles.category')}}</FormLabel>
@@ -161,9 +175,9 @@
             <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
           </FormItem>
         </FormField>
-
         <br />
 
+        <!-- Description text area -->
         <FormField v-slot="{ field, meta, errorMessage }" name="description">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.description') }}:</FormLabel>
@@ -176,16 +190,20 @@
         </FormField>
         <br />
 
+        <!-- Submit button -->
         <Button type="submit">{{ $t('add-event-info.titles.submit') }}</Button>
       </form>
     </div>
 
+    <!-- Map section -->
     <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8 z-50">
       <AdminMapController
         :mapComponent="mapComponentInstance"
         @location-selected="handleLocationSelected"
         @location-cleared="handleLocationCleared"
       />
+
+      <!-- Map display -->
       <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md z-50">
         <MapComponent
           ref="mapComponent"
@@ -199,6 +217,7 @@
     </div>
   </div>
 
+  <!-- Success dialog shown once event is created -->
   <Dialog :open="isSuccessDialogOpen" @update:open="isSuccessDialogOpen = $event">
     <DialogContent
       class="
@@ -210,11 +229,14 @@
       z-[1001]
     "
     >
+      <!-- Dialog header with title and description -->
       <DialogHeader>
         <DialogTitle>{{ $t('add-event-info.successfully') }}</DialogTitle>
         <DialogDescription>
           {{ $t('add-event-info.success-message') }}
         </DialogDescription>
+
+        <!-- Success content with icon and message -->
       </DialogHeader>
       <div class="py-4">
         <div class="flex items-center gap-2 mb-4">
@@ -228,6 +250,8 @@
           </p>
         </div>
       </div>
+
+      <!-- Dialog footer with navigation button -->
       <DialogFooter>
         <Button @click="navigateToAdminPanel">{{ $t('add-event-info.go-to-admin') }}</Button>
       </DialogFooter>
@@ -245,15 +269,15 @@
  */
 
 import { ref, computed, watch, onMounted } from 'vue';
-import { createEvent } from '@/services/api/AdminServices'; // API service for creating events
-import router from '@/router/index.ts'; // Vue router instance
-import { Button } from '@/components/ui/button'; // UI Button component
-import { useForm } from 'vee-validate'; // Form handling library
-import { toTypedSchema } from '@vee-validate/zod'; // VeeValidate Zod adapter
-import * as z from 'zod'; // Schema validation library
-import { useI18n } from 'vue-i18n'; // Internationalization library
-import { Input } from '@/components/ui/input'; // UI Input component
-import { Textarea } from '@/components/ui/textarea'; // UI Textarea component
+import { createEvent } from '@/services/api/AdminServices';
+import router from '@/router/index.ts';
+import { Button } from '@/components/ui/button';
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import * as z from 'zod';
+import { useI18n } from 'vue-i18n';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { getScenarioThemePreview } from '@/services/api/ScenarioThemeService';
 import type { CreateCrisisEventDto } from '@/models/CrisisEvent'
 import type { ScenarioThemePreview } from '@/models/ScenarioTheme'
@@ -264,7 +288,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'; // UI Form components
+} from '@/components/ui/form';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -272,7 +296,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'; // UI Breadcrumb components
+} from '@/components/ui/breadcrumb';
 import {
   Select,
   SelectContent,
@@ -280,7 +304,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'; // UI Select components
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -288,10 +312,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'; // UI Dialog components
-import MapComponent from '@/components/map/MapComponent.vue'; // Custom Map component
-import AdminMapController from '@/components/admin/AdminMapController.vue'; // Custom Map controller component
-import * as L from 'leaflet'; // Leaflet library for map interactions
+} from '@/components/ui/dialog';
+import MapComponent from '@/components/map/MapComponent.vue';
+import AdminMapController from '@/components/admin/AdminMapController.vue';
+import * as L from 'leaflet';
 
 /**
  * Represents geographical coordinates.
@@ -319,16 +343,16 @@ interface MapClickEvent {
 }
 
 // --- State and Initialization ---
-const { t } = useI18n(); // i18n instance
+const { t } = useI18n();
 
 // Map related state
-const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null); // Ref to the map component
-const tempMarker = ref<L.Marker | null>(null); // Ref to the temporary marker on the map
-const initialCenter: Location = { lat: 63.4305, lng: 10.3951 }; // Initial map center (Norway)
+const mapComponent = ref<InstanceType<typeof MapComponent> | null>(null);
+const tempMarker = ref<L.Marker | null>(null);
+const initialCenter: Location = { lat: 63.4305, lng: 10.3951 };
 
 // Dialog state
-const isSuccessDialogOpen = ref(false); // Controls success dialog visibility
-const createdEventName = ref(''); // Stores the created event name for the dialog
+const isSuccessDialogOpen = ref(false);
+const createdEventName = ref('');
 
 const scenarioPreviews = ref<ScenarioThemePreview[]>([]);
 const allowedScenarios = ref<string[]>([]);
@@ -344,36 +368,27 @@ onMounted(() => {
  */
 const formSchema = toTypedSchema(
   z.object({
-    // Title: required string, min 2, max 50 chars
+
     title: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
-    // Latitude: optional number between -90 and 90
     latitude: z.preprocess(
       (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
       z.number().min(-90, t('add-event-info.errors.latitude')).max(90, t('add-event-info.errors.latitude'))
     ),
-    // Longitude: optional number between -180 and 180
     longitude: z.preprocess(
       (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
       z.number().min(-180, t('add-event-info.errors.longitude')).max(180, t('add-event-info.errors.longitude'))
     ),
-    // Address: optional string, max 100 chars
     address: z.string().max(100, t('add-event-info.errors.address')).optional(),
-    // Radius: required number, min 1, max 10000
     radius: z.preprocess(
-      (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)), // Handle empty string properly
-      z.number({required_error: "Radius is required"}).min(1, t('add-event-info.errors.radius')).max(10000, t('add-event-info.errors.radius'))
+      (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
+      z.number({required_error: "Radius is required"}).min(1, t('add-event-info.errors.radius')).max(100000, t('add-event-info.errors.radius'))
     ),
-    // Time: optional string (HH:MM format expected)
     time: z.string().optional(),
-    // Date: optional string (YYYY-MM-DD format expected)
     date: z.string().optional(),
-    // Priority/Severity: required enum ('Low', 'Medium', 'High')
     priority: z.enum(['green', 'yellow', 'red'], { required_error: t('add-event-info.errors.priority') }),
     category: z.string().refine(val => allowedScenarios.value.includes(val),'add-event-info.errors.category').optional(),
-    // Description: required string, min 10, max 500 chars
     description: z.string().min(10, t('add-event-info.errors.description')).max(500, t('add-event-info.errors.description')),
   })
-  // Refine step 1: Ensure either coordinates or address (min 2 chars) are provided
   .refine(
     (data) => {
       const hasCoords = (data.latitude !== undefined && !isNaN(data.latitude)) && (data.longitude !== undefined && !isNaN(data.longitude));
@@ -382,15 +397,14 @@ const formSchema = toTypedSchema(
     },
     {
       message: t('add-event-info.errors.position-missing'),
-      path: ['address'], // Show error message associated with the address field if condition fails
+      path: ['address'],
     }
   )
-  // Refine step 2: Ensure both date and time are provided if either one is
   .refine(
-    (data) => !(data.date || data.time) || (data.date && data.time), // If either is set, both must be set
+    (data) => !(data.date || data.time) || (data.date && data.time),
     {
-      message: 'Både dato og tid må angis for starttidspunkt.', // Translation key can be used here too
-      path: ['time'], // Show error message associated with the time field
+      message: 'Både dato og tid må angis for starttidspunkt.',
+      path: ['time'],
     }
   )
 );
@@ -401,15 +415,15 @@ const formSchema = toTypedSchema(
  */
 const form = useForm({
   validationSchema: formSchema,
-  initialValues: { // Set initial values (important for reactivity)
+  initialValues: {
     title: '',
-    latitude: undefined, // Initialize number fields as undefined
+    latitude: undefined,
     longitude: undefined,
     address: '',
-    radius: undefined, // Initialize as undefined to avoid "0" placeholder issues
+    radius: undefined,
     time: '',
     date: '',
-    priority: undefined, // Initialize select as undefined
+    priority: undefined,
     category: undefined,
     description: '',
   },
@@ -423,7 +437,6 @@ const form = useForm({
  * @returns {InstanceType<typeof MapComponent> | null} The map component instance or null.
  */
 const mapComponentInstance = computed(() => {
-  // CORRECTION: Return null instead of undefined
   return mapComponent.value || null;
 });
 
@@ -451,7 +464,7 @@ function handleLocationSelected(location: Location): void {
   form.setFieldValue('latitude', location.lat);
   form.setFieldValue('longitude', location.lng);
   updateMapMarker(location.lat, location.lng);
-  form.setFieldError('address', undefined); // Clear address validation error if coordinates are now set
+  form.setFieldError('address', undefined);
 }
 
 /**
@@ -460,12 +473,12 @@ function handleLocationSelected(location: Location): void {
  */
 function handleLocationCleared(): void {
   console.log('Location cleared');
-  form.setFieldValue('latitude', undefined); // Reset coordinates
+  form.setFieldValue('latitude', undefined);
   form.setFieldValue('longitude', undefined);
 
   // Remove marker from the map
   if (tempMarker.value && mapComponent.value?.removeMarker) {
-    mapComponent.value.removeMarker(tempMarker.value as L.Marker); // Type assertion might be needed
+    mapComponent.value.removeMarker(tempMarker.value as L.Marker);
     tempMarker.value = null;
   }
 }
@@ -474,8 +487,8 @@ function handleLocationCleared(): void {
  * Navigates the user back to the admin panel after closing the success dialog.
  */
 function navigateToAdminPanel(): void {
-  isSuccessDialogOpen.value = false; // Close the dialog
-  router.push('/admin-panel'); // Navigate
+  isSuccessDialogOpen.value = false;
+  router.push('/admin/admin-panel');
 }
 
 /**
@@ -485,12 +498,10 @@ function navigateToAdminPanel(): void {
  * @param {number} lng - Longitude for the marker.
  */
 function updateMapMarker(lat: number, lng: number): void {
-  // Ensure map component and its methods are available
   if (!mapComponent.value?.addMarker) {
     console.error('Map component or addMarker method not available yet.');
     return;
   }
-  // Remove existing marker if present
   if (tempMarker.value && mapComponent.value?.removeMarker) {
     mapComponent.value.removeMarker(tempMarker.value as L.Marker);
   }
@@ -522,6 +533,7 @@ function updateMapMarker(lat: number, lng: number): void {
 watch(
   () => form.values.title, // Source: the title value from the form state
   (newTitle) => { // Callback executed when the title changes
+
     // Guard against accessing properties before initialization or if marker doesn't exist
     if (form.values && tempMarker.value && mapComponent.value) {
       const markerTitle = newTitle || t('navigation.new-event') || 'Ny hendelse';
@@ -552,14 +564,13 @@ watch(
 const onSubmit = form.handleSubmit(async (values) => {
   console.log('Form values on submit:', values);
   try {
-    // Combine date and time into a single ISO 8601 string for the backend
-    // Zod refine ensures both date and time exist if one does
     if (!values.date || !values.time) {
       console.error('Start time (date and time) is required but missing.');
       form.setFieldError('date', 'Starttidspunkt (dato og tid) er påkrevd.');
       form.setFieldError('time', 'Starttidspunkt (dato og tid) er påkrevd.');
       return;
     }
+
     // Combine date and time into ISO format (e.g., "YYYY-MM-DDTHH:MM:SS")
     const startTime = `${values.date}T${values.time}:00`; // Append seconds for potential backend requirements
 
@@ -582,8 +593,8 @@ const onSubmit = form.handleSubmit(async (values) => {
     };
 
     console.log('Submitting Event data:', eventData);
-    const response = await createEvent(eventData); // Call the API service
-    console.log('Event created successfully!', response.data); // Log success
+    const response = await createEvent(eventData);
+    console.log('Event created successfully!', response.data);
 
     // Show success dialog on successful creation
     createdEventName.value = values.title;
@@ -613,7 +624,7 @@ async function getCategories() {
 		}
 	} catch (error) {
 		console.error('Something happened when fetching categories: ', error);
-		scenarioPreviews.value = []; // saetting empty arrays to prevent potential runtime fails
+		scenarioPreviews.value = []; // setting empty arrays to prevent potential runtime fails
 	}
 }
 
@@ -640,12 +651,12 @@ function getScenarioId(category: string): number | null {
 }
 
 .green {
-	background-color: var(--crisis-level-green);
+	background-color: var(--color-chart-2);
 }
 .yellow {
-	background-color: var(--crisis-level-yellow);
+	background-color: var(--color-chart-4);
 }
 .red {
-	background-color: var(--crisis-level-red);
+	background-color: var(--color-chart-1);
 }
 </style>

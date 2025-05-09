@@ -1,5 +1,3 @@
-<!-- Page for view of the current medical inventory in a household -->
-
 <template>
   <div class="min-h-screen p-6 bg-background text-foreground">
     <div class="max-w-5xl mx-auto space-y-8">
@@ -111,11 +109,18 @@
 </template>
 
 <script setup>
+
+/**
+ * @component MedicineInventory
+ * @description Page for viewing the current medical inventory in a household.
+ */
+
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { differenceInDays } from "date-fns"; // temporary use of date-fns, will most likely be modified when connected to backend
+import { differenceInDays } from "date-fns";
 
 const { t } = useI18n();
+
 /**
  * Reactive list of all medicines in the inventory.
  * Each medicine has the fields name, amount, unit, expires, notes and edit.

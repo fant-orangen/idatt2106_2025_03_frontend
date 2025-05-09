@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen p-6 bg-background text-foreground">
     <div class="max-w-5xl mx-auto space-y-8">
+
       <!-- Breadcrumb -->
       <Breadcrumb class="mb-6">
         <BreadcrumbList>
@@ -65,6 +66,7 @@
             <DialogTitle>{{ $t('admin.new-admin') }}</DialogTitle>
           </DialogHeader>
           <form @submit.prevent="confirmNewAdmin" class="grid gap-4">
+
             <!-- Email Field -->
             <FormField v-slot="{ field, meta, errorMessage }" name="email">
               <FormItem>
@@ -119,6 +121,7 @@
             <DrawerTitle>{{ $t('admin.administrate-profile') }}</DrawerTitle>
           </DrawerHeader>
           <form class="grid gap-4">
+
             <!-- Email Field -->
             <div class="grid gap-2">
               <Label for="email">{{ $t('login.email') }}</Label>

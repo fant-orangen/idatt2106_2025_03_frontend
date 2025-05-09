@@ -29,7 +29,7 @@
         class="flex items-center justify-between w-72 mt-2 px-6 py-3 text-left border rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
         @click="navigateToScenarioTheme(currentEventId)"
       >
-        Les mer om krisesenarioet
+        {{t("scenarioThemes.readMore")}}
         <ArrowRight class="ml-1 h-3 w-3" />
       </Button>
 
