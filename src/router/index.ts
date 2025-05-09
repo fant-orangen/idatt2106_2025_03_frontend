@@ -68,13 +68,13 @@ const routes = [
     path: '/food-and-drinks',
     name: 'FoodAndDrinks',
     component: () => import('@/views/FoodAndDrinksView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/medicine-inventory',
     name: 'MedicineInventory',
     component: () => import('@/views/MedicineInventory.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/admin/admin-panel',
@@ -119,16 +119,6 @@ const routes = [
     meta: { requiresSuperAdmin: true },
   },
   {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFound',
-    component: () => import('@/views/404NotFoundView.vue'),
-  },
-  {
-    path: '/medicine-inventory',
-    name: 'MedicineInventory',
-    component: () => import('@/views/MedicineInventory.vue'),
-  },
-  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/ProfileView.vue'),
@@ -144,19 +134,19 @@ const routes = [
     path: '/inventory/water',
     name: 'WaterInventory',
     component: () => import('@/views/FoodAndDrinksView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/inventory/food',
     name: 'FoodInventory',
     component: () => import('@/views/FoodAndDrinksView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/inventory/medicine',
     name: 'MedicineInventory',
     component: () => import('@/views/FoodAndDrinksView.vue'),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresHousehold: true },
   },
   {
     path: '/group',
@@ -180,6 +170,45 @@ const routes = [
     path: '/privacy-policy',
     name: 'PrivacyPolicy',
     component: () => import('@/views/PrivacyPolicyView.vue'),
+  },
+  {
+    path: '/quiz-overview',
+    name: 'QuizOverview',
+    component: () => import('@/views/gamification/QuizOverviewView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/quiz/id=:quizId',
+    name: 'Quiz',
+    component: () => import('@/views/gamification/QuizView.vue'),
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/history/id=:quizId',
+    name: 'QuizHistory',
+    component: () => import('@/views/gamification/QuizHistoryView.vue'),
+    props: true,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/quiz-overview/admin/new-quiz',
+    name: 'NewQuiz',
+    component: () => import('@/views/gamification/admin/DefineQuizView.vue'),
+    props: true,
+    meta: { requiresAdmin: true },
+  },
+  {
+    path: '/quiz-overview/admin/edit-quiz/id=:quizId',
+    name: 'EditQuiz',
+    component: () => import('@/views/gamification/admin/EditQuizView.vue'),
+    props: true,
+  },
+  {
+    path: '/admin/news',
+    name: 'AdminCreateNews',
+    component: () => import('@/views/AdminAddNews.vue'),
+    meta: { requiresAdmin: true },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -225,11 +254,13 @@ router.beforeEach(async (to, from, next) => {
     'Notifications',
     'ResetPassword',
     'PrivacyPolicy',
+    'QuizOverview',
+    'Quiz',
   ]
 
+  const noHouseholdRequiredRoutes = ['Reflections', 'Profile', 'Settings']
   // Allow immediate navigation if the target route is public
   if (publicRoutes.includes(to.name as string)) {
-    //
     return next() // Proceed to the public route
   }
 
@@ -263,8 +294,8 @@ router.beforeEach(async (to, from, next) => {
     return next({ name: 'Login' })
   }
 
-  // For authenticated, non-admin users, check for household association.
-  if (!userStore.isAdminUser && !userStore.isSuperAdminUser) {
+  // For authenticated, non-admin users, check for household association ONLY if route requires it
+  if (to.meta.requiresHousehold && !userStore.isAdminUser && !userStore.isSuperAdminUser) {
     try {
       // Attempt to fetch the user's current household information from the backend.
       const household = await getCurrentHousehold()
@@ -281,23 +312,23 @@ router.beforeEach(async (to, from, next) => {
       }
     } catch (error) {
       // Catch errors during the household check (e.g., network, API errors)
-      console.error('Error checking household:', error) // Log the error for debugging
+      console.error('Error checking household:', error)
 
       // Check if the error is an Axios error with a 401 (Unauthorized) status.
-      // This indicates the user's token might be invalid or expired.
-      const axiosError = error as AxiosError // Assert error type
+      const axiosError = error as AxiosError
       if (axiosError.response?.status === 401) {
         console.log('Unauthorized check for household, redirecting to login.')
-        userStore.logout() // Log out the user and clear auth state
-        return next({ name: 'Login' }) // Redirect to login
+        userStore.logout()
+        return next({ name: 'Login' })
       }
 
-      // For other errors during the household check, allow navigation to prevent
-      return next() // Proceed, potentially to a route that might show an error state
+      // For other errors during the household check, allow navigation
+      return next()
     }
   }
-  // User is authenticated, not an admin, and has a household. Allow navigation.
-  return next() // Proceed to the requested route
+
+  // User is authenticated and meets all requirements. Allow navigation.
+  return next()
 })
 
 export default router
