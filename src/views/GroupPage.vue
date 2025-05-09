@@ -71,7 +71,7 @@
         <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
         <Button
             v-if="isAdmin && currentGroupId"
-            @click="leaveCurrentGroup"
+            @click="confirmDialog()"
             class="text-sm text-white bg-destructive hover:cursor-pointer hover:bg-destructive/70"
         >
           {{ t('group.leave-group') }}
@@ -105,6 +105,20 @@
       @update:open="showCreateGroupDialog = $event"
       @group-created="refreshGroups"
   />
+
+  <Dialog v-model:open="openDialog">
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Er du sikker?</DialogTitle>
+      </DialogHeader>
+      <p>Denne handlingen kan ikke angres. 
+        <br>Hvis du vil inn i en gruppe må du bli invitert eller lage din egen.
+      </p>
+      <Button type="button" variant="destructive" class="w-full" @click="leaveCurrentGroup()">
+        Forlat
+      </Button>
+    </DialogContent>
+  </Dialog>
 </template>
 
 
@@ -123,8 +137,8 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import InviteHouseholdDialog from '@/components/group/InviteHouseholdDialog.vue';
 import CreateGroupDialog from '@/components/group/CreateGroupDialog.vue';
-
-
+import { toast } from 'vue-sonner'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 const { t } = useI18n();
 const groupStore = useGroupStore();
@@ -143,6 +157,7 @@ const isAdmin = ref(false);
 const showInviteDialog = ref(false);
 const showCreateGroupDialog = ref(false);
 const selectedGroupId = ref<number | null>(null);
+const openDialog = ref(false);
 
 // Check if user is household admin when component mounts
 onMounted(async () => {
@@ -236,12 +251,10 @@ function inviteHousehold() {
 async function leaveCurrentGroup() {
   if (!currentGroupId.value) return;
 
-  const confirmLeave = confirm('Er du sikker på at du vil forlate denne gruppen?');
-  if (!confirmLeave) return;
-
   try {
     await groupService.leaveGroup(currentGroupId.value);
-
+    callToast('Du har blitt fjernet fra gruppa!')
+    openDialog.value = false
     // Remove the group from the list
     groups.value = groups.value.filter(g => g.groupId !== currentGroupId.value);
 
@@ -253,7 +266,7 @@ async function leaveCurrentGroup() {
     }
   } catch (error) {
     console.error('Error leaving group:', error);
-    alert('Det oppstod en feil ved forsøk på å forlate gruppen');
+    errorToast('Det oppstod en feil ved forsøk på å forlate gruppen');
   }
 }
 
@@ -273,5 +286,17 @@ async function refreshGroups() {
   } catch (error) {
     console.error('Error refreshing groups:', error);
   }
+}
+
+function confirmDialog() {
+  openDialog.value = true
+}
+
+function callToast(message: string) {
+  toast.success(message)
+}
+
+function errorToast(message: string) {
+  toast.error(message)
 }
 </script>

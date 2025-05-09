@@ -14,11 +14,8 @@
     "edit": "Edit",
     "accept": "Accept",
     "reject": "Reject",
-    "success": {
-      "shared": "Product was added to the group",
-      "removed": "Product was removed from the group.",
-      "error": "An error occurred while sharing the product with the group"
-    }
+    "pick-date": "Pick a date",
+    "date-title":"Start time"
   },
   "actions": {
     "to-reflect": "to reflect",
@@ -53,7 +50,7 @@
     "reset-password": "Reset Password",
     "2fa-login-title": "Two-Step Verification",
     "2fa-login-description": "Enter the verification code sent to your email to complete the login process.",
-    "already-user": "This username is already registered.",
+    "already-user": "Already a user? ",
     "log-in-here": "Login here"
   },
   "reset-password": {
@@ -216,6 +213,7 @@
     "unexpected-error": "An unexpected error has occurred. Please try again later.",
     "network-error": "Nettwork error. Please check your connection.",
     "invalid-2fa-code": "The 2FA code you have entered is incorrect. Please try again."
+
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",
@@ -224,6 +222,8 @@
   },
   "crisis": {
     "crisis-status": "Crisis Status",
+    "severity": "Severity:",
+    "start_time": "Crisis Start:",
     "more-crisis-info": "Read more about your current crisis situation",
     "no-crisis": "No ongoing crisis",
     "all_clear": "All clear. No active crisis events at this time.",
@@ -306,6 +306,7 @@
     "during": "During"
   },
   "info": {
+    "info": "Information",
     "news": "News",
     "notifications": "Notifications",
     "nr-of-people-in-household": "Number of people in household",
@@ -353,7 +354,7 @@
     },
     "crisis_info": {
       "title": "Crisis Information Center",
-      "description": "Get real-time updates and practical guidance for all types of emergencies.",
+      "description": "Get useful information and guidance on all types of emergencies",
       "before": "Learn how to prepare before a crisis happens",
       "during": "Get critical information during active emergencies",
       "after": "Find recovery resources after a crisis has passed"
@@ -478,6 +479,8 @@
       "close-directions": "Close",
       "need-location": "Please enable your location to show directions",
       "legend": {
+        "legend": "Legend",
+        "toggle-legend": "Hide Legend",
         "user-location": "Your Location",
         "household-location": "Household",
         "crisis-level-1": "Crisis Level 1",
@@ -557,7 +560,7 @@
       "optional-message": "Optional: Add a personal message",
       "send-invitation": "Send Invitation",
       "invitation-sent": "Invitation sent successfully",
-      "invitation-failed": "Failed to send invitation",
+      "invitation-failed": "Failed to send invitation, user not found.",
       "add-user-title": "Invite User to Household",
       "create_new": "Create New Household",
       "create_description": "Create your own household to manage your emergency preparedness.",
@@ -1101,9 +1104,119 @@
       "noRelatedEvents": "No related crisis events found",
       "themeNotFound": "Scenario theme not found",
       "readMore": "Read More About Crisis Scenarios "
+    },
+    "common": {
+      "back": "Back",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "confirm": "Confirm"
+    },
+    "gamification": {
+      "quizCreator": {
+        "title": "Quiz Creator",
+        "creatorTitle": "Create a New Quiz",
+        "creatorDescription": "Fill in the details below to create a new quiz.",
+        "quizName": "Quiz Name",
+        "enterTitle": "Enter the quiz title",
+        "quizDescription": "Quiz Description",
+        "enterDescription": "Enter the quiz description",
+        "createQuiz": "Create Quiz",
+        "addOption": "Add Option",
+        "option": "Option",
+        "enterOption": "Enter option",
+        "addQuestionButton": "Add Question",
+        "addQuestion": "Add Question",
+        "addQuestionDescription": "Add a question and its options to the quiz.",
+        "previewTitle": "Quiz Preview",
+        "previewDescription": "Review the quiz before publishing.",
+        "optionLabel": "Option Label",
+        "optionText": "Option Text",
+        "correct": "Correct?",
+        "questionText": "Question Text",
+        "enterQuestion": "Enter the question text",
+        "maxOptions": "You can only add up to 5 options.",
+        "questionValidationError": "Please provide a valid question and select the correct option.",
+        "questionAdded": "Question added successfully!",
+        "questionCreationError": "An error occurred while creating the question or answers.",
+        "fetchError": "Failed to fetch questions and answers.",
+        "noQuestions": "No questions have been added yet.",
+        "saveQuestionButton": "Save Question",
+        "cancelButton": "Cancel",
+        "deleteQuestion": "Delete Question",
+        "editQuestion": "Edit Question",
+        "editQuestionDescription": "Edit the question and its options.",
+        "questionUpdated": "Question updated successfully",
+        "questionUpdatedDescription": "The question and its answers have been updated.",
+        "updateError": "Failed to update question",
+        "updateErrorDescription": "An error occurred while updating the question.",
+        "questionAddedDescription": "The question and its answers have been added.",
+        "questionCreationErrorDescription": "An error occurred while creating the question.",
+        "questionDeleted": "Question deleted successfully",
+        "questionDeletedDescription": "The question has been removed.",
+        "deleteError": "Failed to delete question",
+        "deleteErrorDescription": "An error occurred while deleting the question.",
+        "fetchErrorDescription": "An error occurred while fetching the questions.",
+        "questionValidationErrorDescription": "Please provide a valid question and at least one correct answer.",
+        "maxOptionsDescription": "You cannot add more than 5 options."
+      },
+      "quiz": {
+        "quizOverview": "Quiz Overview",
+        "takeQuiz": "Take Quiz",
+        "lastAttempt": "Last Attempt"
+      }
+    },
+    "alert": {
+      "areYouSure": "Are you sure?",
+      "deleteQuiz": "This action is final and cannot be undone. This will delete this quiz and all relevant data. Do you want to proceed?",
+      "confirmDelete": "Confirm deletion",
+      "cancel": "Cancel"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "breadcrumbHome": "Home",
+      "breadcrumbCurrent": "Privacy Policy",
+      "introductionTitle": "Introduction",
+      "introductionText": "We value your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and protect your information when you use our platform.",
+      "dataTitle": "Data We Collect",
+      "dataPersonal": "Personal Information: Name, email address, phone number, and household details (e.g., number of members). Location data (if you enable location services).",
+      "dataAccount": "Account Information: Login credentials (email and password, stored securely using encryption). Two-factor authentication (2FA) codes (if enabled).",
+      "dataUsage": "Usage Data: Interactions with the platform, such as activities completed, reflections, and preferences. Device and browser information for analytics purposes.",
+      "dataEmergency": "Emergency Data: Information related to crisis events, such as your preparedness status or participation in household activities.",
+      "useTitle": "How We Use Your Data",
+      "useServices": "Provide and improve services: Manage your account and household, send emergency notifications, and support 2FA if enabled.",
+      "useExperience": "Enhance user experience: Personalize content and offer location-based features.",
+      "useSecurity": "Ensure security: Use 2FA and monitor for unauthorized access.",
+      "useLegal": "Comply with legal obligations: Retain necessary data for legal and dispute purposes.",
+      "childrenTitle": "Children's Privacy",
+      "childrenText": "Our platform is not intended for children under the age of 13. We do not knowingly collect personal data from children without parental consent. If we become aware that we have collected data from a child without consent, we will delete it immediately.",
+      "twoFaTitle": "Two-Factor Authentication (2FA)",
+      "twoFaText": "Two-factor authentication is optional and adds an extra layer of security. If enabled, we collect temporary codes to verify identity. You may manage this in your settings.",
+      "sharingTitle": "Data Sharing",
+      "sharingConsent": "With your consent: e.g., inviting others to join your household.",
+      "sharingLegal": "For legal reasons: If required by law or for user safety.",
+      "sharingProviders": "With service providers: Trusted third parties that help us operate (e.g., email, maps).",
+      "retentionTitle": "Data Retention",
+      "retentionText": "We retain your data only as long as needed for services or legal requirements. You can request deletion at any time.",
+      "rightsTitle": "Your Rights",
+      "rightsAccess": "Access: Request a copy of your data.",
+      "rightsCorrect": "Correction: Update your personal information.",
+      "rightsDelete": "Deletion: Request deletion of your account and data.",
+      "rightsRestrict": "Restriction: Limit our use of your data.",
+      "rightsPortable": "Portability: Get a copy of your data in portable format.",
+      "accessibilityTitle": "Accessibility",
+      "accessibilityText": "We are committed to ensuring our platform and privacy policy are accessible to all users, including those with disabilities. If you encounter any accessibility issues, please contact us for assistance.",
+      "securityTitle": "Security",
+      "securityText": "We follow industry standards like encryption, secure storage of auth codes, and conduct regular audits.",
+      "cookiesTitle": "Cookies and Tracking",
+      "cookiesText": "We use cookies to enhance functionality, analyze usage, and support location services. You can control cookies via browser settings.",
+      "changesTitle": "Changes to This Policy",
+      "changesText": "We may update this policy periodically. Changes will be announced on the platform or via email.",
+      "contactTitle": "Contact Us",
+      "contactText": "If you have questions or concerns, reach out to us at:"
     }
   },
   "household": {
+    "my-household": "Household",
     "supplies": "Household Supplies",
     "no-supplies": "",
     "members": "Members",
@@ -1137,7 +1250,7 @@
     "email-address": "Email",
     "enter-email": "Enter the email of the person you wish to invite...",
     "send-invitation": "Send invitation",
-    "stats": "Household Statistics",
+    "stats": "Household Overview",
     "total_members": "Total number of members",
     "adults": "Adults",
     "children": "Children",
@@ -1154,19 +1267,44 @@
     "pending-sent-invitations": "Pending invitations sent from your household"
   },
   "inventory": {
-    "search-placeholder":"Search for a product in the inventory...",
+    "search-placeholder": "Search",
     "search-clear": "Clear search",
     "food-title": "Food Inventory",
-    "food-add-new": "Add Food Item",
+    "food-add-new": "Add new item",
     "food-add": "Add Item",
-    "food-product-name": "Produktnavn",
-    "select-unit": "Velg enhet",
-    "edit": "Edit"
+    "food-product-name": "Product name",
+    "select-unit": "Select unit",
+    "save": "Save",
+    "edit": "Edit",
+    "share-with-group": "Share with group",
+    "select-group": "Select group",
+    "no-groups": "No groups",
+    "remove-from-group": "Remove from group",
+    "food-already-shared": "Already shared",
+    "food-share": "Share item",
+    "food-delete-type": "Remove type",
+    "food-calories": "Kcal per unit",
+    "food-amount": "Amount",
+    "food-exists-message": "This item already exists. Select 'Edit' to add a new batch.",
+    "button-food": "Food",
+    "button-water": "Water",
+    "button-medicine": "Medicine",
+    "water": {
+      "title": "Water",
+      "total": "Total ",
+      "liters": "L",
+      "add-new": "Add new",
+      "product-name": "Container",
+      "add": "Add",
+      "share": "Share",
+      "delete-type": "Delete type"
+    }
+
   },
-  "group" : {
+  "group": {
     "create-group-title": "Title for your group",
     "create-group-description": "Description for your group",
-    "group-name" : "Group Name",
+    "group-name": "Group Name",
     "group-created-success": "Your group was created successfully.",
     "invite-household-title": "Invite A Household",
     "invite-household-description": "Invite a household to join your group.",
@@ -1205,5 +1343,68 @@
     "backToQuizzes": "Back To Quiz Overview",
     "backToTop": "Back To Top",
     "noMoreAttemptsToLoad": "No more attempts to load"
+  },
+  "news": {
+    "related_crisis": "Related Srisis",
+    "crisis_context": "Related Crisis Information"
+  },
+  "infoPage": {
+    "aboutThisTheme": "About this subject",
+    "themeDescription": "Important information to help you prepare and respond.",
+    "readMore": "Read More",
+    "readMoreTitle": "More Resources",
+    "readMoreDescription": "Find more detailed information on this topic from official sources.",
+    "officialWebsites": "Official sites ",
+    "additionalResources": "For more information, visit these official resources:",
+    "close": "Close",
+    "emergencyContacts": "Emergency Contacts",
+    "emergencyContactsTitle": "Emergency Contacts",
+    "emergencyContactsDescription": "Important Contacts Form Emergencies:",
+    "generalEmergencyContacts": {
+      "title": "General Emergency Numbers",
+      "police": "Police: 112",
+      "ambulance": "Ambulance: 113",
+      "fire": "Fire Department: 110",
+      "civilDefense": "The Civil Defense: 51 51 51 51"
+    },
+    "relatedThemes": "Related Themes",
+    "selectThemePrompt": "Choose A Theme To Learn More!",
+    "browseThemesDescription": "Browse our information resources to learn about different emergency situations and how to prepare yourself",
+    "preparednessStorageBrief": "Learn what supplies you should have ready for emergencies.",
+    "afterCrisisBrief": "Find guidance on recovery and returning to normality after a crisis.",
+    "learnMoreTopic": "Click to learn more about this topic."
+
+
+  },
+  "sidebar": {
+    "title": "Information Sites",
+    "themes-preparednessStorage": "Emergency Inventory",
+    "themes-afterCrisis": "After The Crisis",
+    "categories": "Categories",
+    "scenario-description": "Description",
+    "scenario-nodescription": "No Description Has Been Added.",
+    "themes": {
+      "preparednessStorage": "Emergency Inventory",
+      "afterCrisis": "After the crisis"
+    }
+  },
+  "scenarioThemes": {
+    "description": "Description",
+    "before": "Before The Crisis:",
+    "under": "Under The Crisis",
+    "after": "After The Crisis"
+  },
+  "themes": {
+    "preparednessStorage": {
+      "title": "Emergency Inventory"
+    },
+      "afterCrisis": {
+        "title": "After A Crisis",
+        "content": "Guidance for after a crisis has occured."
+      }
+    }
+
   }
-}
+
+
+

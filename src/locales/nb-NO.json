@@ -18,7 +18,9 @@
     },
     "edit": "Rediger",
     "accept": "Aksepter",
-    "reject": "Avvis"
+    "reject": "Avvis",
+    "pick-date": "Velg en dato",
+    "date-title":"Startid"
   },
   "actions": {
     "to-reflect": "for å reflektere",
@@ -54,7 +56,7 @@
     "reset-password": "Tilbakestill passord",
     "2fa-login-title": "To-trinnsverifisering",
     "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn.",
-    "already-user": "Dette brukernavnet er allerede registrert.",
+    "already-user": "Allerede bruker?",
     "log-in-here": "Logg inn her"
   },
   "reset-password": {
@@ -225,6 +227,8 @@
   },
   "crisis": {
     "crisis-status": "Krisestatus",
+    "severity": "Alvorlighetsgrad:",
+    "start_time": "Krisestart:",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
     "no-crisis": "Ingen pågående krise",
     "all_clear": "Alt klart. Ingen aktive krisehendelser for øyeblikket.",
@@ -296,7 +300,9 @@
     "light-mode": "Lys modus",
     "dark-mode": "Mørk modus",
     "admin-news": "Lag et nyhetsvarsel",
-    "change-mode": "Bytt modus"
+    "change-mode": "Bytt modus",
+    "household": "Husholdning",
+    "food-and-drinks": "Mat og drikke"
   },
   "user-profile": {
     "title": "Brukerprofil",
@@ -309,6 +315,7 @@
     "during": "Under"
   },
   "info": {
+    "info": "Informasjon",
     "news": "Nyheter",
     "notifications": "Varslinger",
     "nr-of-people-in-household": "Antall personer i husholdningen",
@@ -357,7 +364,7 @@
     },
     "crisis_info": {
       "title": "Kriseinformasjonssenter",
-      "description": "Få sanntidsoppdateringer og praktisk veiledning for alle typer nødsituasjoner.",
+      "description": "Få nyttig informasjon og veiledning om alle typer nødsituasjoner.",
       "before": "Lær hvordan du forbereder deg før en krise oppstår",
       "during": "Få kritisk informasjon under aktive nødsituasjoner",
       "after": "Finn ressurser for gjenoppretting etter at en krise har passert"
@@ -370,7 +377,29 @@
     "related_news": "Relaterte nyheter",
     "no_news_found": "Ingen nyheter funnet",
     "published_at": "Publisert",
-    "read_more": "Les mer"
+    "read_more": "Les mer",
+    "post": "Lagre & Publiser",
+    "search": "Søk etter en hendelse",
+    "select": "Velg en hendelse",
+    "content": "Innhold",
+    "news-title": "Tittel",
+    "updated": "Sist oppdatert",
+    "save-draft": "Lagre utkast",
+    "published": "Publisert på",
+    "archive": "Arkiver",
+    "handle-news": "Lag et nytt, rediger eller publiser nyhetsvarsler",
+    "description": {
+      "title": "Dette er tittelen på nyhetsvarselet",
+      "subject": "Dette er temaet i nyhetsvarselet, og burde være relatert til hendelsen",
+      "event": "Velg en tilhørende hendelse til dette nyhetsvarselet",
+      "update": "Utkastet ble sist oppdatert på dette tidspunktet. Dato og tid vil bli satt automatisk når du lagrer.",
+      "saved-drafts": "Lagrede utkast av deg og andre adminbrukere",
+      "choose-draft": "Velg et utkast å redigere",
+      "latest-news": "Siste publiserte nyhetsartikler",
+      "published": "Dato og tidspunkt da denne artikkelen ble publisert",
+      "related-news": "Relaterte nyhetsartikler tilhørende den valgte hendelsen",
+      "search": "Søk etter en artikkel"
+    }
   },
   "reflect": {
     "reflection": "Reflekter etter krisen",
@@ -646,7 +675,7 @@
     "optional-message": "Valgfritt: Legg til en personlig melding",
     "send-invitation": "Send invitasjon",
     "invitation-sent": "Invitasjon sendt",
-    "invitation-failed": "Kunne ikke sende invitasjon",
+    "invitation-failed": "Kunne ikke sende invitasjon, brukeren finnes ikke.",
     "invitation-sent-success": "Invitasjon sendt",
     "add-user-title": "Inviter bruker til hushold",
     "create_new": "Opprett nytt hushold",
@@ -717,6 +746,385 @@
         "tokenRequired": "Invitasjonskode er påkrevd",
         "invalidToken": "Ugyldig invitasjonskode",
         "generic": "Kunne ikke bli med i hushold"
+    },
+    "news": {
+      "title": "Nyheter",
+      "loading_more": "Laster flere nyheter...",
+      "no_more_news": "Ingen flere nyheter å laste",
+      "related_news": "Relaterte nyheter",
+      "no_news_found": "Ingen nyheter funnet",
+      "published_at": "Publisert",
+      "read_more": "Les mer",
+      "post": "Lagre & Publiser",
+      "search": "Søk etter en hendelse",
+      "select": "Velg en hendelse",
+      "content": "Innhold",
+      "news-title": "Tittel",
+      "updated": "Sist oppdatert",
+      "save-draft": "Lagre utkast",
+      "published": "Publisert på",
+      "archive": "Arkiver",
+      "handle-news": "Lag et nytt, rediger eller publiser nyhetsvarsler",
+      "description": {
+        "title": "Dette er tittelen på nyhetsvarselet",
+        "subject": "Dette er temaet i nyhetsvarselet, og burde være relatert til hendelsen",
+        "event": "Velg en tilhørende hendelse til dette nyhetsvarselet",
+        "update": "Utkastet ble sist oppdatert på dette tidspunktet. Dato og tid vil bli satt automatisk når du lagrer.",
+        "saved-drafts": "Lagrede utkast av deg og andre adminbrukere",
+        "choose-draft": "Velg et utkast å redigere",
+        "latest-news": "Siste publiserte nyhetsartikler",
+        "published": "Dato og tidspunkt da denne artikkelen ble publisert",
+        "related-news": "Relaterte nyhetsartikler tilhørende den valgte hendelsen",
+        "search": "Søk etter en artikkel"
+      }
+    },
+    "reflect": {
+      "reflection": "Reflekter etter en krise.",
+      "your-reflections": "Dine refleksjoner",
+      "shared-reflections": "Delte refleksjoner",
+      "community-reflections": "Fellesskapets refleksjoner",
+      "need-help-q": "Trenger du hjelp?",
+      "what-2-do-after-crisis": "Hva bør du gjøre etter en krise?",
+      "shared-reflections-description": "Se refleksjoner delt av ditt hushold og gruppemedlemmer.",
+      "no-reflections": "Ingen refleksjoner ennå",
+      "no-shared-reflections": "Ingen delte refleksjoner ennå",
+      "add-reflection": "Legg til refleksjon",
+      "edit-reflection": "Rediger refleksjon",
+      "delete-reflection": "Slett refleksjon",
+      "delete-reflection-confirm": "Er du sikker på at du vil slette denne refleksjonen? Denne handlingen kan ikke angres.",
+      "reflection-description": "Del dine tanker og erfaringer etter en krisehendelse.",
+      "add-reflection-for-crisis": "Legg til refleksjon for denne krisen",
+      "reflection-for-crisis-description": "Del dine tanker og erfaringer om denne krisehendelsen.",
+      "crisis-event": "Krisehendelse",
+      "select-crisis-event": "Velg en krisehendelse",
+      "no-crisis-event": "Ingen spesifikk krisehendelse",
+      "crisis-event-description": "Koble denne refleksjonen til en spesifikk krisehendelse (valgfritt).",
+      "content": "Refleksjonsinnhold",
+      "content-placeholder": "Skriv din refleksjon her...",
+      "content-required": "Innhold er påkrevd",
+      "sharing-options": "Delingsalternativer",
+      "share-with-community": "Del med mitt fellesskap",
+      "sharing-description-simple": "Når aktivert, vil refleksjonen din være synlig for medlemmer av ditt hushold og din gruppe.",
+      "create": "Opprett refleksjon",
+      "created-success": "Refleksjon opprettet",
+      "updated-success": "Refleksjon oppdatert",
+      "deleted-success": "Refleksjon slettet",
+      "save-error": "Kunne ikke lagre refleksjon",
+      "delete-error": "Kunne ikke slette refleksjon",
+      "error-loading": "Kunne ikke laste refleksjoner",
+      "error-loading-shared": "Kunne ikke laste delte refleksjoner",
+      "loading_more": "Laster flere refleksjoner...",
+      "no_more_reflections": "Ingen flere refleksjoner å laste",
+      "select-scope": "Filtrer etter",
+      "all-shared": "Alle delte",
+      "household-only": "Kun hushold",
+      "group-only": "Kun gruppe",
+      "no-household-id": "Ingen hushold-ID angitt",
+      "no-group-id": "Ingen gruppe-ID angitt",
+      "shared": "Delt",
+      "form-error": "Feil i skjemainnsending",
+      "reflections": "Refleksjoner",
+      "reflection-for-crisis": "Refleksjon for krise:",
+      "selected-crisis": "Valgt krise",
+      "unknown-crisis": "Ukjent krise",
+      "view-reflections": "Se refleksjoner",
+      "no-household-message": "Du er ikke i en husholdning for øyeblikket.",
+      "cannot-view-shared-reflections": "Du må være i en husholdning for å se delte refleksjoner fra andre brukere.",
+      "join-household-prompt": "Bli med i eller opprett en husholdning for å koble til andre og dele refleksjoner."
+    },
+    "map": {
+      "defibrillator": "Hjertestarter",
+      "medical-help": "Legehjelp",
+      "fire-extinguishing": "Brannslukking",
+      "shelter": "Tilfluktsrom",
+      "address": "Adresse",
+      "opening-hours": "Åpningstider",
+      "directions": "Veibeskrivelse",
+      "contact": "Kontakt",
+      "filter": "Filtrer interessepunkt",
+      "show-pois": "Interessepunkt",
+      "show-crisis": "Kriser",
+      "show-meeting-places": "Møteplasser Nær Meg",
+      "my-location": "Bruk min posisjon",
+      "your-location": "Din posisjon",
+      "household-location": "Din husholdning",
+      "view-household": "Se husholdning",
+      "getting-location": "Henter din posisjon",
+      "distance": "Avstand (meter)",
+      "poi-type": "Type interessepunkt",
+      "all-types": "Alle typer",
+      "apply-filter": "Bruk filter",
+      "reset-filter": "Nullstill",
+      "location-error": "Kunne ikke hente din posisjon. Vennligst sjekk nettleserens tillatelser.",
+      "location-success": "Posisjon hentet.",
+      "show-filter": "Vis filteralternativer",
+      "hide-filter": "Skjul filteralternativer",
+      "nearest-shelter": "Finn nærmeste tilfluktsrom",
+      "location-needed": "Posisjon er nødvendig for å finne nærmeste tilfluktsrom. Vennligst tillat posisjonstilgang.",
+      "location-required": "Posisjon er nødvendig for dette filteret",
+      "find-nearest": "Finn nærmeste",
+      "show-directions": "Vis veibeskrivelse",
+      "close-directions": "Lukk",
+      "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse",
+      "legend": {
+        "legend": "Kartikoner",
+        "toggle-legend": "Skjul kartikoner",
+        "user-location": "Din Posisjon",
+        "household-location": "Husholdning",
+        "user-location": "Din Posisjon",
+        "crisis-level-1": "Krisenivå 1",
+        "crisis-level-2": "Krisenivå 2",
+        "crisis-level-3": "Krisenivå 3",
+        "fire-station": "Brannstasjon",
+        "police-station": "Politistasjon",
+        "hospital": "Sykehus",
+        "pharmacy": "Apotek",
+        "gas-station": "Bensinstasjon",
+        "grocery-store": "Dagligvarebutikk",
+        "water-point": "Vannkilde",
+        "meeting-point": "Møtepunkt",
+        "shelter": "Tilfluktsrom",
+        "default": "Other"
+      },
+      "poiTypes": {
+        "1": "Sykehus",
+        "2": "Politistasjon",
+        "3": "Brannstasjon",
+        "4": "Tilfluktsrom",
+        "5": "Dagligvarebutikk",
+        "6": "Vannkilde",
+        "7": "Bensinstajon",
+        "8": "Apotek"
+      }
+    },
+    "time-units": {
+      "month": "1 måned | {count} måneder",
+      "day": "1 dag | {count} dager",
+      "hour": "1 time | {count} timer"
+    },
+    "storage": {
+      "food-and-drinks": "Mat og drikke",
+      "medicine": "Medisin",
+      "storage": "Beredskapslager",
+      "your-storage": "Ditt beredskapslager"
+    },
+    "household": {
+      "my-household": "Mitt hushold",
+      "members": "Medlemmer",
+      "no-members-found": "Ingen medlemmer funnet i husholdet.",
+      "person": "Person",
+      "people": "Personer",
+      "user": "Bruker",
+      "users": "Brukere",
+      "other_member": "Annet medlem",
+      "other_members": "Andre medlemmer",
+      "in-household": "i husholdet",
+      "add-empty-user": "Legg til husholdsmedlem",
+      "add-empty-member": "Legg til husholdsmedlem",
+      "name": "Navn",
+      "enter-name": "Skriv inn navn",
+      "type": "Type",
+      "select-type": "Velg type",
+      "adult": "Voksen",
+      "child": "Barn",
+      "description": "Beskrivelse",
+      "additional-info": "Tilleggsinformasjon",
+      "save": "Lagre",
+      "cancel": "Avbryt",
+      "invitation-canceled": "Invitasjonen er blitt kansellert.",
+      "beredskapslager": "Beredskapslager",
+      "no-expiring-items": "Ingen varer nær utløpsdato.",
+      "days-left": "dager igjen",
+      "water-days-left": "Vann: {days} dager igjen",
+      "food-days-left": "Mat: {days} dager igjen",
+      "your-shelter-store": "Ditt beredskapslager",
+      "invite-user": "Inviter bruker",
+      "email-address": "E-postadresse",
+      "stats": "Statistikk",
+      "total_members": "Totalt antall medlemmer",
+      "adults": "Voksne",
+      "children": "Barn",
+      "pets": "Kjæledyr",
+      "admin_badge": "Admin",
+      "admin_only": "Kun for administratorer",
+      "member_name": "Navn på medlem",
+      "member_name_placeholder": "Skriv inn navn på medlem",
+      "member_type": "Type medlem",
+      "select_member_type": "Velg type medlem",
+      "type_adult": "Voksen",
+      "type_child": "Barn",
+      "type_dog": "Hund",
+      "type_pet": "Kjæledyr",
+      "description_placeholder": "Tilleggsinformasjon om medlemmet",
+      "required_fields": "Alle påkrevde felt må fylles ut",
+      "member_added_success": "Medlem ble lagt til",
+      "member_added_error": "Kunne ikke legge til medlem",
+      "empty_members": "Andre medlemmer",
+      "no_empty_members": "Ingen andre medlemmer funnet",
+      "no-empty-members-found": "Ingen andre medlemmer funnet.",
+      "add_empty_member": "Legg til medlem",
+      "done": "Ferdig",
+      "manage-members": "Administrer medlemmer",
+      "remove_selected": "Fjern valgte ({count})",
+      "remove-selected": "Fjern valgte",
+      "empty-member-added": "Medlem ble lagt til",
+      "invitation-sent-success": "Invitasjon sendt",
+      "error-fetching-members": "Kunne ikke hente medlemmer",
+      "pending-invitations": "Ventende invitasjoner",
+      "no-pending-invitations": "Ingen ventende invitasjoner",
+      "cancel-invitation": "Avbryt invitasjon",
+      "your-invitations": "Dine invitasjoner",
+      "check-back-later": "Sjekk tilbake senere for nye invitasjoner",
+      "other": "Annet",
+      "others": "Andre",
+      "member-removed-success": "Medlem fjernet",
+      "member-removed-error": "Kunne ikke fjerne medlem",
+      "members-removed-success": "{count} medlemmer fjernet",
+      "members-removed-error": "Kunne ikke fjerne medlemmer",
+      "confirm-remove-member": "Bekreft fjerning av medlem",
+      "confirm-remove-member-description": "Er du sikker på at du vil fjerne dette medlemmet fra husholdet?",
+      "confirm-remove-multiple-title": "Bekreft fjerning av medlemmer",
+      "confirm-remove-multiple-description": "Er du sikker på at du vil fjerne {count} medlemmer fra husholdet?",
+      "remove-selected": "Fjern valgte",
+      "leave-household": "Forlat hushold",
+      "transfer-admin-role": "Overfør adminrolle",
+      "leave-confirm-title": "Bekreft at du vil forlate husholdet",
+      "leave-confirm": "Er du sikker på at du vil forlate dette husholdet?",
+      "leave-admin-warning": "Du er administrator for dette husholdet. Du må overføre adminrollen før du kan forlate husholdet.",
+      "transfer-admin-first": "Overfør administrator-rollen til et annet medlem først.",
+      "leave-success": "Du har forlatt husholdet.",
+      "leave-error": "Kunne ikke forlate husholdet.",
+      "transfer-admin-title": "Overfør administartor-rolle",
+      "transfer-admin-description": "Velg et medlem som skal få administrator-rettigheter for husholdet.",
+      "no-members-to-transfer": "Ingen medlemmer å overføre administrator-rollen til.",
+      "admin-transferred-success": "Administrator-rollen er blitt overført",
+      "admin-transferred-error": "Kunne ikke overføre administrator rollen.",
+      "already-admin-error": "Denne brukeren er allerede administrator.",
+      "error-fetching-data": "Kunne ikke hente husholddata",
+      "delete_household": "Slett hushold",
+      "confirm_delete_title": "Bekreft sletting av hushold",
+      "confirm_delete_description": "Er du sikker på at du vil slette dette husholdet?",
+      "delete_warning": "Dette vil slette husholdet permanent for alle medlemmer.",
+      "delete_permanent": "Denne handlingen kan ikke angres.",
+      "confirm_delete": "Slett hushold",
+      "delete_success": "Husholdet er slettet",
+      "delete_error": "Kunne ikke slette husholdet",
+      "create": {
+        "title": "Opprett nytt hushold",
+        "description": "Opprett et nytt hushold for å administrere medlemmer og ressurser.",
+        "nameLabel": "Husholdnavn",
+        "namePlaceholder": "Skriv inn husholdnavn",
+        "locationLabel": "Adresse",
+        "locationPlaceholder": "Skriv inn adresse",
+        "submitButton": "Opprett hushold",
+        "success": "Hushold opprettet",
+        "errors": {
+          "nameRequired": "Husholdnavn er påkrevd",
+          "generic": "Kunne ikke opprette hushold."
+        }
+      },
+      "join": {
+        "title": "Bli med i et hushold",
+        "subtitle": "Skriv inn invitasjonskoden du har mottatt",
+        "tokenLabel": "Invitasjonskode",
+        "tokenPlaceholder": "Skriv inn invitasjonskode",
+        "submitButton": "Bli med",
+        "success": "Du er nå medlem av husholdet",
+        "errors": {
+          "generic": "Kunne ikke bli med i husholdet"
+        }
+      },
+      "invitation-from": "Invitasjon fra {name}",
+      "invitation-expires": "Utløper {date}",
+      "decline": "Avslå",
+      "accept": "Godta",
+      "invitation-accepted": "Invitasjon godtatt",
+      "invitation-declined": "Invitasjon avslått",
+      "error-accepting-invitation": "Kunne ikke godta invitasjon",
+      "error-declining-invitation": "Kunne ikke avslå invitasjon",
+      "error-fetching-invitations": "Kunne ikke hente invitasjoner",
+      "no-invitations": "Ingen ventende invitasjoner",
+      "refresh-invitations": "Oppdater invitasjoner",
+      "created-success": "Hushold opprettet",
+      "enter-email": "Skriv inn e-postadresse",
+      "access-level": "Tilgangsnivå",
+      "select-access-level": "Velg tilgangsnivå",
+      "editor": "Redaktør",
+      "viewer": "Seer",
+      "personal-message": "Personlig melding",
+      "optional-message": "Valgfritt: Legg til en personlig melding",
+      "send-invitation": "Send invitasjon",
+      "invitation-sent": "Invitasjon sendt",
+      "invitation-failed": "Kunne ikke sende invitasjon",
+      "invitation-sent-success": "Invitasjon sendt",
+      "add-user-title": "Inviter bruker til hushold",
+      "create_new": "Opprett nytt hushold",
+      "create_description": "Opprett ditt eget hushold for å håndtere beredskap.",
+      "create_button": "Opprett nytt hushold",
+      "no-household": "Du har ikke et hushold ennå",
+      "no-household-description": "Opprett eller bli med i et hushold for å håndtere beredskap sammen med familie eller venner.",
+      "no_household": {
+        "title": "Ingen husholdning funnet",
+        "banner": "Uten en husholdning kan vi ikke oppdatere deg om aktive hendelser i nærheten.",
+        "create_now": "Opprett husholdning"
+      },
+      "manage-household": "Administrer hushold",
+      "leave-household": "Forlat hushold",
+      "leave-confirm-title": "Forlat hushold",
+      "leave-confirm": "Er du sikker på at du vil forlate dette husholdet?",
+      "leave-success": "Du har forlatt husholdet",
+      "leave-error": "Kunne ikke forlate husholdet",
+      "leave-admin-warning": "Du er administrator for dette husholdet. Du kan ikke forlate det før du overfører administratorrettigheter til et annet medlem.",
+      "transfer-admin-first": "Vennligst overfør administratorrettigheter til et annet medlem først.",
+      "transfer-admin-role": "Gi administratorrettigheter",
+      "transfer-admin-title": "Gi administratorrettigheter",
+      "transfer-admin-description": "Velg et medlem å gi administratorrettigheter til. Flere medlemmer kan være administratorer.",
+      "no-members-to-transfer": "Ingen medlemmer tilgjengelig for å gi administratorrettigheter til.",
+      "admin-transferred-success": "Administratorrettigheter gitt",
+      "admin-transferred-error": "Kunne ikke gi administratorrettigheter",
+      "error-fetching-data": "Feil ved henting av husholddata",
+      "generate-invitation": "Generer invitasjonskode",
+      "copy-invitation": "Kopier invitasjonskode",
+      "copied-to-clipboard": "Kopiert til utklippstavlen!",
+      "share-invitation": "Del denne koden med noen du vil invitere til husholdet ditt.",
+      "users": "Brukere",
+      "no-users": "Ingen brukere i dette husholdet ennå",
+      "done": "Ferdig",
+      "manage-members": "Administrer medlemmer",
+      "confirm-remove-member": "Fjern husholdsmedlem",
+      "confirm-remove-member-description": "Er du sikker på at du vil fjerne dette medlemmet fra husholdet ditt?",
+      "error-fetching-members": "Feil ved henting av husholdsmedlemmer",
+      "member-added-success": "Medlem lagt til",
+      "member-added-error": "Kunne ikke legge til medlem",
+      "member-removed-success": "Medlem fjernet",
+      "member-removed-error": "Kunne ikke fjerne medlem",
+      "create": {
+        "title": "Opprett nytt hushold",
+        "subtitle": "Sett opp ditt hushold for beredskap",
+        "nameLabel": "Husholdsnavn",
+        "namePlaceholder": "Skriv inn husholdsnavn",
+        "locationLabel": "Sted",
+        "locationPlaceholder": "Skriv inn adresse (valgfritt)",
+        "descriptionLabel": "Beskrivelse",
+        "descriptionPlaceholder": "Skriv inn beskrivelse av husholdet (valgfritt)",
+        "submitButton": "Opprett hushold",
+        "errors": {
+          "nameRequired": "Husholdsnavn er påkrevd",
+          "generic": "Kunne ikke opprette hushold"
+        }
+      },
+      "join": {
+        "title": "Bli med i hushold",
+        "subtitle": "Bli med i et eksisterende hushold med en invitasjonskode",
+        "tokenLabel": "Invitasjonskode",
+        "tokenPlaceholder": "Skriv inn invitasjonskode",
+        "submitButton": "Bli med i hushold",
+        "success": "Vellykket blitt med i hushold",
+        "errors": {
+          "tokenRequired": "Invitasjonskode er påkrevd",
+          "invalidToken": "Ugyldig invitasjonskode",
+          "generic": "Kunne ikke bli med i hushold"
+        }
       }
     },
     "created-success": "Hushold opprettet",
@@ -1159,4 +1567,622 @@
     "backToTop": "Tilbake til toppen",
     "noMoreAttemptsToLoad": "Ingen flere forsøk å laste inn."
   }
-}
+},
+    "sidebar": {
+      "title": "Temaer",
+      "themes": {
+        "crisisSituations": {
+          "title": "Ulike typer krisesituasjoner",
+          "pandemic": "Pandemi",
+          "war": "Krig",
+          "extremeWeather": {
+            "title": "Ekstremvær",
+            "flood": "Flom",
+            "hurricane": "Orkan",
+            "drought": "Tørke",
+            "heatwave": "Hetebølge"
+          },
+          "forestFire": "Skogbrann",
+          "powerOutage": "Strømbrudd",
+          "waterShortage": "Vannmangel",
+          "cyberAttack": "Cyberangrep",
+          "majorAccident": "Stor ulykke"
+        },
+        "preparednessStorage": "Beredskapslager",
+        "afterCrisis": "Etter en krise"
+      }
+    },
+    "themes": {
+      "crisisSituations": {
+        "pandemic": {
+          "title": "Informasjon om Pandemi",
+          "content": "Under en pandemi er det avgjørende å følge råd fra helsemyndighetene (som [Helsenorge.no](https://www.helsenorge.no/) og FHI) for å begrense smittespredning.\n\n**Viktige tiltak inkluderer:**\n* God hånd- og hostehygiene.\n* Holde avstand til andre.\n* Holde seg hjemme ved sykdom.\n* Sørge for å ha nødvendige medisiner og hygieneartikler tilgjengelig.\n\nVær forberedt på at tjenester som transport og butikker kan bli påvirket. Ha et lager av mat og drikke som anbefalt i egenberedskapsrådene. Følg med på offisiell informasjon og vær kildekritisk.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+        },
+        "war": {
+          "title": "Informasjon om Krig",
+          "content": "Selv om Norge er et trygt land, er det viktig å være forberedt på ulike scenarioer, inkludert krigshandlinger. Ved en slik situasjon:\n\n* **Følg myndighetenes råd nøye.** Informasjon vil bli gitt via offisielle kanaler som NRK P1.\n* **Søk informasjon:** Hold deg oppdatert via pålitelige kilder.\n* **Finn dekning:** Orienter deg om nærmeste offentlige tilfluktsrom (sjekk [kart.dsb.no](https://kart.dsb.no)). Hvis ikke tilgjengelig, søk dekning i kjellere eller rom midt i bygninger, unngå vinduer da disse kan knuse.\n* **Ha beredskapslageret klart:** Sørg for at du har nok mat, vann og andre nødvendigheter for minst en uke.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+        },
+        "extremeWeather": {
+          "flood": {
+            "title": "Informasjon om Flom",
+            "content": "Ved fare for flom:\n\n* **Følg varsler:** Hold deg oppdatert på værvarsler fra [MET Norway (Yr.no)](https://www.yr.no) og flomvarsler fra [NVE (varsom.no)](https://www.varsom.no).\n* **Sikre eiendom:** Fest eller flytt løse gjenstander utendørs. Flytt verdifulle eiendeler og farlige stoffer (kjemikalier, drivstoff) opp fra kjeller og første etasje.\n* **Tett åpninger:** Tett ventiler og sluk for å hindre vanninntrenging.\n* **Vurder evakuering:** Følg råd fra myndighetene om eventuell evakuering.\n* **Unngå flomvann:** Ikke kjør, gå eller svøm i flomvann – det kan være sterk strøm og skjulte farer.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) og [varsom.no](https://www.varsom.no)*"
+          },
+          "hurricane": {
+            "title": "Informasjon om Orkan/Sterk Storm",
+            "content": "Ved varsel om orkan eller sterk storm:\n\n* **Følg varsler:** Hold deg oppdatert via [MET Norway (Yr.no)](https://www.yr.no).\n* **Sikre løse gjenstander:** Fest hagemøbler, trampoliner, søppelkasser og annet som kan bli tatt av vinden.\n* **Hold deg innendørs:** Unngå unødvendige reiser. Lukk vinduer og dører godt.\n* **Vær forberedt på strømbrudd:** Ha lommelykter, batteriradio, ladet batteribank og eventuell alternativ varmekilde klar. Sørg for at du har nok mat og vann.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+          },
+          "drought": {
+            "title": "Informasjon om Tørke",
+            "content": "Under lengre tørkeperioder:\n\n* **Spar på vannet:** Følg eventuelle restriksjoner for vannbruk fra kommunen. Begrens vanning av plen/hage, bilvask etc.\n* **Sjekk brannfare:** Tørke øker brannfaren. Vær oppmerksom på og følg alle restriksjoner rundt bålbrenning.\n* **Overvåk vannkilder:** Hvis du bruker privat brønn, følg med på vannstanden.\n\n*[Kilde: Relevant kommune-/NVE-informasjon]*"
+          },
+          "heatwave": {
+            "title": "Informasjon om Hetebølge",
+            "content": "Ved ekstrem varme:\n\n* **Hold deg hydrert:** Drikk rikelig med vann, selv om du ikke føler deg tørst.\n* **Hold deg avkjølt:** Opphold deg innendørs på kjølige steder midt på dagen. Bruk vifte eller klimaanlegg hvis mulig. Ta kjølige dusjer eller bad.\n* **Sjekk sårbare personer:** Se til eldre naboer, spedbarn og personer med kroniske sykdommer.\n* **Forlat aldri barn eller dyr i parkerte biler.**\n\n*[Kilde: Helsenorge.no]*"
+          }
+        },
+        "forestFire": {
+          "title": "Informasjon om Skogbrann",
+          "content": "For å forebygge og håndtere skogbrannfare:\n\n* **Respekter bålforbud:** Sjekk lokale regler og generelt bålforbud (15. april - 15. september). Vær ekstremt forsiktig med all bruk av åpen ild.\n* **Sjekk farevarsel:** Hold deg oppdatert på [skogbrannfare.met.no](https://skogbrannfare.met.no).\n* **Ha evakueringsplan:** Hvis du bor i et utsatt område, tenk gjennom hvor du kan dra og hva du må ta med deg.\n* **Hold deg informert:** Følg med på informasjon fra lokale myndigheter og brannvesen.\n* **Beskytt boligen:** Lukk vinduer og ventiler for å unngå røykinntrengning. Fjern brennbart materiale nær husveggen.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf) og [DSB - Skogbrann](https://www.dsb.no/brannsikkerhet/brannberedskap/skogbrann/)*"
+        },
+        "powerOutage": {
+          "title": "Informasjon om Strømbrudd",
+          "content": "Ved strømbrudd:\n\n* **Bruk alternative lyskilder:** Lommelykter, batteridrevne lamper eller lysestaver er tryggere enn stearinlys.\n* **Hold kjøleskap/fryser lukket:** En full fryser vil holde maten frossen i ca. 48 timer hvis den ikke åpnes.\n* **Hold deg varm:** Kle deg i lag. Steng av ubrukte rom. Bruk trygge alternative oppvarmingsmetoder hvis tilgjengelig.\n* **Spar på telefonbatteriet:** Bruk telefonen sparsomt. Vurder å ha en powerbank ladet og klar.\n* **Vær forsiktig med aggregater:** Hvis du bruker aggregat, følg alle sikkerhetsinstruksjoner og bruk det aldri innendørs.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+        },
+        "waterShortage": {
+          "title": "Informasjon om Vannmangel",
+          "content": "Ved vannmangel eller forurensning:\n\n* **Følg offisielle råd:** Myndighetene kan utstede kokepåbud eller andre instruksjoner.\n* **Bruk nødvannsforsyninger:** Bruk lagret vann eller andre trygge kilder til drikke, matlaging og hygiene.\n* **Spar på vannet:** Minimer bruk til ikke-essensielle formål.\n* **Kjenn til vannrensemetoder:** Vær kjent med metoder som koking, bruk av vannrensingstabletter eller filtrering.\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+        },
+        "cyberAttack": {
+          "title": "Informasjon om Cyberangrep",
+          "content": "For å beskytte deg mot cybertrusler:\n\n* **Bruk sterke, unike passord:** Lag forskjellige passord for viktige kontoer.\n* **Aktiver tofaktorautentisering:** Dette gir et ekstra sikkerhetslag.\n* **Vær forsiktig med e-poster og lenker:** Ikke klikk på mistenkelige lenker eller last ned vedlegg fra ukjente kilder.\n* **Hold programvare oppdatert:** Installer oppdateringer raskt for å fikse sikkerhetssårbarheter.\n* **Sikkerhetskopier viktige data:** Ta regelmessig backup av viktige filer til en ekstern enhet eller sikker skytjeneste.\n\n*Kilde: [Nasjonal sikkerhetsmyndighet (NSM)](https://www.nsm.no/)*"
+        },
+        "majorAccident": {
+          "title": "Informasjon om Storulykke",
+          "content": "Ved en storulykke (industriell, transport, etc.):\n\n* **Følg evakueringsordrer:** Hvis myndighetene ber deg evakuere, gjør det umiddelbart.\n* **Søk ly på stedet hvis pålagt:** Hvis du blir bedt om å holde deg innendørs, lukk vinduer og dører, slå av ventilasjonsanlegg, og flytt til et indre rom om mulig.\n* **Hold deg informert:** Lytt til lokalradio eller sjekk offisielle nettsider for instruksjoner.\n* **Unngå det berørte området:** Hold veier åpne for utrykningskjøretøy.\n\n*Kilde: [DSB](https://www.dsb.no/)*"
+        }
+      },
+      "preparednessStorage": {
+        "title": "Beredskapslager",
+        "content": "Direktoratet for samfunnssikkerhet og beredskap (DSB) anbefaler at alle husholdninger er selvforsynte i minst tre døgn. Ditt beredskapslager bør inkludere:\n\n**Mat og drikke:**\n* Ni liter vann per person\n* Ikke-bedervelig mat som kan spises uten tilberedning eller med minimal oppvarming\n\n**Medisiner og hygiene:**\n* Nødvendige reseptbelagte medisiner\n* Smertestillende og annen grunnleggende medisin\n* Førstehjelpsutstyr\n* Hygieneprodukter\n* Våtservietter og desinfeksjonsmiddel\n\n**Varme- og lyskilder:**\n* Lommelykter med ekstra batterier\n* Stearinlys, fyrstikker/lighter\n* Varme klær, tepper, soveposer\n* Alternativ varmekilde (hvis mulig)\n\n**Andre viktige gjenstander:**\n* Batteridrevet eller håndsveivradio\n* Ekstra batterier/powerbanker til mobiltelefoner\n* Kontanter i små valører\n* Drivstoff på bilen\n* Papirkopier av viktige dokumenter\n* Grunnleggende verktøy\n\n*Kilde: [DSB - Egenberedskap](https://www.dsb.no/siteassets/sikkerhverdag/egenberedskap/brosjyren/dsb-egenberedskap-bokmal-uu-web_ny.pdf)*"
+      },
+      "afterCrisis": {
+        "title": "Etter en krise",
+        "content": "Etter å ha opplevd en krise:\n\n**Ta vare på umiddelbare behov:**\n* Sikre din egen sikkerhet og sikkerheten til de rundt deg\n* Søk medisinsk hjelp om nødvendig\n* Finn trygt ly hvis hjemmet ditt er skadet\n* Kontakt familiemedlemmer for å fortelle at du er trygg\n\n**Start gjenoppbygging:**\n* Dokumenter skader (ta bilder) for forsikringsformål\n* Kontakt forsikringsselskapet ditt\n* Søk om katastrofehjelp hvis tilgjengelig\n* Rengjør og reparer hjemmet ditt når det er trygt å gjøre det\n\n**Mental helse er viktig:**\n* Det er normalt å oppleve stress, angst eller andre emosjonelle reaksjoner\n* Snakk om opplevelsene dine med familie, venner eller fagfolk\n* Ta vare på din fysiske helse (søvn, ernæring, mosjon)\n* Søk profesjonell hjelp om nødvendig\n\n**Lær av erfaringen:**\n* Evaluer beredskapsplanen og forsyningene dine\n* Gjør forbedringer basert på det du har lært\n* Hjelp andre i lokalsamfunnet ditt\n\n*Kilde: [Helsenorge.no og DSB](https://www.dsb.no/)*"
+      }
+    },
+    "infoPage": {
+      "aboutThisTheme": "Om dette temaet",
+      "themeDescription": "Viktig informasjon for å hjelpe deg med å forberede og reagere.",
+      "readMore": "Les mer",
+      "emergencyContacts": "Nødkontakter",
+      "readMoreTitle": "Ytterligere ressurser",
+      "readMoreDescription": "Finn mer detaljert informasjon om dette temaet fra offisielle kilder.",
+      "officialWebsites": "Offisielle nettsider",
+      "additionalResources": "For mer informasjon, besøk disse offisielle ressursene:",
+      "close": "Lukk",
+      "emergencyContactsTitle": "Nødkontakter",
+      "emergencyContactsDescription": "Viktige kontakter for nødsituasjoner.",
+      "generalEmergencyContacts": {
+        "title": "Generelle nødnumre",
+        "police": "Politi: 112",
+        "ambulance": "Ambulanse: 113",
+        "fire": "Brannvesen: 110",
+        "civilDefense": "Sivilforsvaret: 51 51 51 51"
+      },
+      "relatedThemes": "Relaterte temaer",
+      "selectThemePrompt": "Velg et tema for å lære mer",
+      "browseThemesDescription": "Bla gjennom våre informasjonsressurser for å lære om forskjellige krisesituasjoner og hvordan du kan forberede deg.",
+      "preparednessStorageBrief": "Lær hvilke forsyninger du bør ha klare for nødsituasjoner.",
+      "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalitet etter en krise.",
+      "learnMoreTopic": "Klikk for å lære mer om dette temaet."
+    },
+    "settings": {
+      "settings": "Innstillinger",
+      "title": "Innstillinger",
+      "cancel": "Avbryt endringer",
+      "tabs": {
+        "account": "Konto",
+        "notifications": "Varslinger"
+      },
+      "notifications": {
+        "enabled": "Aktivert",
+        "disabled": "Deaktivert"
+      },
+      "account": {
+        "title": "Kontoinnstillinger",
+        "myAccount": "Min konto",
+        "subtitle": "Konto",
+        "description": "Gjør endringer i kontoen din her. Klikk lagre når du er ferdig.",
+        "fullName": "Fullt navn",
+        "save-changes": "Lagre endringer",
+        "password": {
+          "title": "Passord",
+          "description": "Endre passordet ditt her. Etter lagring blir du logget ut.",
+          "current": "Nåværende passord",
+          "new": "Nytt passord"
+        },
+        "email": {
+          "email": "E-post",
+          "subtitle": "E-postinnstillinger",
+          "description": "Oppdater e-postadressen din her. Etter lagring vil du bli logget ut.",
+          "verified": "E-post verifisert",
+          "not-verified": "E-post ikke verifisert"
+        },
+        "security": {
+          "title": "Kontosikkerhet",
+          "description": "Forbedre sikkerheten til kontoen din med totrinnsverifisering, som krever en kode sendt til e-posten din i tillegg til passordet ditt for innlogging.",
+          "enableTwoStep": "Slå på totrinnsverifisering",
+          "disableTwoStep": "Slå av totrinnsverifisering"
+        },
+        "delete": {
+          "title": "Slett konto",
+          "description": "Slett kontoen din og alle tilknyttede data permanent. Denne handlingen er irreversibel og kan ikke angres.",
+          "button": "Slett konto"
+        }
+      },
+      "profile": {
+        "title": "Profilinnstillinger",
+        "description": "Oppdater din personlige informasjon og profildetaljer.",
+        "address-privacy": "Adressen din er ikke synlig for andre brukere."
+      },
+      "notifications": {
+        "title": "Varslingsinnstillinger",
+        "description": "Tilpass hvordan du mottar varsler for å holde deg informert.",
+        "email": {
+          "title": "E-postvarsler",
+          "description": "Motta oppdateringer og varsler via e-post.",
+          "system": "Systemvarsler",
+          "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
+        },
+        "save-changes": "Lagre endringer"
+      }
+    },
+    "add-event-info": {
+      "title": "Dette vil være tittelen på hendelsen din.",
+      "coordinates": "Skriv inn en adresse eller klikk på kartet for å legge inn koordinatene automatisk!",
+      "radius": "Sett inn radiusen til hendelsen din i meter. Omtrent hvor stort område vil hendelsen påvirke?",
+      "priority": "Prioritetsnivået er viktig, og vil vises som lav (grønn), middels (oransje) og høy (rød) for brukere på kartet.",
+      "description": "For eksempel: Hendelsen skjedde på (dato og sted) ... og vil mest sannsynlig vare i (tid)... Det kan bli mangel på (ressurs)...",
+      "time": "Tidspunkt for når hendelsen først inntraff.",
+      "date": "Dato for når hendelsen først inntraff.",
+      "successfully": "Hendelsen er opprettet",
+      "success-message": "Hendelsen din er lagt til i systemet.",
+      "success-added": "har blitt lagt til.",
+      "go-to-admin": "Gå til Admin-panelet",
+      "category": "Velg hvilken type hendelse dette er, f.eks. flom, jordskjelv eller strømbrudd...",
+      "errors": {
+        "title": "Tittelen må ha minst 2 tegn og kan ikke overstige 50 tegn.",
+        "latitude": "Breddegraden må være mellom -90 og 90.",
+        "longitude": "Lengdegraden må være mellom -180 og 180.",
+        "radius": "Radiusen må være minst 1 meter og kan ikke overstige 100 000 meter.",
+        "priority": "Du må velge en prioritet.",
+        "type": "Du må velge hvilket type interessepunkt det er.",
+        "description": "Beskrivelsen må være minst 10 tegn og kan ikke overstige 500 tegn.",
+        "position-missing": "Du må fylle inn begge koordinatene til hendelsen, eller adressen.",
+        "address": "Adressen må ha minst 2 tegn og kan ikke overstige 100 tegn.",
+        "contact-info": "Skriv inn et gyldig telefonnummer.",
+        "category": "Denne kategorien er ikke gyldig."
+      },
+      "scenarios": {
+        "undefined": "Velg en kategori",
+        "flood": "Flom",
+        "hurricane": "Orkan",
+        "drought": "Tørke",
+        "heatwave": "Hetebølge",
+        "pandemic": "Pandemi",
+        "war": "Krig",
+        "forest fire": "Skogbrann",
+        "power outage": "Strømbrudd",
+        "water shortage": "Vannmangel",
+        "cyber attack": "Cyber angrep",
+        "major accident": "Stor ulykke"
+      },
+      "titles": {
+        "address": "Adresse",
+        "title": "Tittel",
+        "longitude": "Lengdegrad",
+        "latitude": "Breddegrad",
+        "radius": "Radius",
+        "priority": "Krisenivå",
+        "description": "Informasjon",
+        "submit": "Lagre",
+        "time": "Tidspunkt",
+        "date": "Dato",
+        "choose-event": "Velg en hendelse",
+        "deactivate": "Deaktiver hendelse",
+        "active": "Aktiv status",
+        "category": "Kategori"
+      },
+      "crisis-level": {
+        "undefined": "Velg et krisenivå",
+        "low": "Lav",
+        "medium": "Middels",
+        "high": "Høy",
+        "green": "Lav",
+        "yellow": "Middels",
+        "red": "Høy"
+      },
+      "active": {
+        "true": "aktiv",
+        "false": "inaktiv",
+        "description": "For å endre statusen på hendelsen må du deaktivere den!"
+      },
+      "isArchived": {
+        "active": "active",
+        "archived": "inaktiv"
+      }
+    },
+    "add-POI-info": {
+      "info": {
+        "title": "Dette vil være tittelen på interessepunktet.",
+        "coordinates": "Sett inn koordinatene eller adressen til punktet. Du kan også klikke på kartet for å få koordinatene automatisk!",
+        "type": "Velg hvilket type interessepunkt dette skal være.",
+        "description": "Skriv litt informasjon som beskriver interessepunktet. Hvor ligger det? Hva kan man finne der?",
+        "successfully": "Interessepunktet er opprettet",
+        "success-message": "Interessepunktet ditt er lagt til i systemet.",
+        "success-added": "har blitt lagt til.",
+        "go-to-admin": "Gå til Admin-panelet",
+        "description-placeholder": "Beskrivelse"
+      },
+      "titles": {
+        "type": "Type",
+        "open-from": "Åpent fra",
+        "open-to": "Åpent til",
+        "contact-info": "Kontaktinformasjon",
+        "choose-poi": "Velg Interessepunkt"
+      },
+      "POI-type": {
+        "undefined": "Velg type",
+        "defibrillator": "Hjertestarter",
+        "shelter": "Tilfluktsrom",
+        "water-source": "Vannkilde",
+        "food": "Matutdeling"
+      }
+    },
+    "footer": {
+      "title": "Krisefikser.no",
+      "description": "En platform for kriseberedskap og informasjonsdeling.",
+      "contact-us": "Kontakt oss på: "
+    },
+    "add-poi": {
+      "name": "Navn",
+      "description": "Beskrivelse",
+      "latitude": "Breddegrad",
+      "longitude": "Lengdegrad",
+      "address": "Adresse",
+      "opening-hours": "Åpningstider",
+      "contact": "Kontaktinformasjon",
+      "type": "Type",
+      "submit": "Lagre",
+      "delete": "Slett",
+      "confirm-delete": "Er du sikker på at du vil slette dette interessepunktet?",
+      "loading": "Laster flere...",
+      "loading.complete": "Alle interessepunkt er lastet inn.",
+      "loading.schema": "Laster inn skjema...",
+      "deletion": {
+        "failed": "Kunne ikke slette interessepunktet.",
+        "success": "Interessepunktet er nå slettet."
+      },
+      "description-max": "Beskrivelse kan ikke inneholde mer enn 1000 tegn.",
+      "contact-max": "Kontaktinformasjon kan ikke inneholde mer enn 100 tegn.",
+      "confirm-delete": "Er du sikker på at du ønsker å slette dette interessepunktet permanent?",
+      "delete-info": "Denne handlingen kan ikke angres.",
+      "update-success": "Interessepunktet er blitt oppdatert!",
+      "update-failed": "Kunne ikke oppdatere interessepunkt med nye verdier.",
+      "search-poi": "Søk etter et interessepunkt..."
+    },
+    "language": {
+      "title": "Språk",
+      "select-language": "Velg språk",
+      "change-language": "Bytt språk"
+    },
+    "group": {
+      "title": "Mine Grupper",
+      "shared-inventory": "Felles beredskapslager",
+      "invite-household": "Inviter husholdning",
+      "switch-group": "Bytt gruppe",
+      "share-from-inventory": "Del varer fra ditt lager",
+      "go-to-groups": "Gå til dine grupper →",
+      "create-group": "Opprett gruppe",
+      "enter-group-name": "Skriv inn gruppenavn",
+      "create": "Opprett",
+      "households": "Husholdninger",
+      "residents": "beboere",
+      "leave-group": "Forlat gruppe"
+    },
+    "inventory": {
+      "save": "Lagre",
+      "edit": "Rediger",
+      "remove-from-group": "Fjern fra gruppe",
+      "search": {
+        "placeholder": "Søk...",
+        "clear": "Opphev søk"
+      },
+      "water": {
+        "title": "Vann",
+        "total": "Totalt vann i husholdningen",
+        "liters": "liter",
+        "amount": "Mengde",
+        "expiry": "Utløp",
+        "already-shared": "Allerede delt",
+        "share": "Del",
+        "add": "Legg til",
+        "delete-type": "Slett produkttype",
+        "add-new": "Legg til",
+        "product-name": "Produktnavn",
+        "exists": {
+          "title": "Denne produkttypen finnes allerede",
+          "message": "Du kan ikke legge til den samme typen flere ganger.",
+          "action": "Trykk på \"Rediger\" for å legge til en ny batch"
+        }
+      },
+      "food": {
+        "title": "Matvarer",
+        "calories": "kcal per",
+        "amount": "Mengde",
+        "expiry": "Utløp",
+        "already-shared": "Allerede delt",
+        "share": "Del",
+        "add": "Legg til",
+        "delete-type": "Slett produkttype",
+        "add-new": "Legg til",
+        "product-name": "Produktnavn",
+        "exists": {
+          "title": "Denne produkttypen finnes allerede",
+          "message": "Du kan ikke legge til den samme typen flere ganger.",
+          "action": "Trykk på \"Rediger\" for å legge til en ny batch"
+        }
+      },
+      "medicine": {
+        "title": "Medisin",
+        "amount": "Mengde",
+        "expiry": "Utløp",
+        "already-shared": "Allerede delt",
+        "share": "Del",
+        "add": "Legg til",
+        "delete-type": "Slett produkttype",
+        "add-new": "Legg til",
+        "product-name": "Produktnavn",
+        "exists": {
+          "title": "Denne produkttypen finnes allerede",
+          "message": "Du kan ikke legge til den samme typen flere ganger.",
+          "action": "Trykk på \"Rediger\" for å legge til en ny batch"
+        }
+      },
+      "common": {
+        "share-with-group": "Del med gruppe",
+        "select-group": "Velg en gruppe",
+        "no-groups": "Ingen grupper funnet",
+        "delete-confirm": "Er du sikker på at du vil slette produkttypen",
+        "success": {
+          "shared": "Produktet ble lagt til i gruppen",
+          "error": "Det oppstod en feil ved deling av produkt med gruppen"
+        },
+        "select-unit": "Velg enhet"
+      }
+    },
+    "scenarioThemes": {
+      "title": "Krisescenario-temaer",
+      "noThemesFound": "Ingen scenariotemaer funnet",
+      "loadError": "Kunne ikke laste scenariotemaer",
+      "viewDetails": "Vis detaljer",
+      "description": "Beskrivelse",
+      "instructions": "Instruksjoner",
+      "before": "Før krisen",
+      "under": "Under krisen",
+      "after": "Etter krisen",
+      "noDescription": "Ingen beskrivelse tilgjengelig",
+      "noInstructions": "Ingen instruksjoner tilgjengelig",
+      "relatedCrises": "Relaterte krisehendelser",
+      "noRelatedEvents": "Ingen relaterte krisehendelser funnet",
+      "themeNotFound": "Scenariotema ikke funnet"
+    },
+  "household": {
+    "my-household": "Husholdning",
+    "supplies": "Husholdningsartikler",
+    "no-supplies": "No supplies registered yet.",
+    "members": "Medlemmer",
+    "manage-members": "Administrer medlemmer",
+    "done": "Ferdig",
+    "remove-selected": "Fjern valgte",
+    "user": "Bruker",
+    "users": "Brukere",
+    "others": "Andre",
+    "other_members": "andre medlemmer",
+    "no-members-found": "Ingen medlemmer funnet.",
+    "admin_badge": "Admin",
+    "safe": "Trygg",
+    "no-empty-members-found": "Ingen tomme brukere funnet.",
+    "add-empty-member": "Legg til tom bruker",
+    "ask-if-safe": "Etterspør trygghetsstatus",
+    "invite-user": "Inviter bruker",
+    "confirm-remove-member": "Bekreft fjerning av medlem.",
+    "confirm-remove-member-description": "Denne handlingen kan ikke angres.",
+    "confirm-remove-multiple-title": "Bekreft fjerning av flere medlemmer.",
+    "confirm-remove-multiple-description": "Denne handlingen kan ikke angres.",
+    "transfer-admin-role": "Overfør administrator-rolle",
+    "leave-household": "Forlat husholdning",
+    "go-to-groups": "Gå til grupper",
+    "in-household": "i husholdningen",
+    "beredskapslager": "Husholdningens beredskapslager",
+    "your-shelter-store": "Gå til beredskaplager",
+    "pending-invitations": "Ventende invitasjoner",
+    "no-pending-invitations": "ingen ventende invitasjoner",
+    "check-back-later": "Kom tilbake senere.",
+    "email-address": "Epost",
+    "enter-email": "Skriv inn epost til personen du ønsker å invitere...",
+    "send-invitation": "Send invitasjon",
+    "stats": "Oversikt over husholdning",
+    "total_members": "Totalt antall medlemmer",
+    "adults": "Voksne",
+    "children": "Barn",
+    "pets": "Dyr",
+    "cancel-invitation": "Angre invitasjon",
+    "invitation-sent-success": "Invitasjon ble sendt.",
+    "transfer-admin-title": "Overføring av administrator-rolle",
+    "transfer-admin-description": "Overfør administrator-rollen til et annet medlem i husholdningen",
+    "admin-transferred-success": "Administrator-rollen er nå overført.",
+    "leave-admin-warning": "Advarsel: Administrator",
+    "transfer-admin-first": "En husholdning må ha en administrator. Overfør rollen før du forlater husholdningen.",
+    "food-days-left": "dager igjen med mat",
+    "water-days-left": "dager igjen med vann",
+    "manage-supplies": "Administrer forsyninger",
+    "view-household": "Vis husholdning",
+    "pending-sent-invitations": "Pending invitations sent from your household"
+
+  },
+  "inventory": {
+    "search-placeholder":"Søk",
+    "search-clear": "Tøm søk",
+    "food-title": "Matvarelager",
+    "food-add-new": "Legg til ny matvare",
+    "food-add": "Legg til vare",
+    "food-product-name": "Produktnavn",
+    "select-unit": "Velg enhet",
+    "edit": "Rediger",
+    "food-exists-title": "Allerede eksisterende matvare",
+    "food-exists-message": "Matvaren du forsøker å legge til finnes allerede. Dersom du ønsker å legge til en ny batch, trykk 'Rediger'.",
+    "share-with-group": "Del med gruppen",
+    "select-group": "Velg gruppe",
+    "food-share": "Del matvare",
+    "no-groups": "No groups",
+    "remove-from-group": "Fjern fra gruppen",
+    "food-already-shared": "Allerede delt",
+    "food-delete-type": "Fjern type",
+    "food-calories": "Kcal per enhet",
+    "food-amount": "Mengde",
+    "food-exists-message": "Denne varen finnes allerede. Vennligst trykk 'Rediger' for å legge til ny batch.",
+    "button-food": "Mat",
+    "button-water": "Vann",
+    "button-medicine": "Medisin",
+    "water": {
+      "title": "Vann",
+      "total": "Totalt ",
+      "liters": "L",
+      "add-new": "Legg til ny beholder",
+      "product-name": "Beholder",
+      "add": "Legg til beholder",
+      "share": "Del",
+      "delete-type": "Slett type"
+    },
+    "medicine": {
+      "title": "Medisin",
+      "product-name": "Navn på medisin",
+      "already-shared": "Allerede delt",
+      "share": "Del",
+      "add": "Legg til medisin",
+      "delete-type": "Slett type",
+      "add-new": "Legg til ny",
+      "exists-title": "",
+      "exists-message": "Denne medisinen finnes allerede.Trykk 'Rediger' for å redigere den."
+    }
+  },
+  "group" : {
+    "create-group-title": "Tittel for gruppen din",
+    "create-group-description": "Beskrivelse for gruppen",
+    "group-name" : "Gruppenavn",
+    "group-created-success": "Opprettelse av gruppen var vellykket.",
+    "invite-household-title": "Inviter en husholdning",
+    "invite-household-description": "Inviter en husholdning til å bli med i gruppen din.",
+    "household-name": "Navn på husholdning",
+    "enter-household-name": "Skriv inn navnet på husholdningen du ønsker å invitere",
+    "pending-group-invitations": "Gruppeinvitasjoner",
+    "invitation-received": "Gruppeinvitasjon motatt",
+    "send-invitation": "Send invitasjon",
+    "invitation-sent-success": "Din invitasjon er blitt sendt."
+  },
+  "gamification": {
+    "unsavedWarning": "Du har ulagrede endringer. Husk å lagre før du forlater siden!",
+    "gameHistory": "Quizhistorikk",
+    "attempt": "Forsøk",
+    "attemptHistory": "Forsøkshistorikk",
+    "quizOverview": "Quizoversikt",
+    "createNewQuiz": "Opprett ny quiz",
+    "noAttempts": "Ingen forsøk er gjort.",
+    "previousAttempt": "Forrige forsøk",
+    "noMoreQuizzes": "Ingen flere quizer å laste inn.",
+    "saveQuiz": "Lagre quiz",
+    "addOption": "Legg til alternativ",
+    "addQuestion": "Legg til spørsmål",
+    "enterQuestionPlaceholder": "Skriv inn spørsmålstekst",
+    "quizPreview": "Forhåndsvisning av quiz",
+    "reviewBeforePublish": "Se gjennom quizen før du lagrer.",
+    "question": "Spørsmål",
+    "correct": "Riktig",
+    "incorrect": "Feil",
+    "youScored": "Du fikk",
+    "outOf": "av",
+    "quizCreator": "Quizskaper",
+    "thanksForParticipating": "Takk for at du deltok i denne quizen!",
+    "quizSummary": "Oppsummering av quiz",
+    "restartQuiz": "Start quizen på nytt",
+    "backToQuizzes": "Tilbake til quizoversikt",
+    "backToTop": "Tilbake til toppen",
+    "noMoreAttemptsToLoad": "Ingen flere forsøk å laste inn."
+  },
+  "news": {
+    "related_crisis": "Relatert krise",
+    "crisis_context": "Relatert kriseinformasjon"
+
+  },
+  "infoPage": {
+    "aboutThisTheme": "Om dette temaet",
+    "themeDescription": "Viktig informasjon for å hjelpe deg med å forberede og reagere.",
+    "readMore": "Les mer",
+    "readMoreTitle": "Ytterligere ressurser",
+    "readMoreDescription": "Finn mer detaljert informasjon om dette temaet fra offisielle kilder.",
+    "officialWebsites": "Offisielle nettsider",
+    "additionalResources": "For mer informasjon, besøk disse offisielle ressursene:",
+    "close": "Lukk",
+    "emergencyContacts": "Nødkontakter",
+    "emergencyContactsTitle": "Nødkontakter",
+    "emergencyContactsDescription": "Viktige kontakter for nødsituasjoner.",
+    "generalEmergencyContacts": {
+      "title": "Generelle nødnummer",
+      "police": "Politi: 112",
+      "ambulance": "Ambulanse: 113",
+      "fire": "Brannvesen: 110",
+      "civilDefense": "Sivilforsvaret: 51 51 51 51"
+    },
+    "relatedThemes": "Relaterte temaer",
+    "selectThemePrompt": "Velg et tema for å lære mer",
+    "browseThemesDescription": "Bla gjennom våre informasjonsressurser for å lære om forskjellige krisesituasjoner og hvordan du kan forberede deg.",
+    "preparednessStorageBrief": "Lær hvilke forsyninger du bør ha klare for nødsituasjoner.",
+    "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalitet etter en krise.",
+    "learnMoreTopic": "Klikk for å lære mer om dette temaet."
+
+
+  },
+  "sidebar": {
+    "title": "Informasjonssider",
+    "themes-preparednessStorage": "Beredskapslager",
+    "themes-afterCrisis": "Etter krisen",
+    "categories": "Kategorier",
+    "scenario-description": "Beskrivelse",
+    "scenario-nodescription": "Det er ikke lagt inn noe beskrivelse for denne kategorien.",
+    "themes": {
+      "preparednessStorage": "Beredskapslager",
+      "afterCrisis": "Etter krisen"
+    }
+  },
+  "scenarioThemes": {
+    "description": "Beskrivelse",
+    "before": "Før krisen:",
+    "under": "Under krisen",
+    "after": "Etter krisen"
+  },
+  "themes": {
+    "preparednessStorage": {
+      "title": "Beredskapslager",
+      "content": ""
+    },
+    "afterCrisis": {
+      "title": "Etter en krise",
+      "content": "Veiledning for etter en krise har inntruffet."
+    }
+
+    }
+  }
+
+
+

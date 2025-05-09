@@ -1,4 +1,25 @@
 <template>
+  <Breadcrumb class="p-5">
+    <BreadcrumbList>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="/">
+          {{ $t('navigation.home') }}
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbLink href="/household">
+          {{ $t('navigation.household') }}
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbLink href="/food-and-drinks">
+          {{ $t('navigation.food-and-drinks') }}
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+    </BreadcrumbList>
+  </Breadcrumb>
   <div class="min-h-screen p-6 bg-background text-foreground pb-35">
 
   <!-- Root wrapper with background and padding -->
@@ -16,7 +37,7 @@
           class="flex items-center gap-2 px-4 py-2 h-12 w-full md:w-auto"
 
         >
-          <Utensils class="w-5 h-5" /> {{ $t('food-and-drinks.food', 'Food') }}
+          <Utensils class="w-5 h-5" /> {{ $t('inventory.button-food', 'Food') }}
         </button>
 
         <!-- Water tab -->
@@ -25,7 +46,7 @@
           @click="goTo('water')"
           class="flex items-center gap-2 px-4 py-2 h-12 w-full md:w-auto"
         >
-          <Droplet class="w-5 h-5" /> {{ $t('food-and-drinks.water', 'Water') }}
+          <Droplet class="w-5 h-5" /> {{ $t('inventory.button-water', 'Water') }}
         </button>
 
         <!-- Medicine tab -->
@@ -35,12 +56,12 @@
           class="flex items-center gap-2 px-4 py-2 h-12 w-full md:w-auto"
 
         >
-          <Pill class="w-5 h-5" /> {{ $t('food-and-drinks.medicine', 'Medicine') }}
+          <Pill class="w-5 h-5" /> {{ $t('inventory.button-medicine', 'Medicine') }}
         </button>
       </nav>
 
       <!-- Search bar for filtering inventory items -->
-      <div class="bg-muted rounded-lg shadow-md p-4">
+      <div class=" rounded-lg shadow-md p-4 border">
         <InventorySearchBar
           class="mb-6"
           @update:search="searchText = $event"
@@ -68,6 +89,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useProductStore } from '@/stores/ProductStore'
 import InventorySearchBar from '@/components/inventory/InventorySearchBar.vue'
 import { Utensils, Droplet, Pill } from 'lucide-vue-next';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
 /**
  * Lazy-load the subcomponents to improve performance.

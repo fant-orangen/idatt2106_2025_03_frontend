@@ -36,11 +36,11 @@
       <div v-if="item.edit" class="space-y-4 mt-4">
         <!-- Group selector -->
         <div class="border-b pb-4 mb-4">
-          <h3 class="text-sm font-medium mb-2">{{ t('inventory.common.share-with-group') }}:</h3>
+          <h3 class="text-sm font-medium mb-2">{{ t('inventory.share-with-group') }}:</h3>
           <div class="flex gap-2 items-center">
             <Select v-model="selectedGroupId" class="w-full sm:w-64">
               <SelectTrigger>
-                <SelectValue :placeholder="groups.length > 0 ? t('inventory.common.select-group') : t('inventory.common.no-groups')" />
+                <SelectValue :placeholder="groups.length > 0 ? t('inventory.select-group') : t('inventory.no-groups')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem v-for="group in groups" :key="group.id" :value="group.id">
@@ -102,7 +102,7 @@
             :disabled="!selectedGroupId || addingBatchToGroup || batch.isContributed"
             class="text-xs w-full sm:w-auto"
           >
-            {{ batch.isContributed ? t('inventory.water.already-shared') : t('inventory.water.share') }}
+            {{ batch.isContributed ? t('inventory.already-shared') : t('inventory.water.share') }}
           </Button>
         </div>
         <!-- Add new batch -->
@@ -151,7 +151,7 @@
       class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground border border-destructive p-6 rounded-lg shadow-xl"
     >
       <p class="text-center">
-        <strong>{{ t('inventory.water.exists.title') }}</strong><br>
+        <strong>{{ t('inventory.water.exists-title') }}</strong><br>
         {{ t('inventory.water.exists.message') }}<br>
         {{ t('inventory.water.exists.action') }}
       </p>
