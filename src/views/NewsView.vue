@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <div class="flex-grow overflow-y-auto p-6 max-h-[80vh] w-full">
+    <div class="flex-grow overflow-y-auto p-6 max-h-[500px] w-full">
       <div class="max-w-6xl mx-auto">
         <ul class="relative my-8 pl-10 list-none border-l-2 border-[var(--default-blue2)]/30">
           <li v-for="item in news" :key="item.id" class="relative mb-10 pl-6">
@@ -39,7 +39,7 @@
                 <p class="font-semibold mb-2 text-base">{{ t('news.crisis_context') }}</p>
 
                 <p class="flex items-center gap-3">
-                  <strong class="inline-block w-28">{{ t('crisis.severity') }}:</strong>
+                  <strong class="inline-block w-28">{{ t('crisis.severity') }} </strong>
                   <span
                     :class="{
                       'text-[var(--crisis-level-green)] font-medium': crisisEventCache[item.crisisEventId]?.severity === 'green',
@@ -51,11 +51,11 @@
                   </span>
                 </p>
                 <p class="flex items-center gap-3">
-                  <strong class="inline-block w-28">{{ t('crisis.start_time') }}:</strong>
+                  <strong class="inline-block w-28">{{ t('crisis.start_time') }} </strong>
                   <span>{{ getStartTime(item.crisisEventId) }}</span>
                 </p>
                 <p class="flex items-center gap-3">
-                  <strong class="inline-block w-28">{{ t('crisis.scenario') }}:</strong>
+                  <strong class="inline-block w-28">{{ t('crisis.scenario') }}: </strong>
                   <a
                     v-if="hasScenarioTheme(item.crisisEventId)"
                     :href="`http://localhost:5173/info/scenario/${getScenarioThemeId(item.crisisEventId)}`"
