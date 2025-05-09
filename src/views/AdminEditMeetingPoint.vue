@@ -35,8 +35,9 @@
         <!--Search field-->
         <div class="relative mb-4 w-full max-w-sm">
           <Input v-model="searchQuery" type="text" placeholder="Søk etter en møteplass..."
-            class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" />
-            <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
+            class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" 
+            />
+          <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
             <Search class="size-4 text-muted-foreground" />
           </span>
         </div>
@@ -192,7 +193,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import type { MeetingPlace, CreateMeetingPlaceDto, MeetingPlacePreviewDto } from '@/models/MeetingPlace'
+import type { CreateMeetingPlaceDto, MeetingPlacePreviewDto } from '@/models/MeetingPlace'
 import { meetingPlaceService } from '@/services/MeetingPlaceService'
 import * as z from 'zod'
 import { Search, MapPinCheckInside } from 'lucide-vue-next';
