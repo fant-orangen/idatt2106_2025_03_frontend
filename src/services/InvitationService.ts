@@ -21,7 +21,6 @@ export async function fetchPendingInvitations(): Promise<Invitation[]> {
     const response = await api.get<Invitation[]>('/user/invitations/pending');
     return response.data;
   } catch (error) {
-    console.error('Failed to fetch pending invitations:', error);
     throw error;
   }
 }
@@ -39,9 +38,7 @@ export async function acceptInvitation(token: string): Promise<Household> {
     const response = await api.post<Household>('/user/invitations/accept', payload);
     return response.data;
   } catch (error: any) {
-    console.error('Failed to accept invitation:', error);
     if (error.response && error.response.data) {
-      // If the error is that the user already has a household, provide a more helpful message
       if (error.response.data.includes('already has a household')) {
         throw new Error('You already have a household. Please leave your current household before accepting this invitation.');
       }
@@ -71,20 +68,15 @@ export async function declineInvitation(token: string): Promise<void> {
  */
 export async function sendGroupInvitation(householdName: string, groupId: number): Promise<void> {
   try {
-    console.log("Sending group invitation with params:", { householdName, groupId });
     const payload = {
       householdName,
       groupId
     };
     const response = await api.post('/user/groups/invite', payload);
-    console.log("Group invitation sent, response:", response.data);
   } catch (error: any) {
-    console.error('Error sending group invitation:', error);
     if (error.response) {
-      console.error('Response status:', error.response.status);
-      console.error('Response data:', error.response.data);
+      throw new Error(error.response.data);
     }
-    throw error;
   }
 }
 
@@ -94,12 +86,9 @@ export async function sendGroupInvitation(householdName: string, groupId: number
  */
 export async function getPendingGroupInvitations(): Promise<GroupInvitation[]> {
   try {
-    console.log("on my way to fetch pending invitations");
     const response = await api.get('/user/groups/invitations');
-    console.log('Pending group invitations response:', response.data);
     return response.data;
   } catch (error) {
-    console.error('Error fetching pending group invitations:', error);
     throw error;
   }
 }
@@ -114,7 +103,6 @@ export async function acceptGroupInvitation(invitationId: number): Promise<void>
   try {
     await api.patch(`/user/groups/invitations/${invitationId}/accept`);
   } catch (error) {
-    console.error('Error accepting group invitation:', error);
     throw error;
   }
 }
@@ -129,7 +117,6 @@ export async function rejectGroupInvitation(invitationId: number): Promise<void>
   try {
     await api.patch(`/user/groups/invitations/${invitationId}/reject`);
   } catch (error) {
-    console.error('Error rejecting group invitation:', error);
     throw error;
   }
 }
