@@ -1,4 +1,5 @@
 <template>
+  <div class="min-h-screen p-6 bg-background text-foreground pb-35">
 
   <!-- Root wrapper with background and padding -->
 

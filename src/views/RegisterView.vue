@@ -230,13 +230,21 @@ const handleRegister = form.handleSubmit(async (values) => {
                     @blur="field.onBlur"
                     id="terms"
                   />
-                  <label for="terms" class="text-sm font-medium leading-none">
+                  <label for="terms" class="text-sm font-medium space-x-2 leading-none">
                     {{ t('login.consent-1') }}
                     <a href="/privacy-policy" class="underline">
                       {{ t('login.privacy-policy') }}.</a
                     >
                   </label>
                 </div>
+                <label>
+                    <span class="text-sm">
+                      {{ t('login.already-user') }}
+                      <a href="/login" class="text-primary underline hover:text-primary/90">
+                        {{ t('login.log-in-here', 'Log in here') }}
+                      </a>
+                    </span>
+                  </label>
               </FormControl>
               <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
             </FormItem>

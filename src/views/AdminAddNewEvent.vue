@@ -92,7 +92,6 @@
           <h2 class="text-xl font-semibold m-0">{{ $t('admin.basic-info') || 'Hendelsesdetaljer' }}</h2>
         </div>
 
-        <!-- Radius input -->
         <FormField v-slot="{ field, meta, errorMessage }" name="radius">
           <FormItem>
             <FormLabel>{{ $t('add-event-info.titles.radius') }}</FormLabel>
@@ -142,7 +141,7 @@
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectGroup>
+                <SelectGroup class="text-white dark:text-black">
                   <SelectItem class="severity-tag green" value="green">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
                   <SelectItem class="severity-tag yellow" value="yellow">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
                   <SelectItem class="severity-tag red" value="red">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
@@ -197,7 +196,7 @@
     </div>
 
     <!-- Map section -->
-    <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8">
+    <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8 z-50">
       <AdminMapController
         :mapComponent="mapComponentInstance"
         @location-selected="handleLocationSelected"
@@ -205,7 +204,7 @@
       />
 
       <!-- Map display -->
-      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md">
+      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md z-50">
         <MapComponent
           ref="mapComponent"
           :adminMode="true"

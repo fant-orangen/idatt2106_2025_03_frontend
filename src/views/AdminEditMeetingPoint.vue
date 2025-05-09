@@ -139,7 +139,7 @@
     </Card>
 
     <!-- third column -->
-    <div class="flex flex-col gap-5">
+    <div class="flex flex-col gap-5 z-50">
       <!-- your existing controller (it already renders a <Card>) -->
       <AdminMapController
         :mapComponent="mapCompRef"
@@ -148,7 +148,7 @@
       />
 
       <!-- the map container -->
-      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md">
+      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md z-50">
         <MapComponent
           ref="mapCompRef"
           :adminMode="true"
