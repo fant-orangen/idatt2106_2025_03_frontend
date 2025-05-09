@@ -99,8 +99,6 @@ const routes = [
     name: 'AddNewPOI',
     component: () => import('@/views/AdminAddNewPOI.vue'),
     meta: { requiresAdmin: true },
-  },
-  {
     path: '/admin/edit-event',
     name: 'EditEvent',
     component: () => import('@/views/AdminEditEvent.vue'),

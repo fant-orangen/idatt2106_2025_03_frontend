@@ -213,6 +213,7 @@
     "unexpected-error": "An unexpected error has occurred. Please try again later.",
     "network-error": "Nettwork error. Please check your connection.",
     "invalid-2fa-code": "The 2FA code you have entered is incorrect. Please try again."
+
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",
@@ -1273,9 +1274,7 @@
     "food-add": "Add Item",
     "food-product-name": "Produktnavn",
     "select-unit": "Velg enhet",
-    "edit": "Edit",
-    "food-exists-message": "This product already exists. Please select 'Edit' to add a new batch."
-
+    "edit": "Edit"
   },
   "group": {
     "create-group-title": "Title for your group",
