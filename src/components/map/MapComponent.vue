@@ -1002,9 +1002,9 @@ export default defineComponent({
 
       // Define styles for different crisis severity levels
       const LEVEL_STYLES: Record<number, { base: string; border: string }> = {
-        1: { base: '#a6d96a', border: '#333333' }, // Low severity (green)
-        2: { base: '#fdae61', border: '#333333' }, // Medium severity (orange)
-        3: { base: '#f46d43', border: '#333333' }  // High severity (red)
+        1: { base: '#81c784', border: '#333333' }, // Low severity (green)
+        2: { base: '#ffd54f', border: '#333333' }, // Medium severity (orange)
+        3: { base: '#ff5c5c', border: '#333333' }  // High severity (red)
       };
       const bounds = L.latLngBounds([]);
 
