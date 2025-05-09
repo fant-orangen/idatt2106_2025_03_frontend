@@ -1267,14 +1267,25 @@
     "pending-sent-invitations": "Pending invitations sent from your household"
   },
   "inventory": {
-    "search-placeholder": "Search for a product in the inventory...",
+    "search-placeholder": "Search",
     "search-clear": "Clear search",
     "food-title": "Food Inventory",
-    "food-add-new": "Add Food Item",
+    "food-add-new": "Add new item",
     "food-add": "Add Item",
-    "food-product-name": "Produktnavn",
-    "select-unit": "Velg enhet",
-    "edit": "Edit"
+    "food-product-name": "Product name",
+    "select-unit": "Select unit",
+    "save": "Save",
+    "edit": "Edit",
+    "share-with-group": "Share with group",
+    "select-group": "Select group",
+    "no-groups": "No groups",
+    "remove-from-group": "Remove from group",
+    "food-already-shared": "Already shared",
+    "food-share": "Share item",
+    "food-delete-type": "Remove type",
+    "food-calories": "Kcal per unit",
+    "food-amount": "Amount",
+    "food-exists-message": "This item already exists. Select 'Edit' to add a new batch."
   },
   "group": {
     "create-group-title": "Title for your group",

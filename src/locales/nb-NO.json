@@ -2001,17 +2001,26 @@
 
   },
   "inventory": {
-    "search-placeholder":"Søk etter et produkt i inventaret...",
+    "search-placeholder":"Søk",
     "search-clear": "Tøm søk",
     "food-title": "Matvarelager",
-    "food.add-new": "Leggg til matvare",
+    "food-add-new": "Legg til ny matvare",
     "food-add": "Legg til vare",
     "food-product-name": "Produktnavn",
     "select-unit": "Velg enhet",
     "edit": "Rediger",
     "food-exists-title": "Allerede eksisterende matvare",
     "food-exists-message": "Matvaren du forsøker å legge til finnes allerede. Dersom du ønsker å legge til en ny batch, trykk 'Rediger'.",
-    "food-share": "Del matvare"
+    "share-with-group": "Del med gruppen",
+    "select-group": "Velg gruppe",
+    "food-share": "Del matvare",
+    "no-groups": "No groups",
+    "remove-from-group": "Fjern fra gruppen",
+    "food-already-shared": "Allerede delt",
+    "food-delete-type": "Fjern type",
+    "food-calories": "Kcal per enhet",
+    "food-amount": "Mengde",
+    "food-exists-message": "Denne varen finnes allerede. Vennligst trykk 'Rediger' for å legge til ny batch."
   },
   "group" : {
     "create-group-title": "Tittel for gruppen din",
