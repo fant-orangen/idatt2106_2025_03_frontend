@@ -122,6 +122,8 @@ onMounted(async () => {
     if (scenario) {
       selectedScenarioId.value = scenario.id
     }
+  } else {
+    selectedTheme.value = 'home'
   }
 
   isLoading.value = false
