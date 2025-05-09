@@ -18,7 +18,6 @@ import AdminAddNewScenarioTheme from '@/views/AdminAddNewScenarioTheme.vue'
 import AdminAddNews from '@/views/AdminAddNews.vue'
 import AdminEditEvent from '@/views/AdminEditEvent.vue'
 import AdminEditMeetingPoint from '@/views/AdminEditMeetingPoint.vue'
-import AdminEditPOI from '@/views/AdminEditPOI.vue'
 import AdminEditScenarioTheme from '@/views/AdminEditScenarioTheme.vue'
 import AdminPanel from '@/views/AdminPanel.vue'
 import CrisisEventView from '@/views/CrisisEventView.vue'
@@ -314,7 +313,6 @@ testComponentRendering(AdminAddNewScenarioTheme, 'AdminAddNewScenarioTheme')
 testComponentRendering(AdminAddNews, 'AdminAddNews')
 testComponentRendering(AdminEditEvent, 'AdminEditEvent')
 testComponentRendering(AdminEditMeetingPoint, 'AdminEditMeetingPoint')
-testComponentRendering(AdminEditPOI, 'AdminEditPOI')
 testComponentRendering(AdminEditScenarioTheme, 'AdminEditScenarioTheme')
 testComponentRendering(AdminPanel, 'AdminPanel')
 testComponentRendering(CrisisEventView, 'CrisisEventView')
