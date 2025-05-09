@@ -35,7 +35,6 @@ const userStore = useUserStore()
 const errorMessage = ref('')
 const resetEmail = ref('')
 const isTwoFactorAuthDialogOpen = ref(false)
-const pinValue = ref<string[]>([])
 /* global grecaptcha */
 
 /**

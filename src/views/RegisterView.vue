@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useForm } from 'vee-validate'
 import { z } from 'zod'
 import { toTypedSchema } from '@vee-validate/zod'
@@ -12,13 +12,18 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'vue-sonner'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Eye, EyeOff } from 'lucide-vue-next'
-import { Card, CardHeader, CardContent } from '@/components/ui/card'
+import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
+import { useRouter } from 'vue-router'
+import { AxiosError } from 'axios'
 
 const { t } = useI18n()
+const router = useRouter()
 const userStore = useUserStore()
 const successMessage = ref('')
 const errorMessage = ref('')
 const isView = ref(false)
+
+const isLoading = ref(false)
 
 /* global grecaptcha */
 
@@ -58,6 +63,7 @@ const form = useForm({
 
 const handleRegister = form.handleSubmit(async (values) => {
   try {
+    isLoading.value = true
     errorMessage.value = ''
     successMessage.value = ''
 
@@ -79,15 +85,58 @@ const handleRegister = form.handleSubmit(async (values) => {
       recaptchaToken: token,
       privacyPolicyAccepted: values.terms,
     })
+
     toast.success(t('success.registration-successful'))
-    setTimeout(() => {
-      window.location.href = '/login'
-    }, 2000)
-  } catch (err) {
-    console.error('Registration failed:', err)
+    isLoading.value = false
+    // Verify the login credentials
+
+    const token2 = await new Promise<string>((resolve, reject) => {
+      grecaptcha.ready(() => {
+        grecaptcha
+          .execute('6Lee4CorAAAAABwb4TokgKDs9GdFCxpaiZTKfkfQ', { action: 'LOGIN' })
+          .then((token) => (token ? resolve(token) : reject('Token generation failed')))
+          .catch(reject)
+      })
+    })
+
+    const response = await userStore.verifyLogin(values.email, values.password, token2)
+
+    console.log('Login response:', response)
+
+    // Handle the response
+    if (response.status === 200) {
+      await userStore.login(response.status, response.data.token, values.email)
+      router.push('/')
+    } else if (response.status === 202) {
+      // Ensure the 2FA dialog is reopened
+      await userStore.send2FACodeToEmail(values.email) // Send the 2FA code
+    } else {
+      errorMessage.value = t('errors.unexpected-error')
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError && error.response) {
+      const status = error.response.status
+      if (status === 401) {
+        errorMessage.value = t('errors.invalid-credentials')
+      } else if (status === 403) {
+        errorMessage.value = t('errors.account-locked')
+      } else {
+        errorMessage.value = t('errors.unexpected-error')
+      }
+    } else {
+      errorMessage.value = t('errors.network-error')
+    }
+    console.error('Login error:', error)
     errorMessage.value = t('errors.registration-failed')
   }
 })
+
+const buttonText = computed(() => (isLoading.value ? t('login.loading') : t('login.signup')))
+const buttonIcon = computed(() =>
+  isLoading.value
+    ? `<svg class='animate-spin h-5 w-5 mr-3' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'><circle class='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' stroke-width='4'></circle><path class='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.963 7.963 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path></svg>`
+    : '',
+)
 </script>
 
 <template>
@@ -205,29 +254,26 @@ const handleRegister = form.handleSubmit(async (values) => {
                   </label>
                 </div>
                 <label>
-                    <span class="text-sm">
-                      {{ t('login.already-user') }}
-                      <a href="/login" class="text-primary underline hover:text-primary/90">
-                        {{ t('login.log-in-here', 'Log in here') }}
-                      </a>
-                    </span>
-                  </label>
+                  <span class="text-sm">
+                    {{ t('login.already-user') }}:
+                    <a href="/login" class="text-primary underline hover:text-primary/90">
+                      {{ t('login.log-in-here', 'Log in here') }}
+                    </a>
+                  </span>
+                </label>
               </FormControl>
               <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
             </FormItem>
           </FormField>
 
-          <p v-if="successMessage" class="text-green-500 text-center mt-2">{{ successMessage }}</p>
-          <p v-if="errorMessage" class="text-red-500 text-center mt-2">{{ errorMessage }}</p>
-
-          <Button type="submit" class="w-full bg-primary hover:bg-primary/90">
-            {{ t('login.signup') }}
-          </Button>
+          <p v-if="successMessage" class="text-crisis-level-green mt-2">{{ successMessage }}</p>
+          <p v-if="errorMessage" class="text-crisis-level-red mt-2">{{ errorMessage }}</p>
         </form>
       </CardContent>
       <CardFooter>
-        <Button type="submit" form="registerForm" class="w-full bg-primary hover:bg-primary/90">
-          {{ t('login.signup') }}
+        <Button type="submit" form="registerForm" class="w-full" :disabled="isLoading">
+          <span v-html="buttonIcon"></span>
+          {{ buttonText }}
         </Button>
       </CardFooter>
     </Card>
