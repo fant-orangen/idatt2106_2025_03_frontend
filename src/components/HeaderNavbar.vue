@@ -123,34 +123,41 @@ watch(
   { immediate: true },
 )
 
-onMounted(async () => {
-  try {
-    isLoading.value = true
-    const userData = await getUserProfile()
 
-    // Map the extended profile to the basic info format
+onMounted(async () => {
+  // Only load profile & notifications when the user is logged in
+  if (!userStore.loggedIn) {
+    return
+  }
+
+  isLoading.value = true
+  try {
+    // Fetch user profile
+    const userData = await getUserProfile()
     profile.value = {
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      email: userData.email,
+      firstName:     userData.firstName,
+      lastName:      userData.lastName,
+      email:         userData.email,
       householdName: userData.householdName,
       emailVerified: userData.emailVerified,
     }
-  } catch (error) {
-    console.error('Failed to fetch user profile:', error)
-    toast.error(t('errors.unexpected-error'))
+  } catch (error: any) {
+    // Suppress 403 (unauthenticated), but log and toast other errors
+    if (error.response?.status !== 403) {
+      console.error('Profile load error:', error)
+      toast.error(t('errors.unexpected-error'))
+    }
   } finally {
     isLoading.value = false
   }
 
-  // Only fetch notifications if logged in and haven't fetched yet
-  if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
+  // Fetch notifications once
+  if (!notificationStore.hasFetchedInitial) {
     try {
       await notificationStore.fetchNotifications()
       await notificationStore.checkUnreadNotifications()
-      console.log('NavBar: Initial notifications fetched and checked for unread')
     } catch (error) {
-      console.error('NavBar: Failed to fetch initial notifications via store:', error)
+      console.error('Notifications load error:', error)
     }
   }
 })
