@@ -79,6 +79,7 @@
     "edit-event": "Rediger en pågående hendelse",
     "edit-mp": "Håndter møteplassen",
     "create-mp": "Lag en ny møteplass",
+    "news": "Lag et nyhetsvarsel",
     "super-admin": "Super Admin",
     "current-admins": "Nåværende adminbrukere",
     "edit-admin": "Håndter adminbrukere",
@@ -276,7 +277,8 @@
     "new-activity": "Ny aktivivtet",
     "go-back": "Tilbake",
     "light-mode": "Lys modus",
-    "dark-mode": "Mørk modus"
+    "dark-mode": "Mørk modus",
+    "admin-news": "Lag et nyhetsvarsel"
   },
   "user-profile": {
     "title": "Brukerprofil",

@@ -205,6 +205,12 @@ const routes = [
     props: true,
   },
   {
+    path: '/admin/news',
+    name: 'AdminCreateNews',
+    component: () => import('@/views/AdminAddNews.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/404NotFoundView.vue'),
