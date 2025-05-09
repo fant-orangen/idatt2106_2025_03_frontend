@@ -24,19 +24,19 @@
 
   <h1 class="text-3xl p-5">{{$t('admin.meeting-point')}}</h1>
 
-
   <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
     <!--Overview of all meeting points-->
-    <Card>
+    <Card class="max-h-fit shadow-md hover:shadow-xl transition-shadow">
       <CardHeader>
         <CardTitle>{{ $t('admin.meeting-places') }}: </CardTitle>
       </CardHeader>
-      <CardContent>
-        <!--Search field-->
+      <CardContent class="overflow-y-auto max-h-[500px]">
+        <!--Search bar-->
         <div class="relative mb-4 w-full max-w-sm">
-          <Input v-model="searchQuery" type="text" placeholder="Søk etter en møteplass..."
-            class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" />
-            <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
+          <Input v-model="searchQuery" type="text" :placeholder="t('admin.search-meeting-point')"
+            class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" 
+            />
+          <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
             <Search class="size-4 text-muted-foreground" />
           </span>
         </div>
@@ -67,7 +67,7 @@
     </Card>
 
     <!--Form to create new meeting point -->
-    <Card>
+    <Card class="max-h-fit shadow-md hover:shadow-xl transition-shadow">
       <CardHeader>
         <CardTitle>{{ $t('admin.create-mp') }}</CardTitle>
       </CardHeader>
@@ -140,6 +140,7 @@
         :mapComponent="mapCompRef"
         @location-selected="onLocationSelected"
         @location-cleared="onLocationCleared"
+        class="shadow-md hover:shadow-xl transition-shadow"
       />
 
       <!-- the map container -->
@@ -192,7 +193,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
-import type { MeetingPlace, CreateMeetingPlaceDto, MeetingPlacePreviewDto } from '@/models/MeetingPlace'
+import type { CreateMeetingPlaceDto, MeetingPlacePreviewDto } from '@/models/MeetingPlace'
 import { meetingPlaceService } from '@/services/MeetingPlaceService'
 import * as z from 'zod'
 import { Search, MapPinCheckInside } from 'lucide-vue-next';

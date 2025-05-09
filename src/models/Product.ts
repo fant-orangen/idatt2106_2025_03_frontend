@@ -22,3 +22,7 @@ export interface CreateProductTypeRequest {
   caloriesPerUnit: number;
   category: 'food' | 'water' | 'medicine';
 }
+
+export interface UpdateProductBatchRequest {
+  unitsToRemove: number;
+}

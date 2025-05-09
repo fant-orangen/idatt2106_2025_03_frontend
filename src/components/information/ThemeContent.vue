@@ -42,7 +42,7 @@ import type { ScenarioThemeDetailsDto } from '@/models/ScenarioTheme'
 // Configure marked with essential options
 marked.setOptions({
   gfm: true,
-  breaks: true
+  breaks: true,
 })
 
 const props = defineProps<{
@@ -64,8 +64,8 @@ const parseMarkdown = (content: string | null) => {
   const renderer = new marked.Renderer()
 
   // Customize header rendering with proper types
-  renderer.heading = function({ tokens, depth }: { tokens: Token[]; depth: number }): string {
-    const text = tokens.map(t => (t as any).text || '').join('')
+  renderer.heading = function ({ tokens, depth }: { tokens: Token[]; depth: number }): string {
+    const text = tokens.map((t) => (t as any).text || '').join('')
     const fontSize = depth === 1 ? '3xl' : depth === 2 ? '2xl' : depth === 3 ? 'xl' : 'lg'
     return `<h${depth} class="text-${fontSize} font-bold my-4">${text}</h${depth}>`
   }
@@ -73,7 +73,7 @@ const parseMarkdown = (content: string | null) => {
   return marked.parse(content, {
     gfm: true,
     breaks: true,
-    renderer
+    renderer,
   })
 }
 
@@ -317,7 +317,10 @@ function closeEmergencyContacts() {
     </Card>
 
     <!-- Legacy Instructions (for backward compatibility) -->
-    <Card v-if="!scenarioTheme.before && !scenarioTheme.under && !scenarioTheme.after" class="mb-6 shadow-md">
+    <Card
+      v-if="!scenarioTheme.before && !scenarioTheme.under && !scenarioTheme.after"
+      class="mb-6 shadow-md"
+    >
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <BookOpen class="h-5 w-5 text-primary" />
@@ -366,7 +369,7 @@ function closeEmergencyContacts() {
       </CardFooter>
 
       <!-- Read More Modal -->
-      <Sheet :open="isReadMoreOpen" @update:open="closeReadMore">
+      <Sheet :open="isReadMoreOpen" @update:open="closeReadMore" class="z-100">
         <SheetContent class="overflow-y-auto z-101">
           <SheetHeader>
             <SheetTitle class="flex items-center gap-2">

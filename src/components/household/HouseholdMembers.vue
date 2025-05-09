@@ -137,7 +137,7 @@
                 <!-- User Icon with status indicator -->
                 <div class="flex-shrink-0 relative">
                   <div class="h-8 w-8 rounded-full bg-accent/50 flex items-center justify-center">
-                    <UserIcon class="h-4 w-4 text-accent-foreground" />
+                    <UserIcon class="h-4 w-4 text-accent-foreground" /> 
                   </div>
                 </div>
               </div>
@@ -192,7 +192,7 @@
             <div
               v-for="member in emptyMembers"
               :key="member.id"
-              class="relative group rounded-md border border-border bg-card hover:bg-accent/30 transition-all duration-200 overflow-hidden"
+              class="relative rounded-md border border-border bg-card transition-all duration-200 overflow-hidden"
               :class="{
                 'hover:border-destructive/50': manageMode,
                 'border-primary': isSelected(member)
