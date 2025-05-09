@@ -31,6 +31,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-vue": "^8.6.0",
+    "floating-vue": "^5.2.2",
     "fontawesome": "^5.6.3",
     "i18n": "^0.15.1",
     "leaflet": "^1.9.4",

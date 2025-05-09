@@ -44,6 +44,7 @@ import { useNotificationStore } from '@/stores/NotificationStore'
 
 // i18n
 import { useI18n } from 'vue-i18n'
+import { tooltip } from 'leaflet'
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -214,13 +215,13 @@ function logOut() {
       <div class="navbar-left flex flex-row gap-4">
 
     <!-- Logo -->
-      <RouterLink to="/" class="hover:text-primary flex items-center">
+      <RouterLink to="/" class="hover:text-primary flex items-center" v-tooltip="t('navigation.home')">
         <img src="../assets/krisefikserNY.png" alt="Logo" class="h-8 w-auto" />
       </RouterLink>
 
       <!-- Change Language -->
 
-      <Button variant="link" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
+      <Button variant="link" v-tooltip="t('language.change-language')" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
         <Globe class="h-4 w-4" />
         {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
       </Button>
@@ -247,7 +248,10 @@ function logOut() {
       >
       <DropdownMenu v-if="userStore.loggedIn">
         <DropdownMenuTrigger as-child>
-          <Button variant="ghost" class="cursor-pointer hover:bg-input dark:hover:bg-background/40">
+          <Button 
+            variant="ghost"
+            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            v-tooltip="t('settings.account.myAccount')">
             <User class="h-5 w-5" />
             <span class="hidden md:inline-flex">
               {{ profile.firstName }} {{ profile.lastName }}
@@ -289,6 +293,7 @@ function logOut() {
       <Popover v-if="userStore.loggedIn">
         <PopoverTrigger as="button" class="no-border relative">
           <Button
+            v-tooltip="t('notifications.notifications')"
             variant="ghost"
             size="icon"
             class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
@@ -307,8 +312,8 @@ function logOut() {
       </Popover>
 
       <!-- Dark Mode Toggle -->
-
       <Button
+        v-tooltip="t('navigation.light-mode') ? t('navigation.dark-mode') : t('navigation.light-mode')"
         variant="ghost"
         size="icon"
         class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
@@ -321,6 +326,7 @@ function logOut() {
       <!-- Mobile Menu -->
 
       <Button
+        v-tooltip="t('navigation.menu')"
         class="hamburger-menu md:hidden z-9999"
         variant="ghost"
         size="icon"
