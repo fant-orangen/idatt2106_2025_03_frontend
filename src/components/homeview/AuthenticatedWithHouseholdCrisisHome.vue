@@ -312,9 +312,9 @@ const getWaterPriority = (days: number): Priority => {
 }
 
 /**
- * Returns CSS classes for an item based on its priority
- * @param {Priority} priority - The priority level
- * @returns {string} CSS classes
+ * Returns CSS classes for styling items based on their priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for styling
  */
 const getItemClasses = (priority: Priority): string => {
   switch (priority) {
@@ -332,9 +332,9 @@ const getItemClasses = (priority: Priority): string => {
 }
 
 /**
- * Returns CSS classes for an icon based on its priority
- * @param {Priority} priority - The priority level
- * @returns {string} CSS classes
+ * Returns CSS classes for styling icons based on priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for icon styling
  */
 const getIconClass = (priority: Priority): string => {
   switch (priority) {

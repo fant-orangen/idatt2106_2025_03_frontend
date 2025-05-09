@@ -190,15 +190,17 @@
 
         <!-- Legend Toggle Button -->
         <Button
-          @click="toggleLegend"
-          v-tooltip="t('legend.toggle-legend')"
-          class="absolute bottom-3 right-3 z-30 rounded-full p-2 shadow-md bg-neutral-200 hover:bg-neutral-400 dark:bg-neutral-500 dark:hover:bg-neutral-700 hover:cursor-pointer transition-colors z-52"
-        >
-          <font-awesome-icon :icon="['fas', showLegend ? 'chevron-right' : 'chevron-left']" class="text-black dark:text-white" />
+          @click.stop="toggleLegend"
+          v-tooltip="t('legend.toggle')"
+          class="legend-toggle-button absolute bottom-3 right-3 z-30 rounded-full p-2 shadow-md text-black dark:text-white bg-neutral-200 hover:bg-neutral-400 dark:bg-neutral-500 dark:hover:bg-neutral-700 hover:cursor-pointer transition-colors z-52"
+          >
+          <font-awesome-icon :icon="['fas', showLegend ? 'chevron-right' : 'chevron-left']" />
+          {{t('legend.toggle')}}
         </Button>
 
         <!-- Collapsible Legend Sidebar -->
         <div
+          ref="legendRef"
           class="absolute top-0 right-0 h-full bg-white dark:bg-black border-l border-[var(--crisis-level-yellow)] p-3 transition-all duration-300 ease-in-out z-51 overflow-y-auto"
           :class="{ 'w-[250px]': showLegend, 'w-0 opacity-0': !showLegend }"
         >
@@ -212,7 +214,7 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ChevronDown, ChevronUp } from 'lucide-vue-next';
 import MapComponent from '@/components/map/MapComponent.vue';
@@ -272,9 +274,10 @@ library.add(
 
 const { t } = useI18n();
 const showMap = ref(false);
-const showLegend = ref(true); // Legend is visible by default
+const showLegend = ref(true);
 const legendHeight = ref(400); // Default height
 const mapComponentRef = ref<any>(null);
+const legendRef = ref<HTMLElement | null>(null);
 
 // Map data
 const showPois = ref(true);
@@ -444,6 +447,13 @@ function resetFilters() {
   distanceInMeters.value = 1000;
   poiError.value = null;
   pois.value = [...allPois.value];
+}
+
+// Function to handle clicks outside the legend
+function handleClickOutside(event: MouseEvent) {
+  if (legendRef.value && legendRef.value.contains && !legendRef.value.contains(event.target as Node)) {
+    showLegend.value = false; // Close the legend
+  }
 }
 
 /**
@@ -634,6 +644,15 @@ function toggleMeetingPlacesVisibility() {
   showMeetingPlaces.value = !showMeetingPlaces.value;
 }
 
+// Add and remove the event listener
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
+
 /**
  * Sets the legend height based on the map container and legend content
  */
@@ -656,5 +675,6 @@ onMounted(() => {
       }
     }
   });
+  showLegend.value = true;
 });
 </script>
