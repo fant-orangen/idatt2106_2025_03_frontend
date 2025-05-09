@@ -20,7 +20,7 @@
     <!-- Expandable Map Section -->
     <div
       v-if="showMap"
-      class="map-container overflow-hidden transition-all duration-500 ease-in-out"
+      class="map-container overflow-hidden transition-all duration-500 ease-in-out z-50"
       :class="{'h-auto': showMap, 'h-0': !showMap}"
     >
       <!-- Reusing MapOverviewComponent's filter-toggle section -->
@@ -176,7 +176,7 @@
       <!-- Map and Legend container with collapsible legend -->
       <div class="relative w-full h-[400px] md:h-[600px] lg:h-[800px]">
         <!-- Map Component -->
-        <div class="absolute inset-0 h-full w-full">
+        <div class="absolute inset-0 h-full w-full z-50">
           <MapComponent
             ref="mapComponentRef"
             :pois="showPois ? convertedPois : []"
@@ -192,14 +192,15 @@
         <!-- Legend Toggle Button -->
         <Button
           @click="toggleLegend"
-          class="absolute bottom-3 right-3 z-30 rounded-full p-2 shadow-md bg-neutral-200 hover:bg-neutral-400 dark:bg-neutral-500 dark:hover:bg-neutral-700 hover:cursor-pointer transition-colors"
+          v-tooltip="t('legend.toggle-legend')"
+          class="absolute bottom-3 right-3 z-30 rounded-full p-2 shadow-md bg-neutral-200 hover:bg-neutral-400 dark:bg-neutral-500 dark:hover:bg-neutral-700 hover:cursor-pointer transition-colors z-52"
         >
           <font-awesome-icon :icon="['fas', showLegend ? 'chevron-right' : 'chevron-left']" class="text-black dark:text-white" />
         </Button>
 
         <!-- Collapsible Legend Sidebar -->
         <div
-          class="absolute top-0 right-0 h-full border-l border-[var(--crisis-level-yellow)] p-3 transition-all duration-300 ease-in-out z-10 overflow-y-auto"
+          class="absolute top-0 right-0 h-full bg-white dark:bg-black border-l border-[var(--crisis-level-yellow)] p-3 transition-all duration-300 ease-in-out z-51 overflow-y-auto"
           :class="{ 'w-[250px]': showLegend, 'w-0 opacity-0': !showLegend }"
         >
           <MapLegend />
@@ -587,7 +588,7 @@ watch(
         meetingPlaces.value = await fetchMeetingPlacesNearby(
           loc.latitude,
           loc.longitude,
-          distanceInMeters.value / 1000  // Convert meters to kilometers for API
+          distanceInMeters.value
         );
       } finally {
         isLoadingMeetings.value = false;

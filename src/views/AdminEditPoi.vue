@@ -30,7 +30,7 @@
       <Button @click="cancelUpdate()">{{ t('navigation.go-back') }}</Button>
     </div>
 
-    <div class="flex flex-wrap justify-center gap-4">
+    <div class="flex flex-wrap justify-center gap-4 pb-30">
 
       <!-- List of POI's to choose from -->
       <div v-if="!selectedPoi" class="min-w-fit max-w-lg max-h-[600px] flex-grow">
@@ -217,12 +217,14 @@
         </DialogHeader>
       </DialogContent>
     </Dialog>
-
-
-
   </div>
 </template>
+
 <script setup lang="ts">
+/**
+ * @component AdminEditPOI
+ * @description displays page to edit an existing point of interest.
+ */
 import { ref, onMounted, watch, computed, nextTick } from 'vue';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query';
 import { useI18n } from 'vue-i18n';

@@ -44,10 +44,28 @@ export async function getCurrentHousehold(): Promise<Household | null> {
  * Create a new household
  * @param householdData The household data
  * @returns The created household
+ * @throws Error with appropriate message (e.g., if user already has a household)
  */
 export async function createHousehold(householdData: HouseholdCreateRequestDto): Promise<Household> {
-  const response = await api.post('/user/households', householdData);
-  return response.data;
+  try {
+    const response = await api.post('/user/households', householdData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating household:', error);
+
+    if (error && typeof error === 'object' && 'response' in error) {
+      const errorResponse = (error as any).response;
+
+      if (errorResponse && typeof errorResponse === 'object') {
+        const errorMessage =
+          typeof errorResponse.data === 'string'
+            ? errorResponse.data
+            : JSON.stringify(errorResponse.data || 'Failed to create household');
+        throw new Error(errorMessage);
+      }
+    }
+    throw new Error('Could not create household. Please try again later.');
+  }
 }
 
 /**

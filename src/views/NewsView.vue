@@ -1,4 +1,16 @@
 <script setup lang="ts">
+
+/**
+ * @component NewsView component
+ * @description Displays a paginated list of news articles from the user's news digest.
+ *
+ * Features:
+ * - Displays news articles in a timeline format
+ * - Supports infinite scrolling pagination
+ * - Shows loading states and error messages
+ * - Formats dates using the formatDateFull utility
+ */
+
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { News } from '@/models/News';
@@ -7,34 +19,19 @@ import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { formatDateFull } from '@/utils/dateUtils';
 
 const { t } = useI18n();
+
+/**
+ * Reactive state
+ */
 const news = ref<News[]>([]);
 const loading = ref(false);
 const hasMore = ref(true);
 const page = ref(0);
-const pageSize = 5; // Reduced page size for more controlled loading
+const pageSize = 5;
 
 /**
- * NewsView component
- *
- * This component displays a paginated list of news articles from the user's news digest.
- * It uses infinite scrolling to load more articles as the user scrolls down.
- *
- * Features:
- * - Displays news articles in a timeline format
- * - Supports infinite scrolling pagination
- * - Shows loading states and error messages
- * - Formats dates using the formatDateFull utility
- *
- * State Management:
- * - news: Array of news articles
- * - loading: Boolean indicating if more news is being loaded
- * - hasMore: Boolean indicating if there are more articles to load
- * - page: Current page number for pagination
- * - pageSize: Number of articles to load per page
- * - error: Error message if news loading fails
- * - initialLoading: Boolean indicating if initial news load is in progress
- *
- * @component
+ * Fetch and append more news articles.
+ * Triggered on mount and when scrolled to the bottom.
  */
 const loadMoreNews = async () => {
   if (loading.value || !hasMore.value) return;
@@ -60,14 +57,20 @@ const loadMoreNews = async () => {
   }
 };
 
+/**
+ * Initial fetch on component mount.
+ */
+
 onMounted(loadMoreNews);
 </script>
 
 <template>
   <div class="news-page">
+
     <!-- Fixed header section -->
     <div class="header-section">
       <div class="content-wrapper w-full max-w-3xl mx-auto p-6">
+
         <!-- Breadcrumb -->
         <div class="breadcrumb">
           <span>{{ t('navigation.home')}}</span> &gt; <span class="current">{{ t('info.news')}}</span>

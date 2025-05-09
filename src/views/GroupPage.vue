@@ -33,41 +33,15 @@
         {{ t('group.invite-household') }}
       </Button>
 
-      <!-- Create group section -->
+      <!-- Create group button -->
       <div v-if="isAdmin" class="mt-8 border-t border-sidebar-border pt-4">
         <Button
-            v-if="!showCreateGroupInput"
-            @click="showCreateGroupInput = true"
+            @click="showCreateGroupDialog = true"
             variant="outline"
             class="mt-4 w-full hover:cursor-pointer hover:bg-sidebar-primary/15 dark:hover:bg-sidebar-primary/10"
-          >
+        >
           {{ t('group.create-group') }}
         </Button>
-        <div v-else class="space-y-2">
-          <Input
-              v-model="newGroupName"
-              type="text"
-              :placeholder="t('group.enter-group-name')"
-              variant="outline"
-              class="mt-4 focus:ring-2 focus:ring-primary"
-              />
-          <div class="flex gap-2">
-            <Button
-                @click="createGroup"
-                variant="outline"
-                class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/20"
-                :disabled="!newGroupName.trim()"
-            >
-              {{ t('group.create') }}
-            </Button>
-            <Button
-                @click="cancelCreateGroup"
-                variant="destructive"
-                class="mt-4 hover:cursor-pointer hover:bg-destructive/70"            >
-              {{ t('common.cancel') }}
-            </Button>
-          </div>
-        </div>
       </div>
 
       <!-- Households in group -->
@@ -96,9 +70,9 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
         <Button
-          v-if="isAdmin && currentGroupId"
-          @click="leaveCurrentGroup"
-          class="text-sm text-white bg-destructive hover:cursor-pointer hover:bg-destructive/70"
+            v-if="isAdmin && currentGroupId"
+            @click="leaveCurrentGroup"
+            class="text-sm text-white bg-destructive hover:cursor-pointer hover:bg-destructive/70"
         >
           {{ t('group.leave-group') }}
         </Button>
@@ -121,6 +95,16 @@
       </div>
     </main>
   </div>
+  <InviteHouseholdDialog
+      :open="showInviteDialog"
+      :group-id="selectedGroupId || 0"
+      @update:open="showInviteDialog = $event"
+  />
+  <CreateGroupDialog
+      :open="showCreateGroupDialog"
+      @update:open="showCreateGroupDialog = $event"
+      @group-created="refreshGroups"
+  />
 </template>
 
 
@@ -137,7 +121,8 @@ import { isCurrentUserHouseholdAdmin } from '@/services/HouseholdService';
 import { House } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
+import InviteHouseholdDialog from '@/components/group/InviteHouseholdDialog.vue';
+import CreateGroupDialog from '@/components/group/CreateGroupDialog.vue';
 
 
 
@@ -154,9 +139,10 @@ const groups = ref<Group[]>([]);
 const households = ref<Household[]>([]);
 const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
-const showCreateGroupInput = ref(false);
-const newGroupName = ref('');
 const isAdmin = ref(false);
+const showInviteDialog = ref(false);
+const showCreateGroupDialog = ref(false);
+const selectedGroupId = ref<number | null>(null);
 
 // Check if user is household admin when component mounts
 onMounted(async () => {
@@ -190,17 +176,17 @@ watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
     if (newSearchText.trim() === '') {
       // If search is empty, get all product types
       response = await groupService.getContributedProductTypes(
-        { groupId: newGroupId },
-        0,
-        20
+          { groupId: newGroupId },
+          0,
+          20
       );
     } else {
       // If there's a search term, use the search endpoint
       response = await groupService.searchContributedProductTypes(
-        newGroupId,
-        newSearchText,
-        0,
-        20
+          newGroupId,
+          newSearchText,
+          0,
+          20
       );
     }
 
@@ -243,8 +229,8 @@ function switchToGroup(groupId: number) {
 }
 
 function inviteHousehold() {
-  // TODO: Implement household invitation
-  console.log('Invite household not implemented');
+  selectedGroupId.value = currentGroupId.value;
+  showInviteDialog.value = true;
 }
 
 async function leaveCurrentGroup() {
@@ -271,13 +257,8 @@ async function leaveCurrentGroup() {
   }
 }
 
-async function createGroup() {
-  if (!newGroupName.value.trim()) return;
-
+async function refreshGroups() {
   try {
-    await groupService.createGroup(newGroupName.value.trim());
-
-    // Refresh the groups list
     const response = await groupService.getCurrentUserGroups();
     if (response?.content?.length > 0) {
       groups.value = response.content.map(group => ({
@@ -285,23 +266,12 @@ async function createGroup() {
         name: group.name,
         groupId: group.id
       }));
-      // Switch to the newly created group
-      const newGroup = groups.value.find(g => g.name === newGroupName.value.trim());
-      if (newGroup) {
-        switchToGroup(newGroup.groupId);
+      if (groups.value.length && !currentGroupId.value) {
+        switchToGroup(groups.value[0].groupId);
       }
     }
-
-    // Reset the create group form
-    cancelCreateGroup();
   } catch (error) {
-    console.error('Error creating group:', error);
-    alert(error instanceof Error ? error.message : 'Det oppstod en feil ved opprettelse av gruppen');
+    console.error('Error refreshing groups:', error);
   }
-}
-
-function cancelCreateGroup() {
-  showCreateGroupInput.value = false;
-  newGroupName.value = '';
 }
 </script>

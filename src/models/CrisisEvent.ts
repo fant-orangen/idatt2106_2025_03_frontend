@@ -1,4 +1,3 @@
-
 /**
  * Represents a full crisis event with all details.
  * This interface is used for displaying detailed information about a crisis event.
@@ -81,6 +80,8 @@ export interface CrisisEventPreviewDto {
   severity: 'green' | 'yellow' | 'red';
   /** ISO string timestamp when the crisis event started */
   startTime: string;
+  /** ID of the associated scenario theme, if any */
+  scenarioThemeId: number;
 }
 
 export interface CreateCrisisEventDto {

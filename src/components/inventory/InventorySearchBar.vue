@@ -5,12 +5,12 @@
       @input="onInput"
       type="text"
       class="flex-1 w-full bg-input text-foreground py-2 px-3 rounded-md border border-border"
-      :placeholder="t('inventory.search.placeholder')"
+      :placeholder="t('inventory.search-placeholder')"
     />
     <Button
     class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/80 dark:hover:bg-sidebar-primary/10"
     @click="clearSearch">
-      {{ t('inventory.search.clear') }}
+      {{ t('inventory.search-clear') }}
     </Button>
   </div>
 </template>

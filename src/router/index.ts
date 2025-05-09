@@ -125,9 +125,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/admin/edit-POI',
-    name: 'AdminEditPOI',
-    component: () => import('@/views/AdminEditPOI.vue'),
+    path: '/admin/edit-poi',
+    name: 'AdminEditPoi',
+    component: () => import('@/views/AdminEditPoi.vue'),
     meta: { requiresAdmin: true },
   },
   {

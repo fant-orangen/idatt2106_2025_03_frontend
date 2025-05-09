@@ -1,7 +1,7 @@
 export interface GroupSummary {
   id: number;
   name: string;
-  createdByUserId: number;
+  createdByUserId?: number;
   createdAt: string;
 }
 
