@@ -1,5 +1,5 @@
 <template>
-  <div id="mapContainer" class="h-full w-full relative">
+  <div id="mapContainer" class="h-full w-full relative not-dark">
     <div :id="mapContainerId" class="w-full h-full"></div>
   </div>
 </template>
@@ -769,6 +769,7 @@ export default defineComponent({
           // Remove any default collapse buttons
           const existingCollapseButtons = container.querySelectorAll('.leaflet-routing-collapse-btn');
           existingCollapseButtons.forEach(btn => btn.remove());
+          container.classList.add('custom-directions-panel');
 
           const controlTitle = document.createElement('div');
           controlTitle.className = 'routing-title';
@@ -1718,4 +1719,25 @@ export default defineComponent({
   /* hint GPU-acceleration and keep the canvas pixel-sharp */
   will-change: transform;
 }
+
+/* Ensure the component is not affected by dark mode */
+:deep(.not-dark) {
+  background-color: white !important; /* Set a light background */
+  color: black !important; /* Set text color to black */
+}
+
+/* Override any dark mode-specific styles */
+:deep(.not-dark .leaflet-container) {
+  background-color: white !important;
+  color: black !important;
+}
+
+:deep(.custom-directions-panel) {
+  background-color: #f9f9f9; /* Light background */
+  color: #333; /* Dark text */
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 </style>
