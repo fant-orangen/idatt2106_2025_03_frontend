@@ -381,7 +381,7 @@ const formSchema = toTypedSchema(
     address: z.string().max(100, t('add-event-info.errors.address')).optional(),
     radius: z.preprocess(
       (val) => (val === '' || val === null || val === undefined ? undefined : Number(val)),
-      z.number({required_error: "Radius is required"}).min(1, t('add-event-info.errors.radius')).max(10000, t('add-event-info.errors.radius'))
+      z.number({required_error: "Radius is required"}).min(1, t('add-event-info.errors.radius')).max(100000, t('add-event-info.errors.radius'))
     ),
     time: z.string().optional(),
     date: z.string().optional(),
