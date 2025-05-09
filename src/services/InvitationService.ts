@@ -7,7 +7,7 @@
  * @module InvitationService
  */
 import api from '@/services/api/AxiosInstance.ts'
-import type { Invitation } from '@/models/Invitation'
+import type { Invitation, GroupInvitation } from '@/models/Invitation'
 import type { Household, HouseholdJoinRequestDto } from '@/models/Household'
 
 /**
@@ -21,7 +21,6 @@ export async function fetchPendingInvitations(): Promise<Invitation[]> {
     const response = await api.get<Invitation[]>('/user/invitations/pending');
     return response.data;
   } catch (error) {
-    console.error('Failed to fetch pending invitations:', error);
     throw error;
   }
 }
@@ -39,9 +38,7 @@ export async function acceptInvitation(token: string): Promise<Household> {
     const response = await api.post<Household>('/user/invitations/accept', payload);
     return response.data;
   } catch (error: any) {
-    console.error('Failed to accept invitation:', error);
     if (error.response && error.response.data) {
-      // If the error is that the user already has a household, provide a more helpful message
       if (error.response.data.includes('already has a household')) {
         throw new Error('You already have a household. Please leave your current household before accepting this invitation.');
       }
@@ -60,4 +57,66 @@ export async function acceptInvitation(token: string): Promise<Household> {
 export async function declineInvitation(token: string): Promise<void> {
   const payload: HouseholdJoinRequestDto = { token };
   await api.post('/user/invitations/decline', payload);
+}
+
+/**
+ * Send a group invitation to a household
+ * @param householdName The name of the household to invite
+ * @param groupId The ID of the group to invite the household to
+ * @returns Promise that resolves when operation is successful
+ * @throws Error if the household doesn't exist or cannot be invited
+ */
+export async function sendGroupInvitation(householdName: string, groupId: number): Promise<void> {
+  try {
+    const payload = {
+      householdName,
+      groupId
+    };
+    const response = await api.post('/user/groups/invite', payload);
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+  }
+}
+
+/**
+ * Get all pending group invitations for the current user's household
+ * @returns List of pending group invitations
+ */
+export async function getPendingGroupInvitations(): Promise<GroupInvitation[]> {
+  try {
+    const response = await api.get('/user/groups/invitations');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Accept a group invitation
+ * @param invitationId The ID of the invitation to accept
+ * @returns Promise that resolves when operation is successful
+ * @throws Error if the user is not a member of the invited household or the invitation doesn't exist
+ */
+export async function acceptGroupInvitation(invitationId: number): Promise<void> {
+  try {
+    await api.patch(`/user/groups/invitations/${invitationId}/accept`);
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Reject a group invitation
+ * @param invitationId The ID of the invitation to reject
+ * @returns Promise that resolves when operation is successful
+ * @throws Error if the user is not a member of the invited household or the invitation doesn't exist
+ */
+export async function rejectGroupInvitation(invitationId: number): Promise<void> {
+  try {
+    await api.patch(`/user/groups/invitations/${invitationId}/reject`);
+  } catch (error) {
+    throw error;
+  }
 }

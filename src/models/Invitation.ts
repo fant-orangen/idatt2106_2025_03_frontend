@@ -25,3 +25,19 @@ export interface Invitation {
   acceptedAt: string | null;
   declinedAt: string | null;
 }
+
+/**
+* Interface representing a group invitation.
+*
+* @interface GroupInvitation
+*/
+
+export interface GroupInvitation {
+  id: number;
+  group: {
+    id: number;
+    name: string;
+    createdAt: string;
+  }
+}
+
