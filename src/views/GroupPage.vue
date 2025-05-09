@@ -105,6 +105,11 @@
       @update:open="showCreateGroupDialog = $event"
       @group-created="refreshGroups"
   />
+  <LeaveGroupDialog
+      :open="showLeaveGroupDialog"
+      @update:open="showLeaveGroupDialog = $event"
+      @confirm="performLeaveGroup"
+  />
 </template>
 
 
@@ -123,6 +128,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import InviteHouseholdDialog from '@/components/group/InviteHouseholdDialog.vue';
 import CreateGroupDialog from '@/components/group/CreateGroupDialog.vue';
+import LeaveGroupDialog from '@/components/group/LeaveGroupDialog.vue';
 
 
 
@@ -142,6 +148,7 @@ const currentGroupId = computed(() => groupStore.currentGroupId);
 const isAdmin = ref(false);
 const showInviteDialog = ref(false);
 const showCreateGroupDialog = ref(false);
+const showLeaveGroupDialog = ref(false);
 const selectedGroupId = ref<number | null>(null);
 
 // Check if user is household admin when component mounts
@@ -233,11 +240,13 @@ function inviteHousehold() {
   showInviteDialog.value = true;
 }
 
-async function leaveCurrentGroup() {
+function leaveCurrentGroup() {
   if (!currentGroupId.value) return;
+  showLeaveGroupDialog.value = true;
+}
 
-  const confirmLeave = confirm('Er du sikker på at du vil forlate denne gruppen?');
-  if (!confirmLeave) return;
+async function performLeaveGroup() {
+  if (!currentGroupId.value) return;
 
   try {
     await groupService.leaveGroup(currentGroupId.value);
