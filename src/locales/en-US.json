@@ -1285,7 +1285,21 @@
     "food-delete-type": "Remove type",
     "food-calories": "Kcal per unit",
     "food-amount": "Amount",
-    "food-exists-message": "This item already exists. Select 'Edit' to add a new batch."
+    "food-exists-message": "This item already exists. Select 'Edit' to add a new batch.",
+    "button-food": "Food",
+    "button-water": "Water",
+    "button-medicine": "Medicine",
+    "water": {
+      "title": "Water",
+      "total": "Total ",
+      "liters": "L",
+      "add-new": "Add new",
+      "product-name": "Container",
+      "add": "Add",
+      "share": "Share",
+      "delete-type": "Delete type"
+    }
+
   },
   "group": {
     "create-group-title": "Title for your group",

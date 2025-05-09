@@ -2020,7 +2020,31 @@
     "food-delete-type": "Fjern type",
     "food-calories": "Kcal per enhet",
     "food-amount": "Mengde",
-    "food-exists-message": "Denne varen finnes allerede. Vennligst trykk 'Rediger' for å legge til ny batch."
+    "food-exists-message": "Denne varen finnes allerede. Vennligst trykk 'Rediger' for å legge til ny batch.",
+    "button-food": "Mat",
+    "button-water": "Vann",
+    "button-medicine": "Medisin",
+    "water": {
+      "title": "Vann",
+      "total": "Totalt ",
+      "liters": "L",
+      "add-new": "Legg til ny beholder",
+      "product-name": "Beholder",
+      "add": "Legg til beholder",
+      "share": "Del",
+      "delete-type": "Slett type"
+    },
+    "medicine": {
+      "title": "Medisin",
+      "product-name": "Navn på medisin",
+      "already-shared": "Allerede delt",
+      "share": "Del",
+      "add": "Legg til medisin",
+      "delete-type": "Slett type",
+      "add-new": "Legg til ny",
+      "exists-title": "",
+      "exists-message": "Denne medisinen finnes allerede.Trykk 'Rediger' for å redigere den."
+    }
   },
   "group" : {
     "create-group-title": "Tittel for gruppen din",
