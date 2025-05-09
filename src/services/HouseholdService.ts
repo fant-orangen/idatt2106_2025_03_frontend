@@ -54,10 +54,13 @@ export async function createHousehold(householdData: HouseholdCreateRequestDto):
     console.error('Error creating household:', error);
 
     if (error && typeof error === 'object' && 'response' in error) {
-      const errorResponse = error.response;
+      const errorResponse = (error as any).response;
 
       if (errorResponse && typeof errorResponse === 'object') {
-        const errorMessage = errorResponse.data || 'Failed to create household';
+        const errorMessage =
+          typeof errorResponse.data === 'string'
+            ? errorResponse.data
+            : JSON.stringify(errorResponse.data || 'Failed to create household');
         throw new Error(errorMessage);
       }
     }
