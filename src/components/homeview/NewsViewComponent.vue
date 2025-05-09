@@ -41,6 +41,16 @@
                 </div>
                 <h3 class="font-medium mt-1">{{ item.title }}</h3>
                 <p class="text-sm mt-1">{{ item.content }}</p>
+
+                <!-- Crisis Event Button -->
+                <Button
+                  variant="outline"
+                  size="sm"
+                  class="mt-2 text-[var(--default-blue2)] border-[var(--default-blue2)]/30 hover:bg-[var(--default-blue2)]/10"
+                  @click="navigateToCrisis(item.crisisEventId)"
+                >
+                  {{ item.crisisEventName }} <ChevronRight class="h-4 w-4 ml-1" />
+                </Button>
               </div>
             </li>
           </ul>
@@ -124,6 +134,15 @@ const loadMoreNews = async () => {
  */
 const navigateTo = (route: string) => {
   router.push(route);
+};
+
+/**
+ * Navigates to the crisis event page with the specified ID
+ *
+ * @param {number} crisisEventId - The ID of the crisis event
+ */
+const navigateToCrisis = (crisisEventId: number) => {
+  router.push(`/crisis-event?id=${crisisEventId}`);
 };
 
 // Load initial news data when component mounts

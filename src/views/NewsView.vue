@@ -28,7 +28,7 @@
                 class="mt-3 bg-[var(--default-blue2)] hover:bg-[var(--default-blue2)]/90"
                 @click="navigateToCrisis(item.crisisEventId)"
               >
-                {{ t('news.view_crisis') }}: {{ item.crisisEventName }} <ChevronRight class="h-4 w-4 ml-1" />
+                {{ item.crisisEventName }} <ChevronRight class="h-4 w-4 ml-1" />
               </Button>
 
               <!-- Additional Crisis Info (Contextual) -->
