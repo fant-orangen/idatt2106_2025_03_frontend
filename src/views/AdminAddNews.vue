@@ -523,6 +523,10 @@ watch(selectedNews, async (news) => {
   }
 })
 
+/**
+ * Fetches crisis event details from backend API
+ * @param crisisId - the Id of the chosen crisis.
+ */
 async function getEventFromArticle(crisisId: number) {
   try {
     const response = await fetchCrisisEventById(crisisId)
@@ -641,7 +645,11 @@ async function archivePublishedArticle() {
 async function saveNewArticle(data: CreateNewsDto) {
   try {
     await adminAddNews(data)
-    successToast('Published the new article!')
+    if (data.status === Status.PUBLISHED) {
+      successToast('Publiserte artikkelen!')
+    } else {
+      successToast('Utkastet er lagret!')
+    }
     cancelInput()
     updateLists()
   } catch (error) {

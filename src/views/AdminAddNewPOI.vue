@@ -510,26 +510,20 @@ function handleLocationCleared(): void {
  * @param {number} lng - Longitude for the marker.
  */
 function updateMapMarker(lat: number, lng: number): void {
-  // Ensure map component and its methods are available
   if (!mapComponent.value?.addMarker) {
     console.error('Map component or addMarker method not available');
     return;
   }
 
-  // Remove existing marker if present
   if (tempMarker.value && mapComponent.value.removeMarker) {
     mapComponent.value.removeMarker(tempMarker.value as L.Marker);
   }
-
-  // Get title and description from form values (use fallbacks)
   const title = form.values.title || t('navigation.new-POI') || 'Nytt interessepunkt';
   const description = form.values.description || '';
   const popupContent = `<b>${title}</b><br>${description}`;
 
-  // Add the new marker
   tempMarker.value = mapComponent.value.addMarker(lat, lng, title);
 
-  // Bind popup and tooltip if marker exists and methods are available
   if (tempMarker.value) {
     if (typeof tempMarker.value.bindPopup === 'function') {
       tempMarker.value.bindPopup(popupContent).openPopup();
@@ -560,37 +554,29 @@ const onSubmit = form.handleSubmit(async (values) => {
   isSubmitting.value = true;
 
   try {
-    // Map POI type to backend ID
     const poiTypeId = values.type;
-
-
-        // Prepare payload in the new required shape
-          const poiData = {
-            name: values.title,
-            latitude: values.latitude ?? null,
-            longitude: values.longitude ?? null,
-            poiTypeId: poiTypeId,
-            description: values.description,
-            address: values.address || null,
-            openFrom: values.openfrom || null,
-            openTo: values.opento || null,
-            contactInfo: values.contactinfo || null,
-          };
+    const poiData = {
+      name: values.title,
+      latitude: values.latitude ?? null,
+      longitude: values.longitude ?? null,
+      poiTypeId: poiTypeId,
+      description: values.description,
+      address: values.address || null,
+      openFrom: values.openfrom || null,
+      openTo: values.opento || null,
+      contactInfo: values.contactinfo || null,
+    };
 
     console.log('Submitting POI data:', poiData);
     const response = await createPOI(poiData);
     console.log('POI created successfully:', response.data);
 
-    // Show success dialog on successful creation
     createdPOIName.value = values.title;
     isSuccessDialogOpen.value = true;
 
   } catch (error: any) {
-    // Handle errors during submission
     console.error('Error creating POI:', error);
-    // Extract a user-friendly error message from the API response or error object
     const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
-    // Display error to user (e.g., associate with a form field)
     form.setFieldError('title', `${t('admin.submission-error') || 'Submission error:'} ${errorMessage}`);
   } finally {
     isSubmitting.value = false;
