@@ -18,7 +18,10 @@ import {
   Menu,
   X,
   BookOpen,
+  House,
 } from 'lucide-vue-next'
+import { library } from '@fortawesome/fontawesome-svg-core';
+
 
 import {
   DropdownMenu,
@@ -271,6 +274,47 @@ function logOut() {
         v-if="!userStore.loggedIn"
         >{{ t('login.signup') }}</Button
       >
+
+      <DropdownMenu v-if="userStore.loggedIn">
+        <DropdownMenuTrigger as-child>
+          <Button
+            variant="ghost"
+            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            v-tooltip="t('household.my-household')">
+            <House class="h-5 w-5" />
+            <span class="hidden md:inline-flex">
+              {{ t('household.my-household') }}
+            </span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="z-101">
+          <DropdownMenuLabel>{{ t('household.my-household') }}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem @click="goToPage('/household')">
+              <House class="mr-2 h-4 w-4" />
+              <span>{{ t('household.my-household') }}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/group')">
+              <font-awesome-icon :icon="['fas', 'users']" class="mr-2 h-4 w-4" />
+              <span>{{ t('group.title') }}</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Button v-if='userStore.isAdminUser'
+        variant="ghost"
+        class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+        v-tooltip="t('navigation.admin-panel')"
+        @click="goToPage('/admin/admin-panel')">
+        <ShieldUser class="h-5 w-5" />
+        <span class="hidden md:inline-flex">
+          {{ $t('navigation.admin-panel') }}
+        </span>
+      </Button>
+        
+
       <DropdownMenu v-if="userStore.loggedIn">
         <DropdownMenuTrigger as-child>
           <Button 
@@ -298,11 +342,6 @@ function logOut() {
             <DropdownMenuItem @click="goToPage('/settings')">
               <Settings class="mr-2 h-4 w-4" />
               <span>{{ t('settings.settings') }}</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator v-if="userStore.isAdminUser" />
-            <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin/admin-panel')">
-              <ShieldUser class="mr-2 h-4 w-4" />
-              <span>{{ t('navigation.admin-panel') }}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="logOut()">
