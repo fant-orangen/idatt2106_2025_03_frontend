@@ -338,7 +338,7 @@ function logOut() {
 
       <!-- Dark Mode Toggle -->
       <Button
-        v-tooltip="t('navigation.light-mode') ? t('navigation.dark-mode') : t('navigation.light-mode')"
+        v-tooltip="t('navigation.change-mode')"
         variant="ghost"
         size="icon"
         class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
@@ -375,6 +375,7 @@ function logOut() {
         >
           <div class="menu-header flex items-center justify-between">
             <Button
+              v-tooltip="t('navigation.change-mode')"
               variant="ghost"
               size="icon"
               class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
