@@ -1,4 +1,5 @@
 <template>
+
   <!-- Loading state -->
   <div v-if="isLoading && userStore.isAuthenticated" class="content w-full max-w-7xl mx-auto pt-0 flex justify-center items-center min-h-[50vh]">
     <div class="text-center">
@@ -29,6 +30,7 @@
   <div v-else class="content w-full max-w-7xl mx-auto pt-0">
     <UnauthenticatedHome />
   </div>
+
 </template>
 
 <script setup lang="ts">

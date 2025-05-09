@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 import QuizHistoryComponent from '@/components/gamification/quiz/QuizHistoryComponent.vue'
-import { quizService } from '@/services/QuizService.ts'
 
 import {
   Breadcrumb,
@@ -26,15 +25,17 @@ const props = defineProps<{
   <Breadcrumb class="m-5">
     <BreadcrumbList>
       <BreadcrumbItem>
-        <BreadcrumbLink href="/"> Home </BreadcrumbLink>
+        <BreadcrumbLink href="/"> {{ $t('navigation.home') }} </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbLink href="/quiz-overview"> Quiz Overview </BreadcrumbLink>
+        <BreadcrumbLink href="/quiz-overview">
+          {{ $t('gamification.gameHistory') }}
+        </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbPage> Quiz History - {{ props.quizId }} </BreadcrumbPage>
+        <BreadcrumbPage> {{ props.quizId }} </BreadcrumbPage>
       </BreadcrumbItem>
     </BreadcrumbList>
   </Breadcrumb>

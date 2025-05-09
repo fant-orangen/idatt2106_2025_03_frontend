@@ -69,33 +69,38 @@ function validateAndSubmit() {
 
 <template>
   <!-- Define Quiz Window -->
-  <div class="define-quiz w-6/7 mt-50 md:w-1/2 mx-auto md:min-w-160">
+  <div class="define-quiz w-6/7 mt-50 md:w-1/2 mx-auto md:min-w-160 mb-20">
     <Card>
       <CardHeader>
         <CardTitle>
-          {{ $t('gamification.quizCreator.creatorTitle') }}
+          {{ $t('gamification.quizCreator.creatorTitle', 'Lag en ny quiz') }}
         </CardTitle>
         <CardDescription>
-          {{ $t('gamification.quizCreator.creatorDescription') }}
+          {{
+            $t(
+              'gamification.quizCreator.creatorDescription',
+              'Lag en ny quiz. Når du går videre må du legge til spørsmål og svar, for så lagre. Om du ikke lagrer vil denne quizzen slettes.',
+            )
+          }}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div class="flex flex-col gap-4">
           <Label for="quiz-name">
-            {{ $t('gamification.quizCreator.quizName') }}
+            {{ $t('gamification.quizCreator.quizName', 'Navn på quiz') }}
           </Label>
           <Input
             id="quiz-name"
             v-model="quizName"
-            :placeholder="$t('gamification.quizCreator.enterTitle')"
+            :placeholder="$t('gamification.quizCreator.enterTitle', 'Skriv inn navn på quiz her.')"
           />
           <Label for="quiz-description">
-            {{ $t('gamification.quizCreator.quizDescription') }}
+            {{ $t('gamification.quizCreator.quizDescription', 'Quizbeskrivelse') }}
           </Label>
           <Textarea
             id="quiz-description"
             v-model="quizDescription"
-            :placeholder="$t('gamification.quizCreator.enterDescription')"
+            :placeholder="$t('gamification.quizCreator.enterDescription', 'Beskriv quizzen her.')"
           />
         </div>
       </CardContent>
@@ -106,10 +111,10 @@ function validateAndSubmit() {
           </div>
           <div class="flex gap-4">
             <Button class="flex-1" @click="validateAndSubmit()">
-              {{ $t('gamification.quizCreator.createQuiz') }}
+              {{ $t('gamification.quizCreator.createQuiz', 'Lag Ny Quiz') }}
             </Button>
             <Button class="flex-1" @click="router.push('/quiz-overview/')" variant="outline">
-              {{ $t('gamification.quizCreator.cancelButton') }}
+              {{ $t('common.cancel') }}
             </Button>
           </div>
         </div>
