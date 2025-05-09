@@ -71,24 +71,32 @@ export async function declineInvitation(token: string): Promise<void> {
  */
 export async function sendGroupInvitation(householdName: string, groupId: number): Promise<void> {
   try {
+    console.log("Sending group invitation with params:", { householdName, groupId });
     const payload = {
       householdName,
       groupId
     };
-    await api.post('/user/groups/invitations', payload);
-  } catch (error) {
+    const response = await api.post('/user/groups/invite', payload);
+    console.log("Group invitation sent, response:", response.data);
+  } catch (error: any) {
     console.error('Error sending group invitation:', error);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
     throw error;
   }
 }
 
 /**
- * Get all pending group invitations for the current user
+ * Get all pending group invitations for the current user's household
  * @returns List of pending group invitations
  */
 export async function getPendingGroupInvitations(): Promise<GroupInvitation[]> {
   try {
+    console.log("on my way to fetch pending invitations");
     const response = await api.get('/user/groups/invitations');
+    console.log('Pending group invitations response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching pending group invitations:', error);

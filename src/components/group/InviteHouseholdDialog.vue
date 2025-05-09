@@ -1,5 +1,5 @@
 <template>
-  <Dialog :open="open" @update:open="$emit('update:open', $event)">
+  <Dialog :open="open && groupId > 0" @update:open="$emit('update:open', $event)">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>{{ t('group.invite-household-title') }}</DialogTitle>
@@ -57,6 +57,11 @@ const props = defineProps<{
   groupId: number;
 }>();
 
+// Validate that we have a valid groupId
+if (props.groupId === 0) {
+  console.error('InviteHouseholdDialog received invalid groupId:', props.groupId);
+}
+
 const emit = defineEmits<{
   'update:open': [value: boolean];
   'invitation-sent': [];
@@ -70,6 +75,14 @@ const isSending = ref(false);
  */
 const sendInvitation = async () => {
   if (!householdName.value.trim() || isSending.value) return;
+
+  console.log('Sending invitation to household:', householdName.value.trim());
+  console.log('Using groupId:', props.groupId);
+
+  if (props.groupId === 0) {
+    toast.error('Cannot invite household: No group selected');
+    return;
+  }
 
   isSending.value = true;
   try {

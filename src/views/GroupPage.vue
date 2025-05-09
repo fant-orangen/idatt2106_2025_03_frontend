@@ -9,14 +9,14 @@
       <ScrollArea  class="space-y-3 overflow-y-auto gap-2 pr-1 flex-1">
         <ul class="space-y-2">
           <li
-              v-for="group in groups"
-              :key="group.id"
-              class="flex items-center px-3 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
-              :class="{
+            v-for="group in groups"
+            :key="group.id"
+            class="flex items-center px-3 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
+            :class="{
                   'bg-black text-accent dark:bg-white ': currentGroupId === group.groupId,
                   'hover:bg-sidebar-primary/15 ': currentGroupId !== group.groupId
                 }"
-              @click="switchToGroup(group.groupId)"
+            @click="switchToGroup(group.groupId)"
           >
             <span class="i-heroicons-home w-5 h-5" /> {{ group.name }}
           </li>
@@ -25,15 +25,15 @@
 
       <!-- Button for inviting household -->
       <Button
-          v-if="isAdmin"
-          @click="inviteHousehold"
-          variant="outline"
-          class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/15"
+        v-if="isAdmin"
+        @click="inviteHousehold"
+        variant="outline"
+        class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/15"
       >
         {{ t('group.invite-household') }}
       </Button>
 
-      <!-- Create group section -->
+      <!-- Create group button -->
       <div v-if="isAdmin" class="mt-8 border-t border-sidebar-border pt-4">
         <Button
           @click="showCreateGroupDialog = true"
@@ -50,9 +50,9 @@
         <ScrollArea class="max-h-48 overflow-y-auto pr-1">
           <ul class="space-y-2">
             <li
-                v-for="household in households"
-                :key="household.id"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-secondary text-sidebar-secondary-foreground text-sm"
+              v-for="household in households"
+              :key="household.id"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-secondary text-sidebar-secondary-foreground text-sm"
             >
               <House class="w-5 h-5" />
               <div>
@@ -81,25 +81,24 @@
       <!-- Inventory Search Bar -->
       <div class="bg-muted rounded-lg shadow-md p-4 mb-6">
         <InventorySearchBar
-            class="mb-6"
-            @update:search="searchText = $event"
+          class="mb-6"
+          @update:search="searchText = $event"
         />
       </div>
 
       <!-- Group Inventory -->
       <div v-if="currentGroupId" class="bg-card rounded-lg shadow-md p-6">
         <GroupInventory
-            :group-id="currentGroupId"
-            :search-text="searchText"
+          :group-id="currentGroupId"
+          :search-text="searchText"
         />
       </div>
     </main>
   </div>
   <InviteHouseholdDialog
     :open="showInviteDialog"
-    :group-id="currentGroupId || 0"
+    :group-id="selectedGroupId || 0"
     @update:open="showInviteDialog = $event"
-    @invitation-sent="refreshHouseholds"
   />
   <CreateGroupDialog
     :open="showCreateGroupDialog"
@@ -122,7 +121,6 @@ import { isCurrentUserHouseholdAdmin } from '@/services/HouseholdService';
 import { House } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 import InviteHouseholdDialog from '@/components/group/InviteHouseholdDialog.vue';
 import CreateGroupDialog from '@/components/group/CreateGroupDialog.vue';
 
@@ -141,9 +139,10 @@ const groups = ref<Group[]>([]);
 const households = ref<Household[]>([]);
 const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
-const showCreateGroupDialog = ref(false);
 const isAdmin = ref(false);
 const showInviteDialog = ref(false);
+const showCreateGroupDialog = ref(false);
+const selectedGroupId = ref<number | null>(null);
 
 // Check if user is household admin when component mounts
 onMounted(async () => {
@@ -154,7 +153,18 @@ onMounted(async () => {
     isAdmin.value = false;
   }
 
-  await refreshGroups();
+  const response = await groupService.getCurrentUserGroups();
+  if (response?.content?.length > 0) {
+    groups.value = response.content.map(group => ({
+      id: group.id,
+      name: group.name,
+      groupId: group.id
+    }));
+    // Set the first group as current
+    if (groups.value[0]) {
+      switchToGroup(groups.value[0].groupId);
+    }
+  }
 });
 
 // Watch for changes in search text and current group ID
@@ -219,6 +229,7 @@ function switchToGroup(groupId: number) {
 }
 
 function inviteHousehold() {
+  selectedGroupId.value = currentGroupId.value;
   showInviteDialog.value = true;
 }
 
@@ -245,6 +256,7 @@ async function leaveCurrentGroup() {
     alert('Det oppstod en feil ved forsøk på å forlate gruppen');
   }
 }
+
 async function refreshGroups() {
   try {
     const response = await groupService.getCurrentUserGroups();
@@ -254,26 +266,12 @@ async function refreshGroups() {
         name: group.name,
         groupId: group.id
       }));
-      // Set the first group as current if no group is selected
-      if (groups.value[0] && !currentGroupId.value) {
+      if (groups.value.length && !currentGroupId.value) {
         switchToGroup(groups.value[0].groupId);
       }
     }
   } catch (error) {
-    console.error('Error fetching groups:', error);
-  }
-}
-
-async function refreshHouseholds() {
-  if (!currentGroupId.value) return;
-
-  try {
-    const response = await groupService.getCurrentHouseholdsInGroup(currentGroupId.value);
-    if (Array.isArray(response)) {
-      households.value = response as Household[];
-    }
-  } catch (error) {
-    console.error('Error refreshing households:', error);
+    console.error('Error refreshing groups:', error);
   }
 }
 </script>

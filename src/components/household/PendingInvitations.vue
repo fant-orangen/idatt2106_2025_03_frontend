@@ -16,12 +16,15 @@
       <div v-if="isLoading" class="flex justify-center py-4">
         <Loader2 class="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
-      <div v-else-if="invitations.length === 0 && groupInvitations.length === 0" class="text-center py-4 text-muted-foreground">
+      <div v-if="!isLoading && invitations.length === 0 && groupInvitations.length === 0" class="text-center py-4 text-muted-foreground">
         {{ $t('household.no-pending-invitations') }}
       </div>
 
-      <!-- Group Invitations -->
-      <div v-else class="space-y-3">
+      <!-- Household Invitations (sent to users) -->
+      <div v-if="invitations.length > 0" class="space-y-3">
+        <h4 class="text-sm font-semibold text-muted-foreground">
+          {{ $t('household.pending-sent-invitations') }}
+        </h4>
         <div
           v-for="invitation in invitations"
           :key="invitation.token"
@@ -47,7 +50,7 @@
         </div>
       </div>
 
-      <!-- Group Invitations -->
+      <!-- Group Invitations (received from groups) -->
       <div v-if="groupInvitations.length > 0" class="space-y-3 mt-6">
         <h4 class="text-sm font-semibold text-muted-foreground">
           {{ $t('group.pending-group-invitations') }}
@@ -68,18 +71,18 @@
               <Button
                 variant="ghost"
                 size="sm"
-                class="text-green-600 hover:bg-green-100"
-                @click="acceptGroup(invitation.id)"
-              >
-                {{ $t('group.accept') }}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
                 class="text-destructive hover:bg-destructive/10"
                 @click="rejectGroup(invitation.id)"
               >
                 {{ $t('group.reject') }}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                class="text-green-600 hover:bg-green-100"
+                @click="acceptGroup(invitation.id)"
+              >
+                {{ $t('group.accept') }}
               </Button>
             </div>
           </div>
@@ -104,12 +107,14 @@ import { RefreshCcwIcon, Loader2, XIcon } from 'lucide-vue-next';
 import { getPendingHouseholdInvitations, cancelHouseholdInvitation } from '@/services/HouseholdService';
 import type { Invitation, GroupInvitation } from '@/models/Invitation';
 import { toast } from 'vue-sonner';
-import { getPendingGroupInvitations, rejectGroupInvitation, acceptGroupInvitation } from '@/services/InvitationService.ts';
+import { getPendingGroupInvitations, acceptGroupInvitation, rejectGroupInvitation } from '@/services/InvitationService';
 
 const { t } = useI18n();
 
 /** List of pending invitations sent by the current user */
 const invitations = ref<Invitation[]>([]);
+
+/** List of pending group invitations for the current user's household */
 const groupInvitations = ref<GroupInvitation[]>([]);
 
 /** Loading state indicator */
@@ -147,6 +152,8 @@ const refreshInvitations = async () => {
       getPendingHouseholdInvitations(),
       getPendingGroupInvitations()
     ]);
+    console.log('Household invitations:', householdData);
+    console.log('Group invitations:', groupData);
     invitations.value = householdData;
     groupInvitations.value = groupData;
   } catch (error) {
@@ -174,19 +181,12 @@ const cancelInvitation = async (token: string) => {
   }
 };
 
-
-const rejectGroup = async (id: number) => {
-  try {
-    await rejectGroupInvitation(id);
-    toast.success(t('group.invitation-rejected'));
-    await refreshInvitations();
-  } catch (error) {
-    console.error('Error rejecting group invitation:', error);
-    toast.error(t('group.error-rejecting-invitation'));
-  }
-};
-
-
+/**
+ * Accepts a group invitation
+ * @async
+ * @param {number} id - The invitation ID
+ * @returns {Promise<void>}
+ */
 const acceptGroup = async (id: number) => {
   try {
     await acceptGroupInvitation(id);
@@ -195,6 +195,23 @@ const acceptGroup = async (id: number) => {
   } catch (error) {
     console.error('Error accepting group invitation:', error);
     toast.error(t('group.error-accepting-invitation'));
+  }
+};
+
+/**
+ * Rejects a group invitation
+ * @async
+ * @param {number} id - The invitation ID
+ * @returns {Promise<void>}
+ */
+const rejectGroup = async (id: number) => {
+  try {
+    await rejectGroupInvitation(id);
+    toast.success(t('group.invitation-rejected'));
+    await refreshInvitations();
+  } catch (error) {
+    console.error('Error rejecting group invitation:', error);
+    toast.error(t('group.error-rejecting-invitation'));
   }
 };
 
