@@ -34,7 +34,7 @@
       <CardContent>
         <!--Search field-->
         <div class="relative mb-4 w-full max-w-sm">
-          <Input v-model="searchQuery" type="text" placeholder="Søk etter en møteplass..."
+          <Input v-model="searchQuery" type="text" :placeholder="t('admin.search-meeting-point')"
             class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" 
             />
           <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
