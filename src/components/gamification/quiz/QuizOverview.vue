@@ -145,13 +145,13 @@ const archiveQuiz = (quizId: number) => {
 
 <template>
   <div class="flex flex-col items-center m-10">
-    <h1 class="text-2xl font-bold m-10">Quizzes</h1>
+    <h1 class="text-2xl font-bold m-10">{{ $t('gamification.quizOverview') }}</h1>
     <Button
       v-if="userStore.isAdminUser"
       @click="router.push('/quiz-overview/admin/new-quiz')"
       class="mb-10"
     >
-      <Plus :size="40" /> Create new quiz
+      <Plus :size="40" /> {{ $t('gamification.createNewQuiz') }}
     </Button>
     <!-- Search Input -->
     <div class="relative w-full max-w-2xl items-center">
@@ -170,7 +170,7 @@ const archiveQuiz = (quizId: number) => {
       :isLoading="quizStore.isLoading"
       :hasMore="quizStore.hasMore"
       loadingText="Loading more quizzes..."
-      endMessage="No more quizzes to load"
+      :endMessage="$t('gamification.noMoreQuizzes')"
       @load-more="quizStore.fetchAllActiveQuizzes(quizStore.currentPage + 1)"
       class="w-full max-w-2xl mb-10 mt-10"
     >
@@ -187,7 +187,7 @@ const archiveQuiz = (quizId: number) => {
             </CardHeader>
             <CardContent>
               <p v-if="lastAttempts[quiz.id] !== null">
-                Last attempt:
+                {{ $t('gamification.previousAttempt') }}:
                 <Badge
                   :style="{
                     backgroundColor:
@@ -211,19 +211,19 @@ const archiveQuiz = (quizId: number) => {
                   }}%
                 </Badge>
               </p>
-              <p v-else>No attempts have been made yet.</p>
+              <p v-else>{{ $t('gamification.noAttempts') }}</p>
             </CardContent>
             <CardFooter>
               <div class="flex w-full justify-between items-center">
                 <div class="flex flex-row gap-4">
                   <Button @click="handleTakeQuiz(quiz.id)">
-                    {{ $t('gamification.quiz.takeQuiz') }}
+                    {{ $t('gamification.takeQuiz', 'Ta Quiz') }}
                   </Button>
                   <Button
                     variant="outline"
                     @click="router.push({ name: 'QuizHistory', params: { quizId: quiz.id } })"
                   >
-                    {{ $t('gamification.quiz.history') }}
+                    {{ $t('gamification.gameHistory') }}
                   </Button>
                 </div>
                 <div>
@@ -253,16 +253,25 @@ const archiveQuiz = (quizId: number) => {
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>{{ $t('alert.areYouSure') }}</AlertDialogTitle>
+                              <AlertDialogTitle>{{
+                                $t('alert.areYouSure', 'Er du sikker?')
+                              }}</AlertDialogTitle>
                               <AlertDialogDescription>
-                                {{ $t('alert.deleteQuiz') }}
+                                {{
+                                  $t(
+                                    'alert.deleteQuiz',
+                                    'Er du helt sikker på at du vil slette denne quizen? Denne handlingen kan ikke angres.',
+                                  )
+                                }}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel variant="destructive">Cancel</AlertDialogCancel>
-                              <AlertDialogAction @click="archiveQuiz(quiz.id)"
-                                >Continue</AlertDialogAction
-                              >
+                              <AlertDialogCancel variant="destructive">{{
+                                $t('common.cancel')
+                              }}</AlertDialogCancel>
+                              <AlertDialogAction @click="archiveQuiz(quiz.id)">{{
+                                $t('common.continue', 'Fortsett')
+                              }}</AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
@@ -278,7 +287,8 @@ const archiveQuiz = (quizId: number) => {
       </ul>
     </InfiniteScroll>
     <Button class="flex justify-center items-center mb-10" @click="scrollToTop">
-      <MoveUp class="h-5 w-5" />Back to top
+      <MoveUp class="h-5 w-5" />
+      {{ $t('gamification.backToTop') }}
     </Button>
   </div>
 </template>

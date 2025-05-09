@@ -22,7 +22,7 @@ import {
   House,
   Siren,
   Phone,
-  Info
+  Info,
 } from 'lucide-vue-next'
 
 import {
@@ -238,238 +238,246 @@ function logOut() {
 </script>
 
 <template>
-  <div
-  class="navbar text-secondary-foreground bg-secondary shadow-md p-4 sticky top-0 z-[100]"
-  >
+  <div class="navbar text-secondary-foreground bg-secondary shadow-md p-4 sticky top-0 z-[100]">
     <div class="w-full max-w-screen-2xl mx-auto flex flex-row items-center justify-between">
       <div class="navbar-left flex flex-row gap-4">
-
-    <!-- Logo -->
-      <RouterLink to="/" class="hover:text-primary flex items-center" v-tooltip="t('navigation.home')">
-        <img src="../assets/krisefikserNY.png" alt="Logo" class="h-8 w-auto" />
-      </RouterLink>
-
-      <!-- Change Language -->
-
-      <Button variant="link" v-tooltip="t('language.change-language')" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
-        <Globe class="h-4 w-4" />
-        {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
-      </Button>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger as-child>
-          <Button
-            variant="ghost"
-            v-tooltip="t('infoPage.emergencyContacts')"
-            class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
-          >
-            <Siren class="h-4 w-4" />
-            {{ t('infoPage.emergencyContacts') }}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent class="z-101">
-          <DropdownMenuLabel> {{ t('infoPage.emergencyContacts') }}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup class="hover:bg-white dark:hover:bg-black">
-            <DropdownMenuLabel class="flex flex-row">
-              <Phone class="mr-2 h-4 w-4" />
-              <span>{{ $t('infoPage.generalEmergencyContacts.police') }}</span>
-            </DropdownMenuLabel>
-            <DropdownMenuLabel class="flex flex-row">
-              <Phone class="mr-2 h-4 w-4" />
-              <span>{{ $t('infoPage.generalEmergencyContacts.ambulance') }}</span>
-            </DropdownMenuLabel>
-            <DropdownMenuLabel class="flex flex-row">
-              <Phone class="mr-2 h-4 w-4" />
-              <span>{{ $t('infoPage.generalEmergencyContacts.fire') }}</span>
-            </DropdownMenuLabel>
-            <DropdownMenuLabel class="flex flex-row">
-              <Phone class="mr-2 h-4 w-4" />
-              <span>{{ $t('infoPage.generalEmergencyContacts.civilDefense') }}</span>
-            </DropdownMenuLabel>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <Button
-        variant="ghost"
-        class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-        v-tooltip="t('info.info')"
-        @click="goToPage('/info')">
-        <Info class="h-5 w-5" />
-        <span class="hidden md:inline-flex">
-          {{ $t('info.info') }}
-        </span>
-      </Button>
-
-    </div>
-    <div class="navbar-right flex flex-row items-center gap-4">
-      <!-- Login -->
-
-      <Button
-        class="hidden md:inline-flex"
-        variant="link"
-        @click="goToPage('/login')"
-        v-if="!userStore.loggedIn"
-        >{{ t('login.login') }}</Button
-      >
-
-      <!-- Sign up -->
-
-      <Button
-        class="hidden md:inline-flex"
-        variant="link"
-        @click="goToPage('/register')"
-        v-if="!userStore.loggedIn"
-        >{{ t('login.signup') }}</Button
-      >
-
-      <Button
-        v-if="userStore.loggedIn"
-        variant="ghost"
-        class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-        v-tooltip="t('household.my-household')"
-        @click="goToPage('/household')">
-        <House class="h-5 w-5" />
-        <span class="hidden md:inline-flex">
-          {{ t('household.my-household') }}
-        </span>
-      </Button>
-
-      <Button v-if='userStore.isAdminUser'
-        variant="ghost"
-        class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
-        v-tooltip="t('navigation.admin-panel')"
-        @click="goToPage('/admin/admin-panel')">
-        <ShieldUser class="h-5 w-5" />
-        <span class="hidden md:inline-flex">
-          {{ $t('navigation.admin-panel') }}
-        </span>
-      </Button>
-        
-
-      <DropdownMenu v-if="userStore.loggedIn">
-        <DropdownMenuTrigger as-child>
-          <Button 
-            variant="ghost"
-            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-            v-tooltip="t('settings.account.myAccount')">
-            <User class="h-5 w-5" />
-            <span class="hidden md:inline-flex">
-              {{ isLoading ? t('loading') : `${profile.firstName} ${profile.lastName}` }}
-            </span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent class="z-[101]">
-          <DropdownMenuLabel>{{ t('settings.account.myAccount') }}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem @select="goToPage('/profile')">
-              <User class="mr-2 h-4 w-4" />
-              <span>{{ t('navigation.profile') }}</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="goToPage('/reflections')">
-              <BookOpen class="mr-2 h-4 w-4" />
-              <span>{{ t('reflect.reflections') }}</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="goToPage('/settings')">
-              <Settings class="mr-2 h-4 w-4" />
-              <span>{{ t('settings.settings') }}</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem @click="logOut()">
-              <LogOut class="mr-2 h-4 w-4" />
-              <span>{{ t('login.logout') }}</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      <!-- Notifications -->
-
-      <Popover v-if="userStore.loggedIn">
-        <PopoverTrigger as="button" class="no-border relative">
-          <Button
-            v-tooltip="t('notifications.notifications')"
-            variant="ghost"
-            size="icon"
-            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-            @click="handleNotificationClick"
-          >
-            <Bell class="h-5 w-5" />
-            <span
-              v-if="hasUnreadNotifications"
-              class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-secondary"
-            ></span>
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent class="z-[1001] w-80 p-4">
-          <NotificationPopover :notifications="topNotifications" />
-        </PopoverContent>
-      </Popover>
-
-      <!-- Dark Mode Toggle -->
-      <Button
-        v-tooltip="t('navigation.change-mode')"
-        variant="ghost"
-        size="icon"
-        class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
-        @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
-        aria-label="Toggle dark mode"
-      >
-        <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
-      </Button>
-
-      <!-- Mobile Menu -->
-
-      <Button
-        v-tooltip="t('navigation.menu')"
-        class="hamburger-menu md:hidden z-9999"
-        variant="ghost"
-        size="icon"
-        @click="toggleMenu"
-      >
-        <span v-if="!isMenuOpen" class="z-99999">
-          <Menu class="h-5 w-5" />
-        </span>
-        <span v-else class="z-9999">
-          <X class="h-5 w-5" />
-        </span>
-      </Button>
-      <div
-        v-if="isMenuOpen"
-        class="fixed top-0 left-0 w-full h-full bg-black/50 z-[1050]"
-        @click.self="toggleMenu"
-      >
-        <div
-          class="menu-card fixed top-0 right-0 w-4/5 max-w-sm h-full bg-secondary text-secondary-foreground shadow-lg p-5 transition-transform transform translate-x-0 z-[1051]"
-          :class="{ 'translate-x-full': !isMenuOpen }"
+        <!-- Logo -->
+        <RouterLink
+          to="/"
+          class="hover:text-primary flex items-center"
+          v-tooltip="t('navigation.home')"
         >
-          <div class="menu-header flex items-center justify-between">
+          <img src="../assets/krisefikserNY.png" alt="Logo" class="h-8 w-auto" />
+        </RouterLink>
+
+        <!-- Change Language -->
+
+        <Button
+          variant="link"
+          v-tooltip="t('language.change-language')"
+          @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')"
+        >
+          <Globe class="h-4 w-4" />
+          {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
             <Button
-              v-tooltip="t('navigation.change-mode')"
+              variant="ghost"
+              v-tooltip="t('infoPage.emergencyContacts')"
+              class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            >
+              <Siren class="h-4 w-4" />
+              {{ t('infoPage.emergencyContacts') }}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent class="z-101">
+            <DropdownMenuLabel> {{ t('infoPage.emergencyContacts') }}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup class="hover:bg-white dark:hover:bg-black">
+              <DropdownMenuLabel class="flex flex-row">
+                <Phone class="mr-2 h-4 w-4" />
+                <span>{{ $t('infoPage.generalEmergencyContacts.police') }}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuLabel class="flex flex-row">
+                <Phone class="mr-2 h-4 w-4" />
+                <span>{{ $t('infoPage.generalEmergencyContacts.ambulance') }}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuLabel class="flex flex-row">
+                <Phone class="mr-2 h-4 w-4" />
+                <span>{{ $t('infoPage.generalEmergencyContacts.fire') }}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuLabel class="flex flex-row">
+                <Phone class="mr-2 h-4 w-4" />
+                <span>{{ $t('infoPage.generalEmergencyContacts.civilDefense') }}</span>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Button
+          variant="ghost"
+          class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          v-tooltip="t('info.info')"
+          @click="goToPage('/info')"
+        >
+          <Info class="h-5 w-5" />
+          <span class="hidden md:inline-flex">
+            {{ $t('info.info') }}
+          </span>
+        </Button>
+      </div>
+      <div class="navbar-right flex flex-row items-center gap-4">
+        <!-- Login -->
+
+        <Button
+          class="hidden md:inline-flex"
+          variant="link"
+          @click="goToPage('/login')"
+          v-if="!userStore.loggedIn"
+          >{{ t('login.login') }}</Button
+        >
+
+        <!-- Sign up -->
+
+        <Button
+          class="hidden md:inline-flex"
+          variant="link"
+          @click="goToPage('/register')"
+          v-if="!userStore.loggedIn"
+          >{{ t('login.signup') }}</Button
+        >
+
+        <Button
+          v-if="userStore.loggedIn"
+          variant="ghost"
+          class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          v-tooltip="t('household.my-household')"
+          @click="goToPage('/household')"
+        >
+          <House class="h-5 w-5" />
+          <span class="hidden md:inline-flex">
+            {{ t('household.my-household') }}
+          </span>
+        </Button>
+
+        <Button
+          v-if="userStore.isAdminUser"
+          variant="ghost"
+          class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          v-tooltip="t('navigation.admin-panel')"
+          @click="goToPage('/admin/admin-panel')"
+        >
+          <ShieldUser class="h-5 w-5" />
+          <span class="hidden md:inline-flex">
+            {{ $t('navigation.admin-panel') }}
+          </span>
+        </Button>
+
+        <DropdownMenu v-if="userStore.loggedIn">
+          <DropdownMenuTrigger as-child>
+            <Button
+              variant="ghost"
+              class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+              v-tooltip="t('settings.account.myAccount')"
+            >
+              <User class="h-5 w-5" />
+              <span class="hidden md:inline-flex">
+                {{ isLoading ? t('loading') : `${profile.firstName} ${profile.lastName}` }}
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent class="z-[101]">
+            <DropdownMenuLabel>{{ t('settings.account.myAccount') }}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem @select="goToPage('/profile')">
+                <User class="mr-2 h-4 w-4" />
+                <span>{{ t('navigation.profile') }}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="goToPage('/reflections')">
+                <BookOpen class="mr-2 h-4 w-4" />
+                <span>{{ t('reflect.reflections') }}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem @click="goToPage('/settings')">
+                <Settings class="mr-2 h-4 w-4" />
+                <span>{{ t('settings.settings') }}</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem @click="logOut()">
+                <LogOut class="mr-2 h-4 w-4" />
+                <span>{{ t('login.logout') }}</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <!-- Notifications -->
+
+        <Popover v-if="userStore.loggedIn">
+          <PopoverTrigger as="button" class="no-border relative">
+            <Button
+              v-tooltip="t('notifications.notifications')"
               variant="ghost"
               size="icon"
-              class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
-              @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+              class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+              @click="handleNotificationClick"
             >
-              <component :is="colorMode === 'dark' ? Sun : Moon" class="h-6 w-6" />
+              <Bell class="h-5 w-5" />
+              <span
+                v-if="hasUnreadNotifications"
+                class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-secondary"
+              ></span>
             </Button>
-          </div>
+          </PopoverTrigger>
+          <PopoverContent class="z-[1001] w-80 p-4">
+            <NotificationPopover :notifications="topNotifications" />
+          </PopoverContent>
+        </Popover>
 
-          <ul class="menu-links space-y-4 mt-16">
-            <li
-              v-for="link in menuLinks"
-              :key="link.label"
-              class="text-lg hover:text-primary cursor-pointer"
-              @click="link.action ? link.action() : goToPage(link.route ?? '/')"
-            >
-              {{ $t(link.label) }}
-            </li>
-          </ul>
+        <!-- Dark Mode Toggle -->
+        <Button
+          v-tooltip="t('navigation.change-mode')"
+          variant="ghost"
+          size="icon"
+          class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+          aria-label="Toggle dark mode"
+        >
+          <component :is="colorMode === 'dark' ? Sun : Moon" class="h-5 w-5" />
+        </Button>
+
+        <!-- Mobile Menu -->
+
+        <Button
+          v-tooltip="t('navigation.menu')"
+          class="hamburger-menu md:hidden z-9999"
+          variant="ghost"
+          size="icon"
+          @click="toggleMenu"
+        >
+          <span v-if="!isMenuOpen" class="z-99999">
+            <Menu class="h-5 w-5" />
+          </span>
+          <span v-else class="z-9999">
+            <X class="h-5 w-5" />
+          </span>
+        </Button>
+        <div
+          v-if="isMenuOpen"
+          class="fixed top-0 left-0 w-full h-full bg-black/50 z-[1050]"
+          @click.self="toggleMenu"
+        >
+          <div
+            class="menu-card fixed top-0 right-0 w-4/5 max-w-sm h-full bg-secondary text-secondary-foreground shadow-lg p-5 transition-transform transform translate-x-0 z-[1051]"
+            :class="{ 'translate-x-full': !isMenuOpen }"
+          >
+            <div class="menu-header flex items-center justify-between">
+              <Button
+                v-tooltip="t('navigation.change-mode')"
+                variant="ghost"
+                size="icon"
+                class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
+                @click="colorMode = colorMode === 'dark' ? 'light' : 'dark'"
+              >
+                <component :is="colorMode === 'dark' ? Sun : Moon" class="h-6 w-6" />
+              </Button>
+            </div>
+
+            <ul class="menu-links space-y-4 mt-16">
+              <li
+                v-for="link in menuLinks"
+                :key="link.label"
+                class="text-lg hover:text-primary cursor-pointer"
+                @click="link.action ? link.action() : goToPage(link.route ?? '/')"
+              >
+                {{ $t(link.label) }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
