@@ -210,6 +210,19 @@ const mainCrisis = ref<CrisisEventPreviewDto | null>(null);
 const scenarioUnderInstructions = ref<string | null>(null);
 const loadingInstructions = ref(false);
 
+// Configure marked with essential options (copied from ThemeContent.vue)
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+});
+
+// Custom renderer for headers (copied from ThemeContent.vue)
+const renderer = new marked.Renderer();
+renderer.heading = function ({ tokens, depth }) {
+  const text = tokens.map((t) => (typeof t === 'object' && 'text' in t && typeof t.text === 'string') ? t.text : '').join('');
+  const fontSize = depth === 1 ? '3xl' : depth === 2 ? '2xl' : depth === 3 ? 'xl' : 'lg';
+  return `<h${depth} class="text-${fontSize} font-bold my-4">${text}</h${depth}>`;
+};
 
 // Priority levels for color coding
 enum Priority {
@@ -244,42 +257,42 @@ const getWaterPriority = (days: number): Priority => {
 };
 
 /**
- * Returns CSS classes for an item based on its priority
- * @param {Priority} priority - The priority level
- * @returns {string} CSS classes
+ * Returns CSS classes for styling items based on their priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for styling
  */
-const getItemClasses = (priority: Priority): string => {
+ const getItemClasses = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+      return 'bg-red-50 border border-red-200 dark:text-red-900 dark:bg-red-100';
     case Priority.MEDIUM:
-      return 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
+      return 'bg-orange-50 border border-orange-200 dark:text-orange-900 dark:bg-orange-100';
     case Priority.LOW:
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+      return 'bg-yellow-50 border border-yellow-200 dark:text-yellow-900 dark:bg-yellow-100';
     case Priority.GOOD:
-      return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
+      return 'bg-green-50 border border-green-200';
     default:
-      return 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300';
+      return '';
   }
 };
 
 /**
- * Returns CSS classes for an icon based on its priority
- * @param {Priority} priority - The priority level
- * @returns {string} CSS classes
+ * Returns CSS classes for styling icons based on priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for icon styling
  */
 const getIconClass = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'text-red-700 dark:text-red-300';
+      return 'text-red-500';
     case Priority.MEDIUM:
-      return 'text-orange-700 dark:text-orange-300';
+      return 'text-orange-500';
     case Priority.LOW:
-      return 'text-yellow-700 dark:text-yellow-300';
+      return 'text-yellow-500';
     case Priority.GOOD:
-      return 'text-green-700 dark:text-green-300';
+      return 'text-green-500';
     default:
-      return 'text-gray-700 dark:text-gray-300';
+      return '';
   }
 };
 
@@ -333,8 +346,7 @@ const fetchScenarioInstructions = async () => {
  */
 const markdownToHtml = (markdown: string): string => {
   if (!markdown) return '';
-  // Cast the result to string since marked can return a Promise<string> in some cases
-  return marked.parse(markdown) as string;
+  return marked.parse(markdown, { renderer }) as string;
 };
 
 /**
@@ -452,23 +464,6 @@ const fetchMainCrisis = async () => {
     console.error('Failed to fetch main crisis:', error);
     mainCrisis.value = null;
   }
-};
-
-/**
- * Format a date in full format
- * @param {string} dateString - The date string to format
- * @returns {string} Formatted date string
- */
-const formatDateFull = (dateString: string): string => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date);
 };
 
 /**

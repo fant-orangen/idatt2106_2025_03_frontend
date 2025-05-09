@@ -19,7 +19,6 @@ import type { Page } from '@/types/Page';
  */
 export async function getNotifications(page: number = 1, size: number = 20): Promise<Page<NotificationMessage>> {
   const response = await api.get(`/user/notifications?page=${page - 1}&size=${size}`);
-  console.log(response.data);
   return {
     ...response.data,
     content: response.data.content.map(mapDatesToObjects)
@@ -32,7 +31,6 @@ export async function getNotifications(page: number = 1, size: number = 20): Pro
  */
 export async function markAllNotificationsAsRead() {
   const response = await api.patch('/user/notifications/read-all');
-  console.log(response.data);
   return response.data;
 }
 
@@ -42,7 +40,6 @@ export async function markAllNotificationsAsRead() {
  */
 export async function hasUnreadNotifications() {
   const response = await api.get('/user/notifications/any-unread');
-  console.log(response.data);
   return response.data;
 }
 

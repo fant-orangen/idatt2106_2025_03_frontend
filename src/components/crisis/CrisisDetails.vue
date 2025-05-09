@@ -124,14 +124,13 @@ import { useUserStore } from '@/stores/UserStore';
 import { ArrowRight, PencilIcon } from 'lucide-vue-next';
 import type { CrisisEventDto } from '@/models/CrisisEvent.ts';
 import type { CreateReflectionDto } from '@/models/Reflection';
-import type { ScenarioThemeDetailsDto } from '@/models/ScenarioTheme';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateFull } from '@/utils/dateUtils.ts';
 import { getSeverityClass, getSeverityColor } from '@/utils/severityUtils';
 import { createReflection } from '@/services/ReflectionService';
-import { fetchScenarioThemeById } from '@/services/api/ScenarioThemeService';
+import { fetchScenarioThemeName } from '@/services/api/ScenarioThemeService';
 import { toast } from 'vue-sonner';
 import {
   Dialog,
@@ -167,6 +166,7 @@ const props = defineProps<{
 const { t } = useI18n();
 const router = useRouter();
 const userStore = useUserStore();
+const scenarioTheme = ref<{id: number, name: string} | null>(null);
 
 /**
  * Validates if a coordinate value is valid (a finite number)
@@ -223,14 +223,12 @@ function navigateToDefaultScenarioTheme() {
   });
 }
 
-// Scenario theme state
-const scenarioTheme = ref<ScenarioThemeDetailsDto | null>(null);
 const loadingScenarioTheme = ref(false);
 
 // Fetch scenario theme when crisis changes
 watch(() => props.crisis?.scenarioThemeId, (newThemeId) => {
   if (newThemeId) {
-    fetchScenarioThemeName(newThemeId);
+    fetchScenarioThemeNameById(newThemeId);
   } else {
     scenarioTheme.value = null;
   }
@@ -241,13 +239,13 @@ watch(() => props.crisis?.scenarioThemeId, (newThemeId) => {
  *
  * @param {number} themeId - The ID of the scenario theme to fetch
  */
-async function fetchScenarioThemeName(themeId: number) {
+async function fetchScenarioThemeNameById(themeId: number) {
   loadingScenarioTheme.value = true;
   try {
-    const theme = await fetchScenarioThemeById(themeId);
-    scenarioTheme.value = theme;
+    const result = await fetchScenarioThemeName(themeId);
+    scenarioTheme.value = result;
   } catch (error) {
-    console.error(`Error fetching scenario theme with ID ${themeId}:`, error);
+    console.error('Error fetching scenario theme:', error);
     scenarioTheme.value = null;
   } finally {
     loadingScenarioTheme.value = false;

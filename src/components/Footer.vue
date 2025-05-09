@@ -114,7 +114,7 @@ const navigateTo = (route: string) => {
           <div class="space-y-2">
             <p class="text-sm flex items-center">
               <MapPin class="w-4 h-4 mr-2 flex-shrink-0" />
-              <span>{{ t('footer.address') }}: Høgskoleringen 5, 7034 Trondheim</span>
+              <span>{{ t('footer.address') }}: O. S. Bragstads Plass, 7034 Trondheim</span>
             </p>
             <p class="text-sm flex items-center">
               <Phone class="w-4 h-4 mr-2 flex-shrink-0" />
