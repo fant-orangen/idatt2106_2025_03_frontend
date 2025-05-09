@@ -378,28 +378,41 @@ onMounted(() => {
           <CardHeader>
             <CardTitle>
               <span v-if="editingQuestionId">
-                {{ t('gamification.quizCreator.editQuestion') }} {{ editingQuestionId }}
+                {{ t('gamification.quizCreator.editQuestion', 'Rediger spørsmål') }}
+                {{ editingQuestionId }}
               </span>
               <span v-else>
-                {{ t('gamification.quizCreator.addQuestion') }}
+                {{ t('gamification.addQuestion') }}
               </span>
             </CardTitle>
             <CardDescription>
               <span v-if="editingQuestionId">
-                {{ t('gamification.quizCreator.editQuestionDescription') }}
+                {{
+                  $t(
+                    'gamification.addQuestionDescription',
+                    'Legg til et nytt spørsmål til quizen din. Husk å legg til et riktig alternativ.',
+                  )
+                }}
               </span>
               <span v-else>
-                {{ t('gamification.quizCreator.addQuestionDescription') }}
+                {{
+                  t(
+                    'gamification.quizCreator.addQuestionDescription',
+                    'Legg til et nytt spørsmål til quizen din. Husk å legg til et riktig alternativ.',
+                  )
+                }}
               </span>
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div class="flex flex-col gap-2">
-              <Label for="question-text">{{ t('gamification.quizCreator.questionText') }}</Label>
+              <Label for="question-text">{{
+                t('gamification.quizCreator.questionText', 'Legg til nye spørsmål')
+              }}</Label>
               <Input
                 v-model="newQuestionText"
                 id="question-text"
-                :placeholder="t('gamification.quizCreator.enterQuestion')"
+                :placeholder="t('gamification.quizCreator.enterQuestion', 'Spørsmål')"
               />
             </div>
 
@@ -414,7 +427,7 @@ onMounted(() => {
                 <!-- {{ $t('gamification.quizCreator.optionText') }} -->
               </div>
               <div class="w-20 flex justify-center items-center">
-                {{ $t('gamification.quizCreator.correct') }}
+                {{ $t('gamification.quizCreator.correct', 'Riktig') }}?
               </div>
             </div>
 
@@ -425,7 +438,7 @@ onMounted(() => {
               class="flex items-center gap-4 mt-2"
             >
               <Label :for="'option-' + index" class="w-24">
-                {{ t('gamification.quizCreator.option') }} {{ index + 1 }}
+                {{ t('gamification.option', 'Alternativ') }} {{ index + 1 }}
               </Label>
               <Input v-model="options[index]" :id="'option-' + index" class="flex-1" />
               <div class="flex justify-center items-center w-20">
@@ -438,28 +451,28 @@ onMounted(() => {
             </div>
 
             <Button class="mt-4" variant="outline" @click="addOption">{{
-              t('gamification.quizCreator.addOption')
+              t('gamification.addOption')
             }}</Button>
           </CardContent>
           <CardFooter>
             <div class="flex flex-row gap-4">
               <Button v-if="editingQuestionId" @click="saveEditedQuestion">
-                {{ t('gamification.quizCreator.saveQuestionButton') }}
+                {{ t('gamification.quizCreator.saveQuestionButton', 'Lagre spørsmål') }}
               </Button>
               <Button v-else @click="submitQuestion">
-                {{ t('gamification.quizCreator.addQuestionButton') }}
+                {{ t('gamification.addQuestion') }}
               </Button>
               <Button v-if="editingQuestionId" variant="outline" @click="resetForm">
-                {{ t('gamification.quizCreator.cancelButton') }}
+                {{ t('common.cancel') }}
               </Button>
             </div>
           </CardFooter>
         </Card>
         <Button @click="saveQuiz">
-          {{ t('gamification.quizCreator.saveQuizButton') }}
+          {{ t('gamification.saveQuiz') }}
         </Button>
         <div v-if="hasUnsavedChanges" class="unsaved-warning text-crisis-level-red">
-          {{ t('gamification.quizCreator.unsavedWarning') }}
+          {{ t('gamification.unsavedWarning') }}
         </div>
       </div>
 
@@ -468,10 +481,8 @@ onMounted(() => {
       <div class="quiz-preview w-full md:w-full">
         <Card class="h-full w-full">
           <CardHeader>
-            <CardTitle>{{ t('gamification.quizCreator.previewTitle') }}</CardTitle>
-            <CardDescription>{{
-              t('gamification.quizCreator.previewDescription')
-            }}</CardDescription>
+            <CardTitle>{{ t('gamification.quizPreview') }}</CardTitle>
+            <CardDescription>{{ t('gamification.reviewBeforePublish') }}</CardDescription>
           </CardHeader>
           <ScrollArea class="w-full h-full md:h-[70vh]">
             <CardContent class="pb-2">
@@ -492,7 +503,7 @@ onMounted(() => {
                 >
                   <CardHeader>
                     <CardTitle class="font-semibold text-xl text-card-foreground">
-                      Question {{ index + 1 }}
+                      {{ $t('gamification.question') }} {{ index + 1 }}
                     </CardTitle>
                     <CardDescription class="text-muted-foreground mb-4">
                       {{ question.questionBody }}
@@ -537,7 +548,7 @@ onMounted(() => {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>
-                            {{ t('gamification.quizCreator.editQuestion') }}
+                            {{ t('gamification.quizCreator.editQuestion', 'Rediger spørsmål') }}
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>

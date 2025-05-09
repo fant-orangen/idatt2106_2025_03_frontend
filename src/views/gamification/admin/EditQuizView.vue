@@ -17,15 +17,17 @@ const props = defineProps<{ quizId: number }>()
   <Breadcrumb class="m-5">
     <BreadcrumbList>
       <BreadcrumbItem>
-        <BreadcrumbLink href="/"> Home </BreadcrumbLink>
+        <BreadcrumbLink href="/"> {{ $t('navigation.home') }} </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbLink href="/quiz-overview"> Quiz Overview </BreadcrumbLink>
+        <BreadcrumbLink href="/quiz-overview">
+          {{ $t('gamification.quizOverview') }}
+        </BreadcrumbLink>
       </BreadcrumbItem>
       <BreadcrumbSeparator />
       <BreadcrumbItem>
-        <BreadcrumbPage> Quiz Creator </BreadcrumbPage>
+        <BreadcrumbPage> {{ $t('gamification.quizCreator') }} </BreadcrumbPage>
       </BreadcrumbItem>
     </BreadcrumbList>
   </Breadcrumb>

@@ -20,7 +20,20 @@ import type { QuizAnswerResponse } from '@/models/Quiz'
 // Props
 const props = defineProps<{ quizId: number }>()
 const nrOfQuestions = ref(1)
-const quizName = ref('General Knowledge Quiz')
+const quizName = ref('') // Store the quiz name
+
+async function fetchQuizName(quizId: number) {
+  try {
+    quizName.value = await quizService.getQuizNameById(quizId) // Fetch and store the quiz name
+  } catch (error) {
+    console.error(`Error fetching quiz name for quizId ${quizId}:`, error)
+    quizName.value = 'Unknown Quiz' // Fallback value
+  }
+}
+
+onMounted(() => {
+  fetchQuizName(props.quizId) // Fetch the quiz name when the component is mounted
+})
 
 // Reactive variables
 const playerScore = ref(0)
@@ -46,9 +59,9 @@ const handleAnswer = (answer: string) => {
   if (correctAnswer.value.includes(answer)) {
     // Check if the answer is correct
     playerScore.value++
-    questionDescription.value = 'Correct!'
+    questionDescription.value = 'Korrekt! Bra jobba!'
   } else {
-    questionDescription.value = 'Incorrect!'
+    questionDescription.value = 'Ikke riktig! Du klarer bedre!'
   }
 
   // Save the user's answer
@@ -168,17 +181,22 @@ const restartQuiz = () => {
     <div v-if="quizCompleted" class="flex flex-col items-center justify-center w-full h-full">
       <Card class="test w-8/10 md:min-w-150 md:w-1/2 h-fill">
         <CardHeader>
-          <CardTitle>Quiz Summary</CardTitle>
+          <CardTitle>{{ $t('gamification.quizSummary') }}</CardTitle>
         </CardHeader>
         <CardContent>
           <div class="flex flex-col gap-4">
-            <p class="text-lg">You scored {{ playerScore }} out of {{ nrOfQuestions }}!</p>
-            <p class="text-md">Thank you for participating in the quiz.</p>
+            <p class="text-lg">
+              {{ $t('gamification.youScored') }} {{ playerScore }} {{ $t('gamification.outOf') }}
+              {{ nrOfQuestions }}!
+            </p>
+            <p class="text-md">{{ $t('gamification.thanksForParticipating') }}</p>
           </div>
         </CardContent>
         <CardFooter class="flex gap-4">
-          <Button class="flex-1" @click="restartQuiz">Restart Quiz</Button>
-          <Button class="flex-1" @click="$router.push('/quiz-overview/')"> Back to Quizzes </Button>
+          <Button class="flex-1" @click="restartQuiz">{{ $t('gamification.restartQuiz') }}</Button>
+          <Button class="flex-1" @click="$router.push('/quiz-overview/')">
+            {{ $t('gamification.backToQuizzes') }}
+          </Button>
         </CardFooter>
       </Card>
     </div>
@@ -228,7 +246,11 @@ const restartQuiz = () => {
               {{ questionDescription }}
             </CardDescription>
             <Button :disabled="!questionAnswered" class="w-full" @click="handleNextQuestion">
-              Next
+              {{
+                questionNr + 1 < nrOfQuestions
+                  ? $t('gamification.nextQuestion', 'Neste spørsmål')
+                  : $t('gamification.finishQuiz', 'Avslutt quiz')
+              }}
             </Button>
           </div>
         </CardFooter>

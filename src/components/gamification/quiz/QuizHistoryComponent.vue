@@ -91,15 +91,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center m-10">
     <h1 class="text-2xl font-bold mb-4">{{ quizName }}</h1>
-    <h2 class="text-xl mb-4">Attempt History</h2>
+    <h2 class="text-xl mb-4">{{ $t('gamification.attemptHistory') }}</h2>
 
     <InfiniteScroll
       :isLoading="quizStore.isLoading"
       :hasMore="quizStore.hasMore"
       loadingText="Loading more attempts..."
-      endMessage="No more attempts to load"
+      :endMessage="$t('gamification.noMoreAttemptsToLoad')"
       @load-more="quizStore.fetchQuizAttempts(props.quizId)"
       class="w-full max-w-2xl mb-10 mt-10"
     >
@@ -110,9 +110,10 @@ onMounted(() => {
           class="hover:shadow-lg hover:shadow-gray-300 dark:hover:shadow-gray-800 transition-shadow duration-200"
         >
           <CardHeader>
-            <CardTitle> Attempt {{ quizAttempt.id }}</CardTitle>
+            <CardTitle> {{ $t('gamification.attempt') }} {{ quizAttempt.id }}</CardTitle>
             <CardDescription>
-              Attempt Date: {{ format(new Date(quizAttempt.completedAt), 'yyyy-MM-dd HH:mm') }}
+              {{ $t('gamification.attemptDate', 'Forsøksdato') || 'Forsøksdato' }}
+              {{ format(new Date(quizAttempt.completedAt), 'yyyy-MM-dd HH:mm') }}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -134,7 +135,7 @@ onMounted(() => {
       </div>
     </InfiniteScroll>
     <Button class="flex justify-center items-center mb-10" @click="scrollToTop">
-      <MoveUp class="h-5 w-5" />Back to top
+      <MoveUp class="h-5 w-5" /> {{ $t('gamification.backToTop') }}
     </Button>
   </div>
 </template>
