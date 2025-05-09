@@ -36,38 +36,12 @@
       <!-- Create group section -->
       <div v-if="isAdmin" class="mt-8 border-t border-sidebar-border pt-4">
         <Button
-            v-if="!showCreateGroupInput"
-            @click="showCreateGroupInput = true"
-            variant="outline"
-            class="mt-4 w-full hover:cursor-pointer hover:bg-sidebar-primary/15 dark:hover:bg-sidebar-primary/10"
-          >
+          @click="showCreateGroupDialog = true"
+          variant="outline"
+          class="mt-4 w-full hover:cursor-pointer hover:bg-sidebar-primary/15 dark:hover:bg-sidebar-primary/10"
+        >
           {{ t('group.create-group') }}
         </Button>
-        <div v-else class="space-y-2">
-          <Input
-              v-model="newGroupName"
-              type="text"
-              :placeholder="t('group.enter-group-name')"
-              variant="outline"
-              class="mt-4 focus:ring-2 focus:ring-primary"
-              />
-          <div class="flex gap-2">
-            <Button
-                @click="createGroup"
-                variant="outline"
-                class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/20"
-                :disabled="!newGroupName.trim()"
-            >
-              {{ t('group.create') }}
-            </Button>
-            <Button
-                @click="cancelCreateGroup"
-                variant="destructive"
-                class="mt-4 hover:cursor-pointer hover:bg-destructive/70"            >
-              {{ t('common.cancel') }}
-            </Button>
-          </div>
-        </div>
       </div>
 
       <!-- Households in group -->
@@ -121,6 +95,17 @@
       </div>
     </main>
   </div>
+  <InviteHouseholdDialog
+    :open="showInviteDialog"
+    :group-id="currentGroupId"
+    @update:open="showInviteDialog = $event"
+    @invitation-sent="refreshHouseholds"
+  />
+  <CreateGroupDialog
+    :open="showCreateGroupDialog"
+    @update:open="showCreateGroupDialog = $event"
+    @group-created="refreshGroups"
+  />
 </template>
 
 
@@ -138,6 +123,8 @@ import { House } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
+import InviteHouseholdDialog from '@/components/group/InviteHouseholdDialog.vue';
+import CreateGroupDialog from '@/components/group/CreateGroupDialog.vue';
 
 
 
@@ -154,9 +141,9 @@ const groups = ref<Group[]>([]);
 const households = ref<Household[]>([]);
 const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
-const showCreateGroupInput = ref(false);
-const newGroupName = ref('');
+const showCreateGroupDialog = ref(false);
 const isAdmin = ref(false);
+const showInviteDialog = ref(false);
 
 // Check if user is household admin when component mounts
 onMounted(async () => {
@@ -167,18 +154,7 @@ onMounted(async () => {
     isAdmin.value = false;
   }
 
-  const response = await groupService.getCurrentUserGroups();
-  if (response?.content?.length > 0) {
-    groups.value = response.content.map(group => ({
-      id: group.id,
-      name: group.name,
-      groupId: group.id
-    }));
-    // Set the first group as current
-    if (groups.value[0]) {
-      switchToGroup(groups.value[0].groupId);
-    }
-  }
+  await refreshGroups();
 });
 
 // Watch for changes in search text and current group ID
@@ -243,8 +219,7 @@ function switchToGroup(groupId: number) {
 }
 
 function inviteHousehold() {
-  // TODO: Implement household invitation
-  console.log('Invite household not implemented');
+  showInviteDialog.value = true;
 }
 
 async function leaveCurrentGroup() {
@@ -270,14 +245,8 @@ async function leaveCurrentGroup() {
     alert('Det oppstod en feil ved forsøk på å forlate gruppen');
   }
 }
-
-async function createGroup() {
-  if (!newGroupName.value.trim()) return;
-
+async function refreshGroups() {
   try {
-    await groupService.createGroup(newGroupName.value.trim());
-
-    // Refresh the groups list
     const response = await groupService.getCurrentUserGroups();
     if (response?.content?.length > 0) {
       groups.value = response.content.map(group => ({
@@ -285,23 +254,26 @@ async function createGroup() {
         name: group.name,
         groupId: group.id
       }));
-      // Switch to the newly created group
-      const newGroup = groups.value.find(g => g.name === newGroupName.value.trim());
-      if (newGroup) {
-        switchToGroup(newGroup.groupId);
+      // Set the first group as current if no group is selected
+      if (groups.value[0] && !currentGroupId.value) {
+        switchToGroup(groups.value[0].groupId);
       }
     }
-
-    // Reset the create group form
-    cancelCreateGroup();
   } catch (error) {
-    console.error('Error creating group:', error);
-    alert(error instanceof Error ? error.message : 'Det oppstod en feil ved opprettelse av gruppen');
+    console.error('Error fetching groups:', error);
   }
 }
 
-function cancelCreateGroup() {
-  showCreateGroupInput.value = false;
-  newGroupName.value = '';
+async function refreshHouseholds() {
+  if (!currentGroupId.value) return;
+
+  try {
+    const response = await groupService.getCurrentHouseholdsInGroup(currentGroupId.value);
+    if (Array.isArray(response)) {
+      households.value = response as Household[];
+    }
+  } catch (error) {
+    console.error('Error refreshing households:', error);
+  }
 }
 </script>
