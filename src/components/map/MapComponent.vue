@@ -773,7 +773,7 @@ export default defineComponent({
         addWaypoints: false,
         fitSelectedRoutes: true,
         showAlternatives: true,
-        useZoomParameter: true,
+        useZoomParameter: false,
         draggableWaypoints: false,
         createMarker: function(_i: number, _waypoint: L.Routing.Waypoint, _n: number): L.Marker | null {
           return null; // No waypoint markers
@@ -880,11 +880,8 @@ export default defineComponent({
      * @param newPois - Array of POIs to display on the map
      */
     function updatePOIs(newPois: POI[]): void {
-      // Skip update if map is not ready or zoom level is too low for POIs
-      if (!map.value || map.value.getZoom() < MIN_ZOOM_FOR_POIS) {
-        markerClusterGroup.value?.clearLayers();
-        return;
-      }
+      // Skip update if map is not ready
+      if (!map.value) return;
 
       // Ensure map and cluster group are initialized
       if (!map.value || !markerClusterGroup.value) {
