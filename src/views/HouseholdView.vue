@@ -231,10 +231,10 @@ import { onMounted, ref, computed, nextTick } from 'vue';
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+// Remove unused Badge import
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type {HouseholdMember} from '@/models/Household';
+import type { HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household';
 import {
   Dialog,
   DialogContent,
@@ -250,29 +250,26 @@ import MemberNotInHousehold from '@/components/household/MemberNotInHousehold.vu
 import UserInvitations from '@/components/household/UserInvitations.vue';
 import PendingInvitations from '@/components/household/PendingInvitations.vue';
 import HouseholdStats from '@/components/household/HouseholdStats.vue';
-// DeleteHousehold component no longer used - functionality integrated into edit dialog
 import { useUserStore } from '@/stores/UserStore';
+import { useHouseholdStore } from '@/stores/HouseholdStore';
 import {
-  getCurrentHousehold,
   leaveHousehold,
   isCurrentUserHouseholdAdmin,
   promoteUserToAdmin,
   getHouseholdMembers,
   getEmptyHouseholdMembers,
-  removeEmptyMemberFromHousehold,
   getNonAdminHouseholdMembers,
   updateHousehold,
   deleteHousehold
 } from '@/services/HouseholdService'
 import { toast } from 'vue-sonner';
-// Using direct service calls instead of the store
 
 const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore();
-// Using direct service calls instead of the store
-const hasHousehold = ref(false);
-const household = ref<{ id: number; name: string; address?: string } | null>(null);
+const householdStore = useHouseholdStore();
+const hasHousehold = computed(() => !!householdStore.currentHousehold);
+const household = computed(() => householdStore.currentHousehold);
 const isAdmin = ref(false);
 const showLeaveDialog = ref(false);
 const showEditHouseholdDialog = ref(false);
@@ -284,29 +281,22 @@ const editHouseholdData = ref({
   address: ''
 });
 const showTransferAdminDialog = ref(false);
-const showCreateForm = ref(false);
-const householdMembers = ref<any[]>([]);
-const emptyMembers = ref<any[]>([]);
+const householdMembers = ref<HouseholdMember[]>([]);
+const emptyMembers = ref<EmptyHouseholdMemberDto[]>([]);
 const userInvitationsRef = ref<InstanceType<typeof UserInvitations> | null>(null);
 const pendingInvitationsRef = ref<InstanceType<typeof PendingInvitations> | null>(null);
-
-/**
- * Current user from the user store.
- */
-const currentUser = computed(() => userStore.profile);
 
 /**
  * Computed property for all household members (real + empty).
  * @returns {Array} Combined array of regular and empty household members
  */
-const allHouseholdMembers = computed(() => {
+const allHouseholdMembers = computed<(HouseholdMember | EmptyHouseholdMemberDto)[]>(() => {
   return [...householdMembers.value, ...emptyMembers.value];
 });
 
 /**
  * Non-admin members of the household.
  * Used for the admin transfer dialog.
- * @type {Ref<HouseholdMember[]>}
  */
 const nonAdminMembers = ref<HouseholdMember[]>([]);
 
@@ -316,21 +306,15 @@ const nonAdminMembers = ref<HouseholdMember[]>([]);
 
 /**
  * Handles when a member is selected in the HouseholdMembers component.
- * @param {any} member - The selected household member
+ * @param {HouseholdMember} member - The selected household member
  */
-const handleMemberSelected = (member: any) => {
-  console.log('Selected member in parent:', member);
-  // Implement member selection logic here
+const handleMemberSelected = (member: HouseholdMember | EmptyHouseholdMemberDto) => {
 };
 
 /**
  * Handles the event when the user wants to view the beredskapslager (shelter store).
  */
-const handleViewBeredskapslager = () => {
-  console.log('View beredskapslager in parent');
-  // Implement navigation to beredskapslager page
-};
-
+const handleViewBeredskapslager = () => {};
 /**
  * Opens the edit household dialog and populates it with current household data
  */
@@ -381,12 +365,20 @@ const handleDeleteHousehold = async () => {
     toast.success(t('household.delete_success'));
     showConfirmDeleteDialog.value = false;
     showEditHouseholdDialog.value = false;
+    await householdStore.fetchCurrentHousehold();
     await refreshHouseholdData();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting household:', error);
 
-    if (error.response && error.response.data) {
-      toast.error(error.response.data);
+    if (error instanceof Error) {
+      toast.error(error.message);
+    } else if (typeof error === 'object' && error !== null && 'response' in error) {
+      const errorResponse = error as { response?: { data?: string } };
+      if (errorResponse.response?.data) {
+        toast.error(errorResponse.response.data);
+      } else {
+        toast.error(t('household.delete_error'));
+      }
     } else {
       toast.error(t('household.delete_error'));
     }
@@ -402,9 +394,7 @@ const handleDeleteHousehold = async () => {
  */
 const refreshHouseholdData = async () => {
   try {
-    const householdData = await getCurrentHousehold();
-    hasHousehold.value = !!householdData;
-    household.value = householdData;
+    await householdStore.fetchCurrentHousehold();
 
     if (hasHousehold.value) {
       // Check if the current user is an admin
@@ -462,16 +452,26 @@ const leaveCurrentHousehold = async () => {
     await leaveHousehold();
     toast.success(t('household.leave-success'));
     showLeaveDialog.value = false;
+
+    // Update the household store to reflect that the user has left
+    await householdStore.fetchCurrentHousehold();
     await refreshHouseholdData();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error leaving household:', error);
-    // Check if we have a specific error message from the backend
-    if (error.response && error.response.data) {
-      // If the error is about being the last admin, show a more specific message
-      if (error.response.data.includes('last admin')) {
-        toast.error(t('household.leave-last-admin-error'));
+
+    // Improved error handling
+    if (typeof error === 'object' && error !== null && 'response' in error) {
+      const errorResponse = error as { response?: { data?: string } };
+      if (errorResponse.response?.data) {
+        // If the error is about being the last admin, show a more specific message
+        if (typeof errorResponse.response.data === 'string' &&
+          errorResponse.response.data.includes('last admin')) {
+          toast.error(t('household.leave-last-admin-error'));
+        } else {
+          toast.error(String(errorResponse.response.data));
+        }
       } else {
-        toast.error(error.response.data);
+        toast.error(t('household.leave-error'));
       }
     } else {
       toast.error(t('household.leave-error'));
@@ -496,25 +496,31 @@ const openTransferAdminDialog = async () => {
 
 /**
  * Promotes the selected member to admin status.
- * @param {any} member - The member to promote to admin
+ * @param {HouseholdMember} member - The member to promote to admin
  * @async
  */
-const selectMemberForAdminTransfer = async (member: any) => {
+const selectMemberForAdminTransfer = async (member: HouseholdMember) => {
   try {
     await promoteUserToAdmin(member.email);
     toast.success(t('household.admin-transferred-success'));
     showTransferAdminDialog.value = false;
     await refreshHouseholdData();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error transferring admin role:', error);
 
-    // Check if we have a specific error message from the backend
-    if (error.response && error.response.data) {
-      // If the error is about the user already being an admin
-      if (error.response.data.includes('already an admin')) {
-        toast.error(t('household.already-admin-error'));
+    // Improved error handling
+    if (typeof error === 'object' && error !== null && 'response' in error) {
+      const errorResponse = error as { response?: { data?: string } };
+      if (errorResponse.response?.data) {
+        // If the error is about the user already being an admin
+        if (typeof errorResponse.response.data === 'string' &&
+          errorResponse.response.data.includes('already an admin')) {
+          toast.error(t('household.already-admin-error'));
+        } else {
+          toast.error(String(errorResponse.response.data));
+        }
       } else {
-        toast.error(error.response.data);
+        toast.error(t('household.admin-transferred-error'));
       }
     } else {
       toast.error(t('household.admin-transferred-error'));
@@ -545,6 +551,5 @@ onMounted(async () => {
   }
 });
 </script>
-
 <style scoped>
 </style>

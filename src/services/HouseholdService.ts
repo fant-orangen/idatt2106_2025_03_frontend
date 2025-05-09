@@ -31,13 +31,11 @@ export async function getCurrentHousehold(): Promise<Household | null> {
     const response = await api.get('/user/households/me');
     return response.data;
   } catch (error) {
-    // Check if it's a 404 error (no household)
     if (error instanceof Error && 'response' in error &&
       error.response && typeof error.response === 'object' &&
       'status' in error.response && error.response.status === 404) {
       return null;
     }
-    // For any other error, throw it
     throw error;
   }
 }
@@ -256,5 +254,38 @@ export async function deleteHousehold(): Promise<void> {
   } catch (error) {
     console.error('Error deleting household:', error);
     throw error;
+  }
+}
+
+/**
+ * Sends a safety check to all household members
+ * This will mark the sender as safe automatically
+ *
+ * @returns Promise that resolves when the safety check is sent
+ */
+export async function askIfSafe(): Promise<void> {
+  try {
+    await api.post('/user/confirm-safety/requests');
+  } catch (error: unknown) {
+    console.error('Error sending safety check:', error);
+    throw error;
+  }
+}
+
+/**
+ * Checks if a user is marked as safe
+ *
+ * @param userId The ID of the user to check
+ * @returns Promise that resolves to true if the user is safe, false otherwise
+ * @throws Error if the user doesn't exist or there's another issue
+ */
+export async function isUserSafe(userId: number): Promise<boolean> {
+  try {
+    const response = await api.get('/user/confirm-safety/is-safe', {
+      params: { userId }
+    })
+    return response.data === true || (typeof response.data === 'object' && response.data.isSafe === true);
+  } catch (error: unknown) {
+    return false;
   }
 }

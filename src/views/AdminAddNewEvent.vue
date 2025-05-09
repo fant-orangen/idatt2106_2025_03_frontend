@@ -127,7 +127,7 @@
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectGroup>
+                <SelectGroup class="text-white dark:text-black">
                   <SelectItem class="severity-tag green" value="green">{{ $t('add-event-info.crisis-level.low') }}</SelectItem>
                   <SelectItem class="severity-tag yellow" value="yellow">{{ $t('add-event-info.crisis-level.medium') }}</SelectItem>
                   <SelectItem class="severity-tag red" value="red">{{ $t('add-event-info.crisis-level.high') }}</SelectItem>
@@ -180,13 +180,13 @@
       </form>
     </div>
 
-    <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8">
+    <div class="flex flex-col lg:order-none order-first lg:mb-0 mb-8 z-50">
       <AdminMapController
         :mapComponent="mapComponentInstance"
         @location-selected="handleLocationSelected"
         @location-cleared="handleLocationCleared"
       />
-      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md">
+      <div class="flex-grow lg:min-h-[500px] min-h-[400px] rounded-lg overflow-hidden border border-gray-300 shadow-md z-50">
         <MapComponent
           ref="mapComponent"
           :adminMode="true"
@@ -640,12 +640,12 @@ function getScenarioId(category: string): number | null {
 }
 
 .green {
-	background-color: var(--color-chart-2); /* should be green but is off*/
+	background-color: var(--crisis-level-green);
 }
 .yellow {
-	background-color: var(--color-chart-4); /*should be yellow on dark mode... */
+	background-color: var(--crisis-level-yellow);
 }
 .red {
-	background-color: var(--color-chart-1); /*should be red but is blue  */
+	background-color: var(--crisis-level-red);
 }
 </style>

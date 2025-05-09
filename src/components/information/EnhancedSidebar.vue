@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'EnhancedSidebar'
+  name: 'EnhancedSidebar',
 })
 </script>
 
@@ -21,6 +21,7 @@ import { ChevronRight, ChevronDown } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { useI18n } from 'vue-i18n'
 import type { SidebarNode } from '@/views/information/EnhancedInformationView.vue'
+import { Separator } from '@/components/ui/separator'
 
 const { t } = useI18n()
 
@@ -52,9 +53,9 @@ const emit = defineEmits<{
  * Tracks which sections are expanded in the sidebar
  */
 const expandedSections = ref<Record<string, boolean>>({
-  'crisisSituations': true,
-  'extremeWeather': true,
-  'scenarioThemes': true
+  crisisSituations: true,
+  extremeWeather: true,
+  scenarioThemes: true,
 })
 
 /**
@@ -95,11 +96,11 @@ function getBorderClass(level: number, isActive: boolean | undefined): string {
   const active = isActive === true
 
   if (level === 0) {
-    return active ? 'border-l-4 border-primary' : 'border-l-4 border-transparent'
+    return active ? 'border-l-4 border-transparent' : 'border-l-4 border-transparent'
   } else if (level === 1) {
-    return active ? 'border-l-3 border-primary/80' : 'border-l-3 border-transparent'
+    return active ? 'border-l-3 border-transparent' : 'border-l-3 border-transparent'
   } else {
-    return active ? 'border-l-2 border-primary/60' : 'border-l-2 border-transparent'
+    return active ? 'border-l-2 border-transparent' : 'border-l-2 border-transparent'
   }
 }
 
@@ -132,17 +133,23 @@ function toggleMobileSidebar(): void {
  * Watches for changes in the selected scenario ID
  * Ensures the scenario themes section is expanded when a scenario is selected
  */
-watch(() => props.selectedScenarioId, (newId) => {
-  if (newId) {
-    expandedSections.value['scenarioThemes'] = true;
-  }
-}, { immediate: true })
+watch(
+  () => props.selectedScenarioId,
+  (newId) => {
+    if (newId) {
+      expandedSections.value['scenarioThemes'] = true
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
   <div>
     <!-- Mobile header with menu toggle -->
-    <div class="md:hidden bg-primary text-primary-foreground p-4 flex items-center justify-between sticky top-0 z-10">
+    <div
+      class="md:hidden bg-foreground text-primary-foreground p-4 flex items-center justify-between sticky top-0 z-10"
+    >
       <h1 class="text-xl font-bold">{{ t('sidebar.title') }}</h1>
       <Button variant="ghost" size="icon" @click="toggleMobileSidebar">
         <ChevronRight v-if="!showSidebarMobile" class="h-6 w-6" />
@@ -152,10 +159,10 @@ watch(() => props.selectedScenarioId, (newId) => {
 
     <!-- Sidebar - hidden on mobile unless toggled -->
     <aside
-      class="enhanced-sidebar bg-card border-r border-border overflow-y-auto transition-all duration-300 ease-in-out"
+      class="enhanced-sidebar sticky h-full bg-card border-r border-border overflow-y-auto transition-all duration-300 ease-in-out"
       :class="{
         'w-full md:w-72 fixed md:relative inset-0 z-20': showSidebarMobile,
-        'hidden md:block md:w-72': !showSidebarMobile
+        'hidden md:block md:w-72': !showSidebarMobile,
       }"
     >
       <div class="p-4 border-b border-border hidden md:block">
@@ -169,43 +176,64 @@ watch(() => props.selectedScenarioId, (newId) => {
             <li v-if="section.children?.length" class="enhanced-sidebar-section">
               <div
                 class="enhanced-sidebar-item group flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-accent transition-all"
-                :class="[
-                  getBorderClass(0, false),
-                  'hover:border-primary/50'
-                ]"
+                :class="[getBorderClass(0, false), 'hover:border-trapnspare']"
                 :style="getIndentClass(0)"
                 @click="toggleSection(section.key)"
               >
                 <span :class="getTextClass(0)">{{ t(section.titleKey) }}</span>
                 <ChevronDown v-if="expandedSections[section.key]" class="h-5 w-5 text-primary" />
-                <ChevronRight v-else class="h-5 w-5 text-muted-foreground group-hover:text-foreground" />
+                <ChevronRight
+                  v-else
+                  class="h-5 w-5 text-muted-foreground group-hover:text-foreground"
+                />
               </div>
 
-              <ul v-if="expandedSections[section.key]" class="mt-1 ml-3 space-y-1 border-l-2 border-border pl-2">
+              <ul
+                v-if="expandedSections[section.key]"
+                class="mt-1 ml-3 space-y-1 border-l-2 border-border pl-2"
+              >
                 <template v-for="child in section.children" :key="child.key">
                   <!-- Nested section -->
                   <li v-if="child.children?.length" class="enhanced-sidebar-section">
                     <div
                       class="enhanced-sidebar-item group flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-accent transition-all"
-                      :class="[
-                        getBorderClass(1, false),
-                        'hover:border-primary/50'
-                      ]"
+                      :class="[getBorderClass(1, false), 'hover:border-primary/50']"
                       :style="getIndentClass(1)"
                       @click="toggleSection(child.key)"
                     >
                       <span :class="getTextClass(1)">{{ t(child.titleKey) }}</span>
-                      <ChevronDown v-if="expandedSections[child.key]" class="h-4 w-4 text-primary" />
-                      <ChevronRight v-else class="h-4 w-4 text-muted-foreground group-hover:text-foreground" />
+                      <ChevronDown
+                        v-if="expandedSections[child.key]"
+                        class="h-4 w-4 text-primary"
+                      />
+                      <ChevronRight
+                        v-else
+                        class="h-4 w-4 text-muted-foreground group-hover:text-foreground"
+                      />
                     </div>
 
-                    <ul v-if="expandedSections[child.key]" class="mt-1 ml-4 space-y-1 border-l-2 border-border/70 pl-2">
-                      <li v-for="subChild in child.children" :key="subChild.key" class="enhanced-sidebar-item">
+                    <ul
+                      v-if="expandedSections[child.key]"
+                      class="mt-1 ml-4 space-y-1 border-l-2 border-border/70 pl-2"
+                    >
+                      <li
+                        v-for="subChild in child.children"
+                        :key="subChild.key"
+                        class="enhanced-sidebar-item"
+                      >
                         <button
                           class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                           :class="[
-                            getBorderClass(2, selectedTheme === subChild.key || (subChild.isScenario && subChild.scenarioId === selectedScenarioId)),
-                            { 'bg-accent/50': selectedTheme === subChild.key || (subChild.isScenario && subChild.scenarioId === selectedScenarioId) }
+                            getBorderClass(
+                              2,
+                              selectedTheme === subChild.key ||
+                                (subChild.isScenario && subChild.scenarioId === selectedScenarioId),
+                            ),
+                            {
+                              'bg-accent/50':
+                                selectedTheme === subChild.key ||
+                                (subChild.isScenario && subChild.scenarioId === selectedScenarioId),
+                            },
                           ]"
                           :style="getIndentClass(2)"
                           @click="handleThemeSelected(subChild.key)"
@@ -214,11 +242,23 @@ watch(() => props.selectedScenarioId, (newId) => {
                             <span
                               class="h-2 w-2 rounded-full"
                               :class="{
-                                'bg-primary': subChild.isScenario && subChild.scenarioId === selectedScenarioId,
-                                'bg-muted-foreground': !(subChild.isScenario && subChild.scenarioId === selectedScenarioId)
+                                'bg-primary':
+                                  subChild.isScenario && subChild.scenarioId === selectedScenarioId,
+                                'bg-muted-foreground': !(
+                                  subChild.isScenario && subChild.scenarioId === selectedScenarioId
+                                ),
                               }"
                             ></span>
-                            <span :class="[getTextClass(2), {'font-bold': subChild.isScenario && subChild.scenarioId === selectedScenarioId}]">
+                            <span
+                              :class="[
+                                getTextClass(2),
+                                {
+                                  'font-bold':
+                                    subChild.isScenario &&
+                                    subChild.scenarioId === selectedScenarioId,
+                                },
+                              ]"
+                            >
                               {{ subChild.isScenario ? subChild.titleKey : t(subChild.titleKey) }}
                             </span>
                           </div>
@@ -232,8 +272,16 @@ watch(() => props.selectedScenarioId, (newId) => {
                     <button
                       class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                       :class="[
-                        getBorderClass(1, selectedTheme === child.key || (child.isScenario && child.scenarioId === selectedScenarioId)),
-                        { 'bg-accent/50': selectedTheme === child.key || (child.isScenario && child.scenarioId === selectedScenarioId) }
+                        getBorderClass(
+                          1,
+                          selectedTheme === child.key ||
+                            (child.isScenario && child.scenarioId === selectedScenarioId),
+                        ),
+                        {
+                          'bg-accent/50':
+                            selectedTheme === child.key ||
+                            (child.isScenario && child.scenarioId === selectedScenarioId),
+                        },
                       ]"
                       :style="getIndentClass(1)"
                       @click="handleThemeSelected(child.key)"
@@ -242,11 +290,22 @@ watch(() => props.selectedScenarioId, (newId) => {
                         <span
                           class="h-2 w-2 rounded-full"
                           :class="{
-                            'bg-primary': child.isScenario && child.scenarioId === selectedScenarioId,
-                            'bg-muted-foreground': !(child.isScenario && child.scenarioId === selectedScenarioId)
+                            'bg-primary':
+                              child.isScenario && child.scenarioId === selectedScenarioId,
+                            'bg-muted-foreground': !(
+                              child.isScenario && child.scenarioId === selectedScenarioId
+                            ),
                           }"
                         ></span>
-                        <span :class="[getTextClass(1), {'font-bold': child.isScenario && child.scenarioId === selectedScenarioId}]">
+                        <span
+                          :class="[
+                            getTextClass(1),
+                            {
+                              'font-bold':
+                                child.isScenario && child.scenarioId === selectedScenarioId,
+                            },
+                          ]"
+                        >
                           {{ child.isScenario ? child.titleKey : t(child.titleKey) }}
                         </span>
                       </div>
@@ -261,8 +320,16 @@ watch(() => props.selectedScenarioId, (newId) => {
               <button
                 class="w-full text-left p-2 rounded-md flex items-center gap-2 hover:bg-accent transition-all"
                 :class="[
-                  getBorderClass(0, selectedTheme === section.key || (section.isScenario && section.scenarioId === selectedScenarioId)),
-                  { 'bg-accent/50': selectedTheme === section.key || (section.isScenario && section.scenarioId === selectedScenarioId) }
+                  getBorderClass(
+                    0,
+                    selectedTheme === section.key ||
+                      (section.isScenario && section.scenarioId === selectedScenarioId),
+                  ),
+                  {
+                    'bg-accent/50':
+                      selectedTheme === section.key ||
+                      (section.isScenario && section.scenarioId === selectedScenarioId),
+                  },
                 ]"
                 :style="getIndentClass(0)"
                 @click="handleThemeSelected(section.key)"
@@ -277,6 +344,7 @@ watch(() => props.selectedScenarioId, (newId) => {
           </template>
         </ul>
       </nav>
+      <Separator v-if="showSidebarMobile" />
     </aside>
   </div>
 </template>
@@ -301,13 +369,13 @@ ul {
   padding: 0;
 }
 
-/* Enhanced visual hierarchy */
-.border-l-2, .border-l-3, .border-l-4 {
-  transition: border-color 0.2s ease;
+Enhanced visual hierarchy .border-l-2,
+.border-l-3,
+.border-l-4 {
+  transition: border-transparent 0.2s ease;
 }
 
-/* Nested list styling */
-ul.border-l-2 {
+Nested list styling ul.border-l-2 {
   position: relative;
   transition: all 0.3s ease;
 }
@@ -315,5 +383,6 @@ ul.border-l-2 {
 /* Active item styling */
 button.bg-accent\/50 {
   transition: all 0.2s ease;
+  border: 0;
 }
 </style>

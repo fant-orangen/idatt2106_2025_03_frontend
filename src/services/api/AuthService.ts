@@ -98,21 +98,3 @@ export async function changePassword(userEmail: string, oldPassword: string, new
     oldPassword: oldPassword,
   })
 }
-
-/**
- * Changes the email address for a user.
- *
- * This function makes a POST request to the backend API to change the user's email address.
- *
- * @param {string} email - The current email address of the user
- * @param {string} newEmail - The new email address to set for the user
- * @param {string} password - The password of the user for verification
- * @returns {Promise<import('axios').AxiosResponse>} - A promise that resolves to the server response
- */
-export async function changeEmail(email: string, newEmail: string, password: string) {
-  return await api.post('/auth/change-email', {
-    email: email,
-    newEmail: newEmail,
-    password: password,
-  })
-}

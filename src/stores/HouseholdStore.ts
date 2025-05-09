@@ -123,6 +123,10 @@ export const useHouseholdStore = defineStore('household', () => {
     fetchHouseholdMembers,
     joinHouseholdWithToken,
     cleanHousehold
+    setCurrentHousehold,
+    setLoading,
+    setError,
+
   };
 });
 

@@ -14,8 +14,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Lock, Unlock, User, Eye, EyeOff } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
-import { updateUserPreference, getUserPreferences, getUserProfile, updateUserProfile } from '@/services/UserService'
-import type { UserPreferencesDto, ExtendedUserProfile, UpdateExtendedUserProfile } from '@/models/User'
+import {
+  updateUserPreference,
+  getUserPreferences,
+  getUserProfile,
+  updateUserProfile,
+} from '@/services/UserService'
+import type {
+  UserPreferencesDto,
+  ExtendedUserProfile,
+  UpdateExtendedUserProfile,
+} from '@/models/User'
 import { useUserStore } from '@/stores/UserStore'
 import { ref } from 'vue'
 import { onMounted } from 'vue'
@@ -31,13 +40,10 @@ const twoFactorAuthenticationEnabled = ref(false)
 const locationSharingEnabled = ref(false)
 
 // Email and password fields
-const newEmail = ref('')
-const changeEmailPassword = ref('')
 const currentPassword = ref('')
 const newPassword = ref('')
 
 // View toggles for password fields
-const isViewChangePasswordEmail = ref(false)
 const isViewCurrentPassword = ref(false)
 const isViewNewPassword = ref(false)
 
@@ -53,7 +59,7 @@ const profile = ref<ExtendedUserProfile>({
   locationSharingEnabled: true,
   emailVerified: false,
   householdId: null,
-  householdName: ''
+  householdName: '',
 })
 
 const isProfileLoading = ref(false)
@@ -112,32 +118,6 @@ function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string
     })
 }
 
-function handleUpdateEmail(newEmailInput: string, passwordInput: string) {
-  userStore
-    .updateEmail(newEmailInput, passwordInput)
-    .then(() => {
-      toast.success(t('settings.account.email.success'), {
-        description: t('settings.account.email.successDescription'),
-      })
-      // Reset the email fields
-      newEmail.value = ''
-      changeEmailPassword.value = ''
-      userStore.logout()
-      router.push('/login')
-    })
-    .catch((error) => {
-      console.error('Error updating email:', error)
-      toast.error(t('settings.account.email.error'), {
-        description: t('settings.account.email.errorDescription'),
-      })
-    })
-}
-
-function handleCancelEmailChange() {
-  newEmail.value = ''
-  changeEmailPassword.value = ''
-}
-
 function handleCancelPasswordChange() {
   currentPassword.value = ''
   newPassword.value = ''
@@ -168,7 +148,7 @@ const saveProfile = async () => {
       lastName: profile.value.lastName,
       homeAddress: profile.value.homeAddress,
       homeLatitude: profile.value.homeLatitude,
-      homeLongitude: profile.value.homeLongitude
+      homeLongitude: profile.value.homeLongitude,
     }
 
     await updateUserProfile(updateProfileDto)
@@ -218,50 +198,6 @@ onMounted(() => {
                 {{ t('settings.account.description') }}
               </CardDescription>
             </CardHeader>
-            <!-- Change Email Setting -->
-            <CardHeader>
-              <CardTitle>{{ t('settings.account.email.subtitle') }}</CardTitle>
-              <CardDescription>
-                {{ t('settings.account.email.description') }}
-              </CardDescription>
-            </CardHeader>
-            <CardContent class="account-settings space-y-2">
-              <div class="space-y-1">
-                <Label for="email">{{ t('settings.account.email.email') }}</Label>
-                <Input id="email" :placeholder="t('login.email')" v-model="newEmail" />
-              </div>
-              <div class="space-y-1 relative">
-                <Label for="password">{{ t('login.password') }}</Label>
-                <div class="relative">
-                  <Input
-                    :type="isViewChangePasswordEmail ? 'text' : 'password'"
-                    id="password"
-                    v-model="changeEmailPassword"
-                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    :placeholder="t('login.password')"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
-                    @click="isViewChangePasswordEmail = !isViewChangePasswordEmail"
-                  >
-                    <component :is="isViewChangePasswordEmail ? EyeOff : Eye" class="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <div class="flex flex-col gap-4 md:flex-row">
-                <Button @click="handleUpdateEmail(newEmail, changeEmailPassword)">{{
-                  t('settings.account.save-changes')
-                }}</Button>
-                <Button variant="outline" @click="handleCancelEmailChange">
-                  {{ t('settings.cancel') }}
-                </Button>
-              </div>
-            </CardFooter>
             <!-- Change Password Setting -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.password.title') }}</CardTitle>
@@ -400,14 +336,23 @@ onMounted(() => {
                   <Label for="homeAddress">{{ t('add-event-info.titles.address') }}</Label>
                   <Input id="homeAddress" v-model="profile.homeAddress" />
                   <p class="text-xs text-muted-foreground italic">
-                    {{ t('settings.profile.address-privacy', 'Your address is not visible to other users.') }}
+                    {{
+                      t(
+                        'settings.profile.address-privacy',
+                        'Your address is not visible to other users.',
+                      )
+                    }}
                   </p>
                 </div>
 
                 <!-- Submit button -->
                 <div class="pt-4">
                   <Button type="submit" :disabled="isProfileLoading">
-                    {{ isProfileLoading ? t('common.saving', 'Saving...') : t('settings.account.save-changes') }}
+                    {{
+                      isProfileLoading
+                        ? t('common.saving', 'Saving...')
+                        : t('settings.account.save-changes')
+                    }}
                   </Button>
                 </div>
               </form>

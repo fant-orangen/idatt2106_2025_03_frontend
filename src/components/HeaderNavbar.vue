@@ -92,6 +92,31 @@ watch(
   },
 )
 
+watch(
+  () => userStore.loggedIn,
+  async (loggedIn) => {
+    if (loggedIn) {
+      try {
+        isLoading.value = true
+        const userData = await getUserProfile()
+        profile.value = {
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          householdName: userData.householdName,
+          emailVerified: userData.emailVerified,
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error)
+        toast.error(t('errors.unexpected-error'))
+      } finally {
+        isLoading.value = false
+      }
+    }
+  },
+  { immediate: true },
+)
+
 onMounted(async () => {
   try {
     isLoading.value = true
@@ -208,11 +233,12 @@ function logOut() {
 
 <template>
   <div
-    class="navbar text-secondary-foreground bg-secondary flex flex-row items-center justify-between shadow-md p-4 sticky top-0 z-[100]"
+  class="navbar text-secondary-foreground bg-secondary shadow-md p-4 sticky top-0 z-[100]"
   >
-    <div class="navbar-left flex flex-row gap-4">
-      <!-- Logo -->
+    <div class="w-full max-w-screen-2xl mx-auto flex flex-row items-center justify-between">
+      <div class="navbar-left flex flex-row gap-4">
 
+    <!-- Logo -->
       <RouterLink to="/" class="hover:text-primary flex items-center">
         <img src="../assets/krisefikserNY.png" alt="Logo" class="h-8 w-auto" />
       </RouterLink>
@@ -249,7 +275,7 @@ function logOut() {
           <Button variant="ghost" class="cursor-pointer hover:bg-input dark:hover:bg-background/40">
             <User class="h-5 w-5" />
             <span class="hidden md:inline-flex">
-              {{ profile.firstName }} {{ profile.lastName }}
+              {{ isLoading ? t('loading') : `${profile.firstName} ${profile.lastName}` }}
             </span>
           </Button>
         </DropdownMenuTrigger>
@@ -364,6 +390,7 @@ function logOut() {
           </ul>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>

@@ -1,11 +1,16 @@
 <template>
   <!-- Compact Banner for No Crisis -->
-  <div v-if="!loading && !error && !hasOngoingCrises" class="crisis-status-banner full-width-banner bg-green-50 dark:bg-green-900/20 border-y border-green-200 dark:border-green-800 py-3 mb-4 transition-all duration-200 ease-in-out">
+  <div
+    v-if="!loading && !error && !hasOngoingCrises"
+    class="w-screen -mx-[calc(50vw-50%)] bg-green-50 dark:bg-green-900/20 border-y border-green-200 dark:border-green-800 py-3 mb-4 transition-all duration-200 ease-in-out"
+  >
     <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <font-awesome-icon :icon="['fas', 'check-circle']" class="text-green-500 dark:text-green-400" />
         <span class="font-medium text-green-700 dark:text-green-300">{{ t('crisis.no-crisis') }}</span>
-        <span class="text-sm text-green-600/70 dark:text-green-400/70 hidden sm:inline">{{ t('crisis.all_clear', 'All clear. No active crisis events at this time.') }}</span>
+        <span class="text-sm text-green-600/70 dark:text-green-400/70 hidden sm:inline">
+          {{ t('crisis.all_clear', 'All clear. No active crisis events at this time.') }}
+        </span>
       </div>
       <Button
         variant="ghost"
@@ -20,7 +25,15 @@
   </div>
 
   <!-- Full Card for Crisis or Loading States -->
-  <div v-else class="crisis-status" :class="{'cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5': hasOngoingCrises, 'cursor-default': !hasOngoingCrises}" @click="hasOngoingCrises && navigateToCrisisPage()">
+  <div
+    v-else
+    class="w-full"
+    :class="{
+      'cursor-pointer transition-transform duration-200 ease-in-out hover:-translate-y-0.5': hasOngoingCrises,
+      'cursor-default': !hasOngoingCrises
+    }"
+    @click="hasOngoingCrises && navigateToCrisisPage()"
+  >
     <Card :class="`w-full max-w-20xl rounded-2xl p-4 transition-all duration-200 ease-in-out ${containerClass}`">
       <CardHeader class="items-center">
         <CardTitle class="flex flex-col items-center justify-center text-center gap-3 text-2xl">
@@ -30,7 +43,7 @@
       </CardHeader>
       <CardContent class="flex flex-col items-center w-full px-4">
         <!-- Loading State -->
-        <div v-if="loading" class="main-crisis mb-4 w-full text-center">
+        <div v-if="loading" class="mb-4 w-full text-center">
           <div class="text-base font-semibold flex items-center justify-center gap-2">
             <div class="w-4 h-4 border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
             {{ t('crisis.loading', 'Loading crisis events...') }}
@@ -38,16 +51,16 @@
         </div>
 
         <!-- Error State -->
-        <div v-else-if="error" class="main-crisis mb-4 w-full text-center">
+        <div v-else-if="error" class="mb-4 w-full text-center">
           <div class="text-base font-semibold text-destructive">{{ error }}</div>
         </div>
 
         <!-- Main Crisis (Highest Severity) -->
-        <div v-else-if="mainCrisis" class="main-crisis mb-4 w-full text-center">
+        <div v-else-if="mainCrisis" class="mb-4 w-full text-center">
           <div
             class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-all duration-200 ease-in-out cursor-pointer dark:text-white hover:scale-[1.03] hover:shadow-md"
-            :class="'bg-(--crisis-level-${mainCrisis.severity}) bg-opacity-20'"
-            :style="{ borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}`}"
+            :class="'bg-(--crisis-level-' + mainCrisis.severity + ') bg-opacity-20'"
+            :style="{ borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}` }"
             @click.stop="selectCrisis(mainCrisis)"
           >
             <span class="text-base font-semibold">{{ mainCrisis.name }}</span>
@@ -59,8 +72,13 @@
         </div>
 
         <!-- Other Crisis Events as Links -->
-        <div v-if="!loading && !error && otherEvents.length > 0" class="other-events w-full mt-3 max-w-full py-2 border-t border-black/10 dark:border-white/10">
-          <div class="text-sm font-medium mb-2 text-center">{{ t('crisis.other_events', 'Other active events') }}</div>
+        <div
+          v-if="!loading && !error && otherEvents.length > 0"
+          class="w-full mt-3 max-w-full py-2 border-t border-black/10 dark:border-white/10"
+        >
+          <div class="text-sm font-medium mb-2 text-center">
+            {{ t('crisis.other_events', 'Other active events') }}
+          </div>
           <div class="flex flex-wrap justify-center gap-3">
             <a
               v-for="event in otherEvents"
@@ -76,7 +94,6 @@
               ></span>
             </a>
           </div>
-
           <div v-if="hasMoreEvents" class="text-xs text-center italic mt-2">
             {{ t('crisis.more_events', { count: crisisEvents.length - maxDisplay }) }}
           </div>
@@ -227,15 +244,3 @@ const selectCrisis = (event: CrisisEventPreviewDto) => {
 onMounted(fetchCrisisEvents);
 </script>
 
-<style scoped>
-.crisis-status {
-  width: 100%;
-}
-
-.full-width-banner {
-  position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-}
-</style>

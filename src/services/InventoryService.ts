@@ -177,6 +177,7 @@ class InventoryService {
     }
   }
 
+
   /**
    * Get the total number of units for a product type
    * @param productTypeId The ID of the product type
@@ -267,6 +268,25 @@ class InventoryService {
       return response.data;
     } catch (error) {
       console.error('Error searching product types:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update the number of units in a product batch
+   * @param batchId The ID of the batch to update
+   * @param newNumberOfUnits The new number of units to set for the batch
+   * @returns Promise that resolves when the update is complete
+   */
+  async updateBatchUnits(batchId: number, newNumberOfUnits: number): Promise<void> {
+    try {
+      await api.put(`/user/inventory/product-batches/${batchId}`, JSON.stringify(newNumberOfUnits), {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (error) {
+      console.error('Error updating product batch:', error);
       throw error;
     }
   }
