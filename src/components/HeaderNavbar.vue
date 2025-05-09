@@ -324,33 +324,17 @@ function logOut() {
         >{{ t('login.signup') }}</Button
       >
 
-      <DropdownMenu v-if="userStore.loggedIn">
-        <DropdownMenuTrigger as-child>
-          <Button
-            variant="ghost"
-            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
-            v-tooltip="t('household.my-household')">
-            <House class="h-5 w-5" />
-            <span class="hidden md:inline-flex">
-              {{ t('household.my-household') }}
-            </span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent class="z-101">
-          <DropdownMenuLabel>{{ t('household.my-household') }}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem @click="goToPage('/household')">
-              <House class="mr-2 h-4 w-4" />
-              <span>{{ t('household.my-household') }}</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem @click="goToPage('/group')">
-              <Users class="mr-2 h-4 w-4" />
-              <span>{{ t('group.title') }}</span>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <Button
+        v-if="userStore.loggedIn"
+        variant="ghost"
+        class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+        v-tooltip="t('household.my-household')"
+        @click="goToPage('/household')">
+        <House class="h-5 w-5" />
+        <span class="hidden md:inline-flex">
+          {{ t('household.my-household') }}
+        </span>
+      </Button>
 
       <Button v-if='userStore.isAdminUser'
         variant="ghost"
