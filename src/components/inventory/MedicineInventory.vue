@@ -479,11 +479,22 @@ const addProduct = async () => {
   if (!validUnits.includes(unit)) {
     return
   }
-  await inventoryService.createMedicineProductType({
-    name,
-    unit,
-    category: 'medicine',
-  })
+  try {
+    await inventoryService.createMedicineProductType({
+      name,
+      unit,
+      category: 'medicine',
+    })
+  } catch (error) {
+    if (error?.response?.data && typeof error.response.data === 'string' && error.response.data.includes('Unique index or primary key violation')) {
+      toast('Feil', {
+        description: t('inventory.medicine.exists.message'),
+        duration: 3000
+      });
+      return;
+    }
+    throw error;
+  }
   newProductName.value = ''
   newProductUnit.value = ''
   await fetchProductTypes()

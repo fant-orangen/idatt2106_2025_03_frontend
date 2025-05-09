@@ -405,7 +405,7 @@ const removeBatchFromGroup = async (productIndex, batchIndex) => {
       description: t('common.success.removed'),
       duration: 3000
     });
-  } catch (error) {
+  } catch {
     toast('Feil', {
       description: t('common.success.error'),
       duration: 5000
@@ -432,11 +432,22 @@ const addProduct = async () => {
   if (!validUnits.includes(unit)) {
     return;
   }
-  await inventoryService.createWaterProductType({
-    name,
-    unit,
-    category: 'water'
-  });
+  try {
+    await inventoryService.createWaterProductType({
+      name,
+      unit,
+      category: 'water'
+    });
+  } catch (error) {
+    if (error?.response?.data && typeof error.response.data === 'string' && error.response.data.includes('Unique index or primary key violation')) {
+      toast('Feil', {
+        description: t('inventory.water.exists.message'),
+        duration: 3000
+      });
+      return;
+    }
+    throw error;
+  }
   newProductName.value = "";
   await fetchProductTypes();
 };
