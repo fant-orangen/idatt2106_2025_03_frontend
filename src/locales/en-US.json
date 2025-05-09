@@ -179,7 +179,8 @@
     "edit-POI": "Edit point of interest",
     "poi-details": "Point of interest details",
     "meeting-places": "Meeting places",
-    "meeting-point": "Handle meeting points"
+    "meeting-point": "Handle meeting points",
+    "search-meeting-point": "Search for a meeting point..."
   },
   "notifications": {
     "notification": "Notification",
@@ -360,6 +361,7 @@
       "save-draft": "Save draft",
       "published": "Published on",
       "archive": "Archive",
+      "handle-news": "Create new, edit or publish news notifications",
       "description": {
         "title": "This is the title of the news alert",
         "subject": "This is the subject of the news alert, should be related to the crisis event",
@@ -368,7 +370,9 @@
         "saved-drafts": "Saved drafts by you and other administrators",
         "choose-draft": "Select a draft to edit",
         "latest-news": "Latest published news articles",
-        "published": "Date and time this article was published"
+        "published": "Date and time this article was published",
+        "related-news": "Related news articles to the chosen event",
+        "search": "Search for an article"
       }
     },
     "reflect": {

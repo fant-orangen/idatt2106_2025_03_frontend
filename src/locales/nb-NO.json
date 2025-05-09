@@ -180,7 +180,8 @@
     "edit-POI": "Rediger interessepunkt",
     "poi-details": "Interessepunkt-detaljer",
     "meeting-places": "Møteplasser",
-    "meeting-point": "Håndter møteplasser"
+    "meeting-point": "Håndter møteplasser",
+    "search-meeting-point": "Søk etter en møteplass.."
   },
   "notifications": {
     "notification": "Varsling",
@@ -363,6 +364,7 @@
       "save-draft": "Lagre utkast",
       "published": "Publisert på",
       "archive": "Arkiver",
+      "handle-news": "Lag et nytt, rediger eller publiser nyhetsvarsler",
       "description": {
         "title": "Dette er tittelen på nyhetsvarselet",
         "subject": "Dette er temaet i nyhetsvarselet, og burde være relatert til hendelsen",
@@ -371,7 +373,9 @@
         "saved-drafts": "Lagrede utkast av deg og andre adminbrukere",
         "choose-draft": "Velg et utkast å redigere",
         "latest-news": "Siste publiserte nyhetsartikler",
-        "published": "Dato og tidspunkt da denne artikkelen ble publisert"
+        "published": "Dato og tidspunkt da denne artikkelen ble publisert",
+        "related-news": "Relaterte nyhetsartikler tilhørende den valgte hendelsen",
+        "search": "Søk etter en artikkel"
       }
     },
     "reflect": {
