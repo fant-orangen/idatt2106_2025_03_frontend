@@ -300,7 +300,9 @@
     "light-mode": "Lys modus",
     "dark-mode": "Mørk modus",
     "admin-news": "Lag et nyhetsvarsel",
-    "change-mode": "Bytt modus"
+    "change-mode": "Bytt modus",
+    "household": "Husholdning",
+    "food-and-drinks": "Mat og drikke"
   },
   "user-profile": {
     "title": "Brukerprofil",
@@ -673,7 +675,7 @@
     "optional-message": "Valgfritt: Legg til en personlig melding",
     "send-invitation": "Send invitasjon",
     "invitation-sent": "Invitasjon sendt",
-    "invitation-failed": "Kunne ikke sende invitasjon",
+    "invitation-failed": "Kunne ikke sende invitasjon, brukeren finnes ikke.",
     "invitation-sent-success": "Invitasjon sendt",
     "add-user-title": "Inviter bruker til hushold",
     "create_new": "Opprett nytt hushold",
