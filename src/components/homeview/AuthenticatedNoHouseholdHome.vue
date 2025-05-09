@@ -5,21 +5,33 @@
       class="relative overflow-hidden mt-0 w-screen ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)] py-6 md:py-8 bg-cover bg-center"
     >
       <!-- Background with crisis colors - full width with no limit -->
-      <div class="absolute inset-0 bg-gradient-to-r from-[var(--crisis-level-green)]/20 via-[var(--crisis-level-yellow)]/20 to-[var(--crisis-level-red)]/20 z-0 w-screen left-[calc(-50vw+50%)] right-0"></div>
+      <div
+        class="absolute inset-0 bg-gradient-to-r from-[var(--crisis-level-green)]/20 via-[var(--crisis-level-yellow)]/20 to-[var(--crisis-level-red)]/20 z-0 w-screen left-[calc(-50vw+50%)] right-0"
+      ></div>
 
       <div class="relative z-10 px-4 w-full max-w-7xl mx-auto">
-        <div class="w-full rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-in-out border border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/80">
+        <div
+          class="w-full rounded-lg shadow-md overflow-hidden transition-all duration-300 ease-in-out border border-gray-200 bg-white/80 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/80"
+        >
           <div class="p-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div class="flex-grow">
                 <div class="flex items-center gap-3 mb-2">
-                  <font-awesome-icon :icon="['fas', 'home']" class="text-2xl text-[var(--crisis-level-green)]" />
+                  <font-awesome-icon
+                    :icon="['fas', 'home']"
+                    class="text-2xl text-[var(--crisis-level-green)]"
+                  />
                   <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
                     {{ t('home.no_household.title', 'No Household Found') }}
                   </h2>
                 </div>
                 <p class="mb-4 text-gray-600 dark:text-gray-200">
-                  {{ t('home.no_household.banner', 'Without a household, we won\'t be able to update you on active events nearby.') }}
+                  {{
+                    t(
+                      'home.no_household.banner',
+                      "Without a household, we won't be able to update you on active events nearby.",
+                    )
+                  }}
                 </p>
                 <Button
                   class="bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/75"
@@ -62,28 +74,30 @@
 
         <!-- Crisis Information -->
         <CrisisInfoComponent @learn-more="navigateTo('/info')" />
+
+        <QuizHomeViewComponent />
       </section>
     </div>
   </div>
 </template>
 
-
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { Button } from '@/components/ui/button';
-import MapViewComponent from '@/components/homeview/MapViewComponent.vue';
-import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue';
-import HouseholdInfoComponent from '@/components/homeview/HouseholdInfoComponent.vue';
-import CrisisInfoComponent from '@/components/homeview/CrisisInfoComponent.vue';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faHome, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { Button } from '@/components/ui/button'
+import MapViewComponent from '@/components/homeview/MapViewComponent.vue'
+import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue'
+import HouseholdInfoComponent from '@/components/homeview/HouseholdInfoComponent.vue'
+import CrisisInfoComponent from '@/components/homeview/CrisisInfoComponent.vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faHome, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import QuizHomeViewComponent from '@/components/gamification/quiz/QuizHomeViewComponent.vue'
 
 // Register FontAwesome icons
-library.add(faHome, faArrowRight);
+library.add(faHome, faArrowRight)
 
-const router = useRouter();
-const { t } = useI18n();
+const router = useRouter()
+const { t } = useI18n()
 
 /**
  * Navigates to the specified route
@@ -91,7 +105,6 @@ const { t } = useI18n();
  * @param {string} route - The route to navigate to
  */
 const navigateTo = (route: string) => {
-  router.push(route);
-};
+  router.push(route)
+}
 </script>
-
