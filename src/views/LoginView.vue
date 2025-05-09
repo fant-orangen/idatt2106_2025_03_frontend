@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 /**
  * @component LoginView
  * @description Handles the user login flow including:
@@ -83,16 +82,20 @@ async function handleLogin() {
     })
 
     // Verify the login credentials
-    const response = await userStore.verifyLogin(email.value, password.value, recaptchaToken)
+    const response = await userStore.verifyLogin(
+      email.value.toLowerCase(),
+      password.value,
+      recaptchaToken,
+    )
 
     // Handle the response
     if (response.status === 200) {
-      await userStore.login(response.status, response.data.token, email.value)
+      await userStore.login(response.status, response.data.token, email.value.toLowerCase())
       router.push('/')
     } else if (response.status === 202) {
       // Ensure the 2FA dialog is reopened
       isTwoFactorAuthDialogOpen.value = false // Reset state
-      await userStore.send2FACodeToEmail(email.value) // Send the 2FA code
+      await userStore.send2FACodeToEmail(email.value.toLowerCase()) // Send the 2FA code
       isTwoFactorAuthDialogOpen.value = true // Reopen the dialog
     } else {
       errorMessage.value = t('errors.unexpected-error')
@@ -125,10 +128,10 @@ async function handleLogin() {
 async function handleComplete(pin: number) {
   console.log('Received pin in handleComplete:', pin) // Debug log
   try {
-    const response = await userStore.verify2FACodeInput(email.value, pin)
+    const response = await userStore.verify2FACodeInput(email.value.toLowerCase(), pin)
     if (response.status === 200) {
       isTwoFactorAuthDialogOpen.value = false
-      await userStore.login(response.status, response.data.token, email.value)
+      await userStore.login(response.status, response.data.token, email.value.toLowerCase())
       router.push('/')
     } else {
       errorMessage.value = t('errors.invalid-2fa-code')
@@ -145,7 +148,7 @@ async function handleComplete(pin: number) {
  */
 async function handleResetPassword() {
   try {
-    await sendPasswordResetEmail(resetEmail.value)
+    await sendPasswordResetEmail(resetEmail.value.toLowerCase())
     toast.success(t('reset-password.email-sent'))
   } catch (error: unknown) {
     if (error instanceof AxiosError && error.response) {
@@ -166,7 +169,6 @@ async function handleResetPassword() {
   <!-- Wrapper for login page layout -->
   <div class="login-wrapper flex mt-[10vh] justify-center items-center bg-backround p-[1rem]">
     <Card class="min-w-5/6 md:min-w-xl">
-
       <!-- Header with page title -->
       <CardHeader>
         <CardTitle class="text-xl font-bold text-center">{{ $t('login.login') }}</CardTitle>
@@ -175,7 +177,6 @@ async function handleResetPassword() {
       <!-- Login form -->
       <CardContent>
         <form @submit.prevent="handleLogin" class="space-y-4">
-
           <!-- Email input field -->
           <div class="form-group">
             <Label for="email" class="block text-sm font-medium">{{ $t('login.email') }}</Label>
@@ -192,7 +193,6 @@ async function handleResetPassword() {
               $t('login.password')
             }}</Label>
             <div class="relative">
-
               <!-- Password input -->
               <Input
                 :type="isView ? 'text' : 'password'"

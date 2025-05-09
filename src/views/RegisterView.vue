@@ -77,7 +77,7 @@ const handleRegister = form.handleSubmit(async (values) => {
     })
 
     await userStore.registerUser({
-      email: values.email,
+      email: values.email.toLowerCase(),
       password: values.password,
       firstName: values.firstName,
       lastName: values.lastName,
@@ -99,17 +99,21 @@ const handleRegister = form.handleSubmit(async (values) => {
       })
     })
 
-    const response = await userStore.verifyLogin(values.email, values.password, token2)
+    const response = await userStore.verifyLogin(
+      values.email.toLowerCase(),
+      values.password,
+      token2,
+    )
 
     console.log('Login response:', response)
 
     // Handle the response
     if (response.status === 200) {
-      await userStore.login(response.status, response.data.token, values.email)
+      await userStore.login(response.status, response.data.token, values.email.toLowerCase())
       router.push('/')
     } else if (response.status === 202) {
       // Ensure the 2FA dialog is reopened
-      await userStore.send2FACodeToEmail(values.email) // Send the 2FA code
+      await userStore.send2FACodeToEmail(values.email.toLowerCase()) // Send the 2FA code
     } else {
       errorMessage.value = t('errors.unexpected-error')
     }
