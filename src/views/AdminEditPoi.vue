@@ -304,7 +304,9 @@ const allPois = computed<PoiPreviewDto[]>(() =>
  */
 
 async function selectedAPoi(id: number) {
-
+  if (id == null || undefined) {
+    return;
+  }
   try {
     const response = await fetchPoiById(id);
     selectedPoi.value = response;
