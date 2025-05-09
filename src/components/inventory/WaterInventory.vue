@@ -434,7 +434,10 @@ const addProduct = async () => {
     (item) => item?.name?.toLowerCase() === name.toLowerCase()
   );
   if (exists) {
-    showExistsModal.value = true;
+    toast('Feil', {
+      description: t('inventory.water.exists.message'),
+      duration: 3000
+    });
     return;
   }
   const unit = 'l';

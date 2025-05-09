@@ -511,29 +511,7 @@ export default defineComponent({
           map.value!.addLayer(meetingLayer.value as unknown as L.Layer);
 
           // Set up map event listeners for viewport changes
-          map.value.on('zoomstart zoom', () => {
-            if (!map.value || !markerClusterGroup.value) return;
-
-            const zoom = map.value.getZoom();
-            const tooFar = zoom < MIN_ZOOM_FOR_POIS;
-
-            // Handle layer visibility
-            if (tooFar) {
-              if (map.value.hasLayer(markerClusterGroup.value as unknown as L.Layer)) {
-                map.value.removeLayer(markerClusterGroup.value as unknown as L.Layer);
-              }
-              return;
-            }
-
-            // Ensure layer is visible
-            if (!map.value.hasLayer(markerClusterGroup.value as unknown as L.Layer)) {
-              map.value.addLayer(markerClusterGroup.value as unknown as L.Layer);
-            }
-
-            // Update POIs
-            updatePOIs(getVisiblePois());
-          });
-          map.value.on('moveend', scheduleViewportUpdate);
+          map.value.on('zoomend moveend', scheduleViewportUpdate);
 
           // Add click listener for admin mode only
           if (props.adminMode) {
@@ -773,7 +751,7 @@ export default defineComponent({
         addWaypoints: false,
         fitSelectedRoutes: true,
         showAlternatives: true,
-        useZoomParameter: false,
+        useZoomParameter: true,
         draggableWaypoints: false,
         createMarker: function(_i: number, _waypoint: L.Routing.Waypoint, _n: number): L.Marker | null {
           return null; // No waypoint markers
@@ -880,8 +858,11 @@ export default defineComponent({
      * @param newPois - Array of POIs to display on the map
      */
     function updatePOIs(newPois: POI[]): void {
-      // Skip update if map is not ready
-      if (!map.value) return;
+      // Skip update if map is not ready or zoom level is too low for POIs
+      if (!map.value || map.value.getZoom() < MIN_ZOOM_FOR_POIS) {
+        markerClusterGroup.value?.clearLayers();
+        return;
+      }
 
       // Ensure map and cluster group are initialized
       if (!map.value || !markerClusterGroup.value) {
@@ -1729,7 +1710,7 @@ export default defineComponent({
   will-change: transform;
 }
 
-/* shadows don't need to jump around on zoom either */
+/* shadows don’t need to jump around on zoom either */
 :deep(.leaflet-marker-shadow) {
   will-change: opacity, transform;
 }

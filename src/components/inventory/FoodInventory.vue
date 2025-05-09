@@ -158,21 +158,6 @@
           </Button>
         </div>
       </div>
-
-      <!-- Error Popup -->
-      <Dialog v-model="showExistsModal">
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{{ t('inventory.food.exists.title') }}</DialogTitle>
-            <DialogDescription>
-              {{ t('inventory.food.exists.message') }} {{ t('inventory.food.exists.action') }}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button @click="showExistsModal = false">OK</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   </div>
 </template>
@@ -186,7 +171,6 @@ import { useProductStore } from '@/stores/ProductStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'vue-sonner';
 import { useI18n } from 'vue-i18n';
 
@@ -206,7 +190,6 @@ const items = ref([]);
 const newProductName = ref("");
 const newProductUnit = ref("");
 const newProductCalories = ref("");
-const showExistsModal = ref(false);
 const isLoading = ref(true);
 
 // Group-related state
@@ -447,7 +430,10 @@ const addProduct = async () => {
     (item) => item?.name?.toLowerCase() === name.toLowerCase()
   );
   if (exists) {
-    showExistsModal.value = true;
+    toast('Feil', {
+      description: t('inventory.food.exists.message'),
+      duration: 3000
+    });
     return;
   }
   const unit = newProductUnit.value.toLowerCase();

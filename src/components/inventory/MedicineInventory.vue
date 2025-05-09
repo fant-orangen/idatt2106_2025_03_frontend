@@ -209,7 +209,6 @@ productStore.setType('medicine')
 const items = ref([])
 const newProductName = ref('')
 const newProductUnit = ref('')
-const showExistsModal = ref(false)
 const isLoading = ref(true)
 
 // Group-related state
@@ -482,7 +481,10 @@ const addProduct = async () => {
   if (!name || !newProductUnit.value) return
   const exists = items.value.some((item) => item?.name?.toLowerCase() === name.toLowerCase())
   if (exists) {
-    showExistsModal.value = true
+    toast('Feil', {
+      description: t('inventory.medicine.exists.message'),
+      duration: 3000
+    });
     return
   }
   const unit = newProductUnit.value.toLowerCase()
