@@ -210,6 +210,19 @@ const mainCrisis = ref<CrisisEventPreviewDto | null>(null);
 const scenarioUnderInstructions = ref<string | null>(null);
 const loadingInstructions = ref(false);
 
+// Configure marked with essential options (copied from ThemeContent.vue)
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+});
+
+// Custom renderer for headers (copied from ThemeContent.vue)
+const renderer = new marked.Renderer();
+renderer.heading = function ({ tokens, depth }) {
+  const text = tokens.map((t) => (typeof t === 'object' && 'text' in t && typeof t.text === 'string') ? t.text : '').join('');
+  const fontSize = depth === 1 ? '3xl' : depth === 2 ? '2xl' : depth === 3 ? 'xl' : 'lg';
+  return `<h${depth} class="text-${fontSize} font-bold my-4">${text}</h${depth}>`;
+};
 
 // Priority levels for color coding
 enum Priority {
@@ -333,8 +346,7 @@ const fetchScenarioInstructions = async () => {
  */
 const markdownToHtml = (markdown: string): string => {
   if (!markdown) return '';
-  // Cast the result to string since marked can return a Promise<string> in some cases
-  return marked.parse(markdown) as string;
+  return marked.parse(markdown, { renderer }) as string;
 };
 
 /**
@@ -452,23 +464,6 @@ const fetchMainCrisis = async () => {
     console.error('Failed to fetch main crisis:', error);
     mainCrisis.value = null;
   }
-};
-
-/**
- * Format a date in full format
- * @param {string} dateString - The date string to format
- * @returns {string} Formatted date string
- */
-const formatDateFull = (dateString: string): string => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date);
 };
 
 /**

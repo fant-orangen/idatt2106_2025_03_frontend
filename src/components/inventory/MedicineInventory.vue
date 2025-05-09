@@ -66,6 +66,7 @@
             <template v-if="batch.isNew">
               <Input
                 v-model="batch.expires"
+                type="date"
                 :placeholder="t('inventory.medicine.expiry')"
                 class="text-center w-full"
               />
@@ -85,7 +86,8 @@
 
             <Button
               variant="destructive"
-              @click="removeBatch(index, bIndex)"
+              @click="removeBatchFromGroup(index, bIndex)"
+              :disabled="!batch.isContributed"
               class="text-sm w-full md:w-auto"
             >
               {{ t('inventory.remove-from-group') }}
@@ -209,7 +211,6 @@ productStore.setType('medicine')
 const items = ref([])
 const newProductName = ref('')
 const newProductUnit = ref('')
-const showExistsModal = ref(false)
 const isLoading = ref(true)
 
 // Group-related state
@@ -247,7 +248,7 @@ const addBatchToGroup = async (batchId) => {
     }
 
     toast('Suksess!', {
-      description: 'Produktet ble lagt til i gruppen.',
+      description: t('common.success.shared'),
       duration: 3000
     })
   } catch (error) {
@@ -359,8 +360,7 @@ const toggleEdit = async (index) => {
       // Refresh the batch states to get updated data
       await loadBatchStates(item);
       await updateTotalUnits(item.id);
-    } catch (error) {
-      console.error('Error saving batch updates:', error);
+    } catch {
       toast('Error', {
         description: 'Failed to save changes to one or more batches.',
         duration: 3000
@@ -427,31 +427,12 @@ const addBatch = (productIndex) => {
   })
 }
 
-const validateAndFormatDate = (dateStr) => {
-  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?$/
-  if (!dateRegex.test(dateStr)) {
-    return false
-  }
-  if (dateStr.length === 7) {
-    return `${dateStr}-01`
-  }
-  return dateStr
-}
-
 const saveBatch = async (productIndex, batchIndex) => {
   const product = items.value[productIndex]
   const batch = product.batches[batchIndex]
   const productId = productStore.getProductId(product.name)
   if (!productId) return
   if (!batch.amount || isNaN(Number(batch.amount))) return
-  if (batch.expires) {
-    const formattedDate = validateAndFormatDate(batch.expires)
-    if (formattedDate === false) {
-      alert('Ugyldig dato. Forventet format: YYYY-MM-DD eller YYYY-MM.')
-      return
-    }
-    batch.expires = formattedDate
-  }
   await inventoryService.createProductBatch(
     productId,
     Number(batch.amount),
@@ -463,26 +444,34 @@ const saveBatch = async (productIndex, batchIndex) => {
   await updateTotalUnits(product.id)
 }
 
-const removeBatch = async (productIndex, batchIndex) => {
-  const product = items.value[productIndex]
-  const batch = product.batches[batchIndex]
-  if (batch.isNew) {
-    product.batches.splice(batchIndex, 1)
-    return
+const removeBatchFromGroup = async (productIndex, batchIndex) => {
+  const product = items.value[productIndex];
+  const batch = product.batches[batchIndex];
+  if (!batch.id) return;
+  try {
+    await groupService.removeContributedBatch(batch.id);
+    await loadBatchStates(product);
+    toast('Suksess!', {
+      description: t('common.success.removed'),
+      duration: 3000
+    });
+  } catch (error) {
+    toast('Feil', {
+      description: t('common.success.error'),
+      duration: 5000
+    });
   }
-  const batchId = productStore.getBatchId(product.name, batch.amount, batch.expires)
-  if (!batchId) return
-  await inventoryService.deleteProductBatch(batchId)
-  product.batches.splice(batchIndex, 1)
-  await updateTotalUnits(product.id)
-}
+};
 
 const addProduct = async () => {
   const name = newProductName.value.trim()
   if (!name || !newProductUnit.value) return
   const exists = items.value.some((item) => item?.name?.toLowerCase() === name.toLowerCase())
   if (exists) {
-    showExistsModal.value = true
+    toast('Feil', {
+      description: t('inventory.medicine.exists.message'),
+      duration: 3000
+    });
     return
   }
   const unit = newProductUnit.value.toLowerCase()
