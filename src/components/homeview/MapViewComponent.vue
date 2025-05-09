@@ -252,6 +252,8 @@ import { fetchActiveCrisisEvents } from '@/services/CrisisEventService.ts';
 import { fetchMeetingPlacesNearby } from '@/services/api/MeetingPlaceService.ts';
 import type { PoiData } from '@/models/PoiData.ts';
 import { convertPoiData } from '@/types/map.ts';
+import { useUserStore } from '@/stores/UserStore.ts'
+import { useHouseholdStore } from '@/stores/HouseholdStore.ts'
 
 // Register FontAwesome icons
 library.add(
@@ -281,7 +283,6 @@ const pois = ref<PoiData[]>([]);
 const crisisEvents = ref<any[]>([]);
 const meetingPlaces = ref<any[]>([]);
 const userLocation = ref<{latitude: number, longitude: number} | null>(null);
-const householdLocation = ref<{latitude: number, longitude: number} | null>(null);
 
 // Filter state
 const isFilterMenuVisible = ref(false);
@@ -312,6 +313,26 @@ const convertedPois = computed(() => {
     }
     return convertPoiData(poi);
   });
+});
+
+/**
+ * Property for storing the current household location.
+ */
+
+const householdStore = useHouseholdStore();
+onMounted(() => {
+  // if you need to fetch them:
+  householdStore.fetchCurrentHousehold();
+});
+const householdLocation = computed(() => {
+  const hh = householdStore.currentHousehold;
+  if (hh && hh.latitude != null && hh.longitude != null) {
+    return {
+      latitude: Number(hh.latitude),
+      longitude: Number(hh.longitude)
+    };
+  }
+  return null;
 });
 
 /**
