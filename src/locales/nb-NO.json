@@ -693,7 +693,9 @@
         "invalidToken": "Ugyldig invitasjonskode",
         "generic": "Kunne ikke bli med i hushold"
       }
-    }
+    },
+    "created-success": "Hushold opprettet",
+    "ask-if-safe": "Forspør om alle i husholdet ditt er trygge"
   },
   "sidebar": {
     "title": "Temaer",

@@ -633,7 +633,8 @@
     "error-fetching-invitations": "Could not fetch invitations",
     "no-invitations": "No pending invitations",
     "refresh-invitations": "Refresh invitations",
-    "created-success": "Household created"
+    "created-success": "Household created",
+    "ask-if-safe": "Ask if everyone in your household is safe"
   },
 
   "sidebar": {
