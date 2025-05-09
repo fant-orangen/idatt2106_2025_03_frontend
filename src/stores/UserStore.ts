@@ -11,7 +11,7 @@ import { fetchToken } from '@/services/api/AuthService.ts'
 import { register } from '@/services/api/AuthService.ts'
 import { send2FACode } from '@/services/api/AuthService.ts'
 import { verify2FACode } from '@/services/api/AuthService.ts'
-import { changePassword, changeEmail } from '@/services/api/AuthService.ts'
+import { changePassword } from '@/services/api/AuthService.ts'
 import { computed, ref } from 'vue'
 import api from '@/services/api/AxiosInstance.ts'
 import type { RegistrationData, UserProfile } from '@/models/User.ts'
@@ -138,7 +138,7 @@ export const useUserStore = defineStore('user', () => {
     console.log(` TOKEN BENIG SENT TO BACKEND IN FETCH USER PROFILE: ${token.value}`)
 
     try {
-      const response = await api.get<UserProfile>('/users/me', {
+      const response = await api.get<UserProfile>('/user/me', {
         headers: { Authorization: `Bearer ${token.value}` },
       })
       profile.value = response.data
@@ -182,22 +182,6 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  async function updateEmail(newEmail: string, password: string) {
-    if (!username.value) {
-      throw new Error('User is not logged in. Cannot change email.')
-    }
-
-    try {
-      await changeEmail(username.value, newEmail, password)
-      username.value = newEmail // Update the email in the store
-      localStorage.setItem('username', newEmail) // Update localStorage
-      console.log('Email updated successfully')
-    } catch (error) {
-      console.error('Error updating email:', error)
-      throw error
-    }
-  }
-
   function logout() {
     clearAuthState()
   }
@@ -222,7 +206,6 @@ export const useUserStore = defineStore('user', () => {
     send2FACodeToEmail,
     verify2FACodeInput,
     updatePassword,
-    updateEmail,
     loggedIn,
     initializeFromStorage,
     isAdminUser,

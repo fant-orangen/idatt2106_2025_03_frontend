@@ -161,7 +161,7 @@
               <Button
                 variant="outline"
                 class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
-                @click="navigateTo('/groups')"
+                @click="navigateTo('/group')"
               >
                 {{ t('home.groups.view', 'View Groups') }} <ChevronRight class="h-4 w-4 ml-1" />
               </Button>

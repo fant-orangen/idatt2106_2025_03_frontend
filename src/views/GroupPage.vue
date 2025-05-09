@@ -9,14 +9,14 @@
       <ScrollArea  class="space-y-3 overflow-y-auto gap-2 pr-1 flex-1">
         <ul class="space-y-2">
           <li
-              v-for="group in groups"
-              :key="group.id"
-              class="flex items-center px-3 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
-              :class="{
+            v-for="group in groups"
+            :key="group.id"
+            class="flex items-center px-3 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
+            :class="{
                   'bg-black text-accent dark:bg-white ': currentGroupId === group.groupId,
                   'hover:bg-sidebar-primary/15 ': currentGroupId !== group.groupId
                 }"
-              @click="switchToGroup(group.groupId)"
+            @click="switchToGroup(group.groupId)"
           >
             <span class="i-heroicons-home w-5 h-5" /> {{ group.name }}
           </li>
@@ -25,49 +25,23 @@
 
       <!-- Button for inviting household -->
       <Button
-          v-if="isAdmin"
-          @click="inviteHousehold"
-          variant="outline"
-          class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/15"
+        v-if="isAdmin"
+        @click="inviteHousehold"
+        variant="outline"
+        class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/15"
       >
         {{ t('group.invite-household') }}
       </Button>
 
-      <!-- Create group section -->
+      <!-- Create group button -->
       <div v-if="isAdmin" class="mt-8 border-t border-sidebar-border pt-4">
         <Button
-            v-if="!showCreateGroupInput"
-            @click="showCreateGroupInput = true"
-            variant="outline"
-            class="mt-4 w-full hover:cursor-pointer hover:bg-sidebar-primary/15 dark:hover:bg-sidebar-primary/10"
-          >
+          @click="showCreateGroupDialog = true"
+          variant="outline"
+          class="mt-4 w-full hover:cursor-pointer hover:bg-sidebar-primary/15 dark:hover:bg-sidebar-primary/10"
+        >
           {{ t('group.create-group') }}
         </Button>
-        <div v-else class="space-y-2">
-          <Input
-              v-model="newGroupName"
-              type="text"
-              :placeholder="t('group.enter-group-name')"
-              variant="outline"
-              class="mt-4 focus:ring-2 focus:ring-primary"
-              />
-          <div class="flex gap-2">
-            <Button
-                @click="createGroup"
-                variant="outline"
-                class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/20"
-                :disabled="!newGroupName.trim()"
-            >
-              {{ t('group.create') }}
-            </Button>
-            <Button
-                @click="cancelCreateGroup"
-                variant="destructive"
-                class="mt-4 hover:cursor-pointer hover:bg-destructive/70"            >
-              {{ t('common.cancel') }}
-            </Button>
-          </div>
-        </div>
       </div>
 
       <!-- Households in group -->
@@ -76,9 +50,9 @@
         <ScrollArea class="max-h-48 overflow-y-auto pr-1">
           <ul class="space-y-2">
             <li
-                v-for="household in households"
-                :key="household.id"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-secondary text-sidebar-secondary-foreground text-sm"
+              v-for="household in households"
+              :key="household.id"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-secondary text-sidebar-secondary-foreground text-sm"
             >
               <House class="w-5 h-5" />
               <div>
@@ -107,20 +81,30 @@
       <!-- Inventory Search Bar -->
       <div class="bg-muted rounded-lg shadow-md p-4 mb-6">
         <InventorySearchBar
-            class="mb-6"
-            @update:search="searchText = $event"
+          class="mb-6"
+          @update:search="searchText = $event"
         />
       </div>
 
       <!-- Group Inventory -->
       <div v-if="currentGroupId" class="bg-card rounded-lg shadow-md p-6">
         <GroupInventory
-            :group-id="currentGroupId"
-            :search-text="searchText"
+          :group-id="currentGroupId"
+          :search-text="searchText"
         />
       </div>
     </main>
   </div>
+  <InviteHouseholdDialog
+    :open="showInviteDialog"
+    :group-id="selectedGroupId || 0"
+    @update:open="showInviteDialog = $event"
+  />
+  <CreateGroupDialog
+    :open="showCreateGroupDialog"
+    @update:open="showCreateGroupDialog = $event"
+    @group-created="refreshGroups"
+  />
 </template>
 
 
@@ -142,7 +126,8 @@ import { isCurrentUserHouseholdAdmin } from '@/services/HouseholdService';
 import { House } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
+import InviteHouseholdDialog from '@/components/group/InviteHouseholdDialog.vue';
+import CreateGroupDialog from '@/components/group/CreateGroupDialog.vue';
 
 
 
@@ -159,9 +144,10 @@ const groups = ref<Group[]>([]);
 const households = ref<Household[]>([]);
 const searchText = ref('');
 const currentGroupId = computed(() => groupStore.currentGroupId);
-const showCreateGroupInput = ref(false);
-const newGroupName = ref('');
 const isAdmin = ref(false);
+const showInviteDialog = ref(false);
+const showCreateGroupDialog = ref(false);
+const selectedGroupId = ref<number | null>(null);
 
 /**
  * Check if the user is household admin when component mounts.
@@ -285,17 +271,8 @@ async function leaveCurrentGroup() {
   }
 }
 
-/**
- * Method to create a group.
- * Cancel creation of group by resetting the form.
- */
-async function createGroup() {
-  if (!newGroupName.value.trim()) return;
-
+async function refreshGroups() {
   try {
-    await groupService.createGroup(newGroupName.value.trim());
-
-    // Refresh the groups list
     const response = await groupService.getCurrentUserGroups();
     if (response?.content?.length > 0) {
       groups.value = response.content.map(group => ({
@@ -308,18 +285,14 @@ async function createGroup() {
       const newGroup = groups.value.find(g => g.name === newGroupName.value.trim());
       if (newGroup) {
         switchToGroup(newGroup.groupId);
+      if (groups.value.length && !currentGroupId.value) {
+        switchToGroup(groups.value[0].groupId);
       }
     }
 
     cancelCreateGroup();
   } catch (error) {
-    console.error('Error creating group:', error);
-    alert(error instanceof Error ? error.message : 'Det oppstod en feil ved opprettelse av gruppen');
+    console.error('Error refreshing groups:', error);
   }
-}
-
-function cancelCreateGroup() {
-  showCreateGroupInput.value = false;
-  newGroupName.value = '';
 }
 </script>

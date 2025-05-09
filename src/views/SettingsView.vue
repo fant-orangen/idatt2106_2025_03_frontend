@@ -24,8 +24,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Lock, Unlock, User, Eye, EyeOff } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
-import { updateUserPreference, getUserPreferences, getUserProfile, updateUserProfile } from '@/services/UserService'
-import type { UserPreferencesDto, ExtendedUserProfile, UpdateExtendedUserProfile } from '@/models/User'
+import {
+  updateUserPreference,
+  getUserPreferences,
+  getUserProfile,
+  updateUserProfile,
+} from '@/services/UserService'
+import type {
+  UserPreferencesDto,
+  ExtendedUserProfile,
+  UpdateExtendedUserProfile,
+} from '@/models/User'
 import { useUserStore } from '@/stores/UserStore'
 import { ref } from 'vue'
 import { onMounted } from 'vue'
@@ -47,6 +56,7 @@ const locationSharingEnabled = ref(false)
  */
 const newEmail = ref('')
 const changeEmailPassword = ref('')
+// Email and password fields
 const currentPassword = ref('')
 const newPassword = ref('')
 
@@ -54,6 +64,7 @@ const newPassword = ref('')
  * View toggles for password fields
  */
 const isViewChangePasswordEmail = ref(false)
+// View toggles for password fields
 const isViewCurrentPassword = ref(false)
 const isViewNewPassword = ref(false)
 
@@ -71,7 +82,7 @@ const profile = ref<ExtendedUserProfile>({
   locationSharingEnabled: true,
   emailVerified: false,
   householdId: null,
-  householdName: ''
+  householdName: '',
 })
 
 const isProfileLoading = ref(false)
@@ -215,7 +226,7 @@ const saveProfile = async () => {
       lastName: profile.value.lastName,
       homeAddress: profile.value.homeAddress,
       homeLatitude: profile.value.homeLatitude,
-      homeLongitude: profile.value.homeLongitude
+      homeLongitude: profile.value.homeLongitude,
     }
 
     await updateUserProfile(updateProfileDto)
@@ -374,7 +385,6 @@ onMounted(() => {
                 </Button>
               </div>
             </CardFooter>
-
             <!-- Security Settings -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.security.title') }}</CardTitle>
@@ -405,7 +415,6 @@ onMounted(() => {
                 </Button>
               </div>
             </CardContent>
-
             <!-- Delete Account -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.delete.title') }}</CardTitle>
@@ -453,14 +462,23 @@ onMounted(() => {
                   <Label for="homeAddress">{{ t('add-event-info.titles.address') }}</Label>
                   <Input id="homeAddress" v-model="profile.homeAddress" />
                   <p class="text-xs text-muted-foreground italic">
-                    {{ t('settings.profile.address-privacy', 'Your address is not visible to other users.') }}
+                    {{
+                      t(
+                        'settings.profile.address-privacy',
+                        'Your address is not visible to other users.',
+                      )
+                    }}
                   </p>
                 </div>
 
                 <!-- Submit button -->
                 <div class="pt-4">
                   <Button type="submit" :disabled="isProfileLoading">
-                    {{ isProfileLoading ? t('common.saving', 'Saving...') : t('settings.account.save-changes') }}
+                    {{
+                      isProfileLoading
+                        ? t('common.saving', 'Saving...')
+                        : t('settings.account.save-changes')
+                    }}
                   </Button>
                 </div>
               </form>
@@ -481,7 +499,6 @@ onMounted(() => {
               </CardDescription>
             </CardHeader>
             <CardContent class="space-y-6">
-
               <!-- Email Notifications -->
               <div class="flex items-center justify-between border-b pb-4">
                 <div>
