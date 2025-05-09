@@ -7,12 +7,14 @@
  * @module UserService
  */
 import api from '@/services/api/AxiosInstance.ts'
+import type { AxiosResponse } from 'axios'
 import type {
   UserResponseDto,
   UserPreferencesDto,
   ExtendedUserProfile,
   UpdateExtendedUserProfile,
   UserBasicInfoDto,
+  NotificationPreferenceDto,
 } from '@/models/User'
 
 /**
@@ -159,6 +161,46 @@ export async function getUserBasicInfo(userId: number): Promise<UserBasicInfoDto
     return response.data
   } catch (error) {
     console.error(`Failed to fetch basic info for user ID ${userId}:`, error)
+    throw error
+  }
+}
+
+/**
+ * Updates a user's notification preference for a specific notification type.
+ *
+ * @param preferenceType The type of notification preference to modify.
+ * @param enable Whether to enable or disable the preference.
+ * @returns A promise resolving to the server's response.
+ */
+export async function updateNotificationPreference(
+  preferenceType: string,
+  enable: boolean,
+): Promise<void> {
+  try {
+    const response = await api.patch(`/user/notifications/preferences/${preferenceType}`, null, {
+      params: { enable },
+    })
+    console.log('Notification preference updated successfully:', response.data)
+  } catch (error) {
+    console.error(
+      'Failed to update notification preference:',
+      error.response?.data || error.message,
+    )
+    throw error
+  }
+}
+
+/**
+ * Fetches the user's notification preferences.
+ *
+ */
+export async function getNotificationPreferences(): Promise<NotificationPreferenceDto[]> {
+  try {
+    const response = await api.get<NotificationPreferenceDto[]>('/user/notifications/preferences')
+    console.log('Notification preferences fetched successfully:', response.data)
+    return response.data
+  } catch (error) {
+    console.error('Failed to fetch notification preferences:', error)
     throw error
   }
 }
