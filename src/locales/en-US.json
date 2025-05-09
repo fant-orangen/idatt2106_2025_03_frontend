@@ -280,7 +280,8 @@
     "go-back": "Go back",
     "light-mode": "Lightmode",
     "dark-mode": "Darkmode",
-    "admin-news": "Write a news alert"
+    "admin-news": "Write a news alert",
+    "change-mode": "Change mode"
   },
   "user-profile": {
     "title": "User Profile",

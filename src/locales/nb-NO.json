@@ -283,7 +283,8 @@
     "go-back": "Tilbake",
     "light-mode": "Lys modus",
     "dark-mode": "Mørk modus",
-    "admin-news": "Lag et nyhetsvarsel"
+    "admin-news": "Lag et nyhetsvarsel",
+    "change-mode": "Bytt modus"
   },
   "user-profile": {
     "title": "Brukerprofil",
