@@ -138,7 +138,7 @@ export const useUserStore = defineStore('user', () => {
     console.log(` TOKEN BENIG SENT TO BACKEND IN FETCH USER PROFILE: ${token.value}`)
 
     try {
-      const response = await api.get<UserProfile>('/users/me', {
+      const response = await api.get<UserProfile>('/user/me', {
         headers: { Authorization: `Bearer ${token.value}` },
       })
       profile.value = response.data

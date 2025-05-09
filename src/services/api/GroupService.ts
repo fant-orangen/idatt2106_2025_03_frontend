@@ -231,6 +231,7 @@ class GroupService {
       throw error;
     }
   }
+
 }
 
 
