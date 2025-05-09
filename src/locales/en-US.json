@@ -370,7 +370,10 @@
     }
   },
   "news": {
+    "saved-drafts": "Saved drafts",
+    "latest-news": "Latest published news articles",
     "title": "News",
+    "choose-draft": "Select a draft to edit",
     "loading_more": "Loading more news...",
     "no_more_news": "No more news to load",
     "related_news": "Related news",
@@ -841,7 +844,17 @@
         "title": "Email Notifications",
         "description": "Receive updates and alerts via email.",
         "system": "System Notifications",
-        "systemDescription": "Receive notifications about critical crisis events to keep you informed and prepared."
+        "systemDescription": "Receive notifications about critical crisis events to keep you informed and prepared.",
+        "crisisAlert": "Crisis alerts",
+        "crisisAlertDescription": "Receive alerts about new crisis events.",
+        "expirationReminder": "Expiration reminder",
+        "expirationReminderDescription": "Get reminders about items nearing expiration.",
+        "supplyAlert": "Supply alert",
+        "supplyAlertDescription": "Get alerts when your supply is low.",
+        "locationRequest": "Location request",
+        "locationRequestDescription": "Receive requests to share your location.",
+        "safetyRequest": "Safety request",
+        "safetyRequestDescription": "Receive requests to confirm you are safe."
       },
       "save-changes": "Save changes"
     },
@@ -856,7 +869,11 @@
         "title": "Password",
         "description": "Change your password here. After saving, you will be logged out.",
         "current": "Current password",
-        "new": "New password"
+        "new": "New password",
+        "error": "Error updating password",
+        "errorDescription": "An error occurred while updating your password.",
+        "success": "Password updated",
+        "successDescription": "Your password has been updated. You will be logged out."
       },
       "email": {
         "email": "Email",
@@ -869,12 +886,20 @@
         "title": "Account Security",
         "description": "Improve the security of your account with two-step verification, which requires a code sent to your email in addition to your password for login.",
         "enableTwoStep": "Turn on two-step verification",
-        "disableTwoStep": "Turn off two-step verification"
+        "disableTwoStep": "Turn off two-step verification",
+        "error": "Error updating security settings",
+        "errorDescription": "An error occurred while updating your security settings.",
+        "success": "Security settings updated",
+        "successDescription": "Your security settings have been updated."
       },
       "delete": {
         "title": "Delete account",
         "description": "Permanently delete your account and all associated data. This action is irreversible and cannot be undone.",
-        "button": "Delete account"
+        "button": "Delete account",
+        "error": "Error deleting account",
+        "errorDescription": "An error occurred while deleting your account.",
+        "success": "Account deleted",
+        "successDescription": "Your account has been deleted."
       }
     },
     "profile": {
@@ -1048,6 +1073,7 @@
     "invitation-sent-success": "Your invitation has been sent."
   },
   "inventory": {
+    "select-unit": "Select unit",
     "save": "Save",
     "edit": "Edit",
     "remove-from-group": "Remove from group",
@@ -1181,7 +1207,7 @@
     "backToTop": "Back to Top",
     "noMoreAttemptsToLoad": "No more attempts to load."
   },
-    "privacy": {
+  "privacy": {
     "title": "Privacy Policy",
     "breadcrumbHome": "Home",
     "breadcrumbCurrent": "Privacy Policy",
