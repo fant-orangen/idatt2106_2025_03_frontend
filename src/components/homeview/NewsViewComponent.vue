@@ -1,10 +1,12 @@
 <template>
   <div class="border border-[var(--default-blue2)]/30 rounded-lg overflow-hidden h-full min-h-[600px] flex flex-col">
     <div class="p-4 bg-[var(--default-blue2)]/5">
-      <h2 class="text-2xl font-bold flex items-center">
-        <font-awesome-icon :icon="['fas', 'newspaper']" class="mr-2 text-[var(--default-blue2)]" />
-        {{ t('info.news') }}
-      </h2>
+      <div class="flex justify-between items-center">
+        <h2 class="text-2xl font-bold flex items-center">
+          <font-awesome-icon :icon="['fas', 'newspaper']" class="mr-2 text-[var(--default-blue2)]" />
+          {{ t('info.news') }}
+        </h2>
+      </div>
     </div>
 
     <div class="news-content p-4 flex-grow flex flex-col">
@@ -32,10 +34,20 @@
           :end-message="t('news.no_more_news', 'No more news to load')"
           @load-more="loadMoreNews"
         >
-          <ul class="relative my-6 pl-8 list-none border-l-2 border-[#e2e8f0]">
-            <li v-for="item in news" :key="item.id" class="relative mb-6 pl-6">
-              <div class="absolute left-[-2.4rem] top-[0.45rem] w-[0.75rem] h-[0.75rem] bg-primary rounded-full z-10"></div>
-              <div class="ml-6">
+          <ul class="relative my-6 pl-4 list-none border-l-2 border-[#e2e8f0]">
+            <li v-for="item in news" :key="item.id" class="relative mb-6 pl-4">
+              <!-- Crisis name in top right of each news item -->
+              <div class="absolute right-0 top-0">
+                <a
+                  @click="navigateToCrisis(item.crisisEventId)"
+                  class="text-sm font-medium text-[var(--default-blue2)] hover:underline cursor-pointer"
+                >
+                  {{ item.crisisEventName }}
+                </a>
+              </div>
+
+              <div class="absolute left-0 top-[0.45rem] w-3 h-3 bg-black rounded-full z-10 transform -translate-x-6"></div>
+              <div>
                 <div class="flex justify-between items-baseline">
                   <strong class="text-sm text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
                 </div>
@@ -59,7 +71,6 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -124,6 +135,15 @@ const loadMoreNews = async () => {
  */
 const navigateTo = (route: string) => {
   router.push(route);
+};
+
+/**
+ * Navigates to the crisis event page with the specified ID
+ *
+ * @param {number} crisisEventId - The ID of the crisis event
+ */
+const navigateToCrisis = (crisisEventId: number) => {
+  router.push(`/crisis-event?id=${crisisEventId}`);
 };
 
 // Load initial news data when component mounts

@@ -9,6 +9,7 @@ const messages = {
       'privacy-policy': 'Privacy Policy',
     },
     footer: {
+      'title': 'Krisefikser.no',
       'about': 'About Us',
       'contact': 'Contact',
       'address': 'Address',
@@ -56,8 +57,10 @@ const navigateTo = (route: string) => {
 <template>
   <footer class="footer bg-secondary text-secondary-foreground shadow-t-md py-8 transition-all duration-300">
     <div class="container mx-auto px-4">
+
       <!-- Main Footer Content -->
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-8">
+
         <!-- About Section -->
         <div class="footer-section">
           <h3 class="text-lg font-semibold mb-4 flex items-center">
@@ -111,7 +114,7 @@ const navigateTo = (route: string) => {
           <div class="space-y-2">
             <p class="text-sm flex items-center">
               <MapPin class="w-4 h-4 mr-2 flex-shrink-0" />
-              <span>{{ t('footer.address') }}: Høgskoleringen 5, 7034 Trondheim</span>
+              <span>{{ t('footer.address') }}: O. S. Bragstads Plass, 7034 Trondheim</span>
             </p>
             <p class="text-sm flex items-center">
               <Phone class="w-4 h-4 mr-2 flex-shrink-0" />

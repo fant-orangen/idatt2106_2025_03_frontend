@@ -1,51 +1,208 @@
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { News } from '@/models/News';
-import { fetchGeneralNews } from '@/services/api/NewsService';
-import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
-import { formatDateFull } from '@/utils/dateUtils';
+<template>
+  <div class="h-full w-full flex flex-col">
+    <div class="p-6 bg-[var(--default-blue2)]/5 w-full">
+      <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold flex items-center">
+          <font-awesome-icon :icon="['fas', 'newspaper']" class="mr-3 text-[var(--default-blue2)]" />
+          {{ t('news.title') }}
+        </h1>
+      </div>
+    </div>
 
-const { t } = useI18n();
-const news = ref<News[]>([]);
-const loading = ref(false);
-const hasMore = ref(true);
-const page = ref(0);
-const pageSize = 5; // Reduced page size for more controlled loading
+    <div class="flex-grow overflow-y-auto p-6 max-h-[80vh] w-full">
+      <div class="max-w-6xl mx-auto">
+        <ul class="relative my-8 pl-10 list-none border-l-2 border-[var(--default-blue2)]/30">
+          <li v-for="item in news" :key="item.id" class="relative mb-10 pl-6">
+            <div class="absolute left-[-3.2rem] top-[0.45rem] w-5 h-5 bg-[var(--color-foreground)] rounded-full z-10"></div>
+            <div class="ml-6">
+              <div class="flex justify-between items-baseline">
+                <strong class="text-base text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
+              </div>
+              <h3 class="text-xl font-medium mt-2">{{ item.title }}</h3>
+              <p class="text-base mt-2">{{ item.content }}</p>
+
+              <!-- Crisis Event Button -->
+              <Button
+                variant="default"
+                size="default"
+                class="mt-3 bg-[var(--default-blue2)] hover:bg-[var(--default-blue2)]/90"
+                @click="navigateToCrisis(item.crisisEventId)"
+              >
+                {{ item.crisisEventName }} <ChevronRight class="h-4 w-4 ml-1" />
+              </Button>
+
+              <!-- Additional Crisis Info (Contextual) -->
+              <div
+                v-if="crisisEventCache[item.crisisEventId]"
+                class="text-sm text-muted-foreground mt-4 space-y-2 rounded-md bg-[var(--default-blue2)]/5 p-4 border border-[var(--default-blue2)]/20"
+              >
+                <p class="font-semibold mb-2 text-base">{{ t('news.crisis_context') }}</p>
+
+                <p class="flex items-center gap-3">
+                  <strong class="inline-block w-28">{{ t('crisis.severity') }}:</strong>
+                  <span
+                    :class="{
+                      'text-[var(--crisis-level-green)] font-medium': crisisEventCache[item.crisisEventId]?.severity === 'green',
+                      'text-[var(--crisis-level-yellow)] font-medium': crisisEventCache[item.crisisEventId]?.severity === 'yellow',
+                      'text-[var(--crisis-level-red)] font-medium': crisisEventCache[item.crisisEventId]?.severity === 'red'
+                    }"
+                  >
+                    {{ crisisEventCache[item.crisisEventId]?.severity }}
+                  </span>
+                </p>
+                <p class="flex items-center gap-3">
+                  <strong class="inline-block w-28">{{ t('crisis.start_time') }}:</strong>
+                  <span>{{ getStartTime(item.crisisEventId) }}</span>
+                </p>
+                <p class="flex items-center gap-3">
+                  <strong class="inline-block w-28">{{ t('crisis.scenario') }}:</strong>
+                  <a
+                    v-if="hasScenarioTheme(item.crisisEventId)"
+                    :href="`http://localhost:5173/info/scenario/${getScenarioThemeId(item.crisisEventId)}`"
+                    class="text-[var(--default-blue2)] hover:underline"
+                    target="_blank"
+                  >
+                    {{ getScenarioThemeName(item.crisisEventId) || t('crisis.view_scenario') }}
+                  </a>
+                  <a
+                    v-else
+                    :href="`http://localhost:5173/info/scenario/${crisisEventCache[item.crisisEventId]?.scenarioThemeId}`"
+                    class="text-[var(--default-blue2)] hover:underline"
+                    target="_blank"
+                  >
+                    {{ t('crisis.view_scenario') }}
+                  </a>
+                </p>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <InfiniteScroll
+          @load-more="loadMoreNews"
+          :isLoading="loading"
+          :hasMore="hasMore"
+          class="py-6"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
 
 /**
- * NewsView component
- *
- * This component displays a paginated list of news articles from the user's news digest.
- * It uses infinite scrolling to load more articles as the user scrolls down.
+ * @component NewsView component
+ * @description Displays a paginated list of news articles from the user's news digest.
  *
  * Features:
  * - Displays news articles in a timeline format
  * - Supports infinite scrolling pagination
  * - Shows loading states and error messages
  * - Formats dates using the formatDateFull utility
- *
- * State Management:
- * - news: Array of news articles
- * - loading: Boolean indicating if more news is being loaded
- * - hasMore: Boolean indicating if there are more articles to load
- * - page: Current page number for pagination
- * - pageSize: Number of articles to load per page
- * - error: Error message if news loading fails
- * - initialLoading: Boolean indicating if initial news load is in progress
- *
- * @component
  */
+
+import { ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import type { News } from '@/models/News';
+import { fetchGeneralNews } from '@/services/api/NewsService';
+import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
+import { formatDateFull } from '@/utils/dateUtils';
+import { fetchCrisisEventById } from '@/services/CrisisEventService';
+import { fetchScenarioThemeName } from '@/services/api/ScenarioThemeService';
+import type { CrisisEventDto } from '@/models/CrisisEvent';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-vue-next';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faNewspaper } from '@fortawesome/free-solid-svg-icons';
+
+// Register FontAwesome icons
+library.add(faNewspaper);
+
+const { t } = useI18n();
+const router = useRouter();
+const news = ref<News[]>([]);
+const loading = ref(false);
+const hasMore = ref(true);
+const page = ref(0);
+const pageSize = 5;
+const crisisEventCache = ref<Record<number, CrisisEventDto | null>>({});
+const scenarioThemeCache = ref<Record<number, {id: number, name: string} | null>>({});
+
+const navigateToCrisis = (crisisEventId: number) => {
+  router.push(`/crisis-event?id=${crisisEventId}`);
+};
+
+// Helper functions to safely handle potentially undefined values
+const getSeverity = (eventId: number): string => {
+  return crisisEventCache.value[eventId]?.severity || '';
+};
+
+const getStartTime = (eventId: number): string => {
+  const startTime = crisisEventCache.value[eventId]?.startTime;
+  return startTime ? formatDateFull(startTime) : '';
+};
+
+const getScenarioThemeId = (eventId: number): number | undefined => {
+  return crisisEventCache.value[eventId]?.scenarioThemeId;
+};
+
+const hasScenarioTheme = (eventId: number): boolean => {
+  const themeId = crisisEventCache.value[eventId]?.scenarioThemeId;
+  return !!themeId && !!scenarioThemeCache.value[themeId];
+};
+
+const getScenarioThemeName = (eventId: number): string => {
+  const themeId = crisisEventCache.value[eventId]?.scenarioThemeId;
+  if (!themeId) return t('crisis.view_scenario', 'View Scenario');
+  return scenarioThemeCache.value[themeId]?.name || t('crisis.view_scenario', 'View Scenario');
+};
+
+const loadScenarioThemeName = async (themeId: number) => {
+  if (themeId in scenarioThemeCache.value) return;
+
+  try {
+    const data = await fetchScenarioThemeName(themeId);
+    scenarioThemeCache.value[themeId] = data;
+  } catch (error) {
+    console.error('Failed to load scenario theme name:', error);
+    scenarioThemeCache.value[themeId] = null;
+  }
+};
+
+const loadCrisisDetails = async (eventId: number) => {
+  if (eventId in crisisEventCache.value) return;
+
+  try {
+    const data = await fetchCrisisEventById(eventId);
+    crisisEventCache.value[eventId] = data;
+
+    // After loading crisis details, load the scenario theme name if available
+    if (data?.scenarioThemeId) {
+      await loadScenarioThemeName(data.scenarioThemeId);
+    }
+  } catch (error) {
+    console.error('Failed to load crisis event details:', error);
+    crisisEventCache.value[eventId] = null;
+  }
+};
+
+/**
+ * Fetch and append more news articles.
+ * Triggered on mount and when scrolled to the bottom.
+ */
+
 const loadMoreNews = async () => {
   if (loading.value || !hasMore.value) return;
 
   loading.value = true;
   try {
-    console.log('Loading more news, current page:', page.value);
     const response = await fetchGeneralNews(page.value, pageSize);
-    console.log('Received response:', response);
 
     if (response.content && response.content.length > 0) {
+      for (const item of response.content) {
+        await loadCrisisDetails(item.crisisEventId); // Fetch related crisis info
+      }
       news.value.push(...response.content);
       page.value++;
       hasMore.value = page.value < response.totalPages;
@@ -60,154 +217,16 @@ const loadMoreNews = async () => {
   }
 };
 
+/**
+ * Initial fetch on component mount.
+ */
+
 onMounted(loadMoreNews);
 </script>
 
-<template>
-  <div class="news-page">
-    <!-- Fixed header section -->
-    <div class="header-section">
-      <div class="content-wrapper w-full max-w-3xl mx-auto p-6">
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-          <span>{{ t('navigation.home')}}</span> &gt; <span class="current">{{ t('info.news')}}</span>
-        </div>
-
-        <!-- Page Title -->
-        <h1 class="text-2xl font-bold mb-4">{{ t('info.news')}}</h1>
-      </div>
-    </div>
-
-    <!-- Scrollable content section -->
-    <div class="content-section">
-      <div class="content-wrapper w-full max-w-3xl mx-auto px-6">
-        <div v-if="news.length === 0 && !loading" class="text-center">
-          <p>{{ t('errors.no-news-available')}}</p>
-        </div>
-
-        <InfiniteScroll
-          :is-loading="loading"
-          :has-more="hasMore"
-          :loading-text="t('news.loading_more', 'Loading more news...')"
-          :end-message="t('news.no_more_news', 'No more news to load')"
-          :threshold="100"
-          @load-more="loadMoreNews"
-        >
-          <ul class="timeline">
-            <li v-for="item in news" :key="item.id">
-              <div class="dot"></div>
-              <div class="timeline-content">
-                <div class="flex justify-between items-baseline">
-                  <strong class="text-sm text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
-                  <span class="text-xs text-muted-foreground">{{ item.crisisEventName }}</span>
-                </div>
-                <h3 class="font-medium mt-1">{{ item.title }}</h3>
-                <p class="text-sm mt-1">{{ item.content }}</p>
-                <div class="text-xs text-muted-foreground mt-2">
-                  {{ t('news.posted_by', 'Posted by') }} {{ item.createdByName }}
-                </div>
-              </div>
-            </li>
-          </ul>
-        </InfiniteScroll>
-      </div>
-    </div>
-  </div>
-</template>
-
 <style scoped>
-.news-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.header-section {
-  flex: none;
-}
-
-.content-section {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem 0;
-}
-
-.content-wrapper {
-  width: 100%;
-  max-width: 48rem;
-}
-
-/* Breadcrumb styling */
-.breadcrumb {
-  font-size: 0.875rem;
-  color: var(--color-muted-foreground);
-  margin-bottom: 1rem;
-}
-
-.breadcrumb .current {
-  color: var(--color-foreground);
-  font-weight: 500;
-}
-
-/* Container for news content */
-.news-scroll-container {
-  flex: 1;
-  overflow-y: auto;
-  height: calc(100vh - 120px);
-  width: 100%;
-  position: relative;
-}
-
-/* Timeline styling */
-.timeline {
-  position: relative;
-  margin: 1.5rem 0;
-  padding-left: 2rem;
-  list-style: none;
-  border-left: 2px solid var(--color-border, #e2e8f0);
-}
-
-.timeline li {
-  position: relative;
-  margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
-}
-
-.dot {
-  position: absolute;
-  left: -2.4rem;
-  top: 0.45rem;
-  width: 0.75rem;
-  height: 0.75rem;
-  background-color: var(--color-primary, #3b82f6);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.timeline-content {
-  position: relative;
-  z-index: 2;
-}
-
-/* Responsive adjustments */
+/* Any custom styles that can't be handled with Tailwind classes */
 @media (max-width: 640px) {
-  .timeline {
-    padding-left: 1rem;
-  }
-
-  .timeline li {
-    margin-bottom: 1rem;
-    padding-left: 1rem;
-  }
-
-  .dot {
-    left: -1.5rem;
-    width: 0.6rem;
-    height: 0.6rem;
-  }
-
-  .timeline-content {
-    font-size: 0.875rem;
-  }
+  /* Mobile-specific adjustments */
 }
 </style>

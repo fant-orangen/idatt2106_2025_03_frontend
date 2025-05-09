@@ -1,7 +1,6 @@
 {
   "common": {
     "back": "Tilbake",
-    "back": "Tilbake",
     "cancel": "Avbryt",
     "delete": "Slett",
     "confirm": "Bekreft",
@@ -9,9 +8,17 @@
     "remove": "Fjern",
     "saving": "Lagrer...",
     "not-provided": "Ikke oppgitt",
-    "loading": "Loading",
+    "loading": "Laster inn ",
     "not-found": "Fant ingenting",
-    "all-is-loaded": "Alt er lastet inn"
+    "all-is-loaded": "Alt er lastet inn",
+    "success": {
+      "shared": "Produktet ble lagt til i gruppen",
+      "removed": "Produktet ble fjernet fra gruppen.",
+      "error": "Det oppstod en feil ved deling av produkt med gruppen"
+    },
+    "edit": "Rediger",
+    "accept": "Aksepter",
+    "reject": "Avvis"
   },
   "actions": {
     "to-reflect": "for å reflektere",
@@ -46,7 +53,9 @@
     "enter-email": "Skriv inn e-post",
     "reset-password": "Tilbakestill passord",
     "2fa-login-title": "To-trinnsverifisering",
-    "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn."
+    "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn.",
+    "already-user": "Dette brukernavnet er allerede registrert.",
+    "log-in-here": "Logg inn her"
   },
   "reset-password": {
     "title": "Tilbakestill passord",
@@ -103,13 +112,14 @@
     "scenario-theme-instructions": "Instruksjoner",
     "scenario-theme-instructions-placeholder": "Skriv inn detaljerte instruksjoner for håndtering av denne typen krise",
     "scenario-theme-instructions-help": "Gi trinnvise instruksjoner for brukere å følge under denne typen krise",
-    "scenario-theme-before": "Instruksjoner før krise",
+    "scenario-theme-before": "Instruksjoner før en krise",
     "scenario-theme-before-placeholder": "Skriv inn detaljerte instruksjoner for forberedelse før denne typen krise",
     "scenario-theme-before-help": "Gi trinnvise instruksjoner for brukere å følge før denne typen krise",
-    "scenario-theme-under": "Instruksjoner under krise",
+    "scenario-theme-under-instructions": "Instruksjoner for under en krise",
+    "scenario-theme-under": "Instruksjoner under en krise",
     "scenario-theme-under-placeholder": "Skriv inn detaljerte instruksjoner for håndtering av denne typen krise mens den pågår",
     "scenario-theme-under-help": "Gi trinnvise instruksjoner for brukere å følge under denne typen krise",
-    "scenario-theme-after": "Instruksjoner etter krise",
+    "scenario-theme-after": "Instruksjoner etter en krise",
     "scenario-theme-after-placeholder": "Skriv inn detaljerte instruksjoner for gjenoppretting etter denne typen krise",
     "scenario-theme-after-help": "Gi trinnvise instruksjoner for brukere å følge etter denne typen krise",
     "markdown-supported": "Markdown-formatering støttes",
@@ -121,6 +131,7 @@
     "scenario-theme-name-max-length": "Navn kan ikke overstige 100 tegn",
     "scenario-theme-description-min-length": "Beskrivelse må være minst 10 tegn",
     "scenario-theme-description-max-length": "Beskrivelse kan ikke overstige 1000 tegn",
+    "scenario-theme-before-instructions": "Instruksjoner",
     "scenario-theme-instructions-min-length": "Instruksjoner må være minst 10 tegn",
     "scenario-theme-instructions-max-length": "Instruksjoner kan ikke overstige 5000 tegn",
     "scenario-theme-before-instructions-min-length": "Før-krise instruksjoner må være minst 10 tegn",
@@ -176,7 +187,8 @@
     "edit-POI": "Rediger interessepunkt",
     "poi-details": "Interessepunkt-detaljer",
     "meeting-places": "Møteplasser",
-    "meeting-point": "Håndter møteplasser"
+    "meeting-point": "Håndter møteplasser",
+    "search-meeting-point": "Søk etter en møteplass.."
   },
   "notifications": {
     "notification": "Varsling",
@@ -199,7 +211,12 @@
     "invalid-phone": "Ugyldig telefonnummer",
     "terms": "Du må godta vilkårene og betingelsene.",
     "unexpected-error": "Uventet feil - vennligst prøv igjen senere.",
-    "network-error": "Ingen nettverkstilkobling. Vennligst sjekk internettforbindelsen din."
+    "network-error": "Ingen nettverkstilkobling. Vennligst sjekk internettforbindelsen din.",
+    "account-locked": " Brukernavn eller passord er feil.",
+    "invalid-credentials": "Brukernavn eller passord er feil.",
+    "unexpected-error": "Det har oppstått en uventet feil. Vennligst prøv igjen senere.",
+    "network-error": "Nettverksfeil. Vennligst sjekk tilkoblingen din.",
+    "invalid-2fa-code": "2FA koden du har skrevet inn er feil. Vennligst prøv igjen."
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",
@@ -243,7 +260,7 @@
     "updated": "Oppdatert",
     "created_by": "Opprettet av",
     "scenario_theme": "Scenariotema",
-    "scenario": "Scenario",
+    "scenario": "Kategori",
     "view_scenario_theme": "Vis scenariotema",
     "view_scenario_themes": "Vis scenariotemaer",
     "view_details": "Vis detaljer",
@@ -278,7 +295,8 @@
     "go-back": "Tilbake",
     "light-mode": "Lys modus",
     "dark-mode": "Mørk modus",
-    "admin-news": "Lag et nyhetsvarsel"
+    "admin-news": "Lag et nyhetsvarsel",
+    "change-mode": "Bytt modus"
   },
   "user-profile": {
     "title": "Brukerprofil",
@@ -286,9 +304,9 @@
     "close": "Lukk"
   },
   "time": {
-    "after": "etter",
-    "before": "før",
-    "during": "under"
+    "after": "Etter",
+    "before": "Før",
+    "during": "Under"
   },
   "info": {
     "news": "Nyheter",
@@ -305,8 +323,13 @@
       "title": "Vær forberedt på enhver krise",
       "description": "Krisefikser hjelper deg og din husholdning med å holde dere informert, forberedt og trygge under nødsituasjoner."
     },
+    "view-crisis-events": "Se krisehendelser",
     "view_map": "Vis krisekart",
     "view_all_news": "Se alle nyheter",
+    "household-title": "Din husholdning",
+    "household-feature1": "Opprett og administrer din egen husholdning",
+    "household-feature2": "Inviter familiemedlemmer",
+    "household-feature3": "Opprett grupper ut fra hussholdningen din",
     "learn_more": "Lær mer",
     "national_crisis": {
       "title": "Krisehendelser i Norge",
@@ -328,7 +351,9 @@
       "feature1": "Spor nødforsyninger og få påminnelser når varer utløper",
       "feature2": "Del viktig informasjon med husholdningsmedlemmer",
       "feature3": "Motta stedsspesifikke varsler og veiledning",
-      "create_button": "Opprett husholdning"
+      "create_button": "Opprett husholdning",
+      "supplies": "Husholdningsartikler",
+      "users": "Medlemmer"
     },
     "crisis_info": {
       "title": "Kriseinformasjonssenter",
@@ -693,7 +718,9 @@
         "invalidToken": "Ugyldig invitasjonskode",
         "generic": "Kunne ikke bli med i hushold"
       }
-    }
+    },
+    "created-success": "Hushold opprettet",
+    "ask-if-safe": "Forspør om alle i husholdet ditt er trygge"
   },
   "sidebar": {
     "title": "Temaer",

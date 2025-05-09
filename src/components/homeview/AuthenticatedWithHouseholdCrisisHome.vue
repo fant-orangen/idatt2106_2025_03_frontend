@@ -59,7 +59,7 @@
             variant="outline"
             class="border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/20 dark:hover:bg-[var(--crisis-level-red)]/40"
             :class="getCrisisButtonClass(mainCrisis.severity)"
-            @click="navigateToScenarioTheme(mainCrisis.id)"
+            @click="navigateToScenarioTheme(mainCrisis.scenarioThemeId)"
           >
             {{ t('home.crisis_theme.learn_more', 'Learn More About This Crisis') }}
           </Button>
@@ -81,11 +81,12 @@
 
       <!-- Information Sections (3/5) -->
       <section class="info-sections md:col-span-3 space-y-8">
+
         <!-- Household Supplies -->
         <div class="household-supplies bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
             <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)] w-[18px] h-[18px]" />
-            {{ t('home.household.supplies', 'Household Supplies') }}
+            {{ t('household.supplies') }}
           </h2>
 
           <!-- Status messages about food and water -->
@@ -190,7 +191,7 @@ import CrisisLevelOverview from '@/components/homeview/CrisisLevelOverview.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTriangleExclamation, faBoxOpen, faUsers, faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { inventoryService } from '@/services/InventoryService';
-import { fetchCrisisEventsInRadius } from '@/services/CrisisEventService';
+import { fetchCrisisEventsInRadius, fetchCrisisEventById } from '@/services/CrisisEventService';
 import { fetchScenarioThemeUnderInstructions } from '@/services/api/ScenarioThemeService';
 import { getSeverityColor } from '@/utils/severityUtils';
 import { marked } from 'marked';
@@ -209,6 +210,19 @@ const mainCrisis = ref<CrisisEventPreviewDto | null>(null);
 const scenarioUnderInstructions = ref<string | null>(null);
 const loadingInstructions = ref(false);
 
+// Configure marked with essential options (copied from ThemeContent.vue)
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+});
+
+// Custom renderer for headers (copied from ThemeContent.vue)
+const renderer = new marked.Renderer();
+renderer.heading = function ({ tokens, depth }) {
+  const text = tokens.map((t) => (typeof t === 'object' && 'text' in t && typeof t.text === 'string') ? t.text : '').join('');
+  const fontSize = depth === 1 ? '3xl' : depth === 2 ? '2xl' : depth === 3 ? 'xl' : 'lg';
+  return `<h${depth} class="text-${fontSize} font-bold my-4">${text}</h${depth}>`;
+};
 
 // Priority levels for color coding
 enum Priority {
@@ -311,11 +325,11 @@ const navigateToScenarioTheme = (themeId: number) => {
  * Fetches the 'under' instructions for the current crisis scenario theme
  */
 const fetchScenarioInstructions = async () => {
-  if (!mainCrisis.value?.id) return;
+  if (!mainCrisis.value?.scenarioThemeId) return;
 
   loadingInstructions.value = true;
   try {
-    const instructions = await fetchScenarioThemeUnderInstructions(mainCrisis.value.id);
+    const instructions = await fetchScenarioThemeUnderInstructions(mainCrisis.value.scenarioThemeId);
     scenarioUnderInstructions.value = instructions;
   } catch (error) {
     console.error('Failed to fetch scenario instructions:', error);
@@ -332,8 +346,7 @@ const fetchScenarioInstructions = async () => {
  */
 const markdownToHtml = (markdown: string): string => {
   if (!markdown) return '';
-  // Cast the result to string since marked can return a Promise<string> in some cases
-  return marked.parse(markdown) as string;
+  return marked.parse(markdown, { renderer }) as string;
 };
 
 /**
@@ -434,8 +447,15 @@ const fetchMainCrisis = async () => {
                (severityRank[a.severity as keyof typeof severityRank] || 0);
       });
 
-      mainCrisis.value = sorted[0];
-      console.log("Main crisis found:", mainCrisis.value.name);
+      // Fetch full details of the highest severity crisis
+      const fullDetails = await fetchCrisisEventById(sorted[0].id);
+      if (fullDetails) {
+        mainCrisis.value = fullDetails;
+        console.log("Main crisis found:", mainCrisis.value.name);
+      } else {
+        console.log("No crisis details found");
+        mainCrisis.value = null;
+      }
     } else {
       console.log("No crisis in radius");
       mainCrisis.value = null;
@@ -444,23 +464,6 @@ const fetchMainCrisis = async () => {
     console.error('Failed to fetch main crisis:', error);
     mainCrisis.value = null;
   }
-};
-
-/**
- * Format a date in full format
- * @param {string} dateString - The date string to format
- * @returns {string} Formatted date string
- */
-const formatDateFull = (dateString: string): string => {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(date);
 };
 
 /**

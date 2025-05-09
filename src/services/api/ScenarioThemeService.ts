@@ -56,6 +56,23 @@ export async function fetchScenarioThemeById(id: number): Promise<ScenarioThemeD
 }
 
 /**
+ * Fetches just the name of a scenario theme by its ID.
+ * This is a lightweight alternative to fetching the full theme details when only the name is needed.
+ *
+ * @param {number} id - The ID of the scenario theme to fetch the name for
+ * @returns {Promise<{id: number, name: string} | null>} The scenario theme name object or null if not found
+ */
+export async function fetchScenarioThemeName(id: number): Promise<{id: number, name: string} | null> {
+  try {
+    const response = await api.get(`/public/scenario-themes/${id}/name`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching scenario theme name with ID ${id}:`, error);
+    return null;
+  }
+}
+
+/**
  * Fetches only the 'under' (during crisis) instructions for a specific scenario theme.
  *
  * @param {number} id - The ID of the scenario theme to fetch

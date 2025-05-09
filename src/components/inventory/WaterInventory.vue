@@ -68,6 +68,7 @@
           <template v-if="batch.isNew">
             <input
               v-model="batch.expires"
+              type="date"
               class="bg-input text-foreground py-2 px-3 text-center rounded-md w-full"
               :placeholder="t('inventory.water.expiry')"
               :readonly="true"
@@ -86,7 +87,8 @@
           </Button>
           <Button
             variant="destructive"
-            @click="() => { removeBatch(index, bIndex); }"
+            @click="() => { removeBatchFromGroup(index, bIndex); }"
+            :disabled="!batch.isContributed"
             class="text-sm w-full sm:w-auto"
           >
             {{ t('inventory.remove-from-group') }}
@@ -303,8 +305,7 @@ const toggleEdit = async (index) => {
       await loadBatchStates(item);
       await updateTotalUnits(item.id);
       await fetchTotalWater(); // Special for water: update total water amount
-    } catch (error) {
-      console.error('Error saving batch updates:', error);
+    } catch {
       toast('Error', {
         description: 'Failed to save changes to one or more batches.',
         duration: 3000
@@ -374,31 +375,12 @@ const addBatch = (productIndex) => {
   });
 };
 
-const validateAndFormatDate = (dateStr) => {
-  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?$/;
-  if (!dateRegex.test(dateStr)) {
-    return false;
-  }
-  if (dateStr.length === 7) {
-    return `${dateStr}-01`;
-  }
-  return dateStr;
-};
-
 const saveBatch = async (productIndex, batchIndex) => {
   const product = items.value[productIndex];
   const batch = product.batches[batchIndex];
   const productId = productStore.getProductId(product.name);
   if (!productId) return;
   if (!batch.amount || isNaN(Number(batch.amount))) return;
-  if (batch.expires) {
-    const formattedDate = validateAndFormatDate(batch.expires);
-    if (formattedDate === false) {
-      alert('Ugyldig dato. Forventet format: YYYY-MM-DD eller YYYY-MM.');
-      return;
-    }
-    batch.expires = formattedDate;
-  }
   await inventoryService.createProductBatch(
     productId,
     Number(batch.amount),
@@ -411,19 +393,24 @@ const saveBatch = async (productIndex, batchIndex) => {
   await fetchTotalWater();
 };
 
-const removeBatch = async (productIndex, batchIndex) => {
+const removeBatchFromGroup = async (productIndex, batchIndex) => {
   const product = items.value[productIndex];
   const batch = product.batches[batchIndex];
-  if (batch.isNew) {
-    product.batches.splice(batchIndex, 1);
-    return;
+  if (!batch.id) return;
+  try {
+    await groupService.removeContributedBatch(batch.id);
+    await loadBatchStates(product);
+    await fetchTotalWater();
+    toast('Suksess!', {
+      description: t('common.success.removed'),
+      duration: 3000
+    });
+  } catch (error) {
+    toast('Feil', {
+      description: t('common.success.error'),
+      duration: 5000
+    });
   }
-  const batchId = productStore.getBatchId(product.name, batch.amount, batch.expires);
-  if (!batchId) return;
-  await inventoryService.deleteProductBatch(batchId);
-  product.batches.splice(batchIndex, 1);
-  await updateTotalUnits(product.id);
-  await fetchTotalWater();
 };
 
 const addProduct = async () => {
@@ -434,7 +421,10 @@ const addProduct = async () => {
     (item) => item?.name?.toLowerCase() === name.toLowerCase()
   );
   if (exists) {
-    showExistsModal.value = true;
+    toast('Feil', {
+      description: t('inventory.water.exists.message'),
+      duration: 3000
+    });
     return;
   }
   const unit = 'l';
@@ -500,7 +490,7 @@ const addBatchToGroup = async (batchId) => {
     }
 
     toast('Suksess!', {
-      description: 'Produktet ble lagt til i gruppen.',
+      description: t('common.success.shared'),
       duration: 3000
     });
   } catch (error) {

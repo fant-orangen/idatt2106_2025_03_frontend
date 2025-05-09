@@ -28,15 +28,15 @@ const isView = ref(false)
 const passwordValidation = getPasswordValidationSchema(t)
 
 const resetPasswordSchema = toTypedSchema(
-  z
-    .object({
-      password: passwordValidation,
-      confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: t('reset-password.password-req-match'),
-      path: ['confirmPassword'],
-    }),
+    z
+        .object({
+          password: passwordValidation,
+          confirmPassword: z.string(),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          message: t('reset-password.password-req-match'),
+          path: ['confirmPassword'],
+        }),
 )
 
 // Initialize the form with vee-validate
@@ -89,8 +89,8 @@ const handleReset = form.handleSubmit(async (values) => {
     <Card class="min-w-[20vw]">
       <CardHeader>
         <CardTitle class="text-xl font-bold text-center">{{
-          $t('reset-password.title')
-        }}</CardTitle>
+            $t('reset-password.title')
+          }}</CardTitle>
       </CardHeader>
       <CardContent>
         <form @submit.prevent="handleReset" class="space-y-4">
@@ -101,18 +101,18 @@ const handleReset = form.handleSubmit(async (values) => {
               <div class="relative">
                 <FormControl>
                   <Input
-                    :type="isView ? 'text' : 'password'"
-                    id="password"
-                    v-bind="field"
-                    :placeholder="$t('reset-password.new-password')"
+                      :type="isView ? 'text' : 'password'"
+                      id="password"
+                      v-bind="field"
+                      :placeholder="$t('reset-password.new-password')"
                   />
                 </FormControl>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  @click="isView = !isView"
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    @click="isView = !isView"
                 >
                   <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
                 </Button>
@@ -125,23 +125,23 @@ const handleReset = form.handleSubmit(async (values) => {
           <FormField v-slot="{ field, meta, errorMessage }" name="confirmPassword">
             <FormItem>
               <FormLabel for="confirmPassword">{{
-                $t('reset-password.confirm-new-password')
-              }}</FormLabel>
+                  $t('reset-password.confirm-new-password')
+                }}</FormLabel>
               <div class="relative">
                 <FormControl>
                   <Input
-                    :type="isView ? 'text' : 'password'"
-                    id="confirmPassword"
-                    v-bind="field"
-                    :placeholder="$t('reset-password.confirm-new-password')"
+                      :type="isView ? 'text' : 'password'"
+                      id="confirmPassword"
+                      v-bind="field"
+                      :placeholder="$t('reset-password.confirm-new-password')"
                   />
                 </FormControl>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  @click="isView = !isView"
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    @click="isView = !isView"
                 >
                   <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
                 </Button>
