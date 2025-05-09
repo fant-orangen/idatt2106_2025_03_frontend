@@ -56,6 +56,8 @@
             <Input
               v-model="batch.amount"
               type="number"
+              :max="batch.originalAmount"
+              @input="clampBatchAmount(batch)"
               :placeholder="t('inventory.medicine.amount')"
               class="text-center w-full"
             />
@@ -394,6 +396,7 @@ const loadBatchStates = async (item) => {
       item.batches = response.content.map((batch) => ({
         id: batch.id,
         amount: batch.number.toString(),
+        originalAmount: batch.number,
         expires: batch.expirationTime ? format(new Date(batch.expirationTime), 'yyyy-MM-dd') : '',
         isContributed: false // Add this field
       }))
@@ -523,6 +526,12 @@ const deleteProductType = async (index) => {
         batchMap.delete(key)
       }
     }
+  }
+}
+
+function clampBatchAmount(batch) {
+  if (Number(batch.amount) > batch.originalAmount) {
+    batch.amount = batch.originalAmount.toString();
   }
 }
 </script>
