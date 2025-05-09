@@ -176,7 +176,6 @@ const declineInvite = async (token: string) => {
  * Loads invitations when the component mounts
  */
 onMounted(async () => {
-  console.log('UserInvitations component mounted, refreshing invitations...');
   await refreshInvitations();
 });
 

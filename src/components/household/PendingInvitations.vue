@@ -152,8 +152,6 @@ const refreshInvitations = async () => {
       getPendingHouseholdInvitations(),
       getPendingGroupInvitations()
     ]);
-    console.log('Household invitations:', householdData);
-    console.log('Group invitations:', groupData);
     invitations.value = householdData;
     groupInvitations.value = groupData;
   } catch (error) {

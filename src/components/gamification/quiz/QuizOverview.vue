@@ -91,14 +91,12 @@ const fetchLastAttempts = async () => {
         maxScore: maxScore,
       }
 
-      console.log(`Quiz ${quiz.id}: Score = ${score}, Max Score = ${maxScore}`)
     } catch (error) {
       console.error(`Error fetching data for quiz ${quiz.id}:`, error)
       lastAttempts.value[quiz.id] = null
     }
   }
 
-  console.log('Last attempts:', lastAttempts.value)
 }
 
 const fetchLastQuizAttempt = async (quizId: number): Promise<QuizAttemptSummary | null> => {
@@ -137,7 +135,6 @@ const archiveQuiz = (quizId: number) => {
     console.error('User is not authorized to delete quizzes')
     return
   }
-  console.log(`Delete quiz with ID: ${quizId}`)
   quizStore.archiveQuiz(quizId)
   quizStore.fetchAllActiveQuizzes()
 }

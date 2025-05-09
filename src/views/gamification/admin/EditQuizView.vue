@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/breadcrumb'
 
 const props = defineProps<{ quizId: number }>()
-console.log('Quiz ID:', props.quizId)
 </script>
 
 <template>

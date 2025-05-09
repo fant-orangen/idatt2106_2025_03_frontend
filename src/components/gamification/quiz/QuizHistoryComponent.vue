@@ -40,7 +40,6 @@ const fetchQuizAttempts = async (quizId: number): Promise<QuizAttemptSummary[]> 
 
       // Fetch the total number of questions for the quiz
       const totalQuestions = (await quizService.getQuizQuestionsByQuizId(quizId)).length
-      console.log('Total questions:', totalQuestions)
 
       // Map attempts to include the score
       const attemptsWithScores = await Promise.all(
@@ -49,9 +48,7 @@ const fetchQuizAttempts = async (quizId: number): Promise<QuizAttemptSummary[]> 
             attempt.id,
           )
           const correctAnswers = correctAnswersResponse
-          console.log('Correct answers for attempt ', attempt.id, ': ', correctAnswers)
           const score = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
-          console.log('Calculated score:', score)
           return {
             ...attempt,
             score, // Add the calculated score

@@ -95,7 +95,6 @@ const refreshHomeData = async () => {
 }
 
 watch(() => userStore.isAuthenticated, async (isAuthenticated) => {
-  console.log('Authentication state changed in HomeView:', isAuthenticated)
   if (isAuthenticated) {
     await refreshHomeData()
   }

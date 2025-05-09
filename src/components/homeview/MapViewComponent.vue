@@ -385,7 +385,6 @@ async function loadInitialData() {
       const loadedPois = await fetchPublicPois();
       allPois.value = [...loadedPois];
       pois.value = [...loadedPois];
-      console.log("Initial POIs loaded:", pois.value.length);
     } catch (error) {
       console.error('Error loading initial POIs:', error);
       allPois.value = [];

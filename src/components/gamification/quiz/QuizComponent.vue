@@ -104,7 +104,6 @@ const handleNextQuestion = async () => {
     questionNr.value++
     await fetchQuizData()
   } else {
-    console.log('Quiz completed!')
     quizCompleted.value = true
     try {
       await sendQuizAttemptToBackend()

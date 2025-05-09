@@ -341,7 +341,6 @@ function setupFormSchema() {
   } else {
      console.error("Form instance could not be created in setupFormSchema.");
   }
-  console.log("Form schema setup complete.");
 
 }
 
@@ -365,7 +364,6 @@ async function handleFormSubmitPoi(values: any) {
         contactInfo: values.contactInfo ?? selectedPoi.value.contactInfo,
         poiTypeId: values.poiTypeId ?? selectedPoi.value.poiTypeId,
     };
-    console.log("Submitting update data:", updatedData.value);
     updateSelectedPoi();
 }
 
@@ -374,13 +372,11 @@ async function handleFormSubmitPoi(values: any) {
  */
 async function updateSelectedPoi() {
   if (!selectedPoi.value || !updatedData.value) {
-      console.log('No POI selected or updated.');
       return;
   }
   try {
     const response = await editPoi(selectedPoi.value.id, updatedData.value)
 
-    console.log('Point of interest updated successfully!', response.data);
     callToast(t('add-poi.update-success'));;
 
     selectedPoi.value = null;
@@ -399,7 +395,6 @@ async function updateSelectedPoi() {
  */
 
 function cancelUpdate() {
-  console.log("Update cancelled.");
     selectedPoi.value = null;
     updatedData.value = null;
     form.value?.resetForm();
@@ -423,20 +418,16 @@ async function confirmDeletePoi(poiId: number) {
     callToast(t('add-poi.deletion.failed'));
     return;
   }
-  console.log('Attempting to delete POI with ID:', poiId);
   try {
     const response = await deletePoi(poiId);
-    console.log("Deleted a POI: ", response)
 
     callToast(t('add-poi.deletion.success'));
     selectedPoi.value = null;
     await queryClient.invalidateQueries({ queryKey: ['pois'] });
 
-    console.log("POI deleted successfully, query invalidated.");
   } catch (error) {
     console.error('Failed to delete POI:', error);
   }
-  console.log("Deletion confirmed.");
 
 }
 
@@ -445,7 +436,6 @@ async function confirmDeletePoi(poiId: number) {
  * @param message - the message to be shown.
  */
 function callToast(message: string) {
-  console.log("Toast:", message);
   toast(message);
 }
 

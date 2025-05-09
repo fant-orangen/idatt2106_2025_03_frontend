@@ -186,9 +186,7 @@ const loadReflections = async (page: number = 0) => {
 
   isLoading.value = true;
   try {
-    console.log(`Loading user reflections, page=${page}`);
     const response = await getMyReflections(page, pageSize);
-    console.log('Received response:', response);
 
     if (page === 0) {
       reflections.value = response.content;
@@ -198,7 +196,6 @@ const loadReflections = async (page: number = 0) => {
 
     hasMore.value = !response.last;
     currentPage.value = page;
-    console.log(`Updated hasMore=${hasMore.value}, currentPage=${currentPage.value}`);
   } catch (error) {
     console.error('Error loading reflections:', error);
     toast.error(t('reflect.error-loading'));

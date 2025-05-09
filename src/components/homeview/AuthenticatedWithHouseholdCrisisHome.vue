@@ -437,7 +437,6 @@ const handleCrisisSelect = (crisisId: number) => {
  */
 const fetchMainCrisis = async () => {
   try {
-    console.log("Fetching crisis events in radius");
     const response = await fetchCrisisEventsInRadius(0, 4);
     if (response.content.length > 0) {
       // Sort by severity (red > yellow > green)
@@ -451,13 +450,10 @@ const fetchMainCrisis = async () => {
       const fullDetails = await fetchCrisisEventById(sorted[0].id);
       if (fullDetails) {
         mainCrisis.value = fullDetails;
-        console.log("Main crisis found:", mainCrisis.value.name);
       } else {
-        console.log("No crisis details found");
         mainCrisis.value = null;
       }
     } else {
-      console.log("No crisis in radius");
       mainCrisis.value = null;
     }
   } catch (error) {

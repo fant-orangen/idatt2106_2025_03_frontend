@@ -292,7 +292,6 @@ const saveProfile = async () => {
 const fetchNotificationPreferences = async () => {
   try {
     const preferences = await getNotificationPreferences()
-    console.log('Fetched notification preferences:', preferences)
 
     // Map snake_case keys to camelCase keys
     const keyMapping: Record<string, string> = {
@@ -323,7 +322,6 @@ const fetchNotificationPreferences = async () => {
       },
     )
 
-    console.log('Mapped notification preferences:', mappedPreferences)
 
     // Update the notificationPreferences and tempNotificationPreferences
     notificationPreferences.value.email = mappedPreferences

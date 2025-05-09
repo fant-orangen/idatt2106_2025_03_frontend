@@ -77,7 +77,6 @@ defineOptions({ inheritAttrs: false });
 const handleDelete = async () => {
   isDeleting.value = true;
   try {
-    console.log("tries to delete");
     await deleteHousehold();
     toast.success(t('household.delete_success'));
     showConfirmDialog.value = false;

@@ -389,7 +389,6 @@ async function selectMeetingPoint(id: number) {
 	for (let i = 0; i < allMPts.value.length; i++) {
     if (allMPts.value[i].id === id) {
       selectedMP.value = allMPts.value[i]
-      console.log('mp = ', selectedMP.value)
       isOpen.value = true
       break;
 	  }
@@ -403,7 +402,6 @@ async function selectMeetingPoint(id: number) {
 async function createNewMP(data: CreateMeetingPlaceDto) {
   try {
     const response = await meetingPlaceService.createMeetingPlace(data)
-    console.log('Creating new meeting place ...', response)
     callToast('Created a new meeting place successfully!');
     selectedMP.value = null;
 
@@ -420,7 +418,6 @@ async function createNewMP(data: CreateMeetingPlaceDto) {
 async function archiveMP(id: number) {
   try {
     const response = await meetingPlaceService.archiveMeetingPlace(id)
-    console.log('Putting meeting place in archive ...', response)
     callToast('Archived the meeting point.');
 
     selectedMP.value = null;
@@ -438,7 +435,6 @@ async function archiveMP(id: number) {
 async function activateMP(id: number) {
   try {
     const response = await meetingPlaceService.activateMeetingPlace(id)
-    console.log('Activating the meeting place ...', response)
     callToast('Activated the meeting point!');
 
     selectedMP.value = null;
@@ -461,7 +457,6 @@ function cancelUpdate() {
 * @param message - the message to show.
 */
 function callToast (message: string) {
-	console.log('Called toast for message: ', message);
 	toast(message);
 }
 </script>

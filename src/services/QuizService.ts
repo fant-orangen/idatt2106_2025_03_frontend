@@ -56,7 +56,6 @@ class QuizService {
    */
   async getAnswersByQuestionId(questionId: number): Promise<QuizAnswerResponse[]> {
     const response = await api.get(`/quizzes/user/questions/${questionId}/answers`)
-    console.log('Quiz answers:', response.data)
     return response.data
   }
 
@@ -80,7 +79,6 @@ class QuizService {
    * Update a quiz question (admin only)
    */
   async updateQuizQuestion(questionId: number, data: CreateQuizQuestionRequest): Promise<void> {
-    console.log('Updating quiz question:', questionId, data)
     await api.patch(`/quizzes/admin/questions/${questionId}`, data)
   }
 
@@ -119,7 +117,6 @@ class QuizService {
     const response = await api.get('/quizzes/user/all/previews/active', {
       params: { page, size },
     })
-    console.log('successfully fetched active quizzes:', response.data)
     return response.data
   }
 
@@ -200,7 +197,6 @@ class QuizService {
   async getQuizNameById(quizId: number): Promise<string> {
     try {
       const response = await api.get(`/quizzes/${quizId}/name`)
-      console.log('Quiz name:', response.data.name)
       return response.data.name // Extract and return the "name" field
     } catch (error) {
       console.error(`Error fetching quiz name for quizId ${quizId}:`, error)

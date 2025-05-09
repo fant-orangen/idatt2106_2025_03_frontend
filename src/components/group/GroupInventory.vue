@@ -132,7 +132,6 @@ const fetchAllProductTypes = async () => {
       }
     }
 
-    console.log('Loaded group inventory items:', items.value.length);
   } catch (error) {
     console.error('Error fetching group inventory:', error);
   } finally {
@@ -142,7 +141,6 @@ const fetchAllProductTypes = async () => {
 
 // Immediately fetch product types when component is mounted
 onMounted(() => {
-  console.log('GroupInventory mounted, fetching products for group:', props.groupId);
   groupStore.setCurrentGroup(props.groupId);
   fetchAllProductTypes();
 });
@@ -150,7 +148,6 @@ onMounted(() => {
 // Watch for group ID changes
 watch(() => props.groupId, (newGroupId) => {
   if (newGroupId) {
-    console.log('Group ID changed, fetching new products:', newGroupId);
     groupStore.setCurrentGroup(newGroupId);
     fetchAllProductTypes();
   }

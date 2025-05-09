@@ -95,7 +95,6 @@ onMounted(async () => {
   if (userStore.isAuthenticated && !notificationStore.hasFetchedInitial) {
     try {
       await notificationStore.fetchNotifications()
-      console.log('NavBar: Initial notifications fetched via store.')
     } catch (error) {
       console.error('NavBar: Failed to fetch initial notifications via store:', error)
     }
