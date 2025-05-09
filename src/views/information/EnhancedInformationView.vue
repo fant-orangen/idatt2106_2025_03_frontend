@@ -17,7 +17,7 @@ export default defineComponent({
  * @component
  */
 import { ref, onMounted, computed } from 'vue'
-import { useRoute, useRouter, RouterLink } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import EnhancedSidebar from '@/components/information/EnhancedSidebar.vue'
 import ThemeContent from '@/components/information/ThemeContent.vue'
@@ -50,10 +50,6 @@ const scenarioThemes = ref<ScenarioThemeDto[]>([])
 const loadingScenarios = ref(true)
 const scenarioError = ref<string | null>(null)
 
-/**
- * Computed property that extracts the scenario ID from the route
- * Checks both route params and query params for the ID
- */
 const routeScenarioId = computed(() => {
   if (route.params.id) {
     return parseInt(route.params.id as string, 10)
@@ -62,18 +58,17 @@ const routeScenarioId = computed(() => {
   return id ? parseInt(id as string, 10) : null
 })
 
-/**
- * Static sidebar sections that are always available
- */
 const staticSections: SidebarNode[] = [
-  { key: 'preparednessStorage', titleKey: 'sidebar.themes-preparednessStorage' },
-  { key: 'afterCrisis', titleKey: 'sidebar.themes-afterCrisis' }
+  {
+    key: 'home',
+    titleKey: 'sidebar.themes.home'
+  },
+  {
+    key: 'preparednessStorage',
+    titleKey: 'sidebar.themes.preparednessStorage'
+  }
 ]
 
-/**
- * Computed property that combines static sections with dynamic scenario themes
- * Creates a hierarchical structure for the sidebar navigation
- */
 const sections = computed<SidebarNode[]>(() => {
   const scenarioNodes: SidebarNode[] = scenarioThemes.value.map(theme => ({
     key: `scenario-${theme.id}`,
@@ -82,23 +77,22 @@ const sections = computed<SidebarNode[]>(() => {
     scenarioId: theme.id
   }))
 
-  if (scenarioNodes.length > 0) {
-    return [
+  return [
+    // Always place home at the top
+    staticSections[0],
+    // Add scenario themes section if scenarios exist
+    ...(scenarioNodes.length > 0 ? [
       {
         key: 'scenarioThemes',
         titleKey: 'sidebar.categories',
         children: scenarioNodes
-      },
-      ...staticSections
-    ]
-  }
-
-  return staticSections
+      }
+    ] : []),
+    // Add remaining static sections (everything after home)
+    ...staticSections.slice(1)
+  ]
 })
 
-/**
- * Loads scenario themes from the backend API
- */
 async function loadScenarioThemes() {
   loadingScenarios.value = true
   scenarioError.value = null
@@ -116,11 +110,6 @@ async function loadScenarioThemes() {
 
 const router = useRouter()
 
-/**
- * Handles theme selection from the sidebar
- *
- * @param themeKey - The key of the selected theme
- */
 function handleThemeSelected(themeKey: string): void {
   if (themeKey.startsWith('scenario-')) {
     const scenarioId = parseInt(themeKey.replace('scenario-', ''), 10)
@@ -136,17 +125,10 @@ function handleThemeSelected(themeKey: string): void {
   }
 }
 
-/**
- * Toggles the mobile sidebar visibility
- */
 function toggleMobileSidebar(): void {
   showSidebarMobile.value = !showSidebarMobile.value
 }
 
-/**
- * Initialize the component when mounted
- * Loads scenario themes and sets the selected scenario based on the route
- */
 onMounted(async () => {
   await loadScenarioThemes()
 
@@ -155,8 +137,9 @@ onMounted(async () => {
     if (scenario) {
       selectedScenarioId.value = scenario.id
     }
+  } else {
+    selectedTheme.value = 'home'
   }
-
   isLoading.value = false
 })
 </script>
@@ -188,21 +171,20 @@ onMounted(async () => {
         :selectedScenarioId="selectedScenarioId"
         :themeIcon="''"
       >
-        <template #related-themes>
-          <!-- Static themes -->
+        <template #related-themes v-if="selectedTheme === 'home'">
+          <!-- Preparedness Storage -->
           <Card
-            v-for="theme in ['preparednessStorage', 'afterCrisis']"
-            :key="theme"
+            key="preparednessStorage"
             class="cursor-pointer hover:shadow-lg transition-shadow"
-            @click="handleThemeSelected(theme)"
+            @click="handleThemeSelected('preparednessStorage')"
           >
             <CardHeader class="pb-2">
               <CardTitle class="text-lg flex items-center gap-2">
-                {{ $t(`sidebar.themes.${theme}`) }}
+                {{ $t(`sidebar.themes.preparednessStorage`) }}
               </CardTitle>
             </CardHeader>
             <CardContent class="text-sm text-muted-foreground">
-              {{ $t(`infoPage.${theme}Brief`) || $t('infoPage.learnMoreTopic') }}
+              {{ $t(`infoPage.preparednessStorageBrief`) || $t('infoPage.learnMoreTopic') }}
             </CardContent>
           </Card>
 

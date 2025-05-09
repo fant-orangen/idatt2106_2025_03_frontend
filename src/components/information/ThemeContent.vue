@@ -264,9 +264,21 @@ function closeEmergencyContacts() {
         </p>
       </CardContent>
     </Card>
-
+    <div class="sticky top-0 z-10 bg-background py-4 border-b mb-6">
+      <nav class="flex justify-center gap-6 text-lg font-semibold" aria-label="Scenario Navigation">
+        <a href="#before" class="hover:underline text-primary">
+          {{ $t('scenarioThemes.before') }}
+        </a>
+        <a href="#under" class="hover:underline text-primary">
+          {{ $t('scenarioThemes.under') }}
+        </a>
+        <a href="#after" class="hover:underline text-primary">
+          {{ $t('scenarioThemes.after') }}
+        </a>
+      </nav>
+    </div>
     <!-- Before Crisis Instructions -->
-    <Card v-if="scenarioTheme.before" class="mb-6 shadow-md">
+    <Card v-if="scenarioTheme.before" id="before" class="mb-8 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <BookOpen class="h-5 w-5 text-primary" />
@@ -283,7 +295,7 @@ function closeEmergencyContacts() {
     </Card>
 
     <!-- During Crisis Instructions -->
-    <Card v-if="scenarioTheme.under" class="mb-6 shadow-md">
+    <Card v-if="scenarioTheme.under" id="under" class="mb-6 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <AlertTriangle class="h-5 w-5 text-primary" />
@@ -300,7 +312,7 @@ function closeEmergencyContacts() {
     </Card>
 
     <!-- After Crisis Instructions -->
-    <Card v-if="scenarioTheme.after" class="mb-6 shadow-md">
+    <Card v-if="scenarioTheme.after" id="after" class="mb-6 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <BookOpen class="h-5 w-5 text-primary" />
@@ -315,6 +327,10 @@ function closeEmergencyContacts() {
         ></div>
       </CardContent>
     </Card>
+
+    <div class="text-center mt-8">
+      <a href="#top" class="text-primary hover:underline">Back to Top</a>
+    </div>
 
     <!-- Legacy Instructions (for backward compatibility) -->
     <Card
@@ -344,8 +360,8 @@ function closeEmergencyContacts() {
         </CardTitle>
         <CardDescription>
           {{
-            $t('infoPage.themeDescription') ||
-            'Essential information to help you prepare and respond.'
+          $t('infoPage.themeDescription') ||
+          'Essential information to help you prepare and respond.'
           }}
         </CardDescription>
       </CardHeader>
@@ -466,7 +482,7 @@ function closeEmergencyContacts() {
             <div
               v-if="
                 themeResources &&
-                $te(`${themeResources}.contacts`) &&
+                $t(`${themeResources}.contacts`) &&
                 $t(`${themeResources}.contacts`).length > 0
               "
             >
@@ -498,23 +514,136 @@ function closeEmergencyContacts() {
         </SheetContent>
       </Sheet>
     </Card>
+  </div>
 
-    <div v-if="!selectedScenarioId" class="mt-8">
-      <h2 class="text-xl font-bold mb-4">{{ $t('infoPage.relatedThemes') || 'Related themes' }}</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <slot name="related-themes"></slot>
-      </div>
+  <!-- Home view with theme categories -->
+  <div v-else-if="selectedTheme === 'home'" class="max-w-4xl mx-auto">
+    <div class="mb-4">
+      <h1 class="text-2xl md:text-3xl font-bold">{{ $t('infoPage.homeTitle') || 'Crisis Information Center' }}</h1>
+      <p class="text-muted-foreground mt-2">{{ $t('infoPage.homeDescription') || 'Access comprehensive information about crisis preparation, response, and recovery.' }}</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+      <slot name="related-themes"></slot>
     </div>
   </div>
 
+  <!-- General Crisis Categories -->
+  <div v-else-if="selectedTheme === 'before' || selectedTheme === 'under' || selectedTheme === 'after'" class="max-w-4xl mx-auto">
+    <div class="mb-4">
+      <h1 class="text-2xl md:text-3xl font-bold">
+        {{ selectedTheme === 'before'
+          ? ($t('infoPage.beforeTitle') || 'Before Crisis')
+          : selectedTheme === 'under'
+            ? ($t('infoPage.underTitle') || 'During Crisis')
+            : ($t('infoPage.afterTitle') || 'After Crisis') }}
+      </h1>
+    </div>
+
+    <!-- Before Crisis -->
+    <Card id="general-before" v-if="selectedTheme === 'before'" class="mb-8 shadow-md">
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <BookOpen class="h-5 w-5 text-primary" />
+          {{ $t('scenarioThemes.before') || 'Before Crisis' }}
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary">
+          <h2>{{ $t('infoPage.generalBefore.title') || 'General Preparation' }}</h2>
+          <p>{{ $t('infoPage.generalBefore.content') || 'Prepare an emergency kit with essential supplies including water, non-perishable food, medications, first aid supplies, flashlights, batteries, and important documents. Create a family emergency plan with meeting points and communication strategies. Stay informed about potential risks in your area and sign up for emergency alerts.' }}</p>
+
+          <h3>{{ $t('infoPage.generalBefore.kitTitle') || 'Emergency Kit Essentials' }}</h3>
+          <ul>
+            <li>{{ $t('infoPage.generalBefore.water') || 'Water (at least 9 liters per person)' }}</li>
+            <li>{{ $t('infoPage.generalBefore.food') || 'Non-perishable food (3-day supply)' }}</li>
+            <li>{{ $t('infoPage.generalBefore.medications') || 'Medications and first aid supplies' }}</li>
+            <li>{{ $t('infoPage.generalBefore.tools') || 'Flashlights, batteries, and multi-tool' }}</li>
+            <li>{{ $t('infoPage.generalBefore.documents') || 'Copies of important documents' }}</li>
+            <li>{{ $t('infoPage.generalBefore.cash') || 'Cash in small denominations' }}</li>
+            <li>{{ $t('infoPage.generalBefore.clothing') || 'Extra clothing and blankets' }}</li>
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- During Crisis -->
+    <Card id="general-under" v-if="selectedTheme === 'under'" class="mb-8 shadow-md">
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <AlertTriangle class="h-5 w-5 text-primary" />
+          {{ $t('scenarioThemes.under') || 'During Crisis' }}
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary">
+          <h2>{{ $t('infoPage.generalUnder.title') || 'During an Emergency' }}</h2>
+          <p>{{ $t('infoPage.generalUnder.content') || 'Stay calm and follow instructions from emergency officials. If ordered to evacuate, do so immediately. If sheltering in place, secure your location and move to an interior room if necessary. Conserve phone battery and limit calls to emergency purposes. Check on vulnerable neighbors if it\'s safe to do so.' }}</p>
+
+          <h3>{{ $t('infoPage.generalUnder.prioritiesTitle') || 'Priorities During Crisis' }}</h3>
+          <ol>
+            <li>{{ $t('infoPage.generalUnder.safety') || 'Ensure immediate safety of yourself and family' }}</li>
+            <li>{{ $t('infoPage.generalUnder.information') || 'Get reliable information from official sources' }}</li>
+            <li>{{ $t('infoPage.generalUnder.shelter') || 'Secure shelter and basic necessities' }}</li>
+            <li>{{ $t('infoPage.generalUnder.communicate') || 'Communicate your status to family when possible' }}</li>
+            <li>{{ $t('infoPage.generalUnder.conserve') || 'Conserve resources (water, food, power)' }}</li>
+          </ol>
+        </div>
+      </CardContent>
+    </Card>
+
+    <!-- After Crisis -->
+    <Card id="general-after" v-if="selectedTheme === 'after'" class="mb-8 shadow-md">
+      <CardHeader>
+        <CardTitle class="flex items-center gap-2">
+          <BookOpen class="h-5 w-5 text-primary" />
+          {{ $t('scenarioThemes.after') || 'After Crisis' }}
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <div class="prose prose-sm md:prose-base lg:prose-lg max-w-none dark:prose-invert prose-headings:text-primary prose-a:text-primary">
+          <h2>{{ $t('infoPage.generalAfter.title') || 'Recovery Phase' }}</h2>
+          <p>{{ $t('infoPage.generalAfter.content') || 'After the immediate danger has passed, assess your situation carefully. Check for injuries and provide first aid if needed. Inspect your home for damage before re-entering and be alert for hazards like gas leaks, electrical damage, or structural issues. Document damage for insurance purposes. Reach out for mental health support if needed.' }}</p>
+
+          <h3>{{ $t('infoPage.generalAfter.checklistTitle') || 'Post-Crisis Checklist' }}</h3>
+          <ul>
+            <li>{{ $t('infoPage.generalAfter.injuries') || 'Check for injuries and seek medical help if needed' }}</li>
+            <li>{{ $t('infoPage.generalAfter.damage') || 'Assess and document property damage' }}</li>
+            <li>{{ $t('infoPage.generalAfter.utilities') || 'Check utilities before using (gas, electric, water)' }}</li>
+            <li>{{ $t('infoPage.generalAfter.contact') || 'Contact family members to confirm safety' }}</li>
+            <li>{{ $t('infoPage.generalAfter.insurance') || 'Contact insurance company to report damage' }}</li>
+            <li>{{ $t('infoPage.generalAfter.assistance') || 'Apply for disaster assistance if applicable' }}</li>
+            <li>{{ $t('infoPage.generalAfter.mental') || 'Seek mental health support if experiencing distress' }}</li>
+          </ul>
+        </div>
+      </CardContent>
+    </Card>
+
+    <div class="sticky bottom-4 right-4 flex justify-end">
+      <Button variant="outline" class="shadow-md" @click="openReadMore">
+        <BookOpen class="mr-2 h-4 w-4" />
+        {{ $t('infoPage.readMore') || 'Read more' }}
+      </Button>
+    </div>
+  </div>
+
+  <!-- Empty state when no theme is selected -->
   <div v-else class="h-full flex flex-col items-center justify-center text-center p-4">
     <div class="mb-4 text-6xl">📚</div>
     <h2 class="text-2xl font-bold mb-2">{{ $t('infoPage.selectThemePrompt') }}</h2>
     <p class="text-muted-foreground max-w-md">
       {{
-        $t('infoPage.browseThemesDescription') ||
-        'Browse through our information resources to learn about different crisis situations and how to prepare.'
+      $t('infoPage.browseThemesDescription') ||
+      'Browse through our information resources to learn about different crisis situations and how to prepare.'
       }}
     </p>
+
+    <Button variant="outline" class="mt-6" @click="openReadMore">
+      <BookOpen class="mr-2 h-4 w-4" />
+      {{ $t('infoPage.readMore') || 'Read more' }}
+    </Button>
   </div>
 </template>
