@@ -370,7 +370,10 @@
     }
   },
   "news": {
+    "saved-drafts": "Saved drafts",
+    "latest-news": "Latest published news articles",
     "title": "News",
+    "choose-draft": "Select a draft to edit",
     "loading_more": "Loading more news...",
     "no_more_news": "No more news to load",
     "related_news": "Related news",

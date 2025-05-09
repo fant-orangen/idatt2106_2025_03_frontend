@@ -382,6 +382,9 @@
     }
   },
   "news": {
+    "saved-drafts": "Lagrede kladder",
+    "latest-news": "Siste publiserte nyhetsartikler",
+    "choose-draft": "Velg en kladd for å redigere",
     "title": "Nyheter",
     "loading_more": "Laster flere nyheter...",
     "no_more_news": "Ingen flere nyheter å laste",
