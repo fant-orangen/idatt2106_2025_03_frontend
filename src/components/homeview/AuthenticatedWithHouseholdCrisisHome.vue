@@ -248,7 +248,7 @@ import { fetchScenarioThemeUnderInstructions } from '@/services/api/ScenarioThem
 import { getSeverityColor } from '@/utils/severityUtils'
 import { marked } from 'marked'
 import type { CrisisEventPreviewDto } from '@/models/CrisisEvent'
-import QuizHomeViewComponent from '@/gamification/quiz/QuizHomeViewComponent.vue'
+import QuizHomeViewComponent from '@/components/gamification/quiz/QuizHomeViewComponent.vue'
 
 // Register FontAwesome icons
 library.add(faTriangleExclamation, faBoxOpen, faUsers, faArrowRight, faCheckCircle)
