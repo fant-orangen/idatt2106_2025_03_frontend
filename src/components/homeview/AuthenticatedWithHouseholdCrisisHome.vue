@@ -81,11 +81,12 @@
 
       <!-- Information Sections (3/5) -->
       <section class="info-sections md:col-span-3 space-y-8">
+
         <!-- Household Supplies -->
         <div class="household-supplies bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
             <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)] w-[18px] h-[18px]" />
-            {{ t('home.household.supplies', 'Household Supplies') }}
+            {{ t('household.supplies') }}
           </h2>
 
           <!-- Status messages about food and water -->

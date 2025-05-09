@@ -9,6 +9,7 @@ const messages = {
       'privacy-policy': 'Privacy Policy',
     },
     footer: {
+      'title': 'Krisefikser.no',
       'about': 'About Us',
       'contact': 'Contact',
       'address': 'Address',
@@ -56,8 +57,10 @@ const navigateTo = (route: string) => {
 <template>
   <footer class="footer bg-secondary text-secondary-foreground shadow-t-md py-8 transition-all duration-300">
     <div class="container mx-auto px-4">
+
       <!-- Main Footer Content -->
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-8">
+
         <!-- About Section -->
         <div class="footer-section">
           <h3 class="text-lg font-semibold mb-4 flex items-center">

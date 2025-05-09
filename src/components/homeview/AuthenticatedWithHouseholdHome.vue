@@ -36,7 +36,7 @@
         <div class="bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
             <font-awesome-icon :icon="['fas', 'box-open']" class="mr-[6px] w-[18px] h-[18px] text-[var(--crisis-level-green)]" />
-            {{ t('home.household.supplies', 'Household Supplies') }}
+            {{ t('household.supplies', 'Household Supplies') }}
           </h2>
 
           <div class="mb-4">

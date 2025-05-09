@@ -26,13 +26,14 @@
           <div class="flex items-center justify-between w-full px-6">
             <div class="flex items-center flex-1 justify-center">
               <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="text-2xl mr-3 text-orange-600" />
-              <span class="text-lg font-medium">{{ t('home.view_crisis', 'View Crisis Events') }}</span>
+              <span class="text-lg font-medium">{{ t('home.view-crisis-events') }}</span>
             </div>
             <ChevronRight class="h-5 w-5 text-orange-600" />
           </div>
         </div>
       </div>
     </section>
+
     <!-- Map Button Section -->
     <section class="map-button-section w-full px-4">
       <MapViewComponent />
@@ -58,6 +59,12 @@
 </template>
 
 <script setup lang="ts">
+
+/**
+ * @component UnauthenticatedHome
+ * @description displays the 'Home' page for unauthenticated users, showing an overview of News, Crisis Information etc.
+ */
+
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
@@ -69,7 +76,7 @@ import CrisisInfoComponent from '@/components/homeview/CrisisInfoComponent.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
 
-// Register FontAwesome icons
+
 library.add(faTriangleExclamation);
 
 const router = useRouter();

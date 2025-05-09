@@ -305,8 +305,7 @@ const toggleEdit = async (index) => {
       await loadBatchStates(item);
       await updateTotalUnits(item.id);
       await fetchTotalWater(); // Special for water: update total water amount
-    } catch (error) {
-      console.error('Error saving batch updates:', error);
+    } catch {
       toast('Error', {
         description: 'Failed to save changes to one or more batches.',
         duration: 3000
@@ -376,17 +375,6 @@ const addBatch = (productIndex) => {
   });
 };
 
-const validateAndFormatDate = (dateStr) => {
-  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?$/;
-  if (!dateRegex.test(dateStr)) {
-    return false;
-  }
-  if (dateStr.length === 7) {
-    return `${dateStr}-01`;
-  }
-  return dateStr;
-};
-
 const saveBatch = async (productIndex, batchIndex) => {
   const product = items.value[productIndex];
   const batch = product.batches[batchIndex];
@@ -419,7 +407,7 @@ const removeBatchFromGroup = async (productIndex, batchIndex) => {
     });
   } catch (error) {
     toast('Feil', {
-      description: error.message || t('inventory.common.success.error'),
+      description: t('common.success.error'),
       duration: 5000
     });
   }
@@ -502,7 +490,7 @@ const addBatchToGroup = async (batchId) => {
     }
 
     toast('Suksess!', {
-      description: 'Produktet ble lagt til i gruppen.',
+      description: t('common.success.shared'),
       duration: 3000
     });
   } catch (error) {

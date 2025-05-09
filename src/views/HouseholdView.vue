@@ -31,7 +31,7 @@
           class="flex items-center gap-2 px-4 py-2 md:px-6 md:py-3 flex-1 min-w-[120px] md:flex-none"
           @click="goToGroupPage">
           <UsersIcon class="h-4 w-4" />
-          <span>{{ t('group.go-to-groups') }}</span>
+          <span>{{ t('household.go-to-groups') }}</span>
         </Button>
       </div>
     </div>

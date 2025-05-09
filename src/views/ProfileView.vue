@@ -16,7 +16,10 @@ import type { UserBasicInfoDto } from '@/models/User'
 
 const { t } = useI18n()
 
-// Profile data using the simplified UserBasicInfoDto structure
+/**
+ * Profile data using the simplified UserBasicInfoDto structure.
+ */
+
 const profile = ref<UserBasicInfoDto>({
   firstName: '',
   lastName: '',
@@ -27,7 +30,9 @@ const profile = ref<UserBasicInfoDto>({
 
 const isLoading = ref(false)
 
-// Fetch user profile data and convert to basic info format
+/**
+ * Fetch user profile data and convert to basic info format
+ */
 const fetchUserProfile = async () => {
   try {
     isLoading.value = true
@@ -55,27 +60,31 @@ onMounted(() => {
 </script>
 
 <template>
+
+  <!-- Page title -->
   <h1 class="text-4xl font-bold text-foreground flex justify-center mb-6 mt-10">
     {{ t('navigation.profile') }}
   </h1>
   <div class="page-content flex flex-col items-center mt-10 mb-20 w-full">
+
     <!-- Profile content -->
     <div class="w-full max-w-md">
       <Card>
         <CardContent class="pt-6">
           <div class="flex flex-col items-center mb-6">
-            <!-- Profile Avatar -->
+
+            <!-- Profile avatar -->
             <div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <UserIcon class="w-12 h-12 text-primary" />
             </div>
 
-            <!-- Full Name -->
+            <!-- Full name -->
             <h2 class="text-2xl font-bold">{{ profile.firstName }} {{ profile.lastName }}</h2>
 
             <!-- Email -->
             <p class="text-sm text-muted-foreground mt-1">{{ profile.email }}</p>
 
-            <!-- Verification Badge -->
+            <!-- Verification badge -->
             <div v-if="profile.emailVerified" class="flex items-center mt-2 text-xs text-green-600 dark:text-green-400">
               <CheckCircle2 class="w-3 h-3 mr-1" />
               <span>{{ t('settings.account.email.verified', 'Verified') }}</span>

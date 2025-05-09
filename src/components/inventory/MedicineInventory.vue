@@ -248,7 +248,7 @@ const addBatchToGroup = async (batchId) => {
     }
 
     toast('Suksess!', {
-      description: 'Produktet ble lagt til i gruppen.',
+      description: t('common.success.shared'),
       duration: 3000
     })
   } catch (error) {
@@ -360,8 +360,7 @@ const toggleEdit = async (index) => {
       // Refresh the batch states to get updated data
       await loadBatchStates(item);
       await updateTotalUnits(item.id);
-    } catch (error) {
-      console.error('Error saving batch updates:', error);
+    } catch {
       toast('Error', {
         description: 'Failed to save changes to one or more batches.',
         duration: 3000
@@ -458,7 +457,7 @@ const removeBatchFromGroup = async (productIndex, batchIndex) => {
     });
   } catch (error) {
     toast('Feil', {
-      description: error.message || t('inventory.common.success.error'),
+      description: t('common.success.error'),
       duration: 5000
     });
   }
