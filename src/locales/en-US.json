@@ -1249,6 +1249,16 @@
     "manage-supplies": "Manage supplies",
     "view-household": "View household"
 
+  },
+  "inventory": {
+    "search-placeholder":"Search for a product in the inventory...",
+    "search-clear": "Clear search",
+    "food-title": "Food Inventory",
+    "food-add-new": "Add Food Item",
+    "food-add": "Add Item",
+    "food-product-name": "Produktnavn",
+    "select-unit": "Velg enhet",
+    "edit": "Edit"
 
 
   }

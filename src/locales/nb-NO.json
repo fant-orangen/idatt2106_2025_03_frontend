@@ -1189,6 +1189,20 @@
     "manage-supplies": "Administrer forsyninger",
     "view-household": "Vis husholdning"
 
+  },
+  "inventory": {
+    "search-placeholder":"Søk etter et produkt i inventaret...",
+    "search-clear": "Tøm søk",
+    "food-title": "Matvarelager",
+    "food.add-new": "Leggg til matvare",
+    "food-add": "Legg til vare",
+    "food-product-name": "Produktnavn",
+    "select-unit": "Velg enhet",
+    "edit": "Rediger",
+    "food-exists-title": "Allerede eksisterende matvare",
+    "food-exists-message": "Matvaren du forsøker å legge til finnes allerede. Dersom du ønsker å legge til en ny batch, trykk 'Rediger'.",
+    "food-share": "Del matvare"
+
 
 
 
