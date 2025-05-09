@@ -1,5 +1,7 @@
 import './utils/polyfills'
 import './assets/index.css'
+import FloatingVue from 'floating-vue'
+import 'floating-vue/dist/style.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -20,6 +22,13 @@ import {
 /* add icons to the library */
 library.add(faUser, faGlobe, faSignIn, faBell, faTriangleExclamation, faArrowRight)
 
+FloatingVue.options.themes.tooltip.autoHide = false
+FloatingVue.options.themes.tooltip.delay = [300, 100]
+FloatingVue.options.themes.tooltip.triggers = ['hover', 'focus']
+FloatingVue.options.themes.tooltip.popperOptions = {
+  modifiers: [{ name: 'offset', options: { offset: [0, 8] } }]
+}
+
 import App from './App.vue'
 import router from './router'
 import i18n from '@/i18n.ts'
@@ -29,7 +38,7 @@ const queryClient = new QueryClient();
 const app = createApp(App)
 
 app.use(VueQueryPlugin, { queryClient });
-
+app.use(FloatingVue)
 app.use(createPinia())
 app.use(router)
 app.use(i18n)

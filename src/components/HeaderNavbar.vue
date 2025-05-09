@@ -18,7 +18,10 @@ import {
   Menu,
   X,
   BookOpen,
+  House,
 } from 'lucide-vue-next'
+import { library } from '@fortawesome/fontawesome-svg-core';
+
 
 import {
   DropdownMenu,
@@ -44,6 +47,7 @@ import { useNotificationStore } from '@/stores/NotificationStore'
 
 // i18n
 import { useI18n } from 'vue-i18n'
+import { tooltip } from 'leaflet'
 
 const { t, locale } = useI18n()
 const router = useRouter()
@@ -239,13 +243,13 @@ function logOut() {
       <div class="navbar-left flex flex-row gap-4">
 
     <!-- Logo -->
-      <RouterLink to="/" class="hover:text-primary flex items-center">
+      <RouterLink to="/" class="hover:text-primary flex items-center" v-tooltip="t('navigation.home')">
         <img src="../assets/krisefikserNY.png" alt="Logo" class="h-8 w-auto" />
       </RouterLink>
 
       <!-- Change Language -->
 
-      <Button variant="link" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
+      <Button variant="link" v-tooltip="t('language.change-language')" @click="changeLanguage(englishSelected ? 'nb-NO' : 'en-US')">
         <Globe class="h-4 w-4" />
         {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
       </Button>
@@ -270,9 +274,53 @@ function logOut() {
         v-if="!userStore.loggedIn"
         >{{ t('login.signup') }}</Button
       >
+
       <DropdownMenu v-if="userStore.loggedIn">
         <DropdownMenuTrigger as-child>
-          <Button variant="ghost" class="cursor-pointer hover:bg-input dark:hover:bg-background/40">
+          <Button
+            variant="ghost"
+            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            v-tooltip="t('household.my-household')">
+            <House class="h-5 w-5" />
+            <span class="hidden md:inline-flex">
+              {{ t('household.my-household') }}
+            </span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="z-101">
+          <DropdownMenuLabel>{{ t('household.my-household') }}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem @click="goToPage('/household')">
+              <House class="mr-2 h-4 w-4" />
+              <span>{{ t('household.my-household') }}</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="goToPage('/group')">
+              <font-awesome-icon :icon="['fas', 'users']" class="mr-2 h-4 w-4" />
+              <span>{{ t('group.title') }}</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Button v-if='userStore.isAdminUser'
+        variant="ghost"
+        class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+        v-tooltip="t('navigation.admin-panel')"
+        @click="goToPage('/admin/admin-panel')">
+        <ShieldUser class="h-5 w-5" />
+        <span class="hidden md:inline-flex">
+          {{ $t('navigation.admin-panel') }}
+        </span>
+      </Button>
+        
+
+      <DropdownMenu v-if="userStore.loggedIn">
+        <DropdownMenuTrigger as-child>
+          <Button 
+            variant="ghost"
+            class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+            v-tooltip="t('settings.account.myAccount')">
             <User class="h-5 w-5" />
             <span class="hidden md:inline-flex">
               {{ isLoading ? t('loading') : `${profile.firstName} ${profile.lastName}` }}
@@ -295,11 +343,6 @@ function logOut() {
               <Settings class="mr-2 h-4 w-4" />
               <span>{{ t('settings.settings') }}</span>
             </DropdownMenuItem>
-            <DropdownMenuSeparator v-if="userStore.isAdminUser" />
-            <DropdownMenuItem v-if="userStore.isAdminUser" @click="goToPage('/admin/admin-panel')">
-              <ShieldUser class="mr-2 h-4 w-4" />
-              <span>{{ t('navigation.admin-panel') }}</span>
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="logOut()">
               <LogOut class="mr-2 h-4 w-4" />
@@ -314,6 +357,7 @@ function logOut() {
       <Popover v-if="userStore.loggedIn">
         <PopoverTrigger as="button" class="no-border relative">
           <Button
+            v-tooltip="t('notifications.notifications')"
             variant="ghost"
             size="icon"
             class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
@@ -332,8 +376,8 @@ function logOut() {
       </Popover>
 
       <!-- Dark Mode Toggle -->
-
       <Button
+        v-tooltip="t('navigation.change-mode')"
         variant="ghost"
         size="icon"
         class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
@@ -346,6 +390,7 @@ function logOut() {
       <!-- Mobile Menu -->
 
       <Button
+        v-tooltip="t('navigation.menu')"
         class="hamburger-menu md:hidden z-9999"
         variant="ghost"
         size="icon"
@@ -369,6 +414,7 @@ function logOut() {
         >
           <div class="menu-header flex items-center justify-between">
             <Button
+              v-tooltip="t('navigation.change-mode')"
               variant="ghost"
               size="icon"
               class="dark-mode-toggle cursor-pointer hover:bg-input dark:hover:bg-background/40"
