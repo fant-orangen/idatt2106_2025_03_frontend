@@ -256,6 +256,7 @@ router.beforeEach(async (to, from, next) => {
     'PrivacyPolicy',
     'QuizOverview',
     'Quiz',
+    'CrisisEvent'
   ]
 
   const noHouseholdRequiredRoutes = ['Reflections', 'Profile', 'Settings']
