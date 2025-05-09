@@ -184,7 +184,7 @@ export async function updateNotificationPreference(
   } catch (error) {
     console.error(
       'Failed to update notification preference:',
-      error.response?.data || error.message,
+      (error as any)?.response?.data || (error as any)?.message,
     )
     throw error
   }
