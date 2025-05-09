@@ -91,7 +91,7 @@ import HouseholdInfoComponent from '@/components/homeview/HouseholdInfoComponent
 import CrisisInfoComponent from '@/components/homeview/CrisisInfoComponent.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faHome, faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import QuizHomeViewComponent from '../gamification/quiz/QuizHomeViewComponent.vue'
+import QuizHomeViewComponent from '@/components/gamification/quiz/QuizHomeViewComponent.vue'
 
 // Register FontAwesome icons
 library.add(faHome, faArrowRight)

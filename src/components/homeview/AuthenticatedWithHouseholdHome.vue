@@ -208,7 +208,7 @@
         </div>
       </div>
     </div>
-    <QuizHomeviewComponent />
+    <QuizHomeViewComponent />
   </div>
 </template>
 
@@ -221,7 +221,7 @@ import { ChevronRight } from 'lucide-vue-next'
 import { AlertTriangle } from 'lucide-vue-next'
 import MapViewComponent from '@/components/homeview/MapViewComponent.vue'
 import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue'
-import QuizHomeviewComponent from '@/components/gamification/quiz/QuizHomeViewComponent.vue'
+import QuizHomeViewComponent from '@/components/gamification/quiz/QuizHomeViewComponent.vue'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
