@@ -1,7 +1,6 @@
 {
   "common": {
     "back": "Tilbake",
-    "back": "Tilbake",
     "cancel": "Avbryt",
     "delete": "Slett",
     "confirm": "Bekreft",
@@ -11,7 +10,12 @@
     "not-provided": "Ikke oppgitt",
     "loading": "Loading",
     "not-found": "Fant ingenting",
-    "all-is-loaded": "Alt er lastet inn"
+    "all-is-loaded": "Alt er lastet inn",
+    "success": {
+      "shared": "Produktet ble lagt til i gruppen",
+      "removed": "Produktet ble fjernet fra gruppen.",
+      "error": "Det oppstod en feil ved deling av produkt med gruppen"
+    }
   },
   "actions": {
     "to-reflect": "for å reflektere",

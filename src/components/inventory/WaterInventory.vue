@@ -86,7 +86,8 @@
           </Button>
           <Button
             variant="destructive"
-            @click="() => { removeBatch(index, bIndex); }"
+            @click="() => { removeBatchFromGroup(index, bIndex); }"
+            :disabled="!batch.isContributed"
             class="text-sm w-full sm:w-auto"
           >
             {{ t('inventory.remove-from-group') }}
@@ -411,19 +412,24 @@ const saveBatch = async (productIndex, batchIndex) => {
   await fetchTotalWater();
 };
 
-const removeBatch = async (productIndex, batchIndex) => {
+const removeBatchFromGroup = async (productIndex, batchIndex) => {
   const product = items.value[productIndex];
   const batch = product.batches[batchIndex];
-  if (batch.isNew) {
-    product.batches.splice(batchIndex, 1);
-    return;
+  if (!batch.id) return;
+  try {
+    await groupService.removeContributedBatch(batch.id);
+    await loadBatchStates(product);
+    await fetchTotalWater();
+    toast('Suksess!', {
+      description: t('common.success.removed'),
+      duration: 3000
+    });
+  } catch (error) {
+    toast('Feil', {
+      description: error.message || t('inventory.common.success.error'),
+      duration: 5000
+    });
   }
-  const batchId = productStore.getBatchId(product.name, batch.amount, batch.expires);
-  if (!batchId) return;
-  await inventoryService.deleteProductBatch(batchId);
-  product.batches.splice(batchIndex, 1);
-  await updateTotalUnits(product.id);
-  await fetchTotalWater();
 };
 
 const addProduct = async () => {

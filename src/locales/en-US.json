@@ -10,7 +10,12 @@
     "not-provided": "Not provided",
     "loading": "Loading",
     "not-found": "No match",
-    "all-is-loaded": "Everything is loaded"
+    "all-is-loaded": "Everything is loaded",
+    "success": {
+      "shared": "Product was added to the group",
+      "removed": "Product was removed from the group.",
+      "error": "An error occurred while sharing the product with the group"
+    }
   },
   "actions": {
     "to-reflect": "to reflect",
@@ -1055,13 +1060,6 @@
     "noRelatedEvents": "No related crisis events found",
     "themeNotFound": "Scenario theme not found"
   },
-  "common": {
-    "back": "Back",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "confirm": "Confirm"
-  },
-
   "gamification": {
     "quizCreator": {
       "title": "Quiz Creator",
