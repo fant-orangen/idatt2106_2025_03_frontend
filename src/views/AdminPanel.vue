@@ -63,7 +63,7 @@
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
-			  @click="router.push('/admin/add-new-activity')"
+			  @click="router.push('/quiz-overview/admin/new-quiz')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.make-new-activity') }}
