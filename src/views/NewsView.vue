@@ -4,7 +4,7 @@
       <div class="max-w-6xl mx-auto">
         <h1 class="text-3xl font-bold flex items-center">
           <font-awesome-icon :icon="['fas', 'newspaper']" class="mr-3 text-[var(--default-blue2)]" />
-          {{ t('news.title', 'News') }}
+          {{ t('news.title') }}
         </h1>
       </div>
     </div>
@@ -28,7 +28,7 @@
                 class="mt-3 bg-[var(--default-blue2)] hover:bg-[var(--default-blue2)]/90"
                 @click="navigateToCrisis(item.crisisEventId)"
               >
-                {{ t('news.view_crisis', 'View Crisis') }}: {{ item.crisisEventName }} <ChevronRight class="h-4 w-4 ml-1" />
+                {{ t('news.view_crisis') }}: {{ item.crisisEventName }} <ChevronRight class="h-4 w-4 ml-1" />
               </Button>
 
               <!-- Additional Crisis Info (Contextual) -->
@@ -36,10 +36,10 @@
                 v-if="crisisEventCache[item.crisisEventId]"
                 class="text-sm text-muted-foreground mt-4 space-y-2 rounded-md bg-[var(--default-blue2)]/5 p-4 border border-[var(--default-blue2)]/20"
               >
-                <p class="font-semibold mb-2 text-base">{{ t('news.crisis_context', 'Crisis Context') }}</p>
+                <p class="font-semibold mb-2 text-base">{{ t('news.crisis_context') }}</p>
 
                 <p class="flex items-center gap-3">
-                  <strong class="inline-block w-28">{{ t('crisis.severity', 'Severity') }}:</strong>
+                  <strong class="inline-block w-28">{{ t('crisis.severity') }}:</strong>
                   <span
                     :class="{
                       'text-[var(--crisis-level-green)] font-medium': crisisEventCache[item.crisisEventId]?.severity === 'green',
@@ -51,11 +51,11 @@
                   </span>
                 </p>
                 <p class="flex items-center gap-3">
-                  <strong class="inline-block w-28">{{ t('crisis.start_time', 'Start') }}:</strong>
+                  <strong class="inline-block w-28">{{ t('crisis.start_time') }}:</strong>
                   <span>{{ formatDateFull(crisisEventCache[item.crisisEventId]?.startTime) }}</span>
                 </p>
                 <p class="flex items-center gap-3">
-                  <strong class="inline-block w-28">{{ t('crisis.scenario', 'Scenario') }}:</strong>
+                  <strong class="inline-block w-28">{{ t('crisis.scenario') }}:</strong>
                   <a
                     v-if="crisisEventCache[item.crisisEventId]?.scenarioThemeId &&
                           scenarioThemeCache[crisisEventCache[item.crisisEventId]?.scenarioThemeId]"
@@ -65,7 +65,7 @@
                   >
                     {{
                       scenarioThemeCache[crisisEventCache[item.crisisEventId]?.scenarioThemeId]?.name ||
-                      t('crisis.view_scenario', 'View Scenario')
+                      t('crisis.view_scenario')
                     }}
                   </a>
                   <a
@@ -74,7 +74,7 @@
                     class="text-[var(--default-blue2)] hover:underline"
                     target="_blank"
                   >
-                    {{ t('crisis.view_scenario', 'View Scenario') }}
+                    {{ t('crisis.view_scenario') }}
                   </a>
                 </p>
               </div>
