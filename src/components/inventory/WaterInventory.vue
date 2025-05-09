@@ -68,6 +68,7 @@
           <template v-if="batch.isNew">
             <input
               v-model="batch.expires"
+              type="date"
               class="bg-input text-foreground py-2 px-3 text-center rounded-md w-full"
               :placeholder="t('inventory.water.expiry')"
               :readonly="true"
@@ -392,14 +393,6 @@ const saveBatch = async (productIndex, batchIndex) => {
   const productId = productStore.getProductId(product.name);
   if (!productId) return;
   if (!batch.amount || isNaN(Number(batch.amount))) return;
-  if (batch.expires) {
-    const formattedDate = validateAndFormatDate(batch.expires);
-    if (formattedDate === false) {
-      alert('Ugyldig dato. Forventet format: YYYY-MM-DD eller YYYY-MM.');
-      return;
-    }
-    batch.expires = formattedDate;
-  }
   await inventoryService.createProductBatch(
     productId,
     Number(batch.amount),

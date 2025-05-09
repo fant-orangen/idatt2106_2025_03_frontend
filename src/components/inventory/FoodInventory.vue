@@ -70,6 +70,7 @@
             <template v-if="batch.isNew">
               <Input
                 v-model="batch.expires"
+                type="date"
                 :placeholder="t('inventory.food.expiry')"
                 class="text-center w-full"
               />
@@ -374,31 +375,12 @@ const addBatch = (productIndex) => {
   }
 };
 
-const validateAndFormatDate = (dateStr) => {
-  const dateRegex = /^\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?$/;
-  if (!dateRegex.test(dateStr)) {
-    return false;
-  }
-  if (dateStr.length === 7) {
-    return `${dateStr}-01`;
-  }
-  return dateStr;
-};
-
 const saveBatch = async (productIndex, batchIndex) => {
   const product = items.value[productIndex];
   const batch = product.batches[batchIndex];
   const productId = productStore.getProductId(product.name);
   if (!productId) return;
   if (!batch.amount || isNaN(Number(batch.amount))) return;
-  if (batch.expires) {
-    const formattedDate = validateAndFormatDate(batch.expires);
-    if (formattedDate === false) {
-      alert('Ugyldig dato. Forventet format: YYYY-MM-DD eller YYYY-MM.');
-      return;
-    }
-    batch.expires = formattedDate;
-  }
   await inventoryService.createProductBatch(
     productId,
     Number(batch.amount),
