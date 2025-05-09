@@ -12,7 +12,7 @@
 			</BreadcrumbItem>
 			<BreadcrumbSeparator/>
 			<BreadcrumbItem>
-			  <BreadcrumbLink href="/admin-panel">
+			  <BreadcrumbLink href="/admin/admin-panel">
 				{{ $t('navigation.admin-panel') }}
 			  </BreadcrumbLink>
 			</BreadcrumbItem>
@@ -104,6 +104,7 @@
 				{{ $t('admin.edit-POI') }}
 				<font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
 
         <!-- Add and edit meeting point -->
 			<Button

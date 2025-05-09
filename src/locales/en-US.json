@@ -79,7 +79,8 @@
     "edit-scenario-theme": "Edit scenario themes",
     "edit-event": "Edit a current event",
     "edit-mp": "Handle meeting point",
-    "create-mp": "Create a new meeting point",
+    "news": "Write a news alert",
+    "create-mp":"Create a new meeting point",
     "super-admin": "Super Admin",
     "current-admins": "Current admin users",
     "edit-admin": "Handle admin users",
@@ -277,7 +278,8 @@
     "new-activity": "New activity",
     "go-back": "Go back",
     "light-mode": "Lightmode",
-    "dark-mode": "Darkmode"
+    "dark-mode": "Darkmode",
+    "admin-news": "Write a news alert"
   },
   "user-profile": {
     "title": "User Profile",
