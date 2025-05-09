@@ -511,7 +511,11 @@ export default defineComponent({
           map.value!.addLayer(meetingLayer.value as unknown as L.Layer);
 
           // Set up map event listeners for viewport changes
-          map.value.on('zoomend moveend', scheduleViewportUpdate);
+          map.value.on('zoom', () => {
+            // Update immediately during zoom
+            updatePOIs(getVisiblePois());
+          });
+          map.value.on('moveend', scheduleViewportUpdate);
 
           // Add click listener for admin mode only
           if (props.adminMode) {
@@ -1710,7 +1714,7 @@ export default defineComponent({
   will-change: transform;
 }
 
-/* shadows don’t need to jump around on zoom either */
+/* shadows don't need to jump around on zoom either */
 :deep(.leaflet-marker-shadow) {
   will-change: opacity, transform;
 }
