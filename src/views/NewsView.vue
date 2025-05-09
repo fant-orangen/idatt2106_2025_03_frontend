@@ -52,21 +52,17 @@
                 </p>
                 <p class="flex items-center gap-3">
                   <strong class="inline-block w-28">{{ t('crisis.start_time') }}:</strong>
-                  <span>{{ formatDateFull(crisisEventCache[item.crisisEventId]?.startTime) }}</span>
+                  <span>{{ getStartTime(item.crisisEventId) }}</span>
                 </p>
                 <p class="flex items-center gap-3">
                   <strong class="inline-block w-28">{{ t('crisis.scenario') }}:</strong>
                   <a
-                    v-if="crisisEventCache[item.crisisEventId]?.scenarioThemeId &&
-                          scenarioThemeCache[crisisEventCache[item.crisisEventId]?.scenarioThemeId]"
-                    :href="`http://localhost:5173/info/scenario/${crisisEventCache[item.crisisEventId]?.scenarioThemeId}`"
+                    v-if="hasScenarioTheme(item.crisisEventId)"
+                    :href="`http://localhost:5173/info/scenario/${getScenarioThemeId(item.crisisEventId)}`"
                     class="text-[var(--default-blue2)] hover:underline"
                     target="_blank"
                   >
-                    {{
-                      scenarioThemeCache[crisisEventCache[item.crisisEventId]?.scenarioThemeId]?.name ||
-                      t('crisis.view_scenario')
-                    }}
+                    {{ getScenarioThemeName(item.crisisEventId) || t('crisis.view_scenario') }}
                   </a>
                   <a
                     v-else
@@ -81,7 +77,12 @@
             </div>
           </li>
         </ul>
-        <InfiniteScroll @load-more="loadMoreNews" :loading="loading" :has-more="hasMore" class="py-6" />
+        <InfiniteScroll
+          @load-more="loadMoreNews"
+          :isLoading="loading"
+          :hasMore="hasMore"
+          class="py-6"
+        />
       </div>
     </div>
   </div>
