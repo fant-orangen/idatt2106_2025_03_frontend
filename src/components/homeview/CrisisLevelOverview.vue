@@ -59,7 +59,7 @@
         <div v-else-if="mainCrisis" class="mb-4 w-full text-center">
           <div
             class="inline-flex items-center gap-2 px-4 py-2 rounded-md shadow-sm transition-all duration-200 ease-in-out cursor-pointer dark:text-white hover:scale-[1.03] hover:shadow-md"
-            :class="'bg-(--crisis-level-' + mainCrisis.severity + ') bg-opacity-20'"
+            :class="[mainCrisis.severity === 'red' ? 'bg-crisis-level-red/20' : (mainCrisis.severity === 'yellow' ? 'bg-crisis-level-yellow/20' : 'bg-crisis-level-green/20')]"
             :style="{ borderLeft: `4px solid ${getSeverityColor(mainCrisis.severity)}` }"
             @click.stop="selectCrisis(mainCrisis)"
           >
