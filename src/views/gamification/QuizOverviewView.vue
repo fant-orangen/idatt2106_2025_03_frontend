@@ -15,11 +15,11 @@ import {
     <Breadcrumb class="m-5">
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/"> Home </BreadcrumbLink>
+          <BreadcrumbLink href="/"> {{ $t('navigation.home') }} </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage> Quiz Overview </BreadcrumbPage>
+          <BreadcrumbPage> {{ $t('gamification.quizOverview') }} </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

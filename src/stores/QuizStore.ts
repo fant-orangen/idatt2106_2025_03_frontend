@@ -113,6 +113,17 @@ export const useQuizStore = defineStore('quiz', () => {
     }
   }
 
+  /**
+   * Finds the name of a quiz by its ID.
+   *
+   * @param quizId - The ID of the quiz to search for.
+   * @returns The name of the quiz if found, or `null` if not found.
+   */
+  const findQuizNameById = (quizId: number): string | null => {
+    const quiz = filteredQuizzes.value.find((quiz) => quiz.id === quizId)
+    return quiz ? quiz.name : null
+  }
+
   return {
     quizzes,
     currentPage,
@@ -127,5 +138,6 @@ export const useQuizStore = defineStore('quiz', () => {
     resetQuizzes,
     deleteQuiz,
     archiveQuiz,
+    findQuizNameById,
   }
 })
