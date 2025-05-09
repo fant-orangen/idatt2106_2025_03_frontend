@@ -9,6 +9,7 @@ import { toast } from 'vue-sonner'
 import {
   Globe,
   User,
+  Users,
   Bell,
   Settings,
   Sun,
@@ -19,9 +20,10 @@ import {
   X,
   BookOpen,
   House,
+  Siren,
+  Phone,
+  Info
 } from 'lucide-vue-next'
-import { library } from '@fortawesome/fontawesome-svg-core';
-
 
 import {
   DropdownMenu,
@@ -253,6 +255,53 @@ function logOut() {
         <Globe class="h-4 w-4" />
         {{ englishSelected ? 'Bytt til norsk' : 'Switch to English' }}
       </Button>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger as-child>
+          <Button
+            variant="ghost"
+            v-tooltip="t('infoPage.emergencyContacts')"
+            class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
+          >
+            <Siren class="h-4 w-4" />
+            {{ t('infoPage.emergencyContacts') }}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="z-101">
+          <DropdownMenuLabel> {{ t('infoPage.emergencyContacts') }}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup class="hover:bg-white dark:hover:bg-black">
+            <DropdownMenuLabel class="flex flex-row">
+              <Phone class="mr-2 h-4 w-4" />
+              <span>{{ $t('infoPage.generalEmergencyContacts.police') }}</span>
+            </DropdownMenuLabel>
+            <DropdownMenuLabel class="flex flex-row">
+              <Phone class="mr-2 h-4 w-4" />
+              <span>{{ $t('infoPage.generalEmergencyContacts.ambulance') }}</span>
+            </DropdownMenuLabel>
+            <DropdownMenuLabel class="flex flex-row">
+              <Phone class="mr-2 h-4 w-4" />
+              <span>{{ $t('infoPage.generalEmergencyContacts.fire') }}</span>
+            </DropdownMenuLabel>
+            <DropdownMenuLabel class="flex flex-row">
+              <Phone class="mr-2 h-4 w-4" />
+              <span>{{ $t('infoPage.generalEmergencyContacts.civilDefense') }}</span>
+            </DropdownMenuLabel>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Button
+        variant="ghost"
+        class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+        v-tooltip="t('info.info')"
+        @click="goToPage('/info')">
+        <Info class="h-5 w-5" />
+        <span class="hidden md:inline-flex">
+          {{ $t('info.info') }}
+        </span>
+      </Button>
+
     </div>
     <div class="navbar-right flex flex-row items-center gap-4">
       <!-- Login -->
@@ -296,7 +345,7 @@ function logOut() {
               <span>{{ t('household.my-household') }}</span>
             </DropdownMenuItem>
             <DropdownMenuItem @click="goToPage('/group')">
-              <font-awesome-icon :icon="['fas', 'users']" class="mr-2 h-4 w-4" />
+              <Users class="mr-2 h-4 w-4" />
               <span>{{ t('group.title') }}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -305,7 +354,7 @@ function logOut() {
 
       <Button v-if='userStore.isAdminUser'
         variant="ghost"
-        class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
+        class="hidden md:inline-flex cursor-pointer hover:bg-input dark:hover:bg-background/40"
         v-tooltip="t('navigation.admin-panel')"
         @click="goToPage('/admin/admin-panel')">
         <ShieldUser class="h-5 w-5" />
