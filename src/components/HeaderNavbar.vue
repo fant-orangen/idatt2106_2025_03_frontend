@@ -215,7 +215,7 @@ const menuLinks = computed<MenuLink[]>(() => {
     ]
 
     if (userStore.isAdminUser) {
-      links.push({ label: t('navigation.admin-panel'), route: '/admin-panel' })
+      links.push({ label: t('navigation.admin-panel'), route: '/admin/admin-panel' })
     }
 
     links.push({ label: t('login.logout'), action: logOut })

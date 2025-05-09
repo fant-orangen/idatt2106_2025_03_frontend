@@ -192,11 +192,11 @@
         <!-- Legend Toggle Button -->
         <Button
           @click.stop="toggleLegend"
-          v-tooltip="t('legend.toggle')"
+          v-tooltip="t('map.legend.toggle-legend')"
           class="legend-toggle-button absolute bottom-3 right-3 z-30 rounded-full p-2 shadow-md text-black dark:text-white bg-neutral-200 hover:bg-neutral-400 dark:bg-neutral-500 dark:hover:bg-neutral-700 hover:cursor-pointer transition-colors z-52"
           >
           <font-awesome-icon :icon="['fas', showLegend ? 'chevron-right' : 'chevron-left']" />
-          {{t('legend.toggle')}}
+          {{t('map.legend.toggle-legend')}}
         </Button>
 
         <!-- Collapsible Legend Sidebar -->

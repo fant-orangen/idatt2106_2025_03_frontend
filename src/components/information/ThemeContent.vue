@@ -478,34 +478,6 @@ function closeEmergencyContacts() {
                 </div>
               </div>
             </div>
-
-            <div
-              v-if="
-                themeResources &&
-                $t(`${themeResources}.contacts`) &&
-                $t(`${themeResources}.contacts`).length > 0
-              "
-            >
-              <h3 class="text-lg font-medium mb-4">
-                {{ $t(titleKey) }} - {{ $t('infoPage.emergencyContacts') }}
-              </h3>
-              <div class="space-y-2">
-                <div
-                  v-for="(contact, index) in $t(`${themeResources}.contacts`)"
-                  :key="index"
-                  class="p-4 border rounded-md"
-                >
-                  <h4 class="font-medium">{{ (contact as any).name }}</h4>
-                  <div class="flex items-center mt-1 text-primary">
-                    <Phone class="h-4 w-4 mr-2" />
-                    <span>{{ (contact as any).contact }}</span>
-                  </div>
-                  <p class="text-sm text-muted-foreground mt-2">
-                    {{ (contact as any).description }}
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           <SheetFooter>
