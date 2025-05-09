@@ -118,7 +118,7 @@ export interface UserProfile {
   firstName: string
   lastName: string
   phone: string
-  locationSharingEnabled: boolean;
+  locationSharingEnabled: boolean
 }
 
 /**
@@ -134,7 +134,6 @@ export interface UserBasicInfoDto {
   householdName: string
   emailVerified: boolean
 }
-
 
 /**
  * Interface for user profile data
@@ -175,4 +174,9 @@ export interface UserPreferencesDto {
   locationSharingEnabled: boolean
   notificationsEnabled: boolean
   twoFactorAuthenticationEnabled: boolean
+}
+
+export interface NotificationPreferenceDto {
+  preferenceType: string
+  enabled: boolean
 }
