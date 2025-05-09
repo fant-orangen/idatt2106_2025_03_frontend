@@ -91,10 +91,14 @@ export async function verify2FACode(userEmail: string, code: number) {
  * @param {string} newPassword - The new password to set for the user
  * @returns {Promise<import('axios').AxiosResponse>} - A promise that resolves to the server response
  */
-export async function changePassword(userEmail: string, oldPassword: string, newPassword: string) {
-  return await api.post('/auth/change-password', {
-    email: userEmail,
-    password: newPassword,
+export async function changePassword(
+  oldPassword: string,
+  newPassword: string,
+  confirmNewPassword: string,
+) {
+  return await api.patch('/auth/change-password', {
     oldPassword: oldPassword,
+    newPassword: newPassword,
+    confirmNewPassword: confirmNewPassword,
   })
 }

@@ -168,13 +168,17 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  async function updatePassword(oldPassword: string, newPassword: string) {
+  async function updatePassword(
+    oldPassword: string,
+    newPassword: string,
+    confirmNewPassword: string,
+  ) {
     if (!username.value) {
       throw new Error('User is not logged in. Cannot change password.')
     }
 
     try {
-      await changePassword(username.value, oldPassword, newPassword)
+      await changePassword(oldPassword, newPassword, confirmNewPassword)
       console.log('Password updated successfully')
     } catch (error) {
       console.error('Error updating password:', error)
