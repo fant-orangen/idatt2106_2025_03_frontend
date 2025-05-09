@@ -54,13 +54,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { News } from '@/models/News'
-import type { Page } from '@/types/Page'
+import type { News } from '@/models/News.ts'
+import type { Page } from '@/types/Page.ts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { formatDateFull } from '@/utils/dateUtils.ts'
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue'
-import { fetchPaginatedNewsByCrisisEvent, getNewsDigest } from '@/services/api/NewsService'
+import { fetchPaginatedNewsByCrisisEvent, getNewsDigest } from '@/services/api/NewsService.ts'
 
 /**
  * NewsOverview component
