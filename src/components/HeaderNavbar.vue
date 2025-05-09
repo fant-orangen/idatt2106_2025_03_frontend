@@ -93,6 +93,31 @@ watch(
   },
 )
 
+watch(
+  () => userStore.loggedIn,
+  async (loggedIn) => {
+    if (loggedIn) {
+      try {
+        isLoading.value = true
+        const userData = await getUserProfile()
+        profile.value = {
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          householdName: userData.householdName,
+          emailVerified: userData.emailVerified,
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error)
+        toast.error(t('errors.unexpected-error'))
+      } finally {
+        isLoading.value = false
+      }
+    }
+  },
+  { immediate: true },
+)
+
 onMounted(async () => {
   try {
     isLoading.value = true
@@ -254,7 +279,7 @@ function logOut() {
             v-tooltip="t('settings.account.myAccount')">
             <User class="h-5 w-5" />
             <span class="hidden md:inline-flex">
-              {{ profile.firstName }} {{ profile.lastName }}
+              {{ isLoading ? t('loading') : `${profile.firstName} ${profile.lastName}` }}
             </span>
           </Button>
         </DropdownMenuTrigger>
