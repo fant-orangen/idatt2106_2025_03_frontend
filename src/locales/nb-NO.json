@@ -200,7 +200,19 @@
     "no-notifications": "Ingen varsler tilgjengelig",
     "no-new-notifications": "Ingen nye varsler",
     "all-notifications": "Se alle varsler",
-    "untitled": "Uten tittel"
+    "untitled": "Uten tittel",
+    "email": {
+      "crisisAlert": "Krisevarsler",
+      "crisisAlertDescription": "Motta varsler om nye krisehendelser.",
+      "expirationReminder": "Utløpspåminnelse",
+      "expirationReminderDescription": "Få påminnelser om varer som nærmer seg utløpsdato.",
+      "supplyAlert": "Lagerbeholdningsvarsel",
+      "supplyAlertDescription": "Få varsler når beholdningen er lav.",
+      "locationRequest": "Plasseringforespørsel",
+      "locationRequestDescription": "Få forespørsler om å dele din posisjon.",
+      "safetyRequest": "Trygghetsforespørsel",
+      "safetyRequestDescription": "Få forespørsler om å bekrefte at du er trygg."
+    }
   },
   "errors": {
     "required": "Obligatorisk felt",
@@ -833,6 +845,8 @@
       "notifications": "Varsler"
     },
     "notifications": {
+      "updated": "Varslingsinnstillinger oppdatert",
+      
       "enabled": "Aktivert",
       "disabled": "Deaktivert",
       "title": "Varslingsinnstillinger",
@@ -841,7 +855,17 @@
         "title": "E-postvarsler",
         "description": "Motta oppdateringer og varsler via e-post.",
         "system": "Systemvarsler",
-        "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt."
+        "systemDescription": "Motta varsler om kritiske krisehendelser for å holde deg informert og forberedt.",
+        "crisisAlert": "Krisevarsler",
+        "crisisAlertDescription": "Motta varsler om nye krisehendelser.",
+        "expirationReminder": "Utløpspåminnelse",
+        "expirationReminderDescription": "Få påminnelser om varer som nærmer seg utløpsdato.",
+        "supplyAlert": "Lagerbeholdningsvarsel",
+        "supplyAlertDescription": "Få varsler når beholdningen er lav.",
+        "locationRequest": "Plasseringforespørsel",
+        "locationRequestDescription": "Få forespørsler om å dele din posisjon.",
+        "safetyRequest": "Trygghetsforespørsel",
+        "safetyRequestDescription": "Få forespørsler om å bekrefte at du er trygg."
       },
       "save-changes": "Lagre endringer"
     },
@@ -856,7 +880,11 @@
         "title": "Passord",
         "description": "Endre passordet ditt her. Etter lagring vil du bli logget ut.",
         "current": "Nåværende passord",
-        "new": "Nytt passord"
+        "new": "Nytt passord",
+        "error": "Feil ved oppdatering av passord",
+        "errorDescription": "Det oppstod en feil under oppdatering av passordet ditt.",
+        "success": "Passord oppdatert",
+        "successDescription": "Passordet ditt er oppdatert. Du blir logget ut."
       },
       "email": {
         "email": "E-post",
@@ -869,12 +897,20 @@
         "title": "Kontosikkerhet",
         "description": "Forbedre sikkerheten til kontoen din med to-trinns bekreftelse, som krever en kode sendt til e-posten din i tillegg til passordet ditt for innlogging.",
         "enableTwoStep": "Slå på to-trinns bekreftelse",
-        "disableTwoStep": "Slå av to-trinns bekreftelse"
+        "disableTwoStep": "Slå av to-trinns bekreftelse",
+        "error": "Feil ved sikkerhetsinnstillinger",
+        "errorDescription": "Det oppstod en feil under oppdatering av sikkerhetsinnstillinger.",
+        "success": "Sikkerhetsinnstillinger oppdatert",
+        "successDescription": "Sikkerhetsinnstillingene dine er oppdatert."
       },
       "delete": {
         "title": "Slett konto",
         "description": "Slett kontoen din og alle tilknyttede data permanent. Denne handlingen er irreversibel og kan ikke angres.",
-        "button": "Slett konto"
+        "button": "Slett konto",
+        "error": "Feil ved sletting av konto",
+        "errorDescription": "Det oppstod en feil under sletting av kontoen din.",
+        "success": "Konto slettet",
+        "successDescription": "Kontoen din er slettet."
       }
     },
     "profile": {
@@ -1048,6 +1084,7 @@
     "invitation-sent-success": "Invitasjonen din er sendt."
   },
   "inventory": {
+    "select-unit": "Velg enhet",
     "save": "Lagre",
     "edit": "Rediger",
     "remove-from-group": "Fjern fra gruppe",
