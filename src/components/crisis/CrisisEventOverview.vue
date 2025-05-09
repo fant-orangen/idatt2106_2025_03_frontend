@@ -132,7 +132,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import CrisisDetails from '@/components/crisis/CrisisDetails.vue';
 import CrisisEventHistory from '@/components/crisis/CrisisEventHistory.vue';
-import NewsOverview from '../news/NewsOverview.vue';
+import NewsOverview from './NewsOverview.vue';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { watch } from 'vue';
 import {formatDateFull} from '@/utils/dateUtils.ts';
