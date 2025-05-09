@@ -48,13 +48,6 @@ const form = useForm({
   },
 })
 
-// Watch for tokenFromQuery changes and update the form's token value
-watch(tokenFromQuery, (newToken) => {
-  if (newToken) {
-    form.setFieldValue('token', newToken)
-  }
-})
-
 const props = defineProps<{
   token: string
 }>()
