@@ -244,28 +244,6 @@ const handleUpdatePassword = form.handleSubmit(async (values) => {
   }
 })
 
-// function handleUpdatePassword(values: { currentPassword: string; newPassword: string }) {
-//   console.log('Updating password with values:', values)
-//   userStore
-//     .updatePassword(values.currentPassword, values.newPassword)
-//     .then(() => {
-//       toast.success(t('settings.account.password.success'), {
-//         description: t('settings.account.password.successDescription'),
-//       })
-//       // Reset the password fields
-//       currentPassword.value = ''
-//       newPassword.value = ''
-//       userStore.logout()
-//       router.push('/login')
-//     })
-//     .catch((error) => {
-//       console.error('Error updating password:', error)
-//       toast.error(t('settings.account.password.error'), {
-//         description: t('settings.account.password.errorDescription'),
-//       })
-//     })
-// }
-
 function handleCancelPasswordChange() {
   currentPassword.value = ''
   newPassword.value = ''
@@ -358,7 +336,7 @@ const fetchNotificationPreferences = async () => {
     tempNotificationPreferences.value = { ...notificationPreferences.value }
   } catch (error) {
     console.error('Failed to fetch notification preferences:', error)
-    toast.error(t('errors.unexpected-error', 'Failed to fetch notification preferences.'))
+    //toast.error(t('errors.unexpected-error', 'Failed to fetch notification preferences.'))
   }
 }
 
