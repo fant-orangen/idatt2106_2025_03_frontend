@@ -290,6 +290,7 @@ export default defineComponent({
 
 .control-group {
   display: flex;
+  flex-flow: row wrap;
   gap: 8px;
   margin-bottom: 12px;
 }

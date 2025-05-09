@@ -138,9 +138,8 @@
       </CardContent>
     </Card>
 
-    <!-- third column -->
+    <!-- Map column -->
     <div class="flex flex-col gap-5 z-50">
-      <!-- your existing controller (it already renders a <Card>) -->
       <AdminMapController
         :mapComponent="mapCompRef"
         @location-selected="onLocationSelected"

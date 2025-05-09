@@ -71,7 +71,7 @@
         <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
         <Button
             v-if="isAdmin && currentGroupId"
-            @click="leaveCurrentGroup"
+            @click="confirmDialog()"
             class="text-sm text-white bg-destructive hover:cursor-pointer hover:bg-destructive/70"
         >
           {{ t('group.leave-group') }}
@@ -110,6 +110,7 @@
       @update:open="showLeaveGroupDialog = $event"
       @confirm="performLeaveGroup"
   />
+
 </template>
 
 
@@ -131,7 +132,6 @@ import CreateGroupDialog from '@/components/group/CreateGroupDialog.vue';
 import LeaveGroupDialog from '@/components/group/LeaveGroupDialog.vue';
 
 
-
 const { t } = useI18n();
 const groupStore = useGroupStore();
 
@@ -150,6 +150,7 @@ const showInviteDialog = ref(false);
 const showCreateGroupDialog = ref(false);
 const showLeaveGroupDialog = ref(false);
 const selectedGroupId = ref<number | null>(null);
+const openDialog = ref(false);
 
 // Check if user is household admin when component mounts
 onMounted(async () => {
@@ -250,7 +251,8 @@ async function performLeaveGroup() {
 
   try {
     await groupService.leaveGroup(currentGroupId.value);
-
+    callToast('Du har blitt fjernet fra gruppa!')
+    openDialog.value = false
     // Remove the group from the list
     groups.value = groups.value.filter(g => g.groupId !== currentGroupId.value);
 
@@ -262,7 +264,7 @@ async function performLeaveGroup() {
     }
   } catch (error) {
     console.error('Error leaving group:', error);
-    alert('Det oppstod en feil ved forsøk på å forlate gruppen');
+    errorToast('Det oppstod en feil ved forsøk på å forlate gruppen');
   }
 }
 
@@ -282,5 +284,17 @@ async function refreshGroups() {
   } catch (error) {
     console.error('Error refreshing groups:', error);
   }
+}
+
+function confirmDialog() {
+  openDialog.value = true
+}
+
+function callToast(message: string) {
+  toast.success(message)
+}
+
+function errorToast(message: string) {
+  toast.error(message)
 }
 </script>
