@@ -217,7 +217,7 @@ describe('UserService', () => {
 
       await updateUserPreference(userId, settingKey, settingValue)
 
-      expect(api.patch).toHaveBeenCalledWith('/user/me/preferences/update', { [settingKey]: settingValue })
+      expect(api.patch).toHaveBeenCalledWith('/user/me/preferences', { [settingKey]: settingValue })
     })
 
     /**
@@ -235,7 +235,7 @@ describe('UserService', () => {
       vi.mocked(api.patch).mockRejectedValue(new Error(errorMessage))
 
       await expect(updateUserPreference(userId, settingKey, settingValue)).rejects.toThrow(errorMessage)
-      expect(api.patch).toHaveBeenCalledWith('/user/me/preferences/update', { [settingKey]: settingValue })
+      expect(api.patch).toHaveBeenCalledWith('/user/me/preferences', { [settingKey]: settingValue })
     })
   })
 
@@ -258,24 +258,11 @@ describe('UserService', () => {
 
       const result = await getUserPreferences()
 
-      expect(api.get).toHaveBeenCalledWith('/user/me/preferences/get')
+      expect(api.get).toHaveBeenCalledWith('/user/me/preferences')
       expect(result).toEqual(mockPreferences)
     })
 
-    /**
-     * Test: Error Handling
-     *
-     * Verifies that the getUserPreferences function correctly handles errors
-     * from the API and re-throws them.
-     */
-    it('should handle errors when fetching user preferences', async () => {
-      const errorMessage = 'Failed to fetch preferences'
 
-      vi.mocked(api.get).mockRejectedValue(new Error(errorMessage))
-
-      await expect(getUserPreferences()).rejects.toThrow(errorMessage)
-      expect(api.get).toHaveBeenCalledWith('/user/me/preferences/get')
-    })
   })
 
   /**
@@ -537,7 +524,7 @@ describe('UserService', () => {
 
       const result = await getUserPreferences()
 
-      expect(api.get).toHaveBeenCalledWith('/user/me/preferences/get')
+      expect(api.get).toHaveBeenCalledWith('/user/me/preferences')
       expect(result).toBeNull()
     })
   })

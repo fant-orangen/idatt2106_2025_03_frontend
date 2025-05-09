@@ -24,7 +24,6 @@ import {
   getMyReflections,
   getSharedReflections,
   getHouseholdReflections,
-  getGroupReflections,
   createReflection,
   updateReflection,
   deleteReflection
@@ -339,68 +338,6 @@ describe('ReflectionService', () => {
 
       await expect(getHouseholdReflections(page, size)).rejects.toThrow(errorMessage)
       expect(api.get).toHaveBeenCalledWith('/user/reflections/household', { params: { page, size } })
-    })
-  })
-
-  /**
-   * getGroupReflections Tests
-   *
-   * These tests verify the behavior of the getGroupReflections function.
-   */
-  describe('getGroupReflections', () => {
-    /**
-     * Test: Successful Group Reflections Fetch
-     *
-     * Verifies that the getGroupReflections function correctly fetches group reflections
-     * and returns the paginated reflection data.
-     */
-    it('should fetch group reflections successfully', async () => {
-      const page = 0
-      const size = 5
-      const mockPage = createMockReflectionPage(page, size)
-
-      vi.mocked(api.get).mockResolvedValue(createAxiosResponse(mockPage))
-
-      const result = await getGroupReflections(page, size)
-
-      expect(api.get).toHaveBeenCalledWith('/user/reflections/groups', { params: { page, size } })
-      expect(result).toEqual(mockPage)
-    })
-
-    /**
-     * Test: Default Parameters
-     *
-     * Verifies that the getGroupReflections function correctly uses default parameters
-     * when they are not provided.
-     */
-    it('should use default parameters when not provided', async () => {
-      const defaultPage = 0
-      const defaultSize = 5
-      const mockPage = createMockReflectionPage(defaultPage, defaultSize)
-
-      vi.mocked(api.get).mockResolvedValue(createAxiosResponse(mockPage))
-
-      const result = await getGroupReflections()
-
-      expect(api.get).toHaveBeenCalledWith('/user/reflections/groups', { params: { page: defaultPage, size: defaultSize } })
-      expect(result).toEqual(mockPage)
-    })
-
-    /**
-     * Test: Error Handling
-     *
-     * Verifies that the getGroupReflections function correctly handles errors
-     * from the API and re-throws them.
-     */
-    it('should handle errors when fetching group reflections', async () => {
-      const page = 0
-      const size = 5
-      const errorMessage = 'Failed to fetch group reflections'
-
-      vi.mocked(api.get).mockRejectedValue(new Error(errorMessage))
-
-      await expect(getGroupReflections(page, size)).rejects.toThrow(errorMessage)
-      expect(api.get).toHaveBeenCalledWith('/user/reflections/groups', { params: { page, size } })
     })
   })
 

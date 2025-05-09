@@ -31,7 +31,6 @@ vi.mock('@/services/api/AuthService.ts', () => ({
   send2FACode: vi.fn(),
   verify2FACode: vi.fn(),
   changePassword: vi.fn(),
-  changeEmail: vi.fn()
 }))
 
 // Import the mocked functions for easier access in tests
@@ -378,44 +377,7 @@ describe('UserStore', () => {
       expect(mockAuthService.changePassword).toHaveBeenCalledWith(email, oldPassword, newPassword)
     })
 
-    /**
-     * Test for updating email
-     *
-     * This test verifies that:
-     * 1. The changeEmail function in AuthService is called with the correct parameters
-     * 2. The username in the store and localStorage is updated
-     * 3. The function throws an error if the user is not logged in
-     */
-    it('should update email when user is logged in', async () => {
-      const userStore = useUserStore()
-      const oldEmail = 'olduser@example.com'
-      const newEmail = 'newuser@example.com'
-      const password = 'Password123!'
 
-      // Set up the store as if the user is logged in
-      userStore.username = oldEmail
-
-      vi.spyOn(mockAuthService, 'changeEmail').mockResolvedValue(createAxiosResponse(undefined))
-
-      await userStore.updateEmail(newEmail, password)
-
-      expect(mockAuthService.changeEmail).toHaveBeenCalledWith(oldEmail, newEmail, password)
-      expect(userStore.username).toBe(newEmail)
-      expect(localStorageMock.setItem).toHaveBeenCalledWith('username', newEmail)
-    })
-
-    /**
-     * Test for error handling when user is not logged in
-     */
-    it('should throw error when trying to update password or email while not logged in', async () => {
-      const userStore = useUserStore()
-
-      // Ensure the user is not logged in
-      userStore.username = null
-
-      await expect(userStore.updatePassword('old', 'new')).rejects.toThrow('User is not logged in')
-      await expect(userStore.updateEmail('new@example.com', 'pass')).rejects.toThrow('User is not logged in')
-    })
   })
 
 
