@@ -52,7 +52,6 @@ const resetEmail = ref('')
 const isTwoFactorAuthDialogOpen = ref(false)
 const pinValue = ref<string[]>([])
 
-
 /**
  * Handles the login process by verifying the user's credentials.
  *
