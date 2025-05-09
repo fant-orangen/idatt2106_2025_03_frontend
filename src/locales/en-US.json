@@ -480,7 +480,7 @@
       "need-location": "Please enable your location to show directions",
       "legend": {
         "legend": "Legend",
-        "toggle-legend": "Hide Legend",
+        "toggle-legend": "Toggle Legend",
         "user-location": "Your Location",
         "household-location": "Household",
         "crisis-level-1": "Crisis Level 1",

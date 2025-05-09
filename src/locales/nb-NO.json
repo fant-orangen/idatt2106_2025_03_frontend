@@ -490,6 +490,8 @@
     "close-directions": "Lukk",
     "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse",
     "legend": {
+              "toggle-legend": "Skjul/Vis kartikoner",
+              "legend":"Kartikoner",
               "user-location": "Din Posisjon",
               "household-location": "Husholdning",
               "user-location": "Din Posisjon",
