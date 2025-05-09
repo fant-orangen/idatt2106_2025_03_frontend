@@ -19,6 +19,8 @@ import {
   getUserPreferences,
   getUserProfile,
   updateUserProfile,
+  updateNotificationPreference,
+  getNotificationPreferences,
 } from '@/services/UserService'
 import type {
   UserPreferencesDto,
@@ -48,6 +50,62 @@ const locationSharingEnabled = ref(false)
 const isViewCurrentPassword = ref(false)
 const isViewNewPassword = ref(false)
 const isViewConfirmNewPassword = ref(false)
+
+const notificationPreferences = ref({
+  email: {
+    system: false,
+    crisisAlert: false,
+    expirationReminder: false,
+    supplyAlert: false,
+    locationRequest: false,
+    safetyRequest: false,
+  },
+})
+
+const tempNotificationPreferences = ref({ ...notificationPreferences.value })
+
+const saveNotificationPreferences = async () => {
+  try {
+    // Map camelCase keys to snake_case keys
+    const keyMapping: Record<string, string> = {
+      system: 'system',
+      crisisAlert: 'crisis_alert',
+      expirationReminder: 'expiration_reminder',
+      supplyAlert: 'remaining_supply_alert',
+      locationRequest: 'location_request',
+      safetyRequest: 'safety_request',
+    }
+
+    for (const [key, value] of Object.entries(tempNotificationPreferences.value.email)) {
+      const snakeCaseKey = keyMapping[key] // Convert camelCase to snake_case
+      if (snakeCaseKey) {
+        await handleNotificationPreferenceUpdate(snakeCaseKey, value)
+      }
+    }
+
+    // Update the notificationPreferences with the saved preferences
+    notificationPreferences.value = { ...tempNotificationPreferences.value }
+    toast.success(t('settings.notifications.updated'))
+  } catch (error) {
+    console.error('Error saving notification preferences:', error)
+    toast.error(t('errors.unexpected-error'))
+  }
+}
+
+const handleNotificationPreferenceUpdate = async (preference: string, value: boolean) => {
+  try {
+    console.log(`Updating notification preference: ${preference} to ${value}`)
+    await updateNotificationPreference(preference, value) // Call the backend API
+    console.log(`Notification preference '${preference}' updated successfully.`)
+  } catch (error) {
+    console.error(`Error updating notification preference '${preference}':`, error)
+    toast.error(t('errors.unexpected-error', 'Failed to update notification preference.'))
+    // Revert the state if the request fails
+    tempNotificationPreferences.value.email[
+      preference as keyof typeof tempNotificationPreferences.value.email
+    ] = !value
+  }
+}
 
 // Profile data
 const profile = ref<ExtendedUserProfile>({
@@ -259,9 +317,55 @@ const saveProfile = async () => {
   }
 }
 
+const fetchNotificationPreferences = async () => {
+  try {
+    const preferences = await getNotificationPreferences()
+    console.log('Fetched notification preferences:', preferences)
+
+    // Map snake_case keys to camelCase keys
+    const keyMapping: Record<string, string> = {
+      system: 'system',
+      crisis_alert: 'crisisAlert',
+      expiration_reminder: 'expirationReminder',
+      remaining_supply_alert: 'supplyAlert',
+      location_request: 'locationRequest',
+      safety_request: 'safetyRequest',
+    }
+
+    // Map the preferences array into the expected structure
+    const mappedPreferences = preferences.reduce(
+      (acc, pref) => {
+        const camelCaseKey = keyMapping[pref.preferenceType]
+        if (camelCaseKey) {
+          acc[camelCaseKey as keyof typeof acc] = pref.enabled
+        }
+        return acc
+      },
+      {
+        system: false,
+        crisisAlert: false,
+        expirationReminder: false,
+        supplyAlert: false,
+        locationRequest: false,
+        safetyRequest: false,
+      },
+    )
+
+    console.log('Mapped notification preferences:', mappedPreferences)
+
+    // Update the notificationPreferences and tempNotificationPreferences
+    notificationPreferences.value.email = mappedPreferences
+    tempNotificationPreferences.value = { ...notificationPreferences.value }
+  } catch (error) {
+    console.error('Failed to fetch notification preferences:', error)
+    toast.error(t('errors.unexpected-error', 'Failed to fetch notification preferences.'))
+  }
+}
+
 onMounted(() => {
   getPreferences()
   fetchUserProfile()
+  fetchNotificationPreferences()
 })
 </script>
 
@@ -524,14 +628,117 @@ onMounted(() => {
                   <p class="text-sm text-muted-foreground">
                     {{ t('settings.notifications.email.description') }}
                   </p>
+                  <!-- System Notification -->
+                  <div class="expiration-reminder items-top flex gap-x-2 pt-4">
+                    <Checkbox
+                      id="system"
+                      :modelView="tempNotificationPreferences.email.system"
+                      @update:modelValue="
+                        (value: boolean | 'indeterminate') => {
+                          if (typeof value === 'boolean') {
+                            tempNotificationPreferences.email.system = value
+                          }
+                        }
+                      "
+                    />
+                    <div class="grid gap-1.5 leading-none">
+                      <label
+                        for="system"
+                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {{ t('settings.notifications.email.system') }}
+                      </label>
+                      <p class="text-sm text-muted-foreground">
+                        {{ t('settings.notifications.email.systemDescription') }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Crisis Alert Notification -->
                   <div class="items-top flex gap-x-2 pt-4">
-                    <Checkbox id="terms1" />
+                    <Checkbox
+                      id="crisis-alert"
+                      v-model="notificationPreferences.email.crisisAlert"
+                    />
+                    <div class="grid gap-1.5 leading-none">
+                      <label
+                        for="crisis-alert"
+                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {{ t('settings.notifications.email.crisisAlert') }}
+                      </label>
+                      <p class="text-sm text-muted-foreground">
+                        {{ t('settings.notifications.email.crisisAlertDescription') }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Expiration Reminder -->
+                  <div class="expiration-reminder items-top flex gap-x-2 pt-4">
+                    <Checkbox
+                      id="expiration-reminder"
+                      v-model="tempNotificationPreferences.email.expirationReminder"
+                    />
                     <div class="grid gap-1.5 leading-none">
                       <label
                         for="terms1"
                         class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        {{ t('settings.notifications.email.system') }}
+                        {{ t('settings.notifications.email.expirationReminder') }}
+                      </label>
+                      <p class="text-sm text-muted-foreground">
+                        {{ t('settings.notifications.email.expirationReminderDescription') }}
+                      </p>
+                    </div>
+                  </div>
+                  <!-- Remaining Supply Alert -->
+                  <div class="remaining-supply-alert items-top flex gap-x-2 pt-4">
+                    <Checkbox
+                      id="supply-alert"
+                      v-model="tempNotificationPreferences.email.supplyAlert"
+                    />
+                    <div class="grid gap-1.5 leading-none">
+                      <label
+                        for="terms1"
+                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {{ t('settings.notifications.email.supplyAlert') }}
+                      </label>
+                      <p class="text-sm text-muted-foreground">
+                        {{ t('settings.notifications.email.supplyAlertDescription') }}
+                      </p>
+                    </div>
+                  </div>
+                  <!-- Location Request -->
+                  <div class="location-request items-top flex gap-x-2 pt-4">
+                    <Checkbox
+                      id="location-request"
+                      v-model="tempNotificationPreferences.email.locationRequest"
+                    />
+                    <div class="grid gap-1.5 leading-none">
+                      <label
+                        for="terms1"
+                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {{ t('settings.notifications.email.locationRequest') }}
+                      </label>
+                      <p class="text-sm text-muted-foreground">
+                        {{ t('settings.notifications.email.locationRequestDescription') }}
+                      </p>
+                    </div>
+                  </div>
+                  <!-- Safety Request -->
+                  <div class="expiration-reminder items-top flex gap-x-2 pt-4">
+                    <Checkbox
+                      id="safety-request"
+                      v-model="tempNotificationPreferences.email.safetyRequest"
+                    />
+                    <div class="grid gap-1.5 leading-none">
+                      <label
+                        for="terms1"
+                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {{ t('settings.notifications.email.expirationReminder') }}
                       </label>
                       <p class="text-sm text-muted-foreground">
                         {{ t('settings.notifications.email.systemDescription') }}
@@ -542,7 +749,10 @@ onMounted(() => {
               </div>
             </CardContent>
             <CardFooter class="flex justify-end">
-              <Button class="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button
+                @click="saveNotificationPreferences()"
+                class="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
                 {{ t('settings.notifications.save-changes') }}
               </Button>
             </CardFooter>
