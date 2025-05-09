@@ -302,6 +302,7 @@
     "during": "During"
   },
   "info": {
+    "info": "Information",
     "news": "News",
     "notifications": "Notifications",
     "nr-of-people-in-household": "Number of people in household",
@@ -474,6 +475,8 @@
       "close-directions": "Close",
       "need-location": "Please enable your location to show directions",
       "legend": {
+        "legend": "Legend",
+        "toggle-legend": "Hide Legend",
         "user-location": "Your Location",
         "household-location": "Household",
         "crisis-level-1": "Crisis Level 1",
@@ -1243,7 +1246,7 @@
     "email-address": "Email",
     "enter-email": "Enter the email of the person you wish to invite...",
     "send-invitation": "Send invitation",
-    "stats": "Household Statistics",
+    "stats": "Household Overview",
     "total_members": "Total number of members",
     "adults": "Adults",
     "children": "Children",

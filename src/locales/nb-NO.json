@@ -304,6 +304,7 @@
     "during": "Under"
   },
   "info": {
+    "info": "Informasjon",
     "news": "Nyheter",
     "notifications": "Varslinger",
     "nr-of-people-in-household": "Antall personer i husholdningen",
@@ -477,6 +478,8 @@
       "close-directions": "Lukk",
       "need-location": "Vennligst aktiver plasseringen din for å vise veibeskrivelse",
       "legend": {
+        "legend": "Kartikoner",
+        "toggle-legend": "Skjul kartikoner",
         "user-location": "Din Posisjon",
         "household-location": "Husholdning",
         "user-location": "Din Posisjon",
@@ -1180,7 +1183,7 @@
     "email-address": "Epost",
     "enter-email": "Skriv inn epost til personen du ønsker å invitere...",
     "send-invitation": "Send invitasjon",
-    "stats": "Husholdningsstatistikk",
+    "stats": "Oversikt over husholdning",
     "total_members": "Totalt antall medlemmer",
     "adults": "Voksne",
     "children": "Barn",
