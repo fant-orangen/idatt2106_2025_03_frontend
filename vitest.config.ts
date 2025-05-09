@@ -7,8 +7,29 @@ export default mergeConfig(
   defineConfig({
     test: {
       environment: 'jsdom',
-      exclude: [...configDefaults.exclude, 'e2e/**'],
+      exclude: [
+        ...configDefaults.exclude,
+        'e2e/**',
+        'src/assets/**',
+        'src/i18n.ts',
+        'src/main.ts',
+        'src/router/**',
+        'src/types/**',
+        'src/components/ui/**/index.ts',
+      ],
       root: fileURLToPath(new URL('./', import.meta.url)),
+      coverage: {
+        exclude: [
+          'src/components/**',
+          'src/views/**',
+        ],
+        include: [
+          'src/stores/**',
+          'src/services/**',
+          'src/composables/**',
+          'src/utils/**',
+        ]
+      }
     },
   }),
 )
