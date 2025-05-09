@@ -426,12 +426,23 @@ const addProduct = async () => {
   if (!validUnits.includes(unit)) {
     return;
   }
-  await inventoryService.createFoodProductType({
-    name,
-    unit,
-    caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
-    category: 'food'
-  });
+  try {
+    await inventoryService.createFoodProductType({
+      name,
+      unit,
+      caloriesPerUnit: parseFloat(newProductCalories.value) || 0,
+      category: 'food'
+    });
+  } catch (error) {
+    if (error?.response?.data && typeof error.response.data === 'string' && error.response.data.includes('Unique index or primary key violation')) {
+      toast('Feil', {
+        description: t('inventory.food.exists.message'),
+        duration: 3000
+      });
+      return;
+    }
+    throw error;
+  }
   newProductName.value = "";
   newProductUnit.value = "";
   newProductCalories.value = "";
