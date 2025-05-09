@@ -15,22 +15,14 @@ const isInitialized = ref(false)
 
 // Initialize the store and validate token
 onMounted(async () => {
-  console.log('App.vue mounted - Initializing store')
   await userStore.initializeFromStorage()
 
   // If user is authenticated, initialize household store
   if (userStore.isAuthenticated) {
-    console.log('User is authenticated, initializing household store')
     await householdStore.fetchCurrentHousehold()
   }
 
-  console.log('App.vue - State after initialization:', {
-    loggedIn: userStore.loggedIn,
-    userId: userStore.userId,
-    profile: userStore.profile,
-    isAuthenticated: userStore.isAuthenticated,
-    hasHousehold: !!householdStore.currentHousehold
-  })
+
   isInitialized.value = true
 })
 
@@ -38,7 +30,6 @@ onMounted(async () => {
 watch(
   () => userStore.isAuthenticated,
   async (newAuthState) => {
-    console.log('Authentication state changed:', newAuthState)
     if (newAuthState) {
       await householdStore.fetchCurrentHousehold()
     }

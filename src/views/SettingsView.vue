@@ -94,9 +94,7 @@ const saveNotificationPreferences = async () => {
 
 const handleNotificationPreferenceUpdate = async (preference: string, value: boolean) => {
   try {
-    console.log(`Updating notification preference: ${preference} to ${value}`)
     await updateNotificationPreference(preference, value) // Call the backend API
-    console.log(`Notification preference '${preference}' updated successfully.`)
   } catch (error) {
     console.error(`Error updating notification preference '${preference}':`, error)
     toast.error(t('errors.unexpected-error', 'Failed to update notification preference.'))
@@ -161,9 +159,7 @@ function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boo
   }
 
   updateUserPreference(Number(userStore.userId), preference, value)
-    .then(() => {
-      console.log('Preference updated successfully')
-    })
+
     .catch((error) => {
       console.error('Error updating preference:', error)
       // Revert the state if the request fails
@@ -176,14 +172,12 @@ function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boo
 function getPreferences() {
   getUserPreferences()
     .then((preferences) => {
-      console.log('Fetched preferences:', preferences)
 
       twoFactorAuthenticationEnabled.value = preferences.twoFactorAuthenticationEnabled
       locationSharingEnabled.value = preferences.locationSharingEnabled
     })
     .catch((error) => {
       console.error('Error fetching preferences:', error)
-      console.log(userStore.token)
     })
 }
 
@@ -223,7 +217,6 @@ const handleUpdatePassword = form.handleSubmit(async (values) => {
       return
     }
 
-    console.log('Updating password with values:', values)
     await userStore.updatePassword(
       values.currentPassword,
       values.newPassword,
@@ -244,27 +237,6 @@ const handleUpdatePassword = form.handleSubmit(async (values) => {
   }
 })
 
-// function handleUpdatePassword(values: { currentPassword: string; newPassword: string }) {
-//   console.log('Updating password with values:', values)
-//   userStore
-//     .updatePassword(values.currentPassword, values.newPassword)
-//     .then(() => {
-//       toast.success(t('settings.account.password.success'), {
-//         description: t('settings.account.password.successDescription'),
-//       })
-//       // Reset the password fields
-//       currentPassword.value = ''
-//       newPassword.value = ''
-//       userStore.logout()
-//       router.push('/login')
-//     })
-//     .catch((error) => {
-//       console.error('Error updating password:', error)
-//       toast.error(t('settings.account.password.error'), {
-//         description: t('settings.account.password.errorDescription'),
-//       })
-//     })
-// }
 
 function handleCancelPasswordChange() {
   currentPassword.value = ''

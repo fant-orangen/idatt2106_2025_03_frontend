@@ -126,7 +126,6 @@ async function handleLogin() {
  * @throws {Error} If the verification fails, an error message is displayed.
  */
 async function handleComplete(pin: number) {
-  console.log('Received pin in handleComplete:', pin) // Debug log
   try {
     const response = await userStore.verify2FACodeInput(email.value.toLowerCase(), pin)
     if (response.status === 200) {
@@ -136,10 +135,8 @@ async function handleComplete(pin: number) {
     } else {
       errorMessage.value = t('errors.invalid-2fa-code')
     }
-    console.log('User role is: ', userStore.role)
   } catch (error) {
     errorMessage.value = t('errors.login-failed')
-    console.log('Login error', error)
   }
 }
 

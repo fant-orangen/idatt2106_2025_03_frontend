@@ -465,7 +465,6 @@ const poiTypes = ref<{ id: number; name: string }[]>([])
  * @param {MapClickEvent} event - The event object containing click coordinates.
  */
 function handleMapClick(event: MapClickEvent): void {
-  console.log('Map clicked at:', event.latlng);
   const location: Location = {
     lat: event.latlng.lat,
     lng: event.latlng.lng
@@ -480,7 +479,6 @@ function handleMapClick(event: MapClickEvent): void {
  * @param {Location} location - The selected location coordinates.
  */
 function handleLocationSelected(location: Location): void {
-  console.log('Location selected:', location);
   if (location.lat !== null && location.lng !== null) {
     form.setFieldValue('latitude', location.lat);
     form.setFieldValue('longitude', location.lng);
@@ -494,7 +492,6 @@ function handleLocationSelected(location: Location): void {
  * when the location is cleared via the map controller.
  */
 function handleLocationCleared(): void {
-  console.log('Location cleared');
   form.setFieldValue('latitude', undefined);
   form.setFieldValue('longitude', undefined);
   if (tempMarker.value && mapComponent.value?.removeMarker) {
@@ -556,7 +553,6 @@ function navigateToAdminPanel(): void {
  * @param {object} values - The validated form values provided by VeeValidate.
  */
 const onSubmit = form.handleSubmit(async (values) => {
-  console.log('Form values on submit:', values);
   isSubmitting.value = true;
 
   try {
@@ -577,9 +573,7 @@ const onSubmit = form.handleSubmit(async (values) => {
             contactInfo: values.contactinfo || null,
           };
 
-    console.log('Submitting POI data:', poiData);
     const response = await createPOI(poiData);
-    console.log('POI created successfully:', response.data);
 
     // Show success dialog on successful creation
     createdPOIName.value = values.title;

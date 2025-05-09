@@ -38,7 +38,6 @@ export const useUserStore = defineStore('user', () => {
 
   // Initialize from localStorage and validate token
   async function initializeFromStorage() {
-    console.log('Initializing from storage...')
     const storedToken = localStorage.getItem('token')
     const storedUsername = localStorage.getItem('username')
     const storedRole = localStorage.getItem('role')
@@ -58,7 +57,6 @@ export const useUserStore = defineStore('user', () => {
         })
 
         isAuthenticated.value = true
-        console.log('Token validated successfully')
       } catch (error) {
         console.error('Token validation failed:', error)
         clearAuthState()
@@ -98,7 +96,6 @@ export const useUserStore = defineStore('user', () => {
 
           // Update state
           token.value = tokenStr
-          console.log('Token:', token.value)
           username.value = userEmail
           isAuthenticated.value = true
 
@@ -114,7 +111,6 @@ export const useUserStore = defineStore('user', () => {
 
   async function verifyLogin(userEmail: string, password: string, recaptchaToken: string) {
     try {
-      console.log('Verifying login...')
       const response = await fetchToken({ email: userEmail, password, recaptchaToken })
       return response
       // login(response.status, response.data.token, userEmail);
@@ -135,7 +131,6 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function fetchUserProfile() {
-    console.log(` TOKEN BENIG SENT TO BACKEND IN FETCH USER PROFILE: ${token.value}`)
 
     try {
       const response = await api.get<UserProfile>('/user/me', {
@@ -143,7 +138,6 @@ export const useUserStore = defineStore('user', () => {
       })
       profile.value = response.data
       localStorage.setItem('profile', JSON.stringify(response.data))
-      console.log('User profile fetched successfully:', response.data)
     } catch (error) {
       console.error('Error fetching user profile:', error)
     }
@@ -179,7 +173,6 @@ export const useUserStore = defineStore('user', () => {
 
     try {
       await changePassword(oldPassword, newPassword, confirmNewPassword)
-      console.log('Password updated successfully')
     } catch (error) {
       console.error('Error updating password:', error)
       throw error

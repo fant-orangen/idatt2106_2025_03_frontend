@@ -203,9 +203,7 @@ const loadMore = () => {
  * @param crisisId - The ID of the crisis event to fetch changes for
  */
 const fetchChanges = async (crisisId: number) => {
-  console.log('fetchChanges called'); // Debugging
   if (loading.value || !hasMore.value) {
-    console.log('Not fetching changes because loading:', loading.value, 'hasMore:', hasMore.value); // Debugging
     return;
   }
 
@@ -216,20 +214,16 @@ const fetchChanges = async (crisisId: number) => {
   loading.value = true;
 
   try {
-    console.log('Fetching page:', page.value); // Debugging
     const response = await fetchCrisisEventChanges(crisisId, page.value, size);
-    console.log('Fetched data:', response); // Debugging
     changes.value.push(...response.content);
     page.value++;
     hasMore.value = page.value < response.totalPages;
-    console.log('Updated hasMore:', hasMore.value); // Debugging
   } catch (err) {
     console.error('Failed to load more changes:', err);
     error.value = t('crisis.error_loading_changes', 'Failed to load event history');
   } finally {
     loading.value = false;
     initialLoading.value = false;
-    console.log('Loading finished'); // Debugging
   }
 };
 
@@ -237,7 +231,6 @@ const fetchChanges = async (crisisId: number) => {
  * Watch for changes to the crisis ID and reload data when it changes
  */
 watch(() => props.crisisId, (newId) => {
-  console.log('crisisId changed:', newId);
   // Reset pagination and state when crisis changes
   changes.value = [];
   page.value = 0;

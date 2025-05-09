@@ -383,12 +383,10 @@ const filteredEvents = computed(() => {
 async function selectEvent(index: number) {
   const event = allEvents.value[index]
   if (!event) {
-    console.log('Event doesnt exist in array from backend')
     return
   }
   try {
     const crisisEventDetails = await fetchCrisisEventById(event.id)
-    console.log('Crisis Event details are: ', crisisEventDetails) // Changed 'er' to 'are'
     if (crisisEventDetails) {
       selectedEvent.value = crisisEventDetails
     } else {
@@ -557,7 +555,6 @@ async function handleFormSubmit(values: any) {
     scenarioThemeId: getScenarioId(values.category ?? '') ?? selectedEvent.value.scenarioThemeId,
     radius: radiusInKilometersForBackend, // Send radius in KM
   }
-  console.log('Updating event values to:', updatedEvent.value) // Changed 'Oppdaterte event verdier til'
 
   updateSelectedEvent()
 }
@@ -567,13 +564,11 @@ async function handleFormSubmit(values: any) {
  */
 async function updateSelectedEvent() {
   if (!selectedEvent.value || !updatedEvent.value) {
-    console.log('No event selected or updated!')
     return
   }
   try {
     const response = await updateCurrentEvent(selectedEvent.value.id, updatedEvent.value)
 
-    console.log('Event updated successfully!', response.data)
     callToast('Updated the event with your new values!')
 
     selectedEvent.value = null // redirects user back to the list of events
@@ -603,7 +598,6 @@ function cancelUpdate() {
  */
 async function deactivateEvent(id: number) {
   if (!selectedEvent.value) {
-    console.log("didnt select any event...")
     return
   }
   try {
@@ -623,16 +617,13 @@ async function deactivateEvent(id: number) {
 async function getCategories() {
   try {
     const response = await getScenarioThemePreview()
-    console.log('getting scenarios:', response)
     if (response && Array.isArray(response)) {
       scenarioPreviews.value = response
       allowedCategories.value = scenarioPreviews.value.map((s) => s.name)
-      console.log('allowedCategories: ', allowedCategories.value)
     } else if (response && response.content && Array.isArray(response.content)) {
       // Handle potential paginated response format
       scenarioPreviews.value = response.content
       allowedCategories.value = scenarioPreviews.value.map((s) => s.name)
-      console.log('allowedCategories from paginated response: ', allowedCategories.value)
     }
     else {
       console.error('Unexpected response format for scenario themes, not an array', response)
@@ -648,11 +639,9 @@ async function getCategories() {
 
 function getScenarioName(id: number): string {
   if (!scenarioPreviews.value || id === null) {
-    console.log('Could not find scenario type...') // Changed 'Fant ikke scenariotypen'
     return 'undefined'
   } else {
     const scenario = scenarioPreviews.value.find(s => s.id === id);
-    console.log('Got scenario name: ', scenario?.name) // Changed 'henta scenario navn'
     return scenario ? scenario.name : 'undefined';
   }
 }
@@ -672,7 +661,6 @@ function getScenarioId(category: string): number | null {
  * @param message
  */
 function callToast(message: string) {
-  console.log('Called toast for message: ', message)
   toast(message)
 }
 </script>

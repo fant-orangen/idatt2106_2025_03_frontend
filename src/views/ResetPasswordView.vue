@@ -55,7 +55,6 @@ const props = defineProps<{
 // Set tokenFromQuery on component mount
 onMounted(() => {
   tokenFromQuery.value = (route.query.token as string) || null
-  console.log('Token from query:', tokenFromQuery.value)
 })
 
 /**

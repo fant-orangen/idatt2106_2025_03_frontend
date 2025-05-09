@@ -82,7 +82,6 @@ const hasUnreadNotifications = computed(() => notificationStore.hasUnread)
 watch(
   () => notificationStore.notifications,
   async () => {
-    console.log('HeaderNavbar: Notifications changed, checking unread status') // TODO: remove logs
     await notificationStore.checkUnreadNotifications()
   },
   { deep: true },
@@ -92,7 +91,6 @@ watch(
 watch(
   () => notificationStore.hasUnread,
   (newValue) => {
-    console.log('HeaderNavbar: hasUnread state changed to:', newValue)
   },
 )
 
@@ -146,7 +144,6 @@ onMounted(async () => {
     try {
       await notificationStore.fetchNotifications()
       await notificationStore.checkUnreadNotifications()
-      console.log('NavBar: Initial notifications fetched and checked for unread')
     } catch (error) {
       console.error('NavBar: Failed to fetch initial notifications via store:', error)
     }
@@ -159,7 +156,6 @@ onMounted(async () => {
     try {
       await notificationStore.fetchNotifications()
       await notificationStore.checkUnreadNotifications()
-      console.log('NavBar: Initial notifications fetched and checked for unread')
     } catch (error) {
       console.error('NavBar: Failed to fetch initial notifications via store:', error)
     }
@@ -172,7 +168,6 @@ async function handleNotificationClick() {
     try {
       await notificationStore.markAllAsRead()
       await notificationStore.checkUnreadNotifications() // Recheck after marking as read
-      console.log('NavBar: Marked all notifications as read')
     } catch (error) {
       console.error('NavBar: Failed to mark notifications as read:', error)
     }
@@ -313,11 +308,11 @@ function logOut() {
           {{ $t('navigation.admin-panel') }}
         </span>
       </Button>
-        
+
 
       <DropdownMenu v-if="userStore.loggedIn">
         <DropdownMenuTrigger as-child>
-          <Button 
+          <Button
             variant="ghost"
             class="cursor-pointer hover:bg-input dark:hover:bg-background/40"
             v-tooltip="t('settings.account.myAccount')">

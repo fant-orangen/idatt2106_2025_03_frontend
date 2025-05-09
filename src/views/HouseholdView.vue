@@ -435,7 +435,6 @@ const refreshHouseholdData = async () => {
       // Use nextTick to ensure the component is mounted
       nextTick(() => {
         if (userInvitationsRef.value) {
-          console.log('Refreshing user invitations for user without household');
           userInvitationsRef.value.refreshInvitations();
         }
       });

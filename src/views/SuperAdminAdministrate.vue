@@ -253,11 +253,9 @@ const onSubmit = form.handleSubmit(async (values) => {
       return
     }
     const response = await getUserId(values.email)
-    console.log('Retrieved user id from API:', response.data)
     userId.value = response.data.userId // set userId
 
     if (userId.value !== null) {
-      console.log('NEW ADMIN EMAIL: ', values.email)
       createNewAdmin(userId.value)
 
       userId.value = null
@@ -283,7 +281,6 @@ function openNewAdminDialog() {
 }
 
 function openDrawer(admin: Admin) {
-  console.log('selecting admin...')
   selectedAdmin.value = {
     email: admin.email,
     userId: admin.userId,
@@ -294,7 +291,6 @@ function openDrawer(admin: Admin) {
 async function getAllAdmins() {
   try {
     const response = await getAdminUsers()
-    console.log('Fetched admins from backend!', response.data)
     admins.value = response.data
   } catch (error) {
     console.error('Failed to fetch admin users from backend!')
@@ -304,7 +300,6 @@ async function getAllAdmins() {
 async function createNewAdmin(userID: number) {
   try {
     const response = await addNewAdmin(userID)
-    console.log('Created new admin user!', response.data)
     callToast('Created new admin!')
     await getAllAdmins()
   } catch (error: any) {
@@ -323,9 +318,7 @@ async function createNewAdmin(userID: number) {
 
 async function revokeRights(adminId: number) {
   try {
-    console.log('Admin id is: ', adminId)
     await revokeAdminRights(adminId)
-    console.log('Admin rights revoked!')
 
     callToast('Admin rights revoked.')
     await getAllAdmins() // update the list of admins
@@ -336,7 +329,6 @@ async function revokeRights(adminId: number) {
 }
 
 function callToast(message: string) {
-  console.log('Called toast for message: ', message)
   toast(message)
 }
 

@@ -448,7 +448,6 @@ const mapComponentInstance = computed(() => {
  * @param {MapClickEvent} event - The event object containing click coordinates.
  */
 function handleMapClick(event: MapClickEvent): void {
-  console.log('Map clicked at:', event.latlng);
   const location: Location = { lat: event.latlng.lat, lng: event.latlng.lng };
   handleLocationSelected(location);
 }
@@ -460,7 +459,6 @@ function handleMapClick(event: MapClickEvent): void {
  * @param {Location} location - The selected location coordinates.
  */
 function handleLocationSelected(location: Location): void {
-  console.log('Location selected:', location);
   form.setFieldValue('latitude', location.lat);
   form.setFieldValue('longitude', location.lng);
   updateMapMarker(location.lat, location.lng);
@@ -472,7 +470,6 @@ function handleLocationSelected(location: Location): void {
  * when the location is cleared via the map controller.
  */
 function handleLocationCleared(): void {
-  console.log('Location cleared');
   form.setFieldValue('latitude', undefined);
   form.setFieldValue('longitude', undefined);
 
@@ -548,7 +545,6 @@ watch(
       if (typeof tempMarker.value.setTooltipContent === 'function') {
         tempMarker.value.setTooltipContent(markerTitle);
       }
-      console.log('Updated marker title/popup to:', markerTitle);
     }
   }
 );
@@ -562,7 +558,6 @@ watch(
  * @param {object} values - The validated form values provided by VeeValidate.
  */
 const onSubmit = form.handleSubmit(async (values) => {
-  console.log('Form values on submit:', values);
   try {
     if (!values.date || !values.time) {
       console.error('Start time (date and time) is required but missing.');
@@ -592,9 +587,7 @@ const onSubmit = form.handleSubmit(async (values) => {
       startTime: startTime,
     };
 
-    console.log('Submitting Event data:', eventData);
     const response = await createEvent(eventData);
-    console.log('Event created successfully!', response.data);
 
     // Show success dialog on successful creation
     createdEventName.value = values.title;
@@ -610,7 +603,6 @@ const onSubmit = form.handleSubmit(async (values) => {
 async function getCategories() {
 	try {
 		const response = await getScenarioThemePreview();
-		console.log('getting scenarios:', response);
 		if (response && Array.isArray(response)) {
 			scenarioPreviews.value = response;
       allowedScenarios.value = scenarioPreviews.value.map((s) => s.name);

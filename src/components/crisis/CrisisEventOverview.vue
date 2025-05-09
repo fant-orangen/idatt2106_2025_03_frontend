@@ -265,7 +265,6 @@ const loadCrisisEvents = async () => {
         break;
     }
 
-    console.log(`Crisis events page (${selectedFilter.value}):`, response);
 
     crisisEvents.value.push(...response.content);
     page.value++;
@@ -381,7 +380,6 @@ const mapData = computed(() => {
  * Watch for changes to map data for debugging purposes
  */
 watch(mapData, (newVal) => {
-  console.log('mapData updated:', newVal);
 });
 
 /**

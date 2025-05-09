@@ -145,11 +145,8 @@
 	BreadcrumbList,
 	BreadcrumbSeparator
   } from '@/components/ui/breadcrumb'
-  import MapOverviewComponent from '@/components/map/MapOverviewComponent.vue'
-
   const userStore = useUserStore()
   </script>
 
   <style scoped>
-  /* No additional styles needed as Tailwind CSS handles the layout and responsiveness */
   </style>

@@ -304,13 +304,9 @@ const allPois = computed<PoiPreviewDto[]>(() =>
  */
 
 async function selectedAPoi(id: number) {
-  if (id == null || undefined) {
-    console.log('Wrong POI ID.')
-    return;
-  }
+
   try {
     const response = await fetchPoiById(id);
-    console.log('fetched poi details: ', response)
     selectedPoi.value = response;
   } catch (error) {
     console.error('Error while fetching POI:' , error)
@@ -323,7 +319,6 @@ async function selectedAPoi(id: number) {
  */
 
 function setupFormSchema() {
-  console.log("Setting up form schema...");
 
   const schema = z.object({
      name: z.string(),

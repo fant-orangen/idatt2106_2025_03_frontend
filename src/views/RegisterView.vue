@@ -105,7 +105,6 @@ const handleRegister = form.handleSubmit(async (values) => {
       token2,
     )
 
-    console.log('Login response:', response)
 
     // Handle the response
     if (response.status === 200) {

@@ -26,7 +26,6 @@ const notificationStore = useNotificationStore();
  */
 
 async function loadMoreNotifications() {
-  console.log("NotificationView: load-more triggered");
   // Call the store action to fetch the next page
   await notificationStore.fetchNextPage();
 }

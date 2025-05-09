@@ -53,7 +53,6 @@ export async function updateUserPreference(
   try {
     const payload = { [settingKey]: settingValue }
     const response = await api.patch(`/user/me/preferences`, payload)
-    console.log('Preference updated successfully:', response.data)
   } catch (error) {
     console.error('Error updating preference:', error)
     throw error
@@ -100,7 +99,6 @@ export async function resetPassword(token: string, newPassword: string): Promise
       newPassword,
     }
     await api.post('/auth/reset-password', payload)
-    console.log('Password reset successfully')
   } catch (error) {
     console.error('Error resetting password:', error)
     throw error
@@ -121,7 +119,6 @@ export async function sendPasswordResetEmail(email: string): Promise<void> {
       email,
     }
     await api.post('/auth/forgot-password', payload)
-    console.log('Password reset email sent successfully')
   } catch (error) {
     console.error('Error sending password reset email:', error)
     throw error
@@ -157,7 +154,6 @@ export async function updateUserProfile(
 export async function getUserBasicInfo(userId: number): Promise<UserBasicInfoDto> {
   try {
     const response = await api.get(`/user/${userId}/basic-info`)
-    console.log('Basic info fetched successfully:', response.data)
     return response.data
   } catch (error) {
     console.error(`Failed to fetch basic info for user ID ${userId}:`, error)
@@ -180,7 +176,6 @@ export async function updateNotificationPreference(
     const response = await api.patch(`/user/notifications/preferences/${preferenceType}`, null, {
       params: { enable },
     })
-    console.log('Notification preference updated successfully:', response.data)
   } catch (error) {
     console.error(
       'Failed to update notification preference:',
@@ -197,7 +192,6 @@ export async function updateNotificationPreference(
 export async function getNotificationPreferences(): Promise<NotificationPreferenceDto[]> {
   try {
     const response = await api.get<NotificationPreferenceDto[]>('/user/notifications/preferences')
-    console.log('Notification preferences fetched successfully:', response.data)
     return response.data
   } catch (error) {
     console.error('Failed to fetch notification preferences:', error)

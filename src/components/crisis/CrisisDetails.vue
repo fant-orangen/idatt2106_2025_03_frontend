@@ -175,7 +175,6 @@ const scenarioTheme = ref<{id: number, name: string} | null>(null);
  * @returns True if the coordinate is valid, false otherwise
  */
 const isValidCoordinate = (coord: unknown): boolean => {
-  console.log("unknown", coord);
   if (typeof coord !== 'number' || isNaN(coord)) {
     return false;
   }

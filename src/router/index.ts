@@ -268,17 +268,14 @@ router.beforeEach(async (to, from, next) => {
   // If not, attempt to initialize the store from localStorage (e.g., refresh scenario).
   if (!userStore.isAuthenticated) {
     //
-    console.log('Store not authenticated, attempting initialization...')
     await userStore.initializeFromStorage() // Attempt to load user session
 
     // After attempting initialization, re-check authentication status.
     // If still not authenticated and the route is not public, redirect to Login.
     if (!userStore.isAuthenticated && !publicRoutes.includes(to.name as string)) {
-      console.log('Initialization failed or user not authenticated, redirecting to Login.')
       userStore.logout() // Ensure any partial/invalid state is cleared
       return next({ name: 'Login' }) // Redirect to the login page
     }
-    console.log('Store initialized, role:', userStore.role)
   }
 
   // requires super admin - not allowed
@@ -306,7 +303,6 @@ router.beforeEach(async (to, from, next) => {
         if (to.name === 'Household') {
           return next() // Allow navigation to Household page
         }
-        console.log('User has no household, redirecting to Household page.')
         // Redirect user to the Household page where they can see invitations and create options
         return next({ name: 'Household' })
       }
@@ -317,7 +313,6 @@ router.beforeEach(async (to, from, next) => {
       // Check if the error is an Axios error with a 401 (Unauthorized) status.
       const axiosError = error as AxiosError
       if (axiosError.response?.status === 401) {
-        console.log('Unauthorized check for household, redirecting to login.')
         userStore.logout()
         return next({ name: 'Login' })
       }

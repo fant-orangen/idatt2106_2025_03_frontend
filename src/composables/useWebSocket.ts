@@ -29,21 +29,14 @@ export function useWebSocket() {
   const tryConnect = () => {
     // Prevent multiple connection attempts or connecting if already connected
     if (connectionAttempted || isConnected.value) {
-      console.log('WebSocket connection attempt skipped (already connected or in progress). State:', { connectionAttempted: connectionAttempted, isConnected: isConnected.value });
       return;
     }
 
     // Ensure necessary user data is available in the store
     if (!userStore.loggedIn || !userStore.userId || !userStore.token) {
-      console.log('Cannot connect WebSocket: Missing required state', {
-        loggedIn: userStore.loggedIn,
-        userId: userStore.userId,
-        hasToken: !!userStore.token
-      });
       return;
     }
 
-    console.log('Attempting WebSocket connection...');
     connectionAttempted = true; // Set flag indicating an attempt is in progress
     isConnected.value = false; // Ensure connection status is false initially
 
@@ -52,11 +45,7 @@ export function useWebSocket() {
       const socket = new SockJS('http://localhost:8080/ws');
       stompClient = over(socket);
 
-      // Optional: Disable STOMP debug logging in production
-      // stompClient.debug = null;
-      stompClient.debug = (str) => { console.log('STOMP Debug:', str); }; // Keep for debugging
 
-      // 2. Connect using STOMP
       stompClient.connect(
         {
           // Pass JWT token for authentication (backend needs to handle this)
@@ -67,7 +56,6 @@ export function useWebSocket() {
         // --- Success Callback ---
         () => {
           const topic = `/topic/notifications/${userStore.userId}`;
-          console.log('WebSocket connected successfully! Subscribing to topic:', topic);
           isConnected.value = true; // Update connection state
 
           if (!stompClient) {
@@ -83,18 +71,13 @@ export function useWebSocket() {
             topic,
             // --- Message Handler Callback ---
             (message) => {
-              console.log('Received raw message body:', message.body);
               if (message.body) {
                 try {
                   // Parse the JSON message body into our NotificationMessage type
                   const notification: NotificationMessage = JSON.parse(message.body);
-                  console.log('Parsed notification:', notification);
-                  console.log('Notification readAt status:', notification.readAt);
 
                   // Add the notification to the store
-                  console.log('WebSocket: Adding notification to store. Current hasUnread:', notificationStore.hasUnread);
                   notificationStore.addNotification(notification);
-                  console.log('WebSocket: Notification added to store. New hasUnread:', notificationStore.hasUnread);
 
                   // *** Frontend Improvement: Handle specific notification types ***
                   if (notification.preferenceType === 'crisis_alert') {
@@ -107,7 +90,6 @@ export function useWebSocket() {
                   } else {
                     // Handle other notification types (e.g., 'expiration_reminder')
                     // For now, just log them or show a generic info toast
-                    console.log('Received other notification type:', notification.preferenceType);
                     toast.info(`Notification: ${notification.description || 'Update received.'}`);
                   }
                   // *** End Frontend Improvement ***
@@ -130,7 +112,6 @@ export function useWebSocket() {
               tryDisconnect();
             }
           );
-          console.log('Successfully subscribed to topic:', topic);
           // connectionAttempted = false; // Reset flag after successful connection and subscription
           // Keep connectionAttempted=true while connected to prevent re-attempts by watchers if state briefly flickers
         },
@@ -161,17 +142,13 @@ export function useWebSocket() {
    * Disconnects the WebSocket connection if it's active.
    */
   const tryDisconnect = () => {
-    console.log('Attempting to disconnect WebSocket...');
     if (stompClient) {
       try {
         if (stompClient.connected) {
           stompClient.disconnect(() => {
             // This callback might not always fire reliably depending on server/network state
-            console.log('WebSocket disconnect callback fired.');
           });
-          console.log('Disconnect initiated.');
         } else {
-          console.log('WebSocket client existed but was not connected.');
         }
       } catch (error) {
         console.error('Error during WebSocket disconnect method call:', error);
@@ -180,11 +157,9 @@ export function useWebSocket() {
         stompClient = null; // Ensure client instance is cleared
         isConnected.value = false; // Update connection state
         connectionAttempted = false; // Reset attempt flag
-        console.log('WebSocket client nulled, connection state updated, attempt flag reset.');
         // --- End Crucial Cleanup ---
       }
     } else {
-      console.log('No active stompClient instance to disconnect.');
       // Ensure state consistency even if client was already null
       isConnected.value = false;
       connectionAttempted = false;
@@ -197,18 +172,14 @@ export function useWebSocket() {
   watch(
     () => userStore.isAuthenticated, // Use isAuthenticated for a more reliable state check
     (isAuth, wasAuth) => {
-      console.log(`Authentication state changed: ${wasAuth} -> ${isAuth}`);
       if (isAuth) {
         // Attempt connection only if authenticated and not already connected/attempting
         if (!isConnected.value && !connectionAttempted) {
-          console.log('User is authenticated, attempting WebSocket connection...');
           tryConnect();
         } else {
-          console.log('User authenticated, but WebSocket connection already active or attempt in progress.');
         }
       } else {
         // If user becomes unauthenticated, disconnect
-        console.log('User is not authenticated, ensuring WebSocket is disconnected...');
         tryDisconnect();
       }
     },
@@ -220,12 +191,9 @@ export function useWebSocket() {
   watch(
     () => userStore.userId,
     (newUserId, oldUserId) => {
-      console.log(`User ID changed: ${oldUserId} -> ${newUserId}`);
       if (newUserId && userStore.isAuthenticated && !isConnected.value && !connectionAttempted) {
-        console.log('User ID available while authenticated, attempting WebSocket connection...');
         tryConnect();
       } else if (!newUserId && isConnected.value) {
-        console.log('User ID became null, disconnecting WebSocket...');
         tryDisconnect(); // Disconnect if userId is lost while connected
       }
     }
