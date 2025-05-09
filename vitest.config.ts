@@ -21,13 +21,14 @@ export default mergeConfig(
       coverage: {
         exclude: [
           'src/components/**',
-          'src/views/**',
+
         ],
         include: [
           'src/stores/**',
           'src/services/**',
           'src/composables/**',
           'src/utils/**',
+          'src/views/**',
         ]
       }
     },
