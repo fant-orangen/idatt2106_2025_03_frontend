@@ -512,7 +512,25 @@ export default defineComponent({
 
           // Set up map event listeners for viewport changes
           map.value.on('zoom', () => {
-            // Update immediately during zoom
+            if (!map.value || !markerClusterGroup.value) return;
+
+            const zoom = map.value.getZoom();
+            const tooFar = zoom < MIN_ZOOM_FOR_POIS;
+
+            // Handle layer visibility
+            if (tooFar) {
+              if (map.value.hasLayer(markerClusterGroup.value as unknown as L.Layer)) {
+                map.value.removeLayer(markerClusterGroup.value as unknown as L.Layer);
+              }
+              return;
+            }
+
+            // Ensure layer is visible
+            if (!map.value.hasLayer(markerClusterGroup.value as unknown as L.Layer)) {
+              map.value.addLayer(markerClusterGroup.value as unknown as L.Layer);
+            }
+
+            // Update POIs
             updatePOIs(getVisiblePois());
           });
           map.value.on('moveend', scheduleViewportUpdate);
