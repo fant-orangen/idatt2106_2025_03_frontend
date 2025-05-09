@@ -46,7 +46,9 @@
     "enter-email": "Skriv inn e-post",
     "reset-password": "Tilbakestill passord",
     "2fa-login-title": "To-trinnsverifisering",
-    "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn."
+    "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn.",
+    "already-user": "Dette brukernavnet er allerede registrert.",
+    "log-in-here": "Logg inn her"
   },
   "reset-password": {
     "title": "Tilbakestill passord",
