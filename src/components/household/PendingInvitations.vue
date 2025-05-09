@@ -59,7 +59,7 @@
         >
           <div class="flex justify-between items-center">
             <div>
-              <p class="font-medium">{{ invitation.groupName }}</p>
+              <p class="font-medium">{{ invitation.group.name }}</p>
               <p class="text-xs text-muted-foreground">
                 {{ $t('group.invitation-received') }}
               </p>

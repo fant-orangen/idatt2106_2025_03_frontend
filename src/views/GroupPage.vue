@@ -97,7 +97,7 @@
   </div>
   <InviteHouseholdDialog
     :open="showInviteDialog"
-    :group-id="currentGroupId"
+    :group-id="currentGroupId || 0"
     @update:open="showInviteDialog = $event"
     @invitation-sent="refreshHouseholds"
   />
