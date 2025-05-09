@@ -1,12 +1,4 @@
 <script setup lang="ts">
-
-/**
- * This file handles the user registration view.
- * It includes a form with client-side validation (using VeeValidate and Zod),
- * Google reCAPTCHA verification, and integration with the user store for account creation.
- * It provides real-time error/success messages and feedback via toast notifications.
- */
-
 import { ref, computed } from 'vue'
 import { useForm } from 'vee-validate'
 import { z } from 'zod'
@@ -14,11 +6,6 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useUserStore } from '@/stores/UserStore'
 import { useI18n } from 'vue-i18n'
 import { getPasswordValidationSchema } from '@/utils/passwordValidation'
-
-/**
- * UI Components
- */
-
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -36,12 +23,11 @@ const successMessage = ref('')
 const errorMessage = ref('')
 const isView = ref(false)
 
-/**
- * Schema validation using Zod and i18n
- */
-
 const isLoading = ref(false)
 
+/* global grecaptcha */
+
+// Schema
 const passwordSchema = getPasswordValidationSchema(t)
 const registerSchema = toTypedSchema(
   z
@@ -62,9 +48,6 @@ const registerSchema = toTypedSchema(
     }),
 )
 
-/**
- * Initialize form with default values
- */
 const form = useForm({
   validationSchema: registerSchema,
   initialValues: {
@@ -78,17 +61,11 @@ const form = useForm({
   },
 })
 
-/**
- * Submit handler: validates form, verifies captcha and registers.
- */
-
 const handleRegister = form.handleSubmit(async (values) => {
   try {
     isLoading.value = true
     errorMessage.value = ''
     successMessage.value = ''
-
-    // Get reCAPTCHA token
 
     const token = await new Promise<string>((resolve, reject) => {
       grecaptcha.ready(() => {
@@ -98,8 +75,6 @@ const handleRegister = form.handleSubmit(async (values) => {
           .catch(reject)
       })
     })
-
-    // Call user store to register
 
     await userStore.registerUser({
       email: values.email,
@@ -112,14 +87,6 @@ const handleRegister = form.handleSubmit(async (values) => {
     })
 
     toast.success(t('success.registration-successful'))
-
-    // Redirect to login after short delay.
-
-    setTimeout(() => {
-      window.location.href = '/login'
-    }, 2000)
-  } catch (err) {
-    console.error('Registration failed:', err)
     isLoading.value = false
     // Verify the login credentials
 
@@ -173,19 +140,13 @@ const buttonIcon = computed(() =>
 </script>
 
 <template>
-
-  <!-- Registration card -->
   <div
     class="register-wrapper flex justify-center items-center mt-[10vh] mb-[10vh] bg-background p-[1rem]"
   >
     <Card class="register-container min-w-5/6 md:min-w-xl">
-
-      <!-- Header with page title -->
       <CardHeader>
         <h1 class="text-xl font-bold text-center">{{ t('login.signup') }}</h1>
       </CardHeader>
-
-      <!-- Registration form -->
       <CardContent>
         <form id="registerForm" @submit.prevent="handleRegister" class="space-y-4">
           <FormField v-slot="{ field, meta, errorMessage }" name="firstName">

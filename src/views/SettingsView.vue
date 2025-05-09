@@ -103,52 +103,32 @@ function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boo
   }
 
   updateUserPreference(Number(userStore.userId), preference, value)
-      .then(() => {
-        console.log('Preference updated successfully')
-      })
-      .catch((error) => {
-        console.error('Error updating preference:', error)
-        // Revert the state if the request fails
-        if (preference === 'twoFactorAuthenticationEnabled') {
-          twoFactorAuthenticationEnabled.value = !value
-        }
-      })
+    .then(() => {
+      console.log('Preference updated successfully')
+    })
+    .catch((error) => {
+      console.error('Error updating preference:', error)
+      // Revert the state if the request fails
+      if (preference === 'twoFactorAuthenticationEnabled') {
+        twoFactorAuthenticationEnabled.value = !value
+      }
+    })
 }
 
 function getPreferences() {
   getUserPreferences()
-      .then((preferences) => {
-        console.log('Fetched preferences:', preferences)
+    .then((preferences) => {
+      console.log('Fetched preferences:', preferences)
 
-        twoFactorAuthenticationEnabled.value = preferences.twoFactorAuthenticationEnabled
-        locationSharingEnabled.value = preferences.locationSharingEnabled
-      })
-      .catch((error) => {
-        console.error('Error fetching preferences:', error)
-        console.log(userStore.token)
-      })
+      twoFactorAuthenticationEnabled.value = preferences.twoFactorAuthenticationEnabled
+      locationSharingEnabled.value = preferences.locationSharingEnabled
+    })
+    .catch((error) => {
+      console.error('Error fetching preferences:', error)
+      console.log(userStore.token)
+    })
 }
 
-function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string) {
-  userStore
-      .updatePassword(oldPasswordInput, newPasswordInput)
-      .then(() => {
-        toast.success(t('settings.account.password.success'), {
-          description: t('settings.account.password.successDescription'),
-        })
-        // Reset the password fields
-        currentPassword.value = ''
-        newPassword.value = ''
-        userStore.logout()
-        router.push('/login')
-      })
-      .catch((error) => {
-        console.error('Error updating password:', error)
-        toast.error(t('settings.account.password.error'), {
-          description: t('settings.account.password.errorDescription'),
-        })
-      })
-}
 // function handleTwoFactorAuthentication() {
 //   twoFactorAuthenticationEnabled.value = !twoFactorAuthenticationEnabled.value
 //   handlePreferenceUpdate('twoFactorAuthenticationEnabled', twoFactorAuthenticationEnabled.value)
@@ -317,55 +297,6 @@ onMounted(() => {
               </CardDescription>
             </CardHeader>
             <CardContent class="password-settings space-y-2">
-              <div class="space-y-1">
-                <Label for="current">{{ t('settings.account.password.current') }}</Label>
-                <div class="relative">
-                  <Input
-                      :type="isViewCurrentPassword ? 'text' : 'password'"
-                      id="password"
-                      v-model="currentPassword"
-                      class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                      :placeholder="t('login.password')"
-                  />
-                  <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
-                      @click="isViewCurrentPassword = !isViewCurrentPassword"
-                  >
-                    <component :is="isViewCurrentPassword ? EyeOff : Eye" class="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-              <div class="space-y-1">
-                <Label for="new">{{ t('settings.account.password.new') }}</Label>
-                <div class="relative">
-                  <Input
-                      :type="isViewNewPassword ? 'text' : 'password'"
-                      id="password"
-                      v-model="newPassword"
-                      class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                      :placeholder="t('login.password')"
-                  />
-                  <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
-                      @click="isViewNewPassword = !isViewNewPassword"
-                  >
-                    <component :is="isViewNewPassword ? EyeOff : Eye" class="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <div class="flex flex-col gap-4 md:flex-row">
-                <Button @click="handleUpdatePassword(currentPassword, newPassword)">{{
-                    t('settings.account.save-changes')
-                  }}</Button>
-
               <!-- Current Password Field -->
               <form
                 id="changePasswordForm"
@@ -465,7 +396,6 @@ onMounted(() => {
                 <Button type="submit" form="changePasswordForm">{{
                   t('settings.account.save-changes')
                 }}</Button>
-                
                 <Button variant="outline" @click="handleCancelPasswordChange">
                   {{ t('settings.cancel') }}
                 </Button>
@@ -481,8 +411,8 @@ onMounted(() => {
             <CardContent class="security-settings space-y-2">
               <div class="space-y-1">
                 <Button
-                    :variant="twoFactorAuthenticationEnabled ? 'destructive' : 'outline'"
-                    @click="
+                  :variant="twoFactorAuthenticationEnabled ? 'destructive' : 'outline'"
+                  @click="
                     handlePreferenceUpdate(
                       'twoFactorAuthenticationEnabled',
                       !twoFactorAuthenticationEnabled,
@@ -490,13 +420,13 @@ onMounted(() => {
                   "
                 >
                   <component
-                      :is="twoFactorAuthenticationEnabled ? Unlock : Lock"
-                      class="w-4 h-4 mr-2"
+                    :is="twoFactorAuthenticationEnabled ? Unlock : Lock"
+                    class="w-4 h-4 mr-2"
                   />
                   {{
                     twoFactorAuthenticationEnabled
-                        ? t('settings.account.security.disableTwoStep')
-                        : t('settings.account.security.enableTwoStep')
+                      ? t('settings.account.security.disableTwoStep')
+                      : t('settings.account.security.enableTwoStep')
                   }}
                 </Button>
               </div>
@@ -550,8 +480,8 @@ onMounted(() => {
                   <p class="text-xs text-muted-foreground italic">
                     {{
                       t(
-                          'settings.profile.address-privacy',
-                          'Your address is not visible to other users.',
+                        'settings.profile.address-privacy',
+                        'Your address is not visible to other users.',
                       )
                     }}
                   </p>
@@ -562,8 +492,8 @@ onMounted(() => {
                   <Button type="submit" :disabled="isProfileLoading">
                     {{
                       isProfileLoading
-                          ? t('common.saving', 'Saving...')
-                          : t('settings.account.save-changes')
+                        ? t('common.saving', 'Saving...')
+                        : t('settings.account.save-changes')
                     }}
                   </Button>
                 </div>
@@ -598,8 +528,8 @@ onMounted(() => {
                     <Checkbox id="terms1" />
                     <div class="grid gap-1.5 leading-none">
                       <label
-                          for="terms1"
-                          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        for="terms1"
+                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         {{ t('settings.notifications.email.system') }}
                       </label>
