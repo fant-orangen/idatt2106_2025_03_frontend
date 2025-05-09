@@ -275,6 +275,8 @@ export const useNotificationStore = defineStore('notification', () => {
       return hasUnreadResult;
     } catch (err) {
       console.error('Failed to check unread notifications:', err);
+      error.value = err instanceof Error ? err.message : 'Failed to check for unread notifications';
+      hasUnread.value = false;
       return false;
     }
   }
