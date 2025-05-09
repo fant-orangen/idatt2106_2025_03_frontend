@@ -11,7 +11,9 @@
     "loading": "Loading",
     "not-found": "No match",
     "all-is-loaded": "Everything is loaded",
-    "edit": "Edit"
+    "edit": "Edit",
+    "accept": "Accept",
+    "reject": "Reject"
   },
   "actions": {
     "to-reflect": "to reflect",
@@ -203,7 +205,13 @@
     "invalid-email": "Invalid email address",
     "invalid-phone": "Invalid phone number",
     "unexpected-error": "An unexpected error occurred. Please try again later.",
-    "network-error": "Network error. Please check your internet connection."
+    "network-error": "Network error. Please check your internet connection.",
+    "account-locked": "Username or password is incorrect.",
+    "invalid-credentials": "Username or password is incorrect.",
+    "unexpected-error": "An unexpected error has occurred. Please try again later.",
+    "network-error": "Nettwork error. Please check your connection.",
+    "invalid-2fa-code": "The 2FA code you have entered is incorrect. Please try again."
+
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",
@@ -1247,7 +1255,8 @@
     "food-days-left": "days left with food",
     "water-days-left": "days left with water",
     "manage-supplies": "Manage supplies",
-    "view-household": "View household"
+    "view-household": "View household",
+    "pending-sent-invitations": "Pending invitations sent from your household"
 
   },
   "inventory": {
@@ -1260,6 +1269,48 @@
     "select-unit": "Velg enhet",
     "edit": "Edit"
 
-
+  },
+  "group" : {
+    "create-group-title": "Title for your group",
+    "create-group-description": "Description for your group",
+    "group-name" : "Group Name",
+    "group-created-success": "Your group was created successfully.",
+    "invite-household-title": "Invite A Household",
+    "invite-household-description": "Invite a household to join your group.",
+    "household-name": "Household Name",
+    "enter-household-name": "Enter the name of the household to invite",
+    "pending-group-invitations": "Group Invitations",
+    "invitation-received": "Group invitation received",
+    "send-invitation": "Send invitation",
+    "invitation-sent-success": "Your invitation has been sent successfully."
+  },
+  "gamification": {
+    "unsavedWarning": "You have unsaved changes. Remember to save before leaving!",
+    "gameHistory": "Quiz History",
+    "attempt": "Attempt",
+    "attemptHistory": "Attempt History",
+    "quizOverview": "Quiz Overview",
+    "createNewQuiz": "Create New Quiz",
+    "noAttempts": "No attempts have been made.",
+    "previousAttempt": "Previous Attempt",
+    "noMoreQuizzes": "No more quizzes to load.",
+    "saveQuiz": "Save Quiz",
+    "addOption": "Add Option",
+    "addQuestion": "Add Question",
+    "enterQuestionPlaceholder": "Enter question text",
+    "quizPreview": "Quiz Preview",
+    "reviewBeforePublish": "Review the quiz before saving.",
+    "question": "Question",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "youScored": "You Scored",
+    "outOf": "Out Of",
+    "quizCreator": "Quiz Creator",
+    "thanksForParticipating": "Thank you for participating in this quiz!",
+    "quizSummary": "Quiz Summary",
+    "restartQuiz": "Restart Quiz",
+    "backToQuizzes": "Back To Quiz Overview",
+    "backToTop": "Back To Top",
+    "noMoreAttemptsToLoad": "No more attempts to load"
   }
 }

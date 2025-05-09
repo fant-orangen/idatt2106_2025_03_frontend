@@ -11,7 +11,9 @@
     "loading": "Laster inn ",
     "not-found": "Fant ingenting",
     "all-is-loaded": "Alt er lastet inn",
-    "edit": "Rediger"
+    "edit": "Rediger",
+    "accept": "Aksepter",
+    "reject": "Avvis"
   },
   "actions": {
     "to-reflect": "for å reflektere",
@@ -204,7 +206,12 @@
     "invalid-phone": "Ugyldig telefonnummer",
     "terms": "Du må godta vilkårene og betingelsene.",
     "unexpected-error": "Uventet feil - vennligst prøv igjen senere.",
-    "network-error": "Ingen nettverkstilkobling. Vennligst sjekk internettforbindelsen din."
+    "network-error": "Ingen nettverkstilkobling. Vennligst sjekk internettforbindelsen din.",
+    "account-locked": " Brukernavn eller passord er feil.",
+    "invalid-credentials": "Brukernavn eller passord er feil.",
+    "unexpected-error": "Det har oppstått en uventet feil. Vennligst prøv igjen senere.",
+    "network-error": "Nettverksfeil. Vennligst sjekk tilkoblingen din.",
+    "invalid-2fa-code": "2FA koden du har skrevet inn er feil. Vennligst prøv igjen."
   },
   "success": {
     "registration-successful": "Registrering vellykket! Du kan nå logge inn.",
@@ -1187,7 +1194,8 @@
     "food-days-left": "dager igjen med mat",
     "water-days-left": "dager igjen med vann",
     "manage-supplies": "Administrer forsyninger",
-    "view-household": "Vis husholdning"
+    "view-household": "Vis husholdning",
+    "pending-sent-invitations": "Pending invitations sent from your household"
 
   },
   "inventory": {
@@ -1202,11 +1210,50 @@
     "food-exists-title": "Allerede eksisterende matvare",
     "food-exists-message": "Matvaren du forsøker å legge til finnes allerede. Dersom du ønsker å legge til en ny batch, trykk 'Rediger'.",
     "food-share": "Del matvare"
-
-
-
-
-  }
+  },
+  "group" : {
+    "create-group-title": "Tittel for gruppen din",
+    "create-group-description": "Beskrivelse for gruppen",
+    "group-name" : "Gruppenavn",
+    "group-created-success": "Opprettelse av gruppen var vellykket.",
+    "invite-household-title": "Inviter en husholdning",
+    "invite-household-description": "Inviter en husholdning til å bli med i gruppen din.",
+    "household-name": "Navn på husholdning",
+    "enter-household-name": "Skriv inn navnet på husholdningen du ønsker å invitere",
+    "pending-group-invitations": "Gruppeinvitasjoner",
+    "invitation-received": "Gruppeinvitasjon motatt",
+    "send-invitation": "Send invitasjon",
+    "invitation-sent-success": "Din invitasjon er blitt sendt."
+  },
+  "gamification": {
+    "unsavedWarning": "Du har ulagrede endringer. Husk å lagre før du forlater siden!",
+    "gameHistory": "Quizhistorikk",
+    "attempt": "Forsøk",
+    "attemptHistory": "Forsøkshistorikk",
+    "quizOverview": "Quizoversikt",
+    "createNewQuiz": "Opprett ny quiz",
+    "noAttempts": "Ingen forsøk er gjort.",
+    "previousAttempt": "Forrige forsøk",
+    "noMoreQuizzes": "Ingen flere quizer å laste inn.",
+    "saveQuiz": "Lagre quiz",
+    "addOption": "Legg til alternativ",
+    "addQuestion": "Legg til spørsmål",
+    "enterQuestionPlaceholder": "Skriv inn spørsmålstekst",
+    "quizPreview": "Forhåndsvisning av quiz",
+    "reviewBeforePublish": "Se gjennom quizen før du lagrer.",
+    "question": "Spørsmål",
+    "correct": "Riktig",
+    "incorrect": "Feil",
+    "youScored": "Du fikk",
+    "outOf": "av",
+    "quizCreator": "Quizskaper",
+    "thanksForParticipating": "Takk for at du deltok i denne quizen!",
+    "quizSummary": "Oppsummering av quiz",
+    "restartQuiz": "Start quizen på nytt",
+    "backToQuizzes": "Tilbake til quizoversikt",
+    "backToTop": "Tilbake til toppen",
+    "noMoreAttemptsToLoad": "Ingen flere forsøk å laste inn."
+  },
 }
 
 
