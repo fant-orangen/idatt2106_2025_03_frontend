@@ -1,3 +1,87 @@
+<template>
+  <div class="h-full w-full flex flex-col items-center">
+    <h1 class="text-2xl font-bold mt-4 mb-4">{{ t('news.title', 'News') }}</h1>
+
+    <!-- Add a decorative line with global blue color -->
+    <div class="w-full max-w-4xl px-4 mb-6">
+      <div class="h-1 bg-[var(--primary-blue)] rounded-full"></div>
+    </div>
+
+    <div class="overflow-y-auto max-h-[72vh] max-w-3xl mx-auto px-4 sm:px-6 w-full">
+      <ul class="relative my-6 border-l-2 border-border pl-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-32 after:w-0.5 after:bg-border">
+        <li v-for="item in news" :key="item.id" class="relative mb-6 pl-4">
+          <div class="absolute left-0 top-2 h-4 w-4 rounded-full bg-primary transform -translate-x-6.25"></div>
+          <div class="relative z-10">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1">
+              <strong class="text-sm text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
+              <a
+                class="text-xs inline-flex items-center gap-1 text-primary hover:underline"
+                :href="`http://localhost:5173/crisis-event?id=${item.crisisEventId}`"
+                target="_blank"
+              >
+                <span class="text-muted-foreground">{{ t('news.related_crisis') }}:</span> {{ item.crisisEventName }}
+              </a>
+            </div>
+
+            <h3 class="font-medium mt-2">{{ item.title }}</h3>
+            <p class="text-sm mt-1 text-foreground/80">{{ item.content }}</p>
+
+            <!-- Additional Crisis Info (Contextual) -->
+            <div
+              v-if="crisisEventCache[item.crisisEventId]"
+              class="text-xs text-muted-foreground mt-3 space-y-1 rounded-md bg-muted/50 p-3 border border-border/30"
+            >
+              <p class="font-semibold mb-1">{{ t('news.crisis_context') }}</p>
+
+              <p class="flex items-center gap-2">
+                <strong class="inline-block w-24">{{ t('crisis.severity') }}:</strong>
+                <span
+                  :class="{
+                    'text-[var(--crisis-level-green)] font-medium': getSeverity(item.crisisEventId) === 'green',
+                    'text-[var(--crisis-level-yellow)] font-medium': getSeverity(item.crisisEventId) === 'yellow',
+                    'text-[var(--crisis-level-red)] font-medium': getSeverity(item.crisisEventId) === 'red'
+                  }"
+                >
+                  {{ getSeverity(item.crisisEventId) }}
+                </span>
+              </p>
+              <p class="flex items-center gap-2">
+                <strong class="inline-block w-24">{{ t('crisis.start_time') }}:</strong>
+                <span>{{ getStartTime(item.crisisEventId) }}</span>
+              </p>
+              <p class="flex items-center gap-2">
+                <strong class="inline-block w-24">{{ t('crisis.scenario') }}:</strong>
+                <a
+                  v-if="hasScenarioTheme(item.crisisEventId)"
+                  :href="`http://localhost:5173/info/scenario/${getScenarioThemeId(item.crisisEventId)}`"
+                  class="text-primary hover:underline"
+                  target="_blank"
+                >
+                  {{ getScenarioThemeName(item.crisisEventId) }}
+                </a>
+                <a
+                  v-else-if="getScenarioThemeId(item.crisisEventId)"
+                  :href="`http://localhost:5173/info/scenario/${getScenarioThemeId(item.crisisEventId)}`"
+                  class="text-primary hover:underline"
+                  target="_blank"
+                >
+                  {{ t('crisis.view_scenario', 'View Scenario') }}
+                </a>
+              </p>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <InfiniteScroll
+        @load="loadMoreNews"
+        :isLoading="loading"
+        :hasMore="hasMore"
+        class="py-4"
+      />
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -6,6 +90,7 @@ import { fetchGeneralNews } from '@/services/api/NewsService';
 import InfiniteScroll from '@/components/ui/InfiniteScroll.vue';
 import { formatDateFull } from '@/utils/dateUtils';
 import { fetchCrisisEventById } from '@/services/CrisisEventService';
+import { fetchScenarioThemeName } from '@/services/api/ScenarioThemeService';
 import type { CrisisEventDto } from '@/models/CrisisEvent';
 
 const { t } = useI18n();
@@ -15,6 +100,44 @@ const hasMore = ref(true);
 const page = ref(0);
 const pageSize = 5;
 const crisisEventCache = ref<Record<number, CrisisEventDto | null>>({});
+const scenarioThemeCache = ref<Record<number, {id: number, name: string} | null>>({});
+
+// Helper functions to safely handle potentially undefined values
+const getSeverity = (eventId: number): string => {
+  return crisisEventCache.value[eventId]?.severity || '';
+};
+
+const getStartTime = (eventId: number): string => {
+  const startTime = crisisEventCache.value[eventId]?.startTime;
+  return startTime ? formatDateFull(startTime) : '';
+};
+
+const getScenarioThemeId = (eventId: number): number | undefined => {
+  return crisisEventCache.value[eventId]?.scenarioThemeId;
+};
+
+const hasScenarioTheme = (eventId: number): boolean => {
+  const themeId = crisisEventCache.value[eventId]?.scenarioThemeId;
+  return !!themeId && !!scenarioThemeCache.value[themeId];
+};
+
+const getScenarioThemeName = (eventId: number): string => {
+  const themeId = crisisEventCache.value[eventId]?.scenarioThemeId;
+  if (!themeId) return t('crisis.view_scenario', 'View Scenario');
+  return scenarioThemeCache.value[themeId]?.name || t('crisis.view_scenario', 'View Scenario');
+};
+
+const loadScenarioThemeName = async (themeId: number) => {
+  if (themeId in scenarioThemeCache.value) return;
+
+  try {
+    const data = await fetchScenarioThemeName(themeId);
+    scenarioThemeCache.value[themeId] = data;
+  } catch (error) {
+    console.error('Failed to load scenario theme name:', error);
+    scenarioThemeCache.value[themeId] = null;
+  }
+};
 
 const loadCrisisDetails = async (eventId: number) => {
   if (eventId in crisisEventCache.value) return;
@@ -22,6 +145,11 @@ const loadCrisisDetails = async (eventId: number) => {
   try {
     const data = await fetchCrisisEventById(eventId);
     crisisEventCache.value[eventId] = data;
+
+    // After loading crisis details, load the scenario theme name if available
+    if (data?.scenarioThemeId) {
+      await loadScenarioThemeName(data.scenarioThemeId);
+    }
   } catch (error) {
     console.error('Failed to load crisis event details:', error);
     crisisEventCache.value[eventId] = null;
@@ -56,161 +184,9 @@ const loadMoreNews = async () => {
 onMounted(loadMoreNews);
 </script>
 
-<template>
-  <div class="news-scroll-container">
-    <ul class="timeline">
-      <li v-for="item in news" :key="item.id">
-        <div class="dot"></div>
-        <div class="timeline-content">
-          <div class="flex justify-between items-baseline">
-            <strong class="text-sm text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
-            <a
-              class="text-xs text-blue-600 hover:underline"
-              :href="`http://localhost:5173/crisis-event?id=${item.crisisEventId}`"
-              target="_blank"
-            >
-              {{ item.crisisEventName }}
-            </a>
-          </div>
-
-          <h3 class="font-medium mt-1">{{ item.title }}</h3>
-          <p class="text-sm mt-1">{{ item.content }}</p>
-
-          <div class="text-xs text-muted-foreground mt-2">
-            {{ t('news.posted_by', 'Posted by') }} {{ item.createdByName }}
-          </div>
-
-          <!-- Additional Crisis Info -->
-          <div
-            v-if="crisisEventCache[item.crisisEventId]"
-            class="text-xs text-muted-foreground mt-2"
-          >
-            <p>
-              <strong>Severity:</strong>
-              <span
-                :class="{
-                  'text-green-600': crisisEventCache[item.crisisEventId]?.severity === 'green',
-                  'text-yellow-600': crisisEventCache[item.crisisEventId]?.severity === 'yellow',
-                  'text-red-600': crisisEventCache[item.crisisEventId]?.severity === 'red'
-                }"
-              >
-                {{ crisisEventCache[item.crisisEventId]?.severity }}
-              </span>
-            </p>
-            <p>
-              <strong>Start:</strong> {{ formatDateFull(crisisEventCache[item.crisisEventId]?.startTime) }}
-            </p>
-            <p>
-              <strong>Scenario:</strong>
-              <a
-                :href="`http://localhost:5173/info/scenario/${crisisEventCache[item.crisisEventId]?.scenarioThemeId}`"
-                class="text-blue-600 hover:underline"
-                target="_blank"
-              >
-                View Scenario
-              </a>
-            </p>
-          </div>
-        </div>
-      </li>
-    </ul>
-    <InfiniteScroll @load-more="loadMoreNews" :loading="loading" :has-more="hasMore" />
-  </div>
-</template>
-
 <style scoped>
-.news-page {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.header-section {
-  flex: none;
-}
-
-.content-section {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem 0;
-  max-height: 70vh; /* Limit the height to 70% of viewport height */
-}
-
-.content-wrapper {
-  width: 100%;
-  max-width: 48rem;
-}
-
-/* Breadcrumb styling */
-.breadcrumb {
-  font-size: 0.875rem;
-  color: var(--color-muted-foreground);
-  margin-bottom: 1rem;
-}
-
-.breadcrumb .current {
-  color: var(--color-foreground);
-  font-weight: 500;
-}
-
-/* Container for news content */
-.news-scroll-container {
-  overflow-y: auto;
-  max-height: 60vh; /* Limit the height of the scrollable area */
-  width: 100%;
-  position: relative;
-}
-
-/* Timeline styling */
-.timeline {
-  position: relative;
-  margin: 1.5rem 0;
-  padding-left: 2rem;
-  list-style: none;
-  border-left: 2px solid var(--color-border, #e2e8f0);
-}
-
-.timeline li {
-  position: relative;
-  margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
-}
-
-.dot {
-  position: absolute;
-  left: -2.4rem;
-  top: 0.45rem;
-  width: 0.75rem;
-  height: 0.75rem;
-  background-color: var(--color-primary, #3b82f6);
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.timeline-content {
-  position: relative;
-  z-index: 2;
-}
-
-/* Responsive adjustments */
+/* Any custom styles that can't be handled with Tailwind classes */
 @media (max-width: 640px) {
-  .timeline {
-    padding-left: 1rem;
-  }
-
-  .timeline li {
-    margin-bottom: 1rem;
-    padding-left: 1rem;
-  }
-
-  .dot {
-    left: -1.5rem;
-    width: 0.6rem;
-    height: 0.6rem;
-  }
-
-  .timeline-content {
-    font-size: 0.875rem;
-  }
+  /* Mobile-specific adjustments */
 }
 </style>
