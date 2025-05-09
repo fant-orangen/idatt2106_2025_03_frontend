@@ -257,42 +257,42 @@ const getWaterPriority = (days: number): Priority => {
 };
 
 /**
- * Returns CSS classes for an item based on its priority
- * @param {Priority} priority - The priority level
- * @returns {string} CSS classes
+ * Returns CSS classes for styling items based on their priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for styling
  */
-const getItemClasses = (priority: Priority): string => {
+ const getItemClasses = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+      return 'bg-red-50 border border-red-200 dark:text-red-900 dark:bg-red-100';
     case Priority.MEDIUM:
-      return 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
+      return 'bg-orange-50 border border-orange-200 dark:text-orange-900 dark:bg-orange-100';
     case Priority.LOW:
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+      return 'bg-yellow-50 border border-yellow-200 dark:text-yellow-900 dark:bg-yellow-100';
     case Priority.GOOD:
-      return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
+      return 'bg-green-50 border border-green-200';
     default:
-      return 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300';
+      return '';
   }
 };
 
 /**
- * Returns CSS classes for an icon based on its priority
- * @param {Priority} priority - The priority level
- * @returns {string} CSS classes
+ * Returns CSS classes for styling icons based on priority level
+ * @param {Priority} priority - Priority level of the item
+ * @returns {string} CSS classes for icon styling
  */
 const getIconClass = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'text-red-700 dark:text-red-300';
+      return 'text-red-500';
     case Priority.MEDIUM:
-      return 'text-orange-700 dark:text-orange-300';
+      return 'text-orange-500';
     case Priority.LOW:
-      return 'text-yellow-700 dark:text-yellow-300';
+      return 'text-yellow-500';
     case Priority.GOOD:
-      return 'text-green-700 dark:text-green-300';
+      return 'text-green-500';
     default:
-      return 'text-gray-700 dark:text-gray-300';
+      return '';
   }
 };
 
