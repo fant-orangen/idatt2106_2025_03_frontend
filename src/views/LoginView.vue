@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
 import { useI18n } from 'vue-i18n'
-import { AxiosError } from 'axios' // Import AxiosError type
+import { AxiosError } from 'axios'
 
 const { t } = useI18n()
 
@@ -24,8 +24,8 @@ import {
 import router from '@/router'
 import { Eye, EyeOff } from 'lucide-vue-next'
 import { CardContent, Card, CardHeader, CardTitle } from '@/components/ui/card'
-import { PinInputGroup, PinInputInput, PinInput } from '@/components/ui/pin-input'
 import { sendPasswordResetEmail } from '@/services/UserService.ts'
+import TwoFactorAuthDialog from '@/components/TwoFactorAuthDialog.vue'
 
 // Reactive variables for form fields and error messages
 const email = ref('')
@@ -49,7 +49,6 @@ const pinValue = ref<string[]>([])
 async function handleLogin() {
   try {
     errorMessage.value = ''
-    console.log('Executing reCAPTCHA...')
 
     // Generate the reCAPTCHA token
     const recaptchaToken = await new Promise<string>((resolve, reject) => {
@@ -59,7 +58,6 @@ async function handleLogin() {
             action: 'LOGIN',
           })
           .then((token: string) => {
-            console.log('reCAPTCHA Token:', token)
             if (!token) {
               reject(new Error('Failed to generate reCAPTCHA token'))
             } else {
@@ -70,18 +68,18 @@ async function handleLogin() {
       })
     })
 
-    console.log('This is the token being sent:', recaptchaToken)
-
     // Verify the login credentials
     const response = await userStore.verifyLogin(email.value, password.value, recaptchaToken)
 
     // Handle the response
     if (response.status === 200) {
-      await userStore.login(response.status, response.data.token, email.value);
+      await userStore.login(response.status, response.data.token, email.value)
       router.push('/')
     } else if (response.status === 202) {
-      userStore.send2FACodeToEmail(email.value)
-      isTwoFactorAuthDialogOpen.value = true
+      // Ensure the 2FA dialog is reopened
+      isTwoFactorAuthDialogOpen.value = false // Reset state
+      await userStore.send2FACodeToEmail(email.value) // Send the 2FA code
+      isTwoFactorAuthDialogOpen.value = true // Reopen the dialog
     } else {
       errorMessage.value = t('errors.unexpected-error')
     }
@@ -110,15 +108,13 @@ async function handleLogin() {
  * @returns {Promise<void>} Resolves when the 2FA verification is complete.
  * @throws {Error} If the verification fails, an error message is displayed.
  */
-async function handleComplete() {
+async function handleComplete(pin: number) {
+  console.log('Received pin in handleComplete:', pin) // Debug log
   try {
-    console.log('Pin value:', Number(pinValue.value.join('')))
-    const pinAsNumber = Number(pinValue.value.join(''))
-    console.log('Pin as number:', pinAsNumber)
-    const response = await userStore.verify2FACodeInput(email.value, pinAsNumber)
+    const response = await userStore.verify2FACodeInput(email.value, pin)
     if (response.status === 200) {
       isTwoFactorAuthDialogOpen.value = false
-      await userStore.login(response.status, response.data.token, email.value);
+      await userStore.login(response.status, response.data.token, email.value)
       router.push('/')
     } else {
       errorMessage.value = t('errors.invalid-2fa-code')
@@ -227,30 +223,12 @@ async function handleResetPassword() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Dialog v-model:open="isTwoFactorAuthDialogOpen">
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    {{ $t('login.2fa-login-title') }}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {{ $t('login.2fa-login-description') }}
-                  </DialogDescription>
-                </DialogHeader>
-                <PinInput
-                  id="pin-input"
-                  v-model="pinValue"
-                  placeholder="○"
-                  class="flex justify-center items-center gap-2"
-                  @complete="handleComplete"
-                >
-                  <PinInputGroup>
-                    <PinInputInput v-for="(id, index) in 6" :key="id" :index="index" />
-                  </PinInputGroup>
-                </PinInput>
-                <DialogFooter> </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <TwoFactorAuthDialog
+              v-model:isOpen="isTwoFactorAuthDialogOpen"
+              :email="email"
+              @verify="handleComplete"
+              @close="isTwoFactorAuthDialogOpen = false"
+            />
           </div>
 
           <Button type="submit" class="w-full bg-primary hover:bg-primary/90">

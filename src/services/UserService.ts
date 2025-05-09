@@ -12,7 +12,7 @@ import type {
   UserPreferencesDto,
   ExtendedUserProfile,
   UpdateExtendedUserProfile,
-  UserBasicInfoDto
+  UserBasicInfoDto,
 } from '@/models/User'
 
 /**
@@ -50,7 +50,7 @@ export async function updateUserPreference(
 ): Promise<void> {
   try {
     const payload = { [settingKey]: settingValue }
-    const response = await api.patch(`/user/me/preferences/update`, payload)
+    const response = await api.patch(`/user/me/preferences`, payload)
     console.log('Preference updated successfully:', response.data)
   } catch (error) {
     console.error('Error updating preference:', error)
@@ -67,13 +67,20 @@ export async function updateUserPreference(
  */
 export async function getUserPreferences(): Promise<UserPreferencesDto> {
   try {
-    const response = await api.get<UserPreferencesDto>('/user/me/preferences/get')
+    const response = await api.get<UserPreferencesDto>('/user/me/preferences')
     return response.data
-  } catch (error) {
-    console.error('Error fetching user preferences:', error)
-    throw error
+  } catch (error: any) {
+    console.error(
+      'Failed to fetch user preferences. Please check the API or network connection.',
+      error,
+    )
+    throw new Error(
+      error.response?.data?.message ||
+        'An unexpected error occurred while fetching user preferences.',
+    )
   }
 }
+
 /**
  * Resets the user's password using a token and a new password.
  *
@@ -89,12 +96,12 @@ export async function resetPassword(token: string, newPassword: string): Promise
     const payload = {
       token,
       newPassword,
-    };
-    await api.post('/auth/reset-password', payload);
-    console.log('Password reset successfully');
+    }
+    await api.post('/auth/reset-password', payload)
+    console.log('Password reset successfully')
   } catch (error) {
-    console.error('Error resetting password:', error);
-    throw error;
+    console.error('Error resetting password:', error)
+    throw error
   }
 }
 /**
@@ -110,12 +117,12 @@ export async function sendPasswordResetEmail(email: string): Promise<void> {
   try {
     const payload = {
       email,
-    };
-    await api.post('/auth/forgot-password', payload);
-    console.log('Password reset email sent successfully');
+    }
+    await api.post('/auth/forgot-password', payload)
+    console.log('Password reset email sent successfully')
   } catch (error) {
-    console.error('Error sending password reset email:', error);
-    throw error;
+    console.error('Error sending password reset email:', error)
+    throw error
   }
 }
 
@@ -133,7 +140,9 @@ export async function getUserProfile(): Promise<ExtendedUserProfile> {
  * @param profileData The updated profile data
  * @returns The updated user profile
  */
-export async function updateUserProfile(profileData: Partial<UpdateExtendedUserProfile>): Promise<ExtendedUserProfile> {
+export async function updateUserProfile(
+  profileData: Partial<UpdateExtendedUserProfile>,
+): Promise<ExtendedUserProfile> {
   const response = await api.put('/user/me', profileData)
   return response.data
 }
