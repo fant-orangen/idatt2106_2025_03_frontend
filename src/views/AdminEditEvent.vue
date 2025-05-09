@@ -188,12 +188,12 @@
                     <FormControl>
                       <Select v-bind="field">
                         <SelectTrigger style="cursor: pointer">
-                          <SelectValue :class="['severity-tag', field.value]">{{
+                          <SelectValue class="text-white dark:text-black" :class="['severity-tag', field.value]">{{
                               $t('add-event-info.crisis-level.' + field.value)
                             }}</SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectGroup>
+                          <SelectGroup class="text-white dark:text-black">
                             <SelectItem class="severity-tag green" value="green">{{
                                 $t('add-event-info.crisis-level.low')
                               }}</SelectItem>
@@ -261,7 +261,7 @@
         </Card>
       </div>
 
-      <div class="map-area" v-if="selectedEvent">
+      <div class="map-area z-50" v-if="selectedEvent">
         <StaticMapWithCircle
           v-if="
             selectedEvent.epicenterLatitude != null && selectedEvent.epicenterLongitude != null

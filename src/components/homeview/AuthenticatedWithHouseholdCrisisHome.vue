@@ -17,7 +17,7 @@
         :class="getCrisisContainerClass(mainCrisis.severity)"
       >
         <h2 class="text-xl font-bold mb-3 flex items-center">
-          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2" :class="getCrisisIconClass(mainCrisis.severity)" />
+          <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2 w-[18px] h-[18px]" :class="getCrisisIconClass(mainCrisis.severity)" />
           {{ t('home.crisis_theme.title', 'Ongoing Crisis Scenario') }}
         </h2>
         <p class="mb-4 text-muted-foreground">
@@ -33,13 +33,21 @@
           <h3 class="font-medium mb-2 text-center flex items-center justify-center gap-2">
             {{ mainCrisis.name }}
             <span
-              class="text-xs px-2 py-0.5 rounded-full uppercase font-bold"
-              :style="{ backgroundColor: getSeverityColor(mainCrisis.severity), color: 'white' }"
+              class="text-xs px-2 py-0.5 rounded-full uppercase font-bold text-white"
+              :style="{ backgroundColor: getSeverityColor(mainCrisis.severity) }"
             >
               {{ mainCrisis.severity }}
             </span>
           </h3>
-          <div class="text-sm prose prose-sm max-w-none" v-html="markdownToHtml(scenarioUnderInstructions)"></div>
+          <div
+            class="text-sm prose prose-sm max-w-none"
+            :class="{
+              'prose-a:text-[var(--crisis-level-red)]': mainCrisis.severity === 'red',
+              'prose-a:text-[var(--crisis-level-yellow)]': mainCrisis.severity === 'yellow',
+              'prose-a:text-[var(--crisis-level-green)]': mainCrisis.severity === 'green'
+            }"
+            v-html="markdownToHtml(scenarioUnderInstructions)"
+          ></div>
         </div>
         <div v-else-if="loadingInstructions" class="text-center py-4">
           <div class="inline-block w-6 h-6 border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
@@ -49,6 +57,7 @@
         <div class="mt-4 text-center">
           <Button
             variant="outline"
+            class="border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/20 dark:hover:bg-[var(--crisis-level-red)]/40"
             :class="getCrisisButtonClass(mainCrisis.severity)"
             @click="navigateToScenarioTheme(mainCrisis.id)"
           >
@@ -75,13 +84,13 @@
         <!-- Household Supplies -->
         <div class="household-supplies bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)]" />
+            <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)] w-[18px] h-[18px]" />
             {{ t('home.household.supplies', 'Household Supplies') }}
           </h2>
 
           <!-- Status messages about food and water -->
           <div class="mb-4">
-            <div v-if="!daysOfFood && !daysOfWater" class="text-center text-gray-500">
+            <div v-if="!daysOfFood && !daysOfWater" class="text-center text-gray-500 dark:text-gray-400">
               {{ t('household.no-supplies', 'No supplies registered yet') }}
             </div>
             <div v-else>
@@ -110,14 +119,14 @@
 
           <div class="flex flex-col sm:flex-row gap-3 mt-4">
             <Button
-              class="flex-1 bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/90 text-white"
+              class="flex-1 bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/90"
               @click="navigateTo('/food-and-drinks')"
             >
               {{ t('household.manage-supplies', 'Manage Supplies') }}
             </Button>
             <Button
               variant="outline"
-              class="flex-1 border-[var(--crisis-level-green)]/30 text-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/5"
+              class="flex-1 border-[var(--crisis-level-green)]/30 text-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/20 dark:hover:bg-[var(--crisis-level-green)]/40"
               @click="navigateTo('/household')"
             >
               {{ t('household.view-household', 'View Household') }}
@@ -126,34 +135,34 @@
         </div>
 
         <!-- Reflections & Groups -->
-        <div class="reflections-groups bg-card p-6 rounded-lg border border-[var(--default-blue)]/30">
+        <div class="reflections-groups bg-card p-6 rounded-lg border border-[var(--default-blue2)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
-            <font-awesome-icon :icon="['fas', 'users']" class="mr-2 text-[var(--default-blue)]" />
+            <font-awesome-icon :icon="['fas', 'users']" class="mr-2 text-[var(--default-blue2)] w-[18px] h-[18px]" />
             {{ t('home.community.title', 'Community Features') }}
           </h2>
           <p class="mb-4 text-muted-foreground">{{ t('home.community.description', 'Share experiences and resources with your community') }}</p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div class="text-center p-4 bg-[var(--default-blue)]/10 rounded-lg border border-[var(--default-blue)]/20">
+            <div class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20">
               <h3 class="font-medium mb-2">{{ t('home.reflections.title', 'Reflections') }}</h3>
               <p class="text-sm text-muted-foreground mb-3">{{ t('home.reflections.description', 'Share your experiences and learn from others') }}</p>
               <Button
                 variant="outline"
-                class="w-full border-[var(--default-blue)]/30 text-[var(--default-blue)] hover:bg-[var(--default-blue)]/5"
+                class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
                 @click="navigateTo('/reflections')"
               >
-                {{ t('home.reflections.view', 'View Reflections') }}
+                {{ t('home.reflections.view', 'View Reflections') }} <ChevronRight class="h-4 w-4 ml-1" />
               </Button>
             </div>
-            <div class="text-center p-4 bg-[var(--default-blue)]/10 rounded-lg border border-[var(--default-blue)]/20">
+            <div class="text-center p-4 bg-[var(--default-blue2)]/10 rounded-lg border border-[var(--default-blue2)]/20">
               <h3 class="font-medium mb-2">{{ t('home.groups.title', 'Groups') }}</h3>
               <p class="text-sm text-muted-foreground mb-3">{{ t('home.groups.description', 'Collaborate and share resources with other households') }}</p>
               <Button
                 variant="outline"
-                class="w-full border-[var(--default-blue)]/30 text-[var(--default-blue)] hover:bg-[var(--default-blue)]/5"
+                class="w-full border-[var(--default-blue2)]/30 text-[var(--default-blue2)] hover:bg-[var(--default-blue)]/5 dark:hover:bg-[var(--default-blue)]/40"
                 @click="navigateTo('/groups')"
               >
-                {{ t('home.groups.view', 'View Groups') }}
+                {{ t('home.groups.view', 'View Groups') }} <ChevronRight class="h-4 w-4 ml-1" />
               </Button>
             </div>
           </div>
@@ -166,11 +175,13 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-vue-next';
 import { AlertTriangle } from 'lucide-vue-next';
 import MapViewComponent from '@/components/homeview/MapViewComponent.vue';
 import NewsViewComponent from '@/components/homeview/NewsViewComponent.vue';
@@ -239,15 +250,15 @@ const getWaterPriority = (days: number): Priority => {
 const getItemClasses = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'bg-red-100 text-red-700';
+      return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
     case Priority.MEDIUM:
-      return 'bg-orange-100 text-orange-700';
+      return 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300';
     case Priority.LOW:
-      return 'bg-yellow-100 text-yellow-700';
+      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
     case Priority.GOOD:
-      return 'bg-green-100 text-green-700';
+      return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
     default:
-      return 'bg-gray-100 text-gray-700';
+      return 'bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300';
   }
 };
 
@@ -259,15 +270,15 @@ const getItemClasses = (priority: Priority): string => {
 const getIconClass = (priority: Priority): string => {
   switch (priority) {
     case Priority.HIGH:
-      return 'text-red-700';
+      return 'text-red-700 dark:text-red-300';
     case Priority.MEDIUM:
-      return 'text-orange-700';
+      return 'text-orange-700 dark:text-orange-300';
     case Priority.LOW:
-      return 'text-yellow-700';
+      return 'text-yellow-700 dark:text-yellow-300';
     case Priority.GOOD:
-      return 'text-green-700';
+      return 'text-green-700 dark:text-green-300';
     default:
-      return 'text-gray-700';
+      return 'text-gray-700 dark:text-gray-300';
   }
 };
 
@@ -485,63 +496,3 @@ onMounted(async () => {
   ]);
 });
 </script>
-
-<style scoped>
-.mr-2 {
-  width: 18px;
-  height: 18px;
-}
-
-.notification-banner {
-  position: relative;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
-}
-
-/* Markdown content styling */
-.prose {
-  color: inherit;
-}
-
-.prose p {
-  margin-bottom: 0.75rem;
-}
-
-.prose ul, .prose ol {
-  margin-left: 1.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.prose ul {
-  list-style-type: disc;
-}
-
-.prose ol {
-  list-style-type: decimal;
-}
-
-/* Link colors based on crisis severity */
-.border-\[var\(--crisis-level-red\)\]\/30 .prose a {
-  color: var(--crisis-level-red);
-  text-decoration: underline;
-}
-
-.border-\[var\(--crisis-level-yellow\)\]\/30 .prose a {
-  color: var(--crisis-level-yellow);
-  text-decoration: underline;
-}
-
-.border-\[var\(--crisis-level-green\)\]\/30 .prose a {
-  color: var(--crisis-level-green);
-  text-decoration: underline;
-}
-
-.prose strong {
-  font-weight: 600;
-}
-
-.prose em {
-  font-style: italic;
-}
-</style>

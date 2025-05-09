@@ -8,7 +8,6 @@
             <SelectValue :placeholder="t('reflect.select-scope')" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">{{ t('reflect.all-shared') }}</SelectItem>
             <SelectItem v-if="hasHousehold" value="household">{{ t('reflect.household-only') }}</SelectItem>
             <SelectItem value="group">{{ t('reflect.group-only') }}</SelectItem>
           </SelectContent>
@@ -91,7 +90,6 @@ import type { ReflectionResponseDto } from '@/models/Reflection';
 import {
   getSharedReflections,
   getHouseholdReflections,
-  getGroupReflections
 } from '@/services/ReflectionService';
 
 const { t } = useI18n();
@@ -117,12 +115,11 @@ const hasHousehold = computed(() => !!props.householdId);
 
 // Set default scope based on household status
 const defaultScope = computed(() => {
-  if (props.defaultScope) return props.defaultScope;
-  if (props.defaultScope === 'household' && !hasHousehold.value) return 'all';
-  return 'all';
+  if (props.defaultScope === 'household' && hasHousehold.value) return 'household';
+  return 'group';
 });
 
-const selectedScope = ref<'all' | 'household' | 'group'>(defaultScope.value);
+const selectedScope = ref<'household' | 'group'>(hasHousehold.value ? 'household' : 'group');
 
 // Format date for display
 const formatDate = (dateString: string): string => {
@@ -137,7 +134,6 @@ const navigateToCrisisEvent = (crisisEventId: number) => {
   });
 };
 
-// Load reflections based on selected scope
 const loadReflections = async (page: number = 0) => {
   if (isLoading.value) return;
 
@@ -146,20 +142,11 @@ const loadReflections = async (page: number = 0) => {
     let response;
     console.log(`Loading reflections with scope=${selectedScope.value}, page=${page}`);
 
-    switch (selectedScope.value) {
-      case 'household':
-        response = await getHouseholdReflections(page, pageSize);
-        break;
-      case 'group':
-        response = await getGroupReflections(page, pageSize);
-        break;
-      case 'all':
-      default:
-        response = await getSharedReflections(page, pageSize);
-        break;
+    if (selectedScope.value === 'household' && hasHousehold.value) {
+      response = await getHouseholdReflections(page, pageSize);
+    } else {
+      response = await getSharedReflections(page, pageSize);
     }
-
-    console.log('Received response:', response);
 
     if (page === 0) {
       reflections.value = response.content;
@@ -169,9 +156,8 @@ const loadReflections = async (page: number = 0) => {
 
     hasMore.value = !response.last;
     currentPage.value = page;
-    console.log(`Updated hasMore=${hasMore.value}, currentPage=${currentPage.value}`);
   } catch (error) {
-    console.error('Error loading shared reflections:', error);
+    console.error(`Error loading ${selectedScope.value} reflections:`, error);
     toast.error(t('reflect.error-loading-shared'));
     hasMore.value = false;
   } finally {

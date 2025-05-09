@@ -73,29 +73,6 @@ export async function getHouseholdReflections(
 }
 
 /**
- * Fetches shared reflections for a specific group.
- *
- * @param {number} groupId - The ID of the group
- * @param {number} page - The page number (0-based)
- * @param {number} size - The number of items per page
- * @returns {Promise<Page<ReflectionResponseDto>>} Promise resolving to a page of group reflections
- */
-export async function getGroupReflections(
-  page: number = 0,
-  size: number = 5
-): Promise<Page<ReflectionResponseDto>> {
-  try {
-    const response = await api.get<Page<ReflectionResponseDto>>(`/user/reflections/groups`, {
-      params: { page, size }
-    })
-    return response.data
-  } catch (error) {
-    console.error(`Error fetching group reflections for groups`, error)
-    throw error
-  }
-}
-
-/**
  * Creates a new reflection.
  *
  * @param {CreateReflectionDto} reflectionData - The reflection data to create
