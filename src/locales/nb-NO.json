@@ -1185,7 +1185,9 @@
     "leave-admin-warning": "Advarsel: Administrator",
     "transfer-admin-first": "En husholdning må ha en administrator. Overfør rollen før du forlater husholdningen.",
     "food-days-left": "dager igjen med mat",
-    "water-days-left": "dager igjen med vann"
+    "water-days-left": "dager igjen med vann",
+    "manage-supplies": "Administrer forsyninger",
+    "view-household": "Vis husholdning"
 
 
 

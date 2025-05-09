@@ -1245,7 +1245,9 @@
     "transfer-admin-description": "Transfer the administrator role to someone else in your household",
     "admin-transferred-success": "Administrator role has now been transferred.",
     "food-days-left": "days left with food",
-    "water-days-left": "days left with water"
+    "water-days-left": "days left with water",
+    "manage-supplies": "Manage supplies",
+    "view-household": "View household"
 
 
 
