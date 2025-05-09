@@ -711,6 +711,7 @@
   "sidebar": {
     "title": "Informasjonssider",
     "themes": {
+      "home": "Hjem",
       "crisisSituations": {
         "title": "Ulike typer krisesituasjoner",
         "pandemic": "Pandemi",
@@ -796,6 +797,8 @@
     }
   },
   "infoPage": {
+    "homeTitle": "Krisemelding",
+    "homeDescription": "Få informasjon om hvordan du kan forberede deg og hva du bør gjøre i en krise.",
     "aboutThisTheme": "Om dette temaet",
     "themeDescription": "Viktig informasjon for å hjelpe deg med å forberede og respondere.",
     "readMore": "Les mer",

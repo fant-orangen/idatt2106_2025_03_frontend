@@ -711,6 +711,7 @@
   "sidebar": {
     "title": "Information Pages",
     "themes": {
+      "home": "Home",
       "crisisSituations": {
         "title": "Different types of crisis situations",
         "pandemic": "Pandemic",
@@ -796,6 +797,8 @@
     }
   },
   "infoPage": {
+    "homeTitle": "Crisis Information Center",
+    "homeDescription": "Access comprehensive information about crisis preparation, response, and recovery.",
     "aboutThisTheme": "About this theme",
     "themeDescription": "Important information to help you prepare and respond.",
     "readMore": "Read more",
