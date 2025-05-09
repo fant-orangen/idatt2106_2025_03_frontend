@@ -29,12 +29,39 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Checkout backend repo
+      - name: Checkout backend
+        uses: actions/checkout@v4
+        with:
+          repository: fant-orangen/idatt2106_2025_03_backend
+          path: backend
+
+      # Setup Java for backend
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      # Build backend (assume Maven wrapper and backend in backend/backend)
+      - name: Build backend
+        run: ./mvnw clean install
+        working-directory: backend/backend
+
+      - name: Start backend
+        run: ./mvnw spring-boot:run &
+        working-directory: backend/backend
+
+      # Wait for backend to be ready
+      - name: Wait for backend
+        run: npx wait-on http://localhost:8080/actuator/health
+
       - name: Build
         run: npm run build --if-present
 
       - name: Run Unit Tests
         run: npm run test:unit -- --run
 
-      # Uncomment the following when E2E tests are ready
-      # - name: Run E2E Tests
-      #   run: npm run test:e2e
+      # Run E2E Tests (uncomment and use)
+      - name: Run E2E Tests
+        run: npm run test:e2e
