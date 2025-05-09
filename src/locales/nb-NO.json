@@ -13,7 +13,9 @@
     "all-is-loaded": "Alt er lastet inn",
     "edit": "Rediger",
     "accept": "Aksepter",
-    "reject": "Avvis"
+    "reject": "Avvis",
+    "pick-date": "Velg en dato",
+    "date-title":"Startid"
   },
   "actions": {
     "to-reflect": "for å reflektere",
@@ -49,7 +51,7 @@
     "reset-password": "Tilbakestill passord",
     "2fa-login-title": "To-trinnsverifisering",
     "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn.",
-    "already-user": "Dette brukernavnet er allerede registrert.",
+    "already-user": "Allerede bruker?",
     "log-in-here": "Logg inn her"
   },
   "reset-password": {
@@ -220,6 +222,8 @@
   },
   "crisis": {
     "crisis-status": "Krisestatus",
+    "severity": "Alvorlighetsgrad:",
+    "start_time": "Krisestart:",
     "more-crisis-info": "Les mer om din nåværende krisesituasjon",
     "no-crisis": "Ingen pågående krise",
     "all_clear": "Alt klart. Ingen aktive krisehendelser for øyeblikket.",
@@ -353,7 +357,7 @@
     },
     "crisis_info": {
       "title": "Kriseinformasjonssenter",
-      "description": "Få sanntidsoppdateringer og praktisk veiledning for alle typer nødsituasjoner.",
+      "description": "Få nyttig informasjon og veiledning om alle typer nødsituasjoner.",
       "before": "Lær hvordan du forbereder deg før en krise oppstår",
       "during": "Få kritisk informasjon under aktive nødsituasjoner",
       "after": "Finn ressurser for gjenoppretting etter at en krise har passert"
@@ -1257,7 +1261,70 @@
     "backToQuizzes": "Tilbake til quizoversikt",
     "backToTop": "Tilbake til toppen",
     "noMoreAttemptsToLoad": "Ingen flere forsøk å laste inn."
+  },
+  "news": {
+    "related_crisis": "Relatert krise",
+    "crisis_context": "Relatert kriseinformasjon"
+
+  },
+  "infoPage": {
+    "aboutThisTheme": "Om dette temaet",
+    "themeDescription": "Viktig informasjon for å hjelpe deg med å forberede og reagere.",
+    "readMore": "Les mer",
+    "readMoreTitle": "Ytterligere ressurser",
+    "readMoreDescription": "Finn mer detaljert informasjon om dette temaet fra offisielle kilder.",
+    "officialWebsites": "Offisielle nettsider",
+    "additionalResources": "For mer informasjon, besøk disse offisielle ressursene:",
+    "close": "Lukk",
+    "emergencyContacts": "Nødkontakter",
+    "emergencyContactsTitle": "Nødkontakter",
+    "emergencyContactsDescription": "Viktige kontakter for nødsituasjoner.",
+    "generalEmergencyContacts": {
+      "title": "Generelle nødnummer",
+      "police": "Politi: 112",
+      "ambulance": "Ambulanse: 113",
+      "fire": "Brannvesen: 110",
+      "civilDefense": "Sivilforsvaret: 51 51 51 51"
+    },
+    "relatedThemes": "Relaterte temaer",
+    "selectThemePrompt": "Velg et tema for å lære mer",
+    "browseThemesDescription": "Bla gjennom våre informasjonsressurser for å lære om forskjellige krisesituasjoner og hvordan du kan forberede deg.",
+    "preparednessStorageBrief": "Lær hvilke forsyninger du bør ha klare for nødsituasjoner.",
+    "afterCrisisBrief": "Finn veiledning om gjenoppretting og tilbakevending til normalitet etter en krise.",
+    "learnMoreTopic": "Klikk for å lære mer om dette temaet."
+
+
+  },
+  "sidebar": {
+    "title": "Informasjonssider",
+    "themes-preparednessStorage": "Beredskapslager",
+    "themes-afterCrisis": "Etter krisen",
+    "categories": "Kategorier",
+    "scenario-description": "Beskrivelse",
+    "scenario-nodescription": "Det er ikke lagt inn noe beskrivelse for denne kategorien.",
+    "themes": {
+      "preparednessStorage": "Beredskapslager",
+      "afterCrisis": "Etter krisen"
+    }
+  },
+  "scenarioThemes": {
+    "description": "Beskrivelse",
+    "before": "Før krisen:",
+    "under": "Under krisen",
+    "after": "Etter krisen"
+  },
+  "themes": {
+    "preparednessStorage": {
+      "title": "Beredskapslager",
+      "content": ""
+    },
+    "afterCrisis": {
+      "title": "Etter en krise",
+      "content": "Veiledning for etter en krise har inntruffet."
+    }
+
+    }
   }
-}
+
 
 

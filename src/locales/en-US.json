@@ -13,7 +13,9 @@
     "all-is-loaded": "Everything is loaded",
     "edit": "Edit",
     "accept": "Accept",
-    "reject": "Reject"
+    "reject": "Reject",
+    "pick-date": "Pick a date",
+    "date-title":"Start time"
   },
   "actions": {
     "to-reflect": "to reflect",
@@ -48,7 +50,7 @@
     "reset-password": "Reset Password",
     "2fa-login-title": "Two-Step Verification",
     "2fa-login-description": "Enter the verification code sent to your email to complete the login process.",
-    "already-user": "This username is already registered.",
+    "already-user": "Already a user? ",
     "log-in-here": "Login here"
   },
   "reset-password": {
@@ -211,7 +213,6 @@
     "unexpected-error": "An unexpected error has occurred. Please try again later.",
     "network-error": "Nettwork error. Please check your connection.",
     "invalid-2fa-code": "The 2FA code you have entered is incorrect. Please try again."
-
   },
   "success": {
     "registration-successful": "Registration successful! You can now log in.",
@@ -220,6 +221,8 @@
   },
   "crisis": {
     "crisis-status": "Crisis Status",
+    "severity": "Severity:",
+    "start_time": "Crisis Start:",
     "more-crisis-info": "Read more about your current crisis situation",
     "no-crisis": "No ongoing crisis",
     "all_clear": "All clear. No active crisis events at this time.",
@@ -350,7 +353,7 @@
     },
     "crisis_info": {
       "title": "Crisis Information Center",
-      "description": "Get real-time updates and practical guidance for all types of emergencies.",
+      "description": "Get useful information and guidance on all types of emergencies",
       "before": "Learn how to prepare before a crisis happens",
       "during": "Get critical information during active emergencies",
       "after": "Find recovery resources after a crisis has passed"
@@ -1261,23 +1264,23 @@
     "manage-supplies": "Manage supplies",
     "view-household": "View household",
     "pending-sent-invitations": "Pending invitations sent from your household"
-
   },
   "inventory": {
-    "search-placeholder":"Search for a product in the inventory...",
+    "search-placeholder": "Search for a product in the inventory...",
     "search-clear": "Clear search",
     "food-title": "Food Inventory",
     "food-add-new": "Add Food Item",
     "food-add": "Add Item",
     "food-product-name": "Produktnavn",
     "select-unit": "Velg enhet",
-    "edit": "Edit"
+    "edit": "Edit",
+    "food-exists-message": "This product already exists. Please select 'Edit' to add a new batch."
 
   },
-  "group" : {
+  "group": {
     "create-group-title": "Title for your group",
     "create-group-description": "Description for your group",
-    "group-name" : "Group Name",
+    "group-name": "Group Name",
     "group-created-success": "Your group was created successfully.",
     "invite-household-title": "Invite A Household",
     "invite-household-description": "Invite a household to join your group.",
@@ -1316,5 +1319,68 @@
     "backToQuizzes": "Back To Quiz Overview",
     "backToTop": "Back To Top",
     "noMoreAttemptsToLoad": "No more attempts to load"
+  },
+  "news": {
+    "related_crisis": "Related Srisis",
+    "crisis_context": "Related Crisis Information"
+  },
+  "infoPage": {
+    "aboutThisTheme": "About this subject",
+    "themeDescription": "Important information to help you prepare and respond.",
+    "readMore": "Read More",
+    "readMoreTitle": "More Resources",
+    "readMoreDescription": "Find more detailed information on this topic from official sources.",
+    "officialWebsites": "Official sites ",
+    "additionalResources": "For more information, visit these official resources:",
+    "close": "Close",
+    "emergencyContacts": "Emergency Contacts",
+    "emergencyContactsTitle": "Emergency Contacts",
+    "emergencyContactsDescription": "Important Contacts Form Emergencies:",
+    "generalEmergencyContacts": {
+      "title": "General Emergency Numbers",
+      "police": "Police: 112",
+      "ambulance": "Ambulance: 113",
+      "fire": "Fire Department: 110",
+      "civilDefense": "The Civil Defense: 51 51 51 51"
+    },
+    "relatedThemes": "Related Themes",
+    "selectThemePrompt": "Choose A Theme To Learn More!",
+    "browseThemesDescription": "Browse our information resources to learn about different emergency situations and how to prepare yourself",
+    "preparednessStorageBrief": "Learn what supplies you should have ready for emergencies.",
+    "afterCrisisBrief": "Find guidance on recovery and returning to normality after a crisis.",
+    "learnMoreTopic": "Click to learn more about this topic."
+
+
+  },
+  "sidebar": {
+    "title": "Information Sites",
+    "themes-preparednessStorage": "Emergency Inventory",
+    "themes-afterCrisis": "After The Crisis",
+    "categories": "Categories",
+    "scenario-description": "Description",
+    "scenario-nodescription": "No Description Has Been Added.",
+    "themes": {
+      "preparednessStorage": "Emergency Inventory",
+      "afterCrisis": "After the crisis"
+    }
+  },
+  "scenarioThemes": {
+    "description": "Description",
+    "before": "Before The Crisis:",
+    "under": "Under The Crisis",
+    "after": "After The Crisis"
+  },
+  "themes": {
+    "preparednessStorage": {
+      "title": "Emergency Inventory"
+    },
+      "afterCrisis": {
+        "title": "After A Crisis",
+        "content": "Guidance for after a crisis has occured."
+      }
+    }
+
   }
-}
+
+
+
