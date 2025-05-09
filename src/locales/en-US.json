@@ -246,7 +246,7 @@
     "updated": "Updated",
     "created_by": "Created By",
     "scenario_theme": "Scenario Theme",
-    "scenario": "Scenario",
+    "scenario": "Category",
     "view_scenario_theme": "View Scenario Theme",
     "view_details": "View Details",
     "previous": "Previous",
@@ -336,7 +336,8 @@
       "feature1": "Track emergency supplies and get reminders when items expire",
       "feature2": "Share important information with household members",
       "feature3": "Receive location-specific alerts and guidance",
-      "create_button": "Create Household"
+      "create_button": "Create Household",
+      "supplies": "Household Supplies"
     },
     "crisis_info": {
       "title": "Crisis Information Center",

@@ -248,7 +248,7 @@
     "updated": "Oppdatert",
     "created_by": "Opprettet av",
     "scenario_theme": "Scenariotema",
-    "scenario": "Scenario",
+    "scenario": "Kategori",
     "view_scenario_theme": "Vis scenariotema",
     "view_scenario_themes": "Vis scenariotemaer",
     "view_details": "Vis detaljer",
@@ -339,7 +339,9 @@
       "feature1": "Spor nødforsyninger og få påminnelser når varer utløper",
       "feature2": "Del viktig informasjon med husholdningsmedlemmer",
       "feature3": "Motta stedsspesifikke varsler og veiledning",
-      "create_button": "Opprett husholdning"
+      "create_button": "Opprett husholdning",
+      "supplies": "Husholdningsartikler",
+      "users":"Medlemmer"
     },
     "crisis_info": {
       "title": "Kriseinformasjonssenter",
