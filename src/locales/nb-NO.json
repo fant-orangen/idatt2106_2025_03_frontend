@@ -296,7 +296,9 @@
     "light-mode": "Lys modus",
     "dark-mode": "Mørk modus",
     "admin-news": "Lag et nyhetsvarsel",
-    "change-mode": "Bytt modus"
+    "change-mode": "Bytt modus",
+    "household": "Husholdning",
+    "food-and-drinks": "Mat og drikke"
   },
   "user-profile": {
     "title": "Brukerprofil",
