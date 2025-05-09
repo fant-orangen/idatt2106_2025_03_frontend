@@ -103,7 +103,7 @@ const handleNotificationPreferenceUpdate = async (preference: string, value: boo
     // Revert the state if the request fails
     tempNotificationPreferences.value.email[
       preference as keyof typeof tempNotificationPreferences.value.email
-    ] = !value
+      ] = !value
   }
 }
 
@@ -157,6 +157,15 @@ const { value: confirmNewPassword } = useField('confirmNewPassword')
 function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boolean) {
   // Optimistically update the state
   if (preference === 'twoFactorAuthenticationEnabled') {
+    if (!profile.value.emailVerified) {
+      toast.error(
+        t(
+          'settings.account.security.enableTwoStepError',
+          'Vennligst bekreft e-posten din for å aktivere tofaktorautentisering.',
+        ),
+      )
+      return
+    }
     twoFactorAuthenticationEnabled.value = value
   }
 
@@ -431,8 +440,8 @@ onMounted(() => {
                       </Button>
                     </div>
                     <FormMessage v-if="meta.touched || meta.validated">{{
-                      errorMessage
-                    }}</FormMessage>
+                        errorMessage
+                      }}</FormMessage>
                   </FormItem>
                 </FormField>
 
@@ -446,7 +455,7 @@ onMounted(() => {
                           :type="isViewNewPassword ? 'text' : 'password'"
                           id="newPassword"
                           v-bind="field"
-                          :placeholder="t('reset-password.new-password')"
+                          :placeholder="t('settings.account.password.new')"
                         />
                       </FormControl>
                       <Button
@@ -460,22 +469,22 @@ onMounted(() => {
                       </Button>
                     </div>
                     <FormMessage v-if="meta.touched || meta.validated">{{
-                      errorMessage
-                    }}</FormMessage>
+                        errorMessage
+                      }}</FormMessage>
                   </FormItem>
                 </FormField>
 
                 <!-- Confirm New Password Field -->
                 <FormField v-slot="{ field, meta, errorMessage }" name="confirmNewPassword">
                   <FormItem>
-                    <Label for="new">{{ t('settings.account.password.confirmNew') }}</Label>
+                    <Label for="new">{{ t('reset-password.confirm-new-password') }}</Label>
                     <div class="relative">
                       <FormControl>
                         <Input
                           :type="isViewConfirmNewPassword ? 'text' : 'password'"
                           id="newPassword"
                           v-bind="field"
-                          :placeholder="t('reset-password.confirmNew-password')"
+                          :placeholder="t('reset-password.confirm-new-password')"
                         />
                       </FormControl>
                       <Button
@@ -489,8 +498,8 @@ onMounted(() => {
                       </Button>
                     </div>
                     <FormMessage v-if="meta.touched || meta.validated">{{
-                      errorMessage
-                    }}</FormMessage>
+                        errorMessage
+                      }}</FormMessage>
                   </FormItem>
                 </FormField>
               </form>
@@ -498,8 +507,8 @@ onMounted(() => {
             <CardFooter>
               <div class="flex flex-col gap-4 md:flex-row">
                 <Button type="submit" form="changePasswordForm">{{
-                  t('settings.account.save-changes')
-                }}</Button>
+                    t('settings.account.save-changes')
+                  }}</Button>
                 <Button variant="outline" @click="handleCancelPasswordChange">
                   {{ t('settings.cancel') }}
                 </Button>
@@ -532,20 +541,6 @@ onMounted(() => {
                       ? t('settings.account.security.disableTwoStep')
                       : t('settings.account.security.enableTwoStep')
                   }}
-                </Button>
-              </div>
-            </CardContent>
-            <!-- Delete Account -->
-            <CardHeader>
-              <CardTitle>{{ t('settings.account.delete.title') }}</CardTitle>
-              <CardDescription>
-                {{ t('settings.account.delete.description') }}
-              </CardDescription>
-            </CardHeader>
-            <CardContent class="security-settings space-y-2">
-              <div class="space-y-1">
-                <Button variant="destructive">
-                  <User class="w-4 h-4 mr-2" /> {{ t('settings.account.delete.button') }}
                 </Button>
               </div>
             </CardContent>

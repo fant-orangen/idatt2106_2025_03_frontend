@@ -81,7 +81,7 @@ async function handleReSend2FAEmail() {
       </PinInput>
       <DialogFooter>
         <Button @click="handleReSend2FAEmail()">
-          {{ $t('login.resend-2fa-email') }}
+          {{ $t('login.resend-2fa-email', 'Send ny kode') }}
         </Button>
       </DialogFooter>
     </DialogContent>
