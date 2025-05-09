@@ -74,7 +74,7 @@
                 class="text-destructive hover:bg-destructive/10"
                 @click="rejectGroup(invitation.id)"
               >
-                {{ $t('group.reject') }}
+                {{ $t('common.reject') }}
               </Button>
               <Button
                 variant="ghost"
@@ -82,7 +82,7 @@
                 class="text-green-600 hover:bg-green-100"
                 @click="acceptGroup(invitation.id)"
               >
-                {{ $t('group.accept') }}
+                {{ $t('common.accept') }}
               </Button>
             </div>
           </div>
