@@ -26,10 +26,15 @@ import type {
   UpdateExtendedUserProfile,
 } from '@/models/User'
 import { useUserStore } from '@/stores/UserStore'
-import { ref } from 'vue'
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { toast } from 'vue-sonner'
 import { useRouter } from 'vue-router'
+import { useForm, useField } from 'vee-validate'
+import { z } from 'zod'
+import { toTypedSchema } from '@vee-validate/zod'
+import { getPasswordValidationSchema } from '@/utils/passwordValidation'
+
+import { FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form'
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -39,13 +44,10 @@ const router = useRouter()
 const twoFactorAuthenticationEnabled = ref(false)
 const locationSharingEnabled = ref(false)
 
-// Email and password fields
-const currentPassword = ref('')
-const newPassword = ref('')
-
 // View toggles for password fields
 const isViewCurrentPassword = ref(false)
 const isViewNewPassword = ref(false)
+const isViewConfirmNewPassword = ref(false)
 
 // Profile data
 const profile = ref<ExtendedUserProfile>({
@@ -63,6 +65,36 @@ const profile = ref<ExtendedUserProfile>({
 })
 
 const isProfileLoading = ref(false)
+
+const passwordSchema = getPasswordValidationSchema(t)
+
+const passwordChangeSchema = toTypedSchema(
+  z
+    .object({
+      currentPassword: z.string().min(1, t('errors.required')),
+      newPassword: passwordSchema,
+      confirmNewPassword: z.string(),
+    })
+    .refine((data) => data.newPassword === data.confirmNewPassword, {
+      message: t('errors.passwords-do-not-match'),
+      path: ['confirmNewPassword'],
+    }),
+)
+
+const form = useForm({
+  validationSchema: passwordChangeSchema,
+  initialValues: {
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  },
+})
+
+const { value: currentPassword } = useField('currentPassword')
+const { value: newPassword } = useField('newPassword')
+const { value: confirmNewPassword } = useField('confirmNewPassword')
+
+/* global grecaptcha */
 
 function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boolean) {
   // Optimistically update the state
@@ -97,30 +129,89 @@ function getPreferences() {
     })
 }
 
-function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string) {
-  userStore
-    .updatePassword(oldPasswordInput, newPasswordInput)
-    .then(() => {
-      toast.success(t('settings.account.password.success'), {
-        description: t('settings.account.password.successDescription'),
+// function handleTwoFactorAuthentication() {
+//   twoFactorAuthenticationEnabled.value = !twoFactorAuthenticationEnabled.value
+//   handlePreferenceUpdate('twoFactorAuthenticationEnabled', twoFactorAuthenticationEnabled.value)
+// }
+
+const handleUpdatePassword = form.handleSubmit(async (values) => {
+  try {
+    const token = await new Promise<string>((resolve, reject) => {
+      grecaptcha.ready(() => {
+        grecaptcha
+          .execute('6Lee4CorAAAAABwb4TokgKDs9GdFCxpaiZTKfkfQ', { action: 'LOGIN' })
+          .then((token) => (token ? resolve(token) : reject('Token generation failed')))
+          .catch(reject)
       })
-      // Reset the password fields
-      currentPassword.value = ''
-      newPassword.value = ''
-      userStore.logout()
-      router.push('/login')
     })
-    .catch((error) => {
-      console.error('Error updating password:', error)
+
+    if (!userStore.username) {
       toast.error(t('settings.account.password.error'), {
         description: t('settings.account.password.errorDescription'),
       })
+      return
+    }
+
+    const verifyLoginResponse = await userStore.verifyLogin(
+      userStore.username,
+      values.currentPassword,
+      token,
+    )
+
+    if (verifyLoginResponse.status === 401) {
+      toast.error(t('settings.account.password.error'), {
+        description: t('settings.account.password.errorDescription'),
+      })
+      return
+    }
+
+    console.log('Updating password with values:', values)
+    await userStore.updatePassword(
+      values.currentPassword,
+      values.newPassword,
+      values.confirmNewPassword,
+    )
+    toast.success(t('settings.account.password.success'), {
+      description: t('settings.account.password.successDescription'),
     })
-}
+    currentPassword.value = ''
+    newPassword.value = ''
+    confirmNewPassword.value = ''
+    router.push('/login')
+  } catch (error) {
+    console.error('Error updating password:', error)
+    toast.error(t('settings.account.password.error'), {
+      description: t('settings.account.password.errorDescription'),
+    })
+  }
+})
+
+// function handleUpdatePassword(values: { currentPassword: string; newPassword: string }) {
+//   console.log('Updating password with values:', values)
+//   userStore
+//     .updatePassword(values.currentPassword, values.newPassword)
+//     .then(() => {
+//       toast.success(t('settings.account.password.success'), {
+//         description: t('settings.account.password.successDescription'),
+//       })
+//       // Reset the password fields
+//       currentPassword.value = ''
+//       newPassword.value = ''
+//       userStore.logout()
+//       router.push('/login')
+//     })
+//     .catch((error) => {
+//       console.error('Error updating password:', error)
+//       toast.error(t('settings.account.password.error'), {
+//         description: t('settings.account.password.errorDescription'),
+//       })
+//     })
+// }
 
 function handleCancelPasswordChange() {
   currentPassword.value = ''
   newPassword.value = ''
+  confirmNewPassword.value = ''
 }
 
 // Fetch user profile data
@@ -206,52 +297,103 @@ onMounted(() => {
               </CardDescription>
             </CardHeader>
             <CardContent class="password-settings space-y-2">
-              <div class="space-y-1">
-                <Label for="current">{{ t('settings.account.password.current') }}</Label>
-                <div class="relative">
-                  <Input
-                    :type="isViewCurrentPassword ? 'text' : 'password'"
-                    id="password"
-                    v-model="currentPassword"
-                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    :placeholder="t('login.password')"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
-                    @click="isViewCurrentPassword = !isViewCurrentPassword"
-                  >
-                    <component :is="isViewCurrentPassword ? EyeOff : Eye" class="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-              <div class="space-y-1">
-                <Label for="new">{{ t('settings.account.password.new') }}</Label>
-                <div class="relative">
-                  <Input
-                    :type="isViewNewPassword ? 'text' : 'password'"
-                    id="password"
-                    v-model="newPassword"
-                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    :placeholder="t('login.password')"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
-                    @click="isViewNewPassword = !isViewNewPassword"
-                  >
-                    <component :is="isViewNewPassword ? EyeOff : Eye" class="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
+              <!-- Current Password Field -->
+              <form
+                id="changePasswordForm"
+                @submit.prevent="handleUpdatePassword"
+                class="space-y-4"
+                autocomplete="off"
+              >
+                <FormField v-slot="{ field, meta, errorMessage }" name="currentPassword">
+                  <FormItem>
+                    <Label for="current">{{ t('settings.account.password.current') }}</Label>
+                    <div class="relative">
+                      <FormControl>
+                        <Input
+                          :type="isViewCurrentPassword ? 'text' : 'password'"
+                          id="currentPassword"
+                          v-bind="field"
+                          :placeholder="t('login.password')"
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
+                        @click="isViewCurrentPassword = !isViewCurrentPassword"
+                      >
+                        <component :is="isViewCurrentPassword ? EyeOff : Eye" class="h-5 w-5" />
+                      </Button>
+                    </div>
+                    <FormMessage v-if="meta.touched || meta.validated">{{
+                      errorMessage
+                    }}</FormMessage>
+                  </FormItem>
+                </FormField>
+
+                <!-- New Password Field -->
+                <FormField v-slot="{ field, meta, errorMessage }" name="newPassword">
+                  <FormItem>
+                    <Label for="new">{{ t('settings.account.password.new') }}</Label>
+                    <div class="relative">
+                      <FormControl>
+                        <Input
+                          :type="isViewNewPassword ? 'text' : 'password'"
+                          id="newPassword"
+                          v-bind="field"
+                          :placeholder="t('reset-password.new-password')"
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
+                        @click="isViewNewPassword = !isViewNewPassword"
+                      >
+                        <component :is="isViewNewPassword ? EyeOff : Eye" class="h-5 w-5" />
+                      </Button>
+                    </div>
+                    <FormMessage v-if="meta.touched || meta.validated">{{
+                      errorMessage
+                    }}</FormMessage>
+                  </FormItem>
+                </FormField>
+
+                <!-- Confirm New Password Field -->
+                <FormField v-slot="{ field, meta, errorMessage }" name="confirmNewPassword">
+                  <FormItem>
+                    <Label for="new">{{ t('settings.account.password.confirmNew') }}</Label>
+                    <div class="relative">
+                      <FormControl>
+                        <Input
+                          :type="isViewConfirmNewPassword ? 'text' : 'password'"
+                          id="newPassword"
+                          v-bind="field"
+                          :placeholder="t('reset-password.confirmNew-password')"
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
+                        @click="isViewConfirmNewPassword = !isViewConfirmNewPassword"
+                      >
+                        <component :is="isViewConfirmNewPassword ? EyeOff : Eye" class="h-5 w-5" />
+                      </Button>
+                    </div>
+                    <FormMessage v-if="meta.touched || meta.validated">{{
+                      errorMessage
+                    }}</FormMessage>
+                  </FormItem>
+                </FormField>
+              </form>
             </CardContent>
             <CardFooter>
               <div class="flex flex-col gap-4 md:flex-row">
-                <Button @click="handleUpdatePassword(currentPassword, newPassword)">{{
+                <Button type="submit" form="changePasswordForm">{{
                   t('settings.account.save-changes')
                 }}</Button>
                 <Button variant="outline" @click="handleCancelPasswordChange">

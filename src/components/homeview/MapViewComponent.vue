@@ -587,7 +587,7 @@ watch(
         meetingPlaces.value = await fetchMeetingPlacesNearby(
           loc.latitude,
           loc.longitude,
-          distanceInMeters.value / 1000  // Convert meters to kilometers for API
+          distanceInMeters.value
         );
       } finally {
         isLoadingMeetings.value = false;

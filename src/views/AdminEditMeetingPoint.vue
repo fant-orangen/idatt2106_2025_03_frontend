@@ -22,6 +22,8 @@
     </BreadcrumbList>
   </Breadcrumb>
 
+  <!-- Page title -->
+
   <h1 class="text-3xl p-5">{{$t('admin.meeting-point')}}</h1>
 
   <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -31,10 +33,11 @@
         <CardTitle>{{ $t('admin.meeting-places') }}: </CardTitle>
       </CardHeader>
       <CardContent class="overflow-y-auto max-h-[500px]">
+
         <!--Search bar-->
         <div class="relative mb-4 w-full max-w-sm">
           <Input v-model="searchQuery" type="text" :placeholder="t('admin.search-meeting-point')"
-            class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" 
+            class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm"
             />
           <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
             <Search class="size-4 text-muted-foreground" />
@@ -73,6 +76,7 @@
       </CardHeader>
       <CardContent>
         <form @submit.prevent="onSubmit" class="flex flex-col gap-5">
+
           <!-- Name of meeting place: -->
           <FormField v-slot="{ field, meta, errorMessage }" name="name">
             <FormItem>
@@ -86,6 +90,7 @@
           </FormField>
 
           <div class="flex flex-col gap-5">
+
             <!--Latitude field-->
             <div class="flex flex-col gap-5">
               <div class="flex flex-col gap-5 md:flex-row">
@@ -158,6 +163,7 @@
     </div>
 
   </div>
+
   <!--Handle meeting point drawer -->
   <Drawer v-model:open="isOpen" v-if="selectedMP">
     <DrawerContent class="z-101">
@@ -181,6 +187,11 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * @component AdminEditMeetingPoint
+ * @description Provides admin functionality for managing public meeting points.
+ * The admin can view all meeting points, create new ones and activate/archive existing points.
+ */
 import MapComponent from '@/components/map/MapComponent.vue'
 import AdminMapController from '@/components/admin/AdminMapController.vue'
 import * as L from 'leaflet'
@@ -254,12 +265,18 @@ const {
 	initialPageParam: 0
 });
 
+/**
+ * States and reactive refs
+ */
 const isOpen = ref(false);
 const selectedMP = ref<MeetingPlacePreviewDto | null>(null);
 const newMeetingPoint = ref<CreateMeetingPlaceDto | null>(null);
 const searchQuery = ref('');
 const tempMarker = ref<L.Marker | null>(null)
 
+/**
+ * Compute all flattened meeting points.
+ */
 const allMPts = computed<MeetingPlacePreviewDto[]>(() => data.value?.pages.flat() ?? []);
 allMPts.value.forEach((event: MeetingPlacePreviewDto) => { console.log(event.name)});
 
@@ -310,11 +327,16 @@ onMounted(() => {
   fetchNextPage()
 })
 
+/**
+ * Filter meeting points by name.
+ */
 const filteredMPts = computed(() => {
   return allMPts.value.filter(mp => mp.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
 });
 
-
+/**
+ * Validation schema for the meeting point form
+ */
 const formSchema = toTypedSchema(
   z.object({
     name: z.string().min(2, t('add-event-info.errors.title')).max(50, t('add-event-info.errors.title')),
@@ -345,6 +367,10 @@ const form = useForm({
 
 const onSubmit = form.handleSubmit(handleFormSubmit);
 
+/**
+ * Handle form submission.
+ * @param values - the values to handle (name, latitude, longitude and name)
+ */
 async function handleFormSubmit(values: any) {
   newMeetingPoint.value = {
     name: values.name,
@@ -355,6 +381,10 @@ async function handleFormSubmit(values: any) {
   createNewMP(newMeetingPoint.value);
 }
 
+/**
+ * Select a meeting point to edit.
+ * @param id - the ID of the meeting point to edit.
+ */
 async function selectMeetingPoint(id: number) {
 	for (let i = 0; i < allMPts.value.length; i++) {
     if (allMPts.value[i].id === id) {
@@ -368,14 +398,13 @@ async function selectMeetingPoint(id: number) {
 
 /**
  * Create a new meeting point
- * @param data
+ * @param data- data needed to create a new meeting point.
  */
 async function createNewMP(data: CreateMeetingPlaceDto) {
   try {
     const response = await meetingPlaceService.createMeetingPlace(data)
     console.log('Creating new meeting place ...', response)
     callToast('Created a new meeting place successfully!');
-    // send a dialogue message that a new mp was created other than the toast maybe??
     selectedMP.value = null;
 
     await queryClient.invalidateQueries({queryKey: ['allMPts']});
@@ -386,7 +415,7 @@ async function createNewMP(data: CreateMeetingPlaceDto) {
 
 /**
  * Archive (deactivate) a meeting point.
- * @param id
+ * @param id - ID of the meeting place to deactivate.
  */
 async function archiveMP(id: number) {
   try {
@@ -404,7 +433,7 @@ async function archiveMP(id: number) {
 
 /**
  * Activate a meeting point
- * @param id
+ * @param id - ID of the meeting place to activate.
  */
 async function activateMP(id: number) {
   try {
@@ -419,6 +448,9 @@ async function activateMP(id: number) {
   }
 }
 
+/**
+ * Cancel update and reset form.
+ */
 function cancelUpdate() {
 	form.resetForm();
 }
@@ -426,7 +458,7 @@ function cancelUpdate() {
 /**
 * Pop-up functionality.
 * Takes in a message to show the user that some action has happened.
-* @param message
+* @param message - the message to show.
 */
 function callToast (message: string) {
 	console.log('Called toast for message: ', message);

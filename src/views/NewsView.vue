@@ -88,6 +88,18 @@
 </template>
 
 <script setup lang="ts">
+
+/**
+ * @component NewsView component
+ * @description Displays a paginated list of news articles from the user's news digest.
+ *
+ * Features:
+ * - Displays news articles in a timeline format
+ * - Supports infinite scrolling pagination
+ * - Shows loading states and error messages
+ * - Formats dates using the formatDateFull utility
+ */
+
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
@@ -174,6 +186,11 @@ const loadCrisisDetails = async (eventId: number) => {
   }
 };
 
+/**
+ * Fetch and append more news articles.
+ * Triggered on mount and when scrolled to the bottom.
+ */
+
 const loadMoreNews = async () => {
   if (loading.value || !hasMore.value) return;
 
@@ -198,6 +215,10 @@ const loadMoreNews = async () => {
     loading.value = false;
   }
 };
+
+/**
+ * Initial fetch on component mount.
+ */
 
 onMounted(loadMoreNews);
 </script>

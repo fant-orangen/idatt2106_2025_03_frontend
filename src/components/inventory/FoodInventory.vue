@@ -61,8 +61,6 @@
             <Input
               v-model="batch.amount"
               type="number"
-              :max="batch.originalAmount"
-              @input="clampBatchAmount(batch)"
               :placeholder="t('inventory.food.amount')"
               class="text-center w-full"
             />

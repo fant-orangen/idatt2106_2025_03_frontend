@@ -59,7 +59,7 @@
             variant="outline"
             class="border-[var(--crisis-level-red)]/30 text-[var(--crisis-level-red)] hover:bg-[var(--crisis-level-red)]/20 dark:hover:bg-[var(--crisis-level-red)]/40"
             :class="getCrisisButtonClass(mainCrisis.severity)"
-            @click="navigateToScenarioTheme(mainCrisis.id)"
+            @click="navigateToScenarioTheme(mainCrisis.scenarioThemeId)"
           >
             {{ t('home.crisis_theme.learn_more', 'Learn More About This Crisis') }}
           </Button>
@@ -81,11 +81,12 @@
 
       <!-- Information Sections (3/5) -->
       <section class="info-sections md:col-span-3 space-y-8">
+
         <!-- Household Supplies -->
         <div class="household-supplies bg-card p-6 rounded-lg border border-[var(--crisis-level-green)]/30">
           <h2 class="text-xl font-bold mb-3 flex items-center">
             <font-awesome-icon :icon="['fas', 'box-open']" class="mr-2 text-[var(--crisis-level-green)] w-[18px] h-[18px]" />
-            {{ t('home.household.supplies', 'Household Supplies') }}
+            {{ t('household.supplies') }}
           </h2>
 
           <!-- Status messages about food and water -->
@@ -190,7 +191,7 @@ import CrisisLevelOverview from '@/components/homeview/CrisisLevelOverview.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faTriangleExclamation, faBoxOpen, faUsers, faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { inventoryService } from '@/services/InventoryService';
-import { fetchCrisisEventsInRadius } from '@/services/CrisisEventService';
+import { fetchCrisisEventsInRadius, fetchCrisisEventById } from '@/services/CrisisEventService';
 import { fetchScenarioThemeUnderInstructions } from '@/services/api/ScenarioThemeService';
 import { getSeverityColor } from '@/utils/severityUtils';
 import { marked } from 'marked';
@@ -311,11 +312,11 @@ const navigateToScenarioTheme = (themeId: number) => {
  * Fetches the 'under' instructions for the current crisis scenario theme
  */
 const fetchScenarioInstructions = async () => {
-  if (!mainCrisis.value?.id) return;
+  if (!mainCrisis.value?.scenarioThemeId) return;
 
   loadingInstructions.value = true;
   try {
-    const instructions = await fetchScenarioThemeUnderInstructions(mainCrisis.value.id);
+    const instructions = await fetchScenarioThemeUnderInstructions(mainCrisis.value.scenarioThemeId);
     scenarioUnderInstructions.value = instructions;
   } catch (error) {
     console.error('Failed to fetch scenario instructions:', error);
@@ -434,8 +435,15 @@ const fetchMainCrisis = async () => {
                (severityRank[a.severity as keyof typeof severityRank] || 0);
       });
 
-      mainCrisis.value = sorted[0];
-      console.log("Main crisis found:", mainCrisis.value.name);
+      // Fetch full details of the highest severity crisis
+      const fullDetails = await fetchCrisisEventById(sorted[0].id);
+      if (fullDetails) {
+        mainCrisis.value = fullDetails;
+        console.log("Main crisis found:", mainCrisis.value.name);
+      } else {
+        console.log("No crisis details found");
+        mainCrisis.value = null;
+      }
     } else {
       console.log("No crisis in radius");
       mainCrisis.value = null;

@@ -22,6 +22,7 @@
       <!-- Crisis Selection -->
       <Card class="flex flex-col h-full">
         <CardHeader class="pb-2">
+
           <!-- Search Component -->
           <div class="relative w-full mb-4">
             <Input
@@ -33,6 +34,7 @@
             />
             <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           </div>
+
           <!-- Crisis Filter Buttons -->
           <div class="grid grid-cols-3 gap-2">
             <Button
@@ -153,16 +155,15 @@ import {
 } from '@/services/CrisisEventService.ts';
 
 /**
- * CrisisEventOverview component
- *
- * This is the main component for displaying crisis events. It includes:
+ * @component CrisisEventOverview
+ * @description This is the main component for displaying crisis events. It includes:
  * - A map view showing the selected crisis event's location
  * - A list of active crisis events that can be selected
  * - Detailed information about the selected crisis
  * - A history of changes made to the crisis event
  * - Related news articles
  *
- * @component
+ *
  */
 
 const router = useRouter();
