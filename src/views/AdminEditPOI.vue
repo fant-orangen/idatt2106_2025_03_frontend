@@ -191,7 +191,7 @@
         v-if="selectedPoi"
         class="min-w-[300px] max-w-xl flex-1 h-[400px] overflow-hidden rounded-lg border"
       >
-        <StaticMapWithMarker
+        <StaticMapWithMarker class="z-50"
           :lat="selectedPoi.latitude"
           :lng="selectedPoi.longitude"
           :poiTypeName="selectedPoi.poiTypeName"

@@ -117,6 +117,13 @@
                   <p v-if="member.email" class="text-xs text-muted-foreground truncate">
                     {{ member.email }}
                   </p>
+                  <!-- Safety status (only shown for real members who are confirmed safe) -->
+                  <p v-if="'email' in member && (member as any).safetyStatus === 'SAFE'" class="text-xs mt-1">
+                    <span class="text-green-600 dark:text-green-400 flex items-center gap-1">
+                      <CheckIcon class="h-3 w-3" />
+                      {{ $t('household.safe', 'Safe') }}
+                    </span>
+                  </p>
                 </div>
 
               </div>
@@ -133,6 +140,15 @@
                     <UserIcon class="h-4 w-4 text-accent-foreground" />
                   </div>
                 </div>
+              </div>
+
+
+
+              <!-- Safety status indicator (only for safe members) -->
+              <div
+                v-if="'email' in member && (member as any).safetyStatus === 'SAFE' && !manageMode"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center justify-center transition-all duration-300 ease-in-out"
+              >
               </div>
 
               <!-- Remove button - absolutely positioned -->
@@ -237,9 +253,15 @@
         </div>
       </div>
 
-      <!-- Action buttons (only shown in people tab and for admin users) -->
-      <div v-if="activeTab === 'people' && isAdmin" class="space-y-2 mt-4">
-        <Button variant="outline" class="w-full justify-start gap-2" @click="toggleInviteUser">
+      <!-- Action buttons (shown in people tab) -->
+      <div v-if="activeTab === 'people'" class="space-y-2 mt-4">
+        <!-- Safety check button (visible to all users) -->
+        <Button variant="outline" class="w-full justify-start gap-2" @click="sendSafetyCheck">
+          <CheckIcon class="h-4 w-4" />
+          <span>{{ $t('household.ask-if-safe', 'Ask if safe') }}</span>
+        </Button>
+        <!-- Admin-only buttons -->
+        <Button v-if="isAdmin" variant="outline" class="w-full justify-start gap-2" @click="toggleInviteUser">
           <MailIcon class="h-4 w-4" />
           <span>{{ $t('household.invite-user') }}</span>
         </Button>
@@ -323,9 +345,8 @@
 import { ref, onMounted, defineEmits, defineProps, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { userProfilePopup } from '@/composables/userProfilePopup.ts';
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -338,7 +359,6 @@ import {
 import AddEmptyMember from './AddEmptyMember.vue';
 import {
   UserIcon,
-  XIcon,
   PlusIcon,
   MailIcon,
   TrashIcon,
@@ -351,19 +371,16 @@ import AddUser from './AddUser.vue';
 import {
   getHouseholdMembers,
   getEmptyHouseholdMembers,
-  addEmptyMember,
   removeEmptyMemberFromHousehold,
-  getCurrentHousehold,
   removeMemberFromHousehold,
-  isCurrentUserHouseholdAdmin
+  isCurrentUserHouseholdAdmin,
+  askIfSafe,
+  isUserSafe
 } from '@/services/HouseholdService.ts'
 import type { HouseholdMember, EmptyHouseholdMemberDto } from '@/models/Household.ts'
 import { toast } from 'vue-sonner';
-// Direct service calls are preferred over using the store
-import { useUserStore } from '@/stores/UserStore';
 
 const { t } = useI18n();
-const userStore = useUserStore();
 const vUserProfile = userProfilePopup;
 
 const props = defineProps({
@@ -448,20 +465,44 @@ const toggleMemberSelection = (member: HouseholdMember | EmptyHouseholdMemberDto
 /**
  * Fetches both regular and empty household members from the backend.
  * Also checks if the current user is an admin of the household.
+ * For each member, checks their safety status.
  * @async
  */
 const fetchMembers = async () => {
   try {
     const members = await getHouseholdMembers();
-    householdMembers.value = members;
 
+    for (const member of members) {
+      try {
+        const isSafe = await isUserSafe(member.id);
+        (member as any).safetyStatus = isSafe ? 'SAFE' : 'UNKNOWN';
+        (member as any).safetyTimestamp = null;
+      } catch (err) {
+        console.error(`Error checking safety status for member ${member.id}:`, err);
+        (member as any).safetyStatus = 'UNKNOWN';
+      }
+    }
+    householdMembers.value = members;
     const emptyMembersList = await getEmptyHouseholdMembers();
     emptyMembers.value = emptyMembersList;
-
     isAdmin.value = await isCurrentUserHouseholdAdmin();
   } catch (error) {
     console.error('Error fetching household members:', error);
     toast.error(t('household.error-fetching-members'));
+  }
+};
+
+/**
+ * Sends a safety check to all household members via email
+ * This sends emails with confirmation links to all household members
+ */
+const sendSafetyCheck = async () => {
+  try {
+    await askIfSafe();
+    toast.success(t('household.safety-check-sent', 'Safety check emails sent to all household members'));
+    await fetchMembers();
+  } catch (error) {
+    toast.error(t('household.safety-check-error', 'Failed to send safety check emails'));
   }
 };
 
@@ -474,22 +515,7 @@ onMounted(async () => {
  * @param {HouseholdMember | EmptyHouseholdMemberDto} member - The member that was selected
  */
 const selectMember = (member: HouseholdMember | EmptyHouseholdMemberDto) => {
-  console.log('Selected member:', member);
   emit('memberSelected', member);
-};
-
-/**
- * Toggles the visibility of the add empty user form.
- * Closes other forms if opening this one.
- */
-const toggleAddEmptyUser = () => {
-  if (showAddUser.value) {
-    showAddUser.value = false;
-  } else {
-    showInviteUser.value = false;
-    showAddEmptyMember.value = false;
-    showAddUser.value = true;
-  }
 };
 
 /**
@@ -505,12 +531,9 @@ const closeAddForms = () => {
  * @param {string} tab - The tab to switch to ('people' or 'others')
  */
 const switchTab = (tab: string) => {
-  // Close any open forms when switching tabs
   showAddUser.value = false;
   showAddEmptyMember.value = false;
   showInviteUser.value = false;
-
-  // Switch to the selected tab
   activeTab.value = tab;
 };
 
@@ -519,7 +542,6 @@ const switchTab = (tab: string) => {
  * Closes other forms if opening this one.
  */
 const toggleAddEmptyMember = () => {
-  // If already showing, close it; otherwise open it and close the other forms
   if (showAddEmptyMember.value) {
     showAddEmptyMember.value = false;
   } else {
@@ -536,7 +558,6 @@ const toggleAddEmptyMember = () => {
  * Closes other forms if opening this one.
  */
 const toggleInviteUser = () => {
-  // If already showing, close it; otherwise open it and close the other form
   if (showInviteUser.value) {
     showInviteUser.value = false;
   } else {
@@ -633,10 +654,8 @@ const executeRemoveMember = async () => {
 
   try {
     if ('email' in memberToRemove.value) {
-      // It's a real user
       await removeMemberFromHousehold(memberToRemove.value.id);
     } else {
-      // It's an empty member
       await removeEmptyMemberFromHousehold(memberToRemove.value.id);
     }
     await fetchMembers();

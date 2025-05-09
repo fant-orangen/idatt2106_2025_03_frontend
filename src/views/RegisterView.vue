@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'vue-sonner'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
 import { Eye, EyeOff } from 'lucide-vue-next'
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -197,13 +197,21 @@ const handleRegister = form.handleSubmit(async (values) => {
                     @blur="field.onBlur"
                     id="terms"
                   />
-                  <label for="terms" class="text-sm font-medium leading-none">
+                  <label for="terms" class="text-sm font-medium space-x-2 leading-none">
                     {{ t('login.consent-1') }}
                     <a href="/privacy-policy" class="underline">
                       {{ t('login.privacy-policy') }}.</a
                     >
                   </label>
                 </div>
+                <label>
+                    <span class="text-sm">
+                      {{ t('login.already-user') }}
+                      <a href="/login" class="text-primary underline hover:text-primary/90">
+                        {{ t('login.log-in-here', 'Log in here') }}
+                      </a>
+                    </span>
+                  </label>
               </FormControl>
               <FormMessage v-if="meta.touched || meta.validated">{{ errorMessage }}</FormMessage>
             </FormItem>
@@ -211,6 +219,10 @@ const handleRegister = form.handleSubmit(async (values) => {
 
           <p v-if="successMessage" class="text-green-500 text-center mt-2">{{ successMessage }}</p>
           <p v-if="errorMessage" class="text-red-500 text-center mt-2">{{ errorMessage }}</p>
+
+          <Button type="submit" class="w-full bg-primary hover:bg-primary/90">
+            {{ t('login.signup') }}
+          </Button>
         </form>
       </CardContent>
       <CardFooter>

@@ -14,7 +14,7 @@ export interface News {
   crisisEventName: string;
   createdAt: string | Date;
   updatedAt: string | Date;
-  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  status: 'draft' | 'published' | 'archived';
 }
 
 /**
@@ -25,7 +25,8 @@ export interface News {
 export interface CreateNewsDto {
   title: string;
   content: string;
-  createdByUserId: number;
+  crisisEventId: number;
+  status: 'draft' | 'published' | 'archived';
 }
 
 /**
@@ -37,6 +38,5 @@ export interface CreateNewsDto {
 export interface UpdateNewsArticleDTO {
   title?: string;
   content?: string;
-  status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+  status?: 'draft' | 'published' | 'archived';
 }
-

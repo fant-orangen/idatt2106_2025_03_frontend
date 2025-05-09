@@ -56,9 +56,11 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import type { HouseholdCreateRequestDto } from '@/models/Household';
 import { toast } from 'vue-sonner';
+import { useHouseholdStore } from '@/stores/HouseholdStore';
 
 const { t } = useI18n();
 const router = useRouter();
+const householdStore = useHouseholdStore();
 const emit = defineEmits(['created']);
 
 const householdData = ref<HouseholdCreateRequestDto>({
@@ -87,7 +89,8 @@ async function createNewHousehold() {
       populationCount: householdData.value.populationCount
     });
 
-    // Emit created event
+    await householdStore.fetchCurrentHousehold();
+
     emit('created', household);
     toast.success(t('household.create.success'));
 
