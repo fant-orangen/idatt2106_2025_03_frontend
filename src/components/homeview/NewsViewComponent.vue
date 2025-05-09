@@ -34,8 +34,8 @@
           :end-message="t('news.no_more_news', 'No more news to load')"
           @load-more="loadMoreNews"
         >
-          <ul class="relative my-6 pl-8 list-none border-l-2 border-[#e2e8f0]">
-            <li v-for="item in news" :key="item.id" class="relative mb-6 pl-6">
+          <ul class="relative my-6 pl-4 list-none border-l-2 border-[#e2e8f0]">
+            <li v-for="item in news" :key="item.id" class="relative mb-6 pl-4">
               <!-- Crisis name in top right of each news item -->
               <div class="absolute right-0 top-0">
                 <a
@@ -46,8 +46,8 @@
                 </a>
               </div>
 
-              <div class="absolute left-[-2.4rem] top-[0.45rem] w-[0.75rem] h-[0.75rem] bg-primary rounded-full z-10"></div>
-              <div class="ml-6">
+              <div class="absolute left-0 top-[0.45rem] w-3 h-3 bg-black rounded-full z-10 transform -translate-x-6"></div>
+              <div>
                 <div class="flex justify-between items-baseline">
                   <strong class="text-sm text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
                 </div>
@@ -71,7 +71,6 @@
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';

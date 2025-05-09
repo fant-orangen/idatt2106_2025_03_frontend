@@ -13,7 +13,7 @@
       <div class="max-w-6xl mx-auto">
         <ul class="relative my-8 pl-10 list-none border-l-2 border-[var(--default-blue2)]/30">
           <li v-for="item in news" :key="item.id" class="relative mb-10 pl-6">
-            <div class="absolute left-[-2.75rem] top-[0.45rem] w-5 h-5 bg-[var(--default-blue2)] rounded-full z-10"></div>
+            <div class="absolute left-[-3.2rem] top-[0.45rem] w-5 h-5 bg-[var(--color-foreground)] rounded-full z-10"></div>
             <div class="ml-6">
               <div class="flex justify-between items-baseline">
                 <strong class="text-base text-muted-foreground">{{ formatDateFull(item.publishedAt) }}</strong>
