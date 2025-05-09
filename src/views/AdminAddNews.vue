@@ -24,7 +24,7 @@
   </div>
 
 <div class="p-5">
-  <h1 class="text-3xl p-3">Skriv eller rediger nyhetsvarsler</h1>
+  <h1 class="text-3xl p-3">{{ $t('news.handle-news') }}</h1>
   <div class="flex justify-center">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-evenly">
       
@@ -157,16 +157,25 @@
         </CardFooter>
       </Card>
 
+      <!--List of all drafts articles  -->
       <div class="flex flex-col gap-5">
-        <!--List of all drafts articles  -->
         <Card class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
           <CardHeader>
-            <CardTitle>Saved drafts by you and other admins:</CardTitle>
-            <CardDescription>Velg en draft å redigere</CardDescription>
+            <CardTitle>{{ $t('news.saved-drafts') }}:</CardTitle>
+            <CardDescription>{{ $t('news.choose-draft') }}</CardDescription>
           </CardHeader>
           <CardContent class="max-h-[500px] overflow-y-auto pr-2">
+            <!--Search bar -->
+            <div class="relative mb-4 w-full max-w-sm">
+              <Input v-model="searchQueryDrafts" type="text" :placeholder="t('news.description.search')"
+                class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" 
+                />
+              <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
+                <Search class="size-4 text-muted-foreground" />
+              </span>
+            </div>
             <InfiniteScroll :is-loading="isFetchingNextDraftsPage" :has-more="hasNextDraftsPage" @load-more="fetchNextDraftsPage">
-            <div v-for="draft in allDrafts" :key="draft.id"
+            <div v-for="draft in filteredDrafts" :key="draft.id"
               class="flex flex-col gap-1 hover:bg-muted cursor-pointer rounded-md p-2"
               @click="selectArticle(draft)">
               <span><b>{{ draft.title }}</b></span>
@@ -181,7 +190,7 @@
         <Card v-if="relatedNews.length > 0" class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
           <CardHeader>
             <CardTitle>{{ $t('news.related_news') }}: </CardTitle>
-            <CardDescription>Nyhetsartikler relatert til denne hendelsen:</CardDescription>
+            <CardDescription>{{ $t('news.description.related-news') }}:</CardDescription>
           </CardHeader>
           <CardContent class="overflow-y-auto max-h-[500px] pr-2">
             <InfiniteScroll :is-loading="isFetchingNextRelatedPage" 
@@ -202,11 +211,21 @@
       <!--All published news articles-->
       <Card class="flex-1 basis-[350px] max-w-[400px] max-h-fit shadow-md hover:shadow-xl transition-shadow">
         <CardHeader>
-          <CardTitle>Siste publiserte nyhetsartikler: </CardTitle>
+          <CardTitle>{{$t('news.latest-news')}}: </CardTitle>
         </CardHeader>
         <CardContent class="overflow-y-auto max-h-[500px] pr-2">
+          <!--Search bar -->
+          <div class="relative mb-4 w-full max-w-sm">
+            <Input v-model="searchQuery" type="text" :placeholder="t('news.description.search')"
+              class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" 
+              />
+            <span class="absolute start-0 inset-y-0 flex items-center justify-center px-3">
+              <Search class="size-4 text-muted-foreground" />
+            </span>
+          </div>
+
           <InfiniteScroll :is-loading="isFetchingNextNewsPage" :has-more="hasNextNewsPage" @load-more="fetchNextNewsPage">
-            <div v-for="article in allNews" :key="`${article.id}-${article.createdAt}`" 
+            <div v-for="article in filteredNews" :key="`${article.id}-${article.createdAt}`" 
             @click="selectArticle(article)"
             class="flex flex-col gap-3 hover:bg-muted p-2 rounded-md cursor-pointer justify-center">
               <span><b>{{ article.title }}</b></span>
@@ -233,7 +252,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Separator } from "@/components/ui/separator"
-import { useForm, type SubmissionContext} from 'vee-validate'
+import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { formatDateFull } from '@/utils/dateUtils.ts'
 import type { CreateNewsDto, News, UpdateNewsArticleDTO } from '@/models/News'
@@ -397,7 +416,10 @@ const {
 	initialPageParam: 0
 });
 const allDrafts = computed<News[]>(() => draftsData.value?.pages.flat() ?? [])
-
+const searchQueryDrafts = ref('')
+const filteredDrafts = computed(() => {
+  return allDrafts.value.filter(n => n.title.toLowerCase().includes(searchQueryDrafts.value.toLowerCase()));
+});
 /**
  * For pagination of list of all events.
  * Paginated list of all crisis events shown in the combobox in the form.
@@ -448,6 +470,10 @@ const allEvents = computed<CrisisEventPreviewDto[]>(() => eventData.value?.pages
 	initialPageParam: 0
 });
 const allNews = computed<News[]>(() => data.value?.pages.flat() ?? [])
+const searchQuery = ref('')
+const filteredNews = computed(() => {
+  return allNews.value.filter(n => n.title.toLowerCase().includes(searchQuery.value.toLowerCase()));
+});
 
 /**
  * Watch for when a crisis event is selected in the form to immediately fetch the 
