@@ -9,6 +9,12 @@ export default defineComponent({
 <script setup lang="ts">
 /**
  * EnhancedInformationView component
+ *
+ * This component serves as the main view for displaying information content.
+ * It provides a sidebar navigation for different themes and displays the selected content.
+ * Handles both static themes and dynamic scenario themes loaded from the backend.
+ *
+ * @component
  */
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -18,11 +24,20 @@ import ThemeContent from '@/components/information/ThemeContent.vue'
 import { fetchAllScenarioThemes } from '@/services/api/ScenarioThemeService'
 import type { ScenarioThemeDto } from '@/models/ScenarioTheme'
 
+/**
+ * Interface representing a node in the sidebar navigation tree
+ * Used to build the hierarchical structure of the sidebar
+ */
 export interface SidebarNode {
+  /** Unique identifier for the node */
   key: string;
+  /** Translation key or display text for the node */
   titleKey: string;
+  /** Optional child nodes for nested navigation */
   children?: SidebarNode[];
+  /** Flag indicating if this node represents a scenario theme */
   isScenario?: boolean;
+  /** ID of the scenario if this is a scenario node */
   scenarioId?: number;
 }
 
@@ -69,7 +84,7 @@ const sections = computed<SidebarNode[]>(() => {
     ...(scenarioNodes.length > 0 ? [
       {
         key: 'scenarioThemes',
-        titleKey: 'scenarioThemes.title',
+        titleKey: 'sidebar.categories',
         children: scenarioNodes
       }
     ] : []),
@@ -125,7 +140,6 @@ onMounted(async () => {
   } else {
     selectedTheme.value = 'home'
   }
-
   isLoading.value = false
 })
 </script>
