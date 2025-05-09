@@ -11,7 +11,7 @@
 			</BreadcrumbItem>
 			<BreadcrumbSeparator/>
 			<BreadcrumbItem>
-			  <BreadcrumbLink href="/admin-panel">
+			  <BreadcrumbLink href="/admin/admin-panel">
 				{{ $t('navigation.admin-panel') }}
 			  </BreadcrumbLink>
 			</BreadcrumbItem>
@@ -63,7 +63,7 @@
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 			<Button
-			  @click="router.push('/admin/add-new-activity')"
+			  @click="router.push('/quiz-overview/admin/new-quiz')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.make-new-activity') }}
@@ -89,12 +89,18 @@
 				{{ $t('admin.edit-POI') }}
 				<font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
+
 			<Button
 			  @click="router.push('/admin/meeting-point')"
 			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
 			>
 			  {{ $t('admin.meeting-point') }}
 			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
+			</Button>
+			<Button @click="router.push('/admin/news')" 
+			class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm">
+				{{ $t('admin.news') }}
+				<font-awesome-icon icon="fa-solid fa-arrow-right" />
 			</Button>
 		  </div>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen p-6 bg-background text-foreground">
+  <div class="min-h-screen p-6 bg-background text-foreground pb-35">
     <div class="max-w-5xl mx-auto space-y-8">
       <!-- Navbar -->
       <nav class="flex flex-col justify-center space-y-4 mb-8 md:pace-x-4 md:flex-row gap-4">

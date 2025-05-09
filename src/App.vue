@@ -5,9 +5,11 @@ import { Toaster } from './components/ui/sonner'
 import { RouterView } from 'vue-router'
 import { useWebSocket } from '@/composables/useWebSocket'
 import { useUserStore } from '@/stores/UserStore'
+import { useHouseholdStore } from '@/stores/HouseholdStore'
 import { onMounted, ref, watch } from 'vue'
 
 const userStore = useUserStore()
+const householdStore = useHouseholdStore()
 const { isConnected } = useWebSocket()
 const isInitialized = ref(false)
 
@@ -15,11 +17,19 @@ const isInitialized = ref(false)
 onMounted(async () => {
   console.log('App.vue mounted - Initializing store')
   await userStore.initializeFromStorage()
+
+  // If user is authenticated, initialize household store
+  if (userStore.isAuthenticated) {
+    console.log('User is authenticated, initializing household store')
+    await householdStore.fetchCurrentHousehold()
+  }
+
   console.log('App.vue - State after initialization:', {
     loggedIn: userStore.loggedIn,
     userId: userStore.userId,
     profile: userStore.profile,
     isAuthenticated: userStore.isAuthenticated,
+    hasHousehold: !!householdStore.currentHousehold
   })
   isInitialized.value = true
 })
@@ -27,8 +37,11 @@ onMounted(async () => {
 // Watch for changes in authentication state
 watch(
   () => userStore.isAuthenticated,
-  (newAuthState) => {
+  async (newAuthState) => {
     console.log('Authentication state changed:', newAuthState)
+    if (newAuthState) {
+      await householdStore.fetchCurrentHousehold()
+    }
   },
 )
 </script>

@@ -1,37 +1,37 @@
 <template>
   <div
-    class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-orange-300 bg-white"
+    class="w-full rounded-lg shadow-sm overflow-hidden transition-all duration-300 ease-in-out border border-[var(--crisis-level-yellow)]"
   >
     <!-- Map Button Header -->
     <div
       @click="toggleMap"
-      class="w-full py-2 flex flex-col items-center cursor-pointer transition-colors bg-white hover:bg-gray-50 px-6"
+      class="w-full py-2 flex flex-col items-center cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800 px-6"
     >
       <div class="flex items-center justify-center">
-        <font-awesome-icon :icon="['fas', 'map-location-dot']" class="text-2xl mr-3 text-orange-600" />
+        <font-awesome-icon :icon="['fas', 'map-location-dot']" class="text-2xl mr-3 text-[var(--crisis-level-yellow)]" />
         <span class="text-lg font-medium">{{ t('home.view_map') }}</span>
       </div>
       <div class="mt-1">
-        <ChevronDown v-if="!showMap" class="h-5 w-5 text-orange-600" />
-        <ChevronUp v-else class="h-5 w-5 text-orange-600" />
+        <ChevronDown v-if="!showMap" class="h-5 w-5 text-[var(--crisis-level-yellow)]" />
+        <ChevronUp v-else class="h-5 w-5 text-[var(--crisis-level-yellow)]" />
       </div>
     </div>
 
     <!-- Expandable Map Section -->
     <div
       v-if="showMap"
-      class="map-container overflow-hidden transition-all duration-500 ease-in-out bg-white"
+      class="map-container overflow-hidden transition-all duration-500 ease-in-out"
       :class="{'h-auto': showMap, 'h-0': !showMap}"
     >
       <!-- Reusing MapOverviewComponent's filter-toggle section -->
-      <div class="p-3 border-b border-orange-200">
+      <div class="p-3 border-b border-[var(--crisis-level-yellow)]">
         <!-- Map control buttons that stack vertically on narrow screens -->
-        <div class="map-buttons-container flex md:items-center gap-2 mb-3 min-h-[40px] overflow-y-auto overflow-x-hidden md:flex-wrap md:overflow-visible scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-transparent">
+        <div class="map-buttons-container flex md:items-center gap-2 mb-3 min-h-[40px] overflow-y-auto overflow-x-hidden md:flex-wrap md:overflow-visible scrollbar-thin scrollbar-thumb-[var(--crisis-level-yellow)] scrollbar-track-transparent">
           <Button
             @click="fetchUserLocation"
             :disabled="isLoadingLocation"
             variant="outline"
-            class="flex items-center bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
           >
             <font-awesome-icon :icon="['fas', 'location-dot']" class="mr-2" />
             {{ isLoadingLocation
@@ -43,7 +43,7 @@
           <Button
             @click="findNearestShelter"
             variant="outline"
-            class="flex items-center bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
           >
             <font-awesome-icon :icon="['fas', 'house-chimney']" class="mr-2" />
             {{ t('map.nearest-shelter') }}
@@ -52,7 +52,7 @@
           <Button
             @click="isFilterMenuVisible = !isFilterMenuVisible"
             variant="outline"
-            class="flex items-center bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             :class="{ 'bg-gray-100': isFilterMenuVisible }"
           >
             <font-awesome-icon
@@ -64,38 +64,45 @@
 
           <Button
             variant="outline"
-            class="flex items-center bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             @click="togglePoiVisibility"
           >
             <font-awesome-icon :icon="['fas', 'map-pin']" class="mr-2" />
             {{ t('map.show-pois', 'POIs') }}
-            <div class="ml-1 w-3 h-3 rounded-full" :class="showPois ? 'bg-green-500' : 'bg-gray-300'"></div>
+            <div class="ml-1 w-3 h-3 rounded-full relative" :class="showPois ? 'bg-green-500' : 'bg-gray-300'">
+              <div v-if="showPois" class="absolute inset-0 m-auto w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
           </Button>
 
           <Button
             variant="outline"
-            class="flex items-center bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             @click="toggleCrisisVisibility"
           >
             <font-awesome-icon :icon="['fas', 'triangle-exclamation']" class="mr-2" />
             {{ t('map.show-crisis', 'Crisis') }}
-            <div class="ml-1 w-3 h-3 rounded-full" :class="showCrisis ? 'bg-green-500' : 'bg-gray-300'"></div>
+            <div class="ml-1 w-3 h-3 rounded-full relative" :class="showCrisis ? 'bg-green-500' : 'bg-gray-300'">
+              <div v-if="showCrisis" class="absolute inset-0 m-auto w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
           </Button>
 
           <Button
             variant="outline"
-            class="flex items-center bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
+            class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             @click="toggleMeetingPlacesVisibility"
           >
-            <font-awesome-icon :icon="['fas', 'people-group']" class="mr-2" />
+            <span class="material-symbols-outlined scale-75 mr-2">recenter</span>
             {{ t('map.show-meeting-places', 'Meeting Places') }}
-            <div class="ml-1 w-3 h-3 rounded-full" :class="showMeetingPlaces ? 'bg-green-500' : 'bg-gray-300'"></div>
+            <div class="ml-1 w-3 h-3 rounded-full relative" :class="showMeetingPlaces ? 'bg-green-500' : 'bg-gray-300'">
+              <div v-if="showMeetingPlaces" class="absolute inset-0 m-auto w-1.5 h-1.5 bg-white rounded-full"></div>
+            </div>
           </Button>
+
         </div>
       </div>
 
       <!-- Filter Card -->
-      <Card v-if="isFilterMenuVisible" class="mb-4 filter-card relative z-20 mx-3 border-orange-300 bg-white">
+      <Card v-if="isFilterMenuVisible" class="mb-4 filter-card relative z-20 mx-3 border-[var(--crisis-level-yellow)]">
         <CardHeader>
           <CardTitle>{{ t('map.filter') }}</CardTitle>
         </CardHeader>
@@ -113,7 +120,7 @@
                 min="100"
                 max="50000"
                 step="100"
-                class="w-full border-orange-300 focus-visible:ring-orange-400 bg-white"
+                class="w-full border-[var(--crisis-level-yellow)] focus-visible:ring-[var(--crisis-level-yellow)]"
               />
             </div>
 
@@ -122,7 +129,7 @@
                 {{ t('map.poi-type') }}
               </label>
               <Select v-model="selectedPoiType" class="w-full">
-                <SelectTrigger id="poi-type" class="w-full border-orange-300 focus:ring-orange-400">
+                <SelectTrigger id="poi-type" class="w-full border-[var(--crisis-level-yellow)] focus:ring-[var(--crisis-level-yellow)]">
                   <SelectValue :placeholder="t('map.all-types')" />
                 </SelectTrigger>
                 <SelectContent>
@@ -139,14 +146,14 @@
             <div class="flex flex-col md:flex-wrap md:flex-row gap-4 w-full">
               <Button
                 variant="outline"
-                class="w-full md:w-auto bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
+                class="w-full md:w-auto border-[var(--crisis-level-yellow)] hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
                 @click="resetFilters"
               >
                 {{ t('map.reset-filter') }}
               </Button>
               <Button
                 variant="outline"
-                class="w-full md:w-auto bg-white border-orange-300 text-black hover:bg-gray-50 hover:border-orange-300"
+                class="w-full md:w-auto border-[var(--crisis-level-yellow)] hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)]"
                 :class="{ 'opacity-50': !userLocation || !selectedPoiType }"
                 @click="findNearestPoi"
                 :disabled="!userLocation || !selectedPoiType"
@@ -156,7 +163,7 @@
             </div>
             <Button
               variant="outline"
-              class="w-full md:w-auto bg-white border-orange-400 text-black hover:bg-gray-50 hover:border-orange-400 font-medium"
+              class="w-full md:w-auto border-[var(--crisis-level-yellow)] hover:bg-gray-50 hover:border-[var(--crisis-level-yellow)] font-medium"
               @click="applyFilters"
             >
               {{ t('map.apply-filter') }}
@@ -166,9 +173,9 @@
       </Card>
 
       <!-- Map and Legend container with collapsible legend -->
-      <div class="relative" :style="{ height: legendHeight + 'px' }">
+      <div class="relative w-full h-[400px] md:h-[600px] lg:h-[800px]">
         <!-- Map Component -->
-        <div class="absolute inset-0" :class="{ 'pr-[250px]': showLegend }">
+        <div class="absolute inset-0 h-full w-full">
           <MapComponent
             ref="mapComponentRef"
             :pois="showPois ? convertedPois : []"
@@ -177,21 +184,21 @@
             :showMeetingPlaces="showMeetingPlaces"
             :userLocation="userLocation"
             :householdLocation="householdLocation"
-            class="h-full w-full z-0"
+            class="h-full w-full"
           />
         </div>
 
         <!-- Legend Toggle Button -->
-        <button
+        <Button
           @click="toggleLegend"
-          class="absolute bottom-3 right-3 z-30 bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors"
+          class="absolute bottom-3 right-3 z-30 rounded-full p-2 shadow-md bg-neutral-200 hover:bg-neutral-400 dark:bg-neutral-500 dark:hover:bg-neutral-700 hover:cursor-pointer transition-colors"
         >
-          <font-awesome-icon :icon="['fas', showLegend ? 'chevron-right' : 'chevron-left']" class="text-black" />
-        </button>
+          <font-awesome-icon :icon="['fas', showLegend ? 'chevron-right' : 'chevron-left']" class="text-black dark:text-white" />
+        </Button>
 
         <!-- Collapsible Legend Sidebar -->
         <div
-          class="absolute top-0 right-0 h-full bg-white border-l border-orange-200 p-3 transition-all duration-300 ease-in-out z-10"
+          class="absolute top-0 right-0 h-full border-l border-[var(--crisis-level-yellow)] p-3 transition-all duration-300 ease-in-out z-10 overflow-y-auto"
           :class="{ 'w-[250px]': showLegend, 'w-0 opacity-0': !showLegend }"
         >
           <MapLegend />
@@ -245,6 +252,8 @@ import { fetchActiveCrisisEvents } from '@/services/CrisisEventService.ts';
 import { fetchMeetingPlacesNearby } from '@/services/api/MeetingPlaceService.ts';
 import type { PoiData } from '@/models/PoiData.ts';
 import { convertPoiData } from '@/types/map.ts';
+import { useUserStore } from '@/stores/UserStore.ts'
+import { useHouseholdStore } from '@/stores/HouseholdStore.ts'
 
 // Register FontAwesome icons
 library.add(
@@ -274,7 +283,6 @@ const pois = ref<PoiData[]>([]);
 const crisisEvents = ref<any[]>([]);
 const meetingPlaces = ref<any[]>([]);
 const userLocation = ref<{latitude: number, longitude: number} | null>(null);
-const householdLocation = ref<{latitude: number, longitude: number} | null>(null);
 
 // Filter state
 const isFilterMenuVisible = ref(false);
@@ -305,6 +313,26 @@ const convertedPois = computed(() => {
     }
     return convertPoiData(poi);
   });
+});
+
+/**
+ * Property for storing the current household location.
+ */
+
+const householdStore = useHouseholdStore();
+onMounted(() => {
+  // if you need to fetch them:
+  householdStore.fetchCurrentHousehold();
+});
+const householdLocation = computed(() => {
+  const hh = householdStore.currentHousehold;
+  if (hh && hh.latitude != null && hh.longitude != null) {
+    return {
+      latitude: Number(hh.latitude),
+      longitude: Number(hh.longitude)
+    };
+  }
+  return null;
 });
 
 /**
@@ -629,106 +657,3 @@ onMounted(() => {
   });
 });
 </script>
-
-<style scoped>
-/* Ensure smooth transitions for the legend sidebar */
-.map-container {
-  position: relative;
-}
-
-/* Ensure the map takes up the full height of its container */
-.h-full {
-  height: 100%;
-}
-
-/* Prevent content overflow */
-.overflow-hidden {
-  overflow: hidden;
-}
-
-/* Ensure the legend scrolls if content is too long */
-.overflow-y-auto {
-  overflow-y: auto;
-}
-
-/* Horizontal scrollbar styling */
-.scrollbar-thin {
-  scrollbar-width: thin;
-}
-
-.scrollbar-thumb-orange-300::-webkit-scrollbar-thumb {
-  background-color: rgb(253, 186, 116);
-  border-radius: 9999px;
-}
-
-.scrollbar-track-transparent::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-
-::-webkit-scrollbar {
-  height: 8px; /* Slightly larger for better visibility */
-  width: 6px;
-}
-
-/* Hide horizontal scrollbar on mobile for the map buttons */
-@media (max-width: 767px) {
-  .map-buttons-container::-webkit-scrollbar:horizontal,
-  .filter-buttons-container::-webkit-scrollbar:horizontal {
-    display: none;
-  }
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgb(253, 186, 116);
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: transparent;
-}
-
-/* Responsive button layout */
-.map-buttons-container,
-.filter-buttons-container {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: 300px;
-  padding-right: 8px;
-  width: 100%;
-}
-
-.map-buttons-container button,
-.filter-buttons-container button {
-  flex-shrink: 0;
-  width: 100%;
-  justify-content: flex-start;
-  max-width: 100%;
-  white-space: normal;
-  text-align: left;
-}
-
-/* Switch to horizontal layout on medium screens and above */
-@media (min-width: 768px) {
-  .map-buttons-container,
-  .filter-buttons-container {
-    flex-direction: row;
-    flex-wrap: wrap;
-    overflow-x: visible;
-    overflow-y: visible;
-    max-height: none;
-    padding-right: 0;
-    width: auto;
-  }
-
-  .map-buttons-container button,
-  .filter-buttons-container button {
-    width: auto;
-    white-space: normal;
-    text-align: center;
-    justify-content: center;
-    margin-bottom: 4px;
-  }
-}
-</style>

@@ -12,7 +12,7 @@
     </ul>
     <div class="mt-4 text-center">
       <Button 
-        class="bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/90 text-white"
+        class="bg-[var(--crisis-level-green)] hover:bg-[var(--crisis-level-green)]/75"
         @click="onCreateClick"
       >
         {{ t('home.household.create_button') }}
