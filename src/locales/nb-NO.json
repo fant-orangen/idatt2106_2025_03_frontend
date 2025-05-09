@@ -1030,7 +1030,8 @@
     },
     "language": {
       "title": "Språk",
-      "select-language": "Velg språk"
+      "select-language": "Velg språk",
+      "change-language": "Bytt språk"
     },
     "group": {
       "title": "Mine Grupper",

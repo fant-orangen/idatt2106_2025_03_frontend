@@ -983,7 +983,8 @@
     },
     "language": {
       "title": "Language",
-      "select-language": "Select Language"
+      "select-language": "Select Language",
+      "change-language": "Change language"
     },
     "group": {
       "title": "My Groups",
