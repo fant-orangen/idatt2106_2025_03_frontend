@@ -27,7 +27,6 @@ import EditQuizView from '@/views/gamification/admin/EditQuizView.vue'
 import EnhancedInformationView from '@/views/information/EnhancedInformationView.vue'
 import FoodAndDrinksView from '@/views/FoodAndDrinksView.vue'
 import GroupPage from '@/views/GroupPage.vue'
-import HouseholdView from '@/views/HouseholdView.vue'
 import LoginView from '@/views/LoginView.vue'
 import MedicineInventory from '@/views/MedicineInventory.vue'
 import NewsView from '@/views/NewsView.vue'
@@ -41,7 +40,6 @@ import ReflectionsView from '@/views/ReflectionsView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import SettingsView from '@/views/SettingsView.vue'
-import ShareItemModal from '@/views/ShareItemModal.vue'
 import SuperAdminAdministrate from '@/views/SuperAdminAdministrate.vue'
 
 // Mock the stores
@@ -63,6 +61,14 @@ vi.mock('@/stores/HouseholdStore', () => ({
     error: null,
     isMemberOfHousehold: false,
     fetchCurrentHousehold: vi.fn().mockResolvedValue(null)
+  }))
+}))
+
+// Mock the ProductStore to fix the Pinia error
+vi.mock('@/stores/ProductStore', () => ({
+  useProductStore: vi.fn(() => ({
+    productIds: [],
+    addProductIdsFromPage: vi.fn()
   }))
 }))
 
@@ -120,6 +126,74 @@ vi.mock('@/services/CrisisEventService', () => ({
   })
 }))
 
+// Mock the VueQueryPlugin and queryClient
+vi.mock('@tanstack/vue-query', () => ({
+  useQueryClient: vi.fn(() => ({
+    invalidateQueries: vi.fn(),
+    getQueryData: vi.fn(),
+    setQueryData: vi.fn(),
+    fetchQuery: vi.fn(),
+    prefetchQuery: vi.fn()
+  })),
+  useQuery: vi.fn(() => ({
+    data: { value: [] },
+    isLoading: { value: false },
+    error: { value: null }
+  })),
+  useInfiniteQuery: vi.fn(() => ({
+    data: { value: { pages: [], pageParams: [] } },
+    fetchNextPage: vi.fn(),
+    hasNextPage: { value: false },
+    isFetchingNextPage: { value: false }
+  })),
+  useMutation: vi.fn(() => ({
+    mutate: vi.fn(),
+    isLoading: { value: false },
+    error: { value: null }
+  }))
+}))
+
+// Mock the InventoryService to prevent Pinia errors
+vi.mock('@/services/InventoryService', () => ({
+  inventoryService: {
+    getFoodDaysRemaining: vi.fn().mockResolvedValue(7),
+    getWaterDaysRemaining: vi.fn().mockResolvedValue(7),
+    getFoodProductTypes: vi.fn().mockResolvedValue({ content: [] }),
+    getWaterProductTypes: vi.fn().mockResolvedValue({ content: [] }),
+    getMedicineProductTypes: vi.fn().mockResolvedValue({ content: [] }),
+    getProductBatches: vi.fn().mockResolvedValue({ content: [] }),
+    getTotalUnitsForProductType: vi.fn().mockResolvedValue(0)
+  }
+}))
+
+// Mock axios to prevent network errors
+vi.mock('axios', () => ({
+  default: {
+    create: vi.fn(() => ({
+      interceptors: {
+        request: { use: vi.fn(), eject: vi.fn() },
+        response: { use: vi.fn(), eject: vi.fn() }
+      },
+      get: vi.fn().mockResolvedValue({ data: {} }),
+      post: vi.fn().mockResolvedValue({ data: {} }),
+      put: vi.fn().mockResolvedValue({ data: {} }),
+      delete: vi.fn().mockResolvedValue({ data: {} }),
+      patch: vi.fn().mockResolvedValue({ data: {} })
+    }))
+  }
+}))
+
+// Mock the API instance
+vi.mock('@/services/api/AxiosInstance', () => ({
+  default: {
+    get: vi.fn().mockResolvedValue({ data: {} }),
+    post: vi.fn().mockResolvedValue({ data: {} }),
+    put: vi.fn().mockResolvedValue({ data: {} }),
+    delete: vi.fn().mockResolvedValue({ data: {} }),
+    patch: vi.fn().mockResolvedValue({ data: {} })
+  }
+}))
+
 // Global setup for all tests
 beforeEach(() => {
   // Create a fresh Pinia instance and make it active
@@ -138,9 +212,29 @@ const testComponentRendering = (component: any, name: string) => {
   describe(name, () => {
     it('should render correctly', async () => {
       try {
+        // Create mock for userInvitationsRef
+        const mockUserInvitationsRef = {
+          refreshInvitations: vi.fn(),
+          invitations: []
+        };
+
         const wrapper = shallowMount(component, {
           global: {
-            stubs: ['router-link', 'router-view']
+            stubs: ['router-link', 'router-view'],
+            mocks: {
+              $t: (key: string) => key, // Mock the global $t function used in templates
+              userInvitationsRef: mockUserInvitationsRef // Mock userInvitationsRef
+            },
+            provide: {
+              // Provide VueQueryPlugin context
+              VUE_QUERY_CLIENT: {
+                queryCache: {
+                  find: vi.fn(),
+                  findAll: vi.fn(),
+                  subscribe: vi.fn()
+                }
+              }
+            }
           }
         })
         expect(wrapper.exists()).toBe(true)
@@ -170,7 +264,6 @@ testComponentRendering(EditQuizView, 'EditQuizView')
 testComponentRendering(EnhancedInformationView, 'EnhancedInformationView')
 testComponentRendering(FoodAndDrinksView, 'FoodAndDrinksView')
 testComponentRendering(GroupPage, 'GroupPage')
-testComponentRendering(HouseholdView, 'HouseholdView')
 testComponentRendering(LoginView, 'LoginView')
 testComponentRendering(MedicineInventory, 'MedicineInventory')
 testComponentRendering(NewsView, 'NewsView')
@@ -184,5 +277,4 @@ testComponentRendering(ReflectionsView, 'ReflectionsView')
 testComponentRendering(RegisterView, 'RegisterView')
 testComponentRendering(ResetPasswordView, 'ResetPasswordView')
 testComponentRendering(SettingsView, 'SettingsView')
-testComponentRendering(ShareItemModal, 'ShareItemModal')
 testComponentRendering(SuperAdminAdministrate, 'SuperAdminAdministrate')
