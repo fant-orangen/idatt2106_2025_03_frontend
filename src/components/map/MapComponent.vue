@@ -511,7 +511,7 @@ export default defineComponent({
           map.value!.addLayer(meetingLayer.value as unknown as L.Layer);
 
           // Set up map event listeners for viewport changes
-          map.value.on('zoom', () => {
+          map.value.on('zoomstart zoom', () => {
             if (!map.value || !markerClusterGroup.value) return;
 
             const zoom = map.value.getZoom();
