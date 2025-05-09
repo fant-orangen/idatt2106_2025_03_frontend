@@ -1,14 +1,5 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, defineProps } from 'vue'
-
-/**
- * @component ResetPasswordView
- * @description This component handles the password reset flow after a user receives a token.
- * It includes a form with validation to input a new password and confirm it.
- * The form is powered by vee-validate and uses localized validation messages.
- */
-
-import { ref, watch, onMounted } from 'vue'
 import { useForm } from 'vee-validate'
 import { useI18n } from 'vue-i18n'
 import { AxiosError } from 'axios'
@@ -17,10 +8,7 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { resetPassword } from '@/services/UserService'
 import { useRoute } from 'vue-router'
 
-/**
- * Import UI components
- */
-
+// Import shadcn-vue components
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'vue-sonner'
@@ -34,41 +22,27 @@ const { t } = useI18n()
 const route = useRoute()
 const tokenFromQuery = ref<string | null>(null)
 
-/**
- * Toggle visibility of password fields.
- */
-
+// Reactive variables
 const isView = ref(false)
-
-/**
- * Reusable password validation schema with translation support.
- */
 
 const passwordValidation = getPasswordValidationSchema(t)
 
-/**
- * Zod validation schema for the reset password form.
- */
-
 const resetPasswordSchema = toTypedSchema(
-  z
-    .object({
-      password: passwordValidation,
-      confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-      message: t('reset-password.password-req-match'),
-      path: ['confirmPassword'],
-    }),
+    z
+        .object({
+          password: passwordValidation,
+          confirmPassword: z.string(),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          message: t('reset-password.password-req-match'),
+          path: ['confirmPassword'],
+        }),
 )
 
-/**
- * Initialize the form using vee-validate.
- */
+// Initialize the form with vee-validate
 const form = useForm({
   validationSchema: resetPasswordSchema,
   initialValues: {
-    token: '',
     password: '',
     confirmPassword: '',
   },
@@ -77,20 +51,8 @@ const form = useForm({
 const props = defineProps<{
   token: string
 }>()
-/**
- * Watch for token in query params and set it in the form.
- */
 
-watch(tokenFromQuery, (newToken) => {
-  if (newToken) {
-    form.setFieldValue('token', newToken)
-  }
-})
-
-/**
- * Set tokenFromQuery on component mount.
- */
-
+// Set tokenFromQuery on component mount
 onMounted(() => {
   tokenFromQuery.value = (route.query.token as string) || null
   console.log('Token from query:', tokenFromQuery.value)
@@ -99,7 +61,6 @@ onMounted(() => {
 /**
  * Handles the reset password process.
  */
-
 const handleReset = form.handleSubmit(async (values) => {
   try {
     await resetPassword(props.token, values.password)
@@ -128,28 +89,11 @@ const handleReset = form.handleSubmit(async (values) => {
     <Card class="min-w-[20vw]">
       <CardHeader>
         <CardTitle class="text-xl font-bold text-center">{{
-          $t('reset-password.title')
-        }}</CardTitle>
+            $t('reset-password.title')
+          }}</CardTitle>
       </CardHeader>
       <CardContent>
         <form @submit.prevent="handleReset" class="space-y-4">
-
-          <!-- Token Field -->
-          <FormField v-slot="{ field, meta, errorMessage }" name="token">
-            <FormItem>
-              <FormLabel for="token">{{ $t('reset-password.code') }}</FormLabel>
-              <FormControl>
-                <Input
-                  id="token"
-                  type="text"
-                  v-bind="field"
-                  :placeholder="$t('reset-password.code')"
-                />
-              </FormControl>
-              <FormMessage v-if="meta.touched || meta.validated" >{{ errorMessage }}</FormMessage>
-            </FormItem>
-          </FormField>
-
           <!-- Password Field -->
           <FormField v-slot="{ field, meta, errorMessage }" name="password">
             <FormItem>
@@ -157,18 +101,18 @@ const handleReset = form.handleSubmit(async (values) => {
               <div class="relative">
                 <FormControl>
                   <Input
-                    :type="isView ? 'text' : 'password'"
-                    id="password"
-                    v-bind="field"
-                    :placeholder="$t('reset-password.new-password')"
+                      :type="isView ? 'text' : 'password'"
+                      id="password"
+                      v-bind="field"
+                      :placeholder="$t('reset-password.new-password')"
                   />
                 </FormControl>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  @click="isView = !isView"
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    @click="isView = !isView"
                 >
                   <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
                 </Button>
@@ -181,23 +125,23 @@ const handleReset = form.handleSubmit(async (values) => {
           <FormField v-slot="{ field, meta, errorMessage }" name="confirmPassword">
             <FormItem>
               <FormLabel for="confirmPassword">{{
-                $t('reset-password.confirm-new-password')
-              }}</FormLabel>
+                  $t('reset-password.confirm-new-password')
+                }}</FormLabel>
               <div class="relative">
                 <FormControl>
                   <Input
-                    :type="isView ? 'text' : 'password'"
-                    id="confirmPassword"
-                    v-bind="field"
-                    :placeholder="$t('reset-password.confirm-new-password')"
+                      :type="isView ? 'text' : 'password'"
+                      id="confirmPassword"
+                      v-bind="field"
+                      :placeholder="$t('reset-password.confirm-new-password')"
                   />
                 </FormControl>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2"
-                  @click="isView = !isView"
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2"
+                    @click="isView = !isView"
                 >
                   <component :is="isView ? EyeOff : Eye" class="h-5 w-5" />
                 </Button>

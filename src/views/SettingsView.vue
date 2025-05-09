@@ -1,14 +1,4 @@
 <script setup lang="ts">
-/**
- * @component SettingsView
- * @description This file defines the settings page for the user account. It allows users to:
- *  - update their email and password
- *  - toggle security preferences like 2FA
- *  - view and edit personal profile information
- *  - manage notification preferences
- *  - access all these settings through a tabbed UI layout
- */
-
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -45,32 +35,19 @@ const { t } = useI18n()
 const userStore = useUserStore()
 const router = useRouter()
 
-/**
- * User preferences
- */
+// User preferences
 const twoFactorAuthenticationEnabled = ref(false)
 const locationSharingEnabled = ref(false)
 
-/**
- * Email and passwords fields
- */
-const newEmail = ref('')
-const changeEmailPassword = ref('')
 // Email and password fields
 const currentPassword = ref('')
 const newPassword = ref('')
 
-/**
- * View toggles for password fields
- */
-const isViewChangePasswordEmail = ref(false)
 // View toggles for password fields
 const isViewCurrentPassword = ref(false)
 const isViewNewPassword = ref(false)
 
-/**
- * Profile data
- */
+// Profile data
 const profile = ref<ExtendedUserProfile>({
   id: null,
   email: '',
@@ -87,11 +64,6 @@ const profile = ref<ExtendedUserProfile>({
 
 const isProfileLoading = ref(false)
 
-/**
- * Method to handle update of user preferences
- * @param preference - the user preference to handle
- * @param value - boolean value for 2FA
- */
 function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boolean) {
   // Optimistically update the state
   if (preference === 'twoFactorAuthenticationEnabled') {
@@ -99,107 +71,59 @@ function handlePreferenceUpdate(preference: keyof UserPreferencesDto, value: boo
   }
 
   updateUserPreference(Number(userStore.userId), preference, value)
-    .then(() => {
-      console.log('Preference updated successfully')
-    })
-    .catch((error) => {
-      console.error('Error updating preference:', error)
-      // Revert the state if the request fails
-      if (preference === 'twoFactorAuthenticationEnabled') {
-        twoFactorAuthenticationEnabled.value = !value
-      }
-    })
+      .then(() => {
+        console.log('Preference updated successfully')
+      })
+      .catch((error) => {
+        console.error('Error updating preference:', error)
+        // Revert the state if the request fails
+        if (preference === 'twoFactorAuthenticationEnabled') {
+          twoFactorAuthenticationEnabled.value = !value
+        }
+      })
 }
-
-/**
- * Method to get preferences.
- */
 
 function getPreferences() {
   getUserPreferences()
-    .then((preferences) => {
-      console.log('Fetched preferences:', preferences)
+      .then((preferences) => {
+        console.log('Fetched preferences:', preferences)
 
-      twoFactorAuthenticationEnabled.value = preferences.twoFactorAuthenticationEnabled
-      locationSharingEnabled.value = preferences.locationSharingEnabled
-    })
-    .catch((error) => {
-      console.error('Error fetching preferences:', error)
-      console.log(userStore.token)
-    })
+        twoFactorAuthenticationEnabled.value = preferences.twoFactorAuthenticationEnabled
+        locationSharingEnabled.value = preferences.locationSharingEnabled
+      })
+      .catch((error) => {
+        console.error('Error fetching preferences:', error)
+        console.log(userStore.token)
+      })
 }
 
-/**
- * Method to handle updating a password.
- * @param oldPasswordInput - the old password
- * @param newPasswordInput - new password chosen by the user.
- */
 function handleUpdatePassword(oldPasswordInput: string, newPasswordInput: string) {
   userStore
-    .updatePassword(oldPasswordInput, newPasswordInput)
-    .then(() => {
-      toast.success(t('settings.account.password.success'), {
-        description: t('settings.account.password.successDescription'),
+      .updatePassword(oldPasswordInput, newPasswordInput)
+      .then(() => {
+        toast.success(t('settings.account.password.success'), {
+          description: t('settings.account.password.successDescription'),
+        })
+        // Reset the password fields
+        currentPassword.value = ''
+        newPassword.value = ''
+        userStore.logout()
+        router.push('/login')
       })
-      // Reset the password fields
-      currentPassword.value = ''
-      newPassword.value = ''
-      userStore.logout()
-      router.push('/login')
-    })
-    .catch((error) => {
-      console.error('Error updating password:', error)
-      toast.error(t('settings.account.password.error'), {
-        description: t('settings.account.password.errorDescription'),
+      .catch((error) => {
+        console.error('Error updating password:', error)
+        toast.error(t('settings.account.password.error'), {
+          description: t('settings.account.password.errorDescription'),
+        })
       })
-    })
 }
 
-/**
- * Method to handle updating email.
- * @param newEmailInput - the new email chosen by the user.
- * @param passwordInput - the old password.
- */
-function handleUpdateEmail(newEmailInput: string, passwordInput: string) {
-  userStore
-    .updateEmail(newEmailInput, passwordInput)
-    .then(() => {
-      toast.success(t('settings.account.email.success'), {
-        description: t('settings.account.email.successDescription'),
-      })
-      // Reset the email fields
-      newEmail.value = ''
-      changeEmailPassword.value = ''
-      userStore.logout()
-      router.push('/login')
-    })
-    .catch((error) => {
-      console.error('Error updating email:', error)
-      toast.error(t('settings.account.email.error'), {
-        description: t('settings.account.email.errorDescription'),
-      })
-    })
-}
-
-/**
- * Cancel update of email.
- */
-function handleCancelEmailChange() {
-  newEmail.value = ''
-  changeEmailPassword.value = ''
-}
-
-/**
- * Cancel changing a password.
- */
 function handleCancelPasswordChange() {
   currentPassword.value = ''
   newPassword.value = ''
 }
 
-/**
- * Fetch user profile data.
- */
+// Fetch user profile data
 const fetchUserProfile = async () => {
   try {
     isProfileLoading.value = true
@@ -213,9 +137,7 @@ const fetchUserProfile = async () => {
   }
 }
 
-/**
- * Save profile changes.
- */
+// Save profile changes
 const saveProfile = async () => {
   try {
     isProfileLoading.value = true
@@ -257,10 +179,8 @@ onMounted(() => {
     {{ t('settings.title') }}
   </h1>
   <div class="page-content flex flex-col items-center mt-10 mb-20 w-full">
-
     <!-- Tabs -->
     <Tabs default-value="account" class="w-full max-w-2/3">
-
       <!-- Tabs List -->
       <TabsList class="grid grid-cols-3 w-2/3 mx-auto mb-4">
         <TabsTrigger value="account">{{ t('settings.tabs.account') }}</TabsTrigger>
@@ -278,52 +198,6 @@ onMounted(() => {
                 {{ t('settings.account.description') }}
               </CardDescription>
             </CardHeader>
-
-            <!-- Change Email Setting -->
-            <CardHeader>
-              <CardTitle>{{ t('settings.account.email.subtitle') }}</CardTitle>
-              <CardDescription>
-                {{ t('settings.account.email.description') }}
-              </CardDescription>
-            </CardHeader>
-            <CardContent class="account-settings space-y-2">
-              <div class="space-y-1">
-                <Label for="email">{{ t('settings.account.email.email') }}</Label>
-                <Input id="email" :placeholder="t('login.email')" v-model="newEmail" />
-              </div>
-              <div class="space-y-1 relative">
-                <Label for="password">{{ t('login.password') }}</Label>
-                <div class="relative">
-                  <Input
-                    :type="isViewChangePasswordEmail ? 'text' : 'password'"
-                    id="password"
-                    v-model="changeEmailPassword"
-                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    :placeholder="t('login.password')"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
-                    @click="isViewChangePasswordEmail = !isViewChangePasswordEmail"
-                  >
-                    <component :is="isViewChangePasswordEmail ? EyeOff : Eye" class="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <div class="flex flex-col gap-4 md:flex-row">
-                <Button @click="handleUpdateEmail(newEmail, changeEmailPassword)">{{
-                  t('settings.account.save-changes')
-                }}</Button>
-                <Button variant="outline" @click="handleCancelEmailChange">
-                  {{ t('settings.cancel') }}
-                </Button>
-              </div>
-            </CardFooter>
-
             <!-- Change Password Setting -->
             <CardHeader>
               <CardTitle>{{ t('settings.account.password.title') }}</CardTitle>
@@ -336,18 +210,18 @@ onMounted(() => {
                 <Label for="current">{{ t('settings.account.password.current') }}</Label>
                 <div class="relative">
                   <Input
-                    :type="isViewCurrentPassword ? 'text' : 'password'"
-                    id="password"
-                    v-model="currentPassword"
-                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    :placeholder="t('login.password')"
+                      :type="isViewCurrentPassword ? 'text' : 'password'"
+                      id="password"
+                      v-model="currentPassword"
+                      class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      :placeholder="t('login.password')"
                   />
                   <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
-                    @click="isViewCurrentPassword = !isViewCurrentPassword"
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
+                      @click="isViewCurrentPassword = !isViewCurrentPassword"
                   >
                     <component :is="isViewCurrentPassword ? EyeOff : Eye" class="h-5 w-5" />
                   </Button>
@@ -357,18 +231,18 @@ onMounted(() => {
                 <Label for="new">{{ t('settings.account.password.new') }}</Label>
                 <div class="relative">
                   <Input
-                    :type="isViewNewPassword ? 'text' : 'password'"
-                    id="password"
-                    v-model="newPassword"
-                    class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    :placeholder="t('login.password')"
+                      :type="isViewNewPassword ? 'text' : 'password'"
+                      id="password"
+                      v-model="newPassword"
+                      class="input-lead w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      :placeholder="t('login.password')"
                   />
                   <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
-                    @click="isViewNewPassword = !isViewNewPassword"
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      class="absolute inset-y-0 right-2 flex items-center justify-center hover:bg-transparent dark:hover:bg-transparent"
+                      @click="isViewNewPassword = !isViewNewPassword"
                   >
                     <component :is="isViewNewPassword ? EyeOff : Eye" class="h-5 w-5" />
                   </Button>
@@ -378,8 +252,8 @@ onMounted(() => {
             <CardFooter>
               <div class="flex flex-col gap-4 md:flex-row">
                 <Button @click="handleUpdatePassword(currentPassword, newPassword)">{{
-                  t('settings.account.save-changes')
-                }}</Button>
+                    t('settings.account.save-changes')
+                  }}</Button>
                 <Button variant="outline" @click="handleCancelPasswordChange">
                   {{ t('settings.cancel') }}
                 </Button>
@@ -395,8 +269,8 @@ onMounted(() => {
             <CardContent class="security-settings space-y-2">
               <div class="space-y-1">
                 <Button
-                  :variant="twoFactorAuthenticationEnabled ? 'destructive' : 'outline'"
-                  @click="
+                    :variant="twoFactorAuthenticationEnabled ? 'destructive' : 'outline'"
+                    @click="
                     handlePreferenceUpdate(
                       'twoFactorAuthenticationEnabled',
                       !twoFactorAuthenticationEnabled,
@@ -404,13 +278,13 @@ onMounted(() => {
                   "
                 >
                   <component
-                    :is="twoFactorAuthenticationEnabled ? Unlock : Lock"
-                    class="w-4 h-4 mr-2"
+                      :is="twoFactorAuthenticationEnabled ? Unlock : Lock"
+                      class="w-4 h-4 mr-2"
                   />
                   {{
                     twoFactorAuthenticationEnabled
-                      ? t('settings.account.security.disableTwoStep')
-                      : t('settings.account.security.enableTwoStep')
+                        ? t('settings.account.security.disableTwoStep')
+                        : t('settings.account.security.enableTwoStep')
                   }}
                 </Button>
               </div>
@@ -464,8 +338,8 @@ onMounted(() => {
                   <p class="text-xs text-muted-foreground italic">
                     {{
                       t(
-                        'settings.profile.address-privacy',
-                        'Your address is not visible to other users.',
+                          'settings.profile.address-privacy',
+                          'Your address is not visible to other users.',
                       )
                     }}
                   </p>
@@ -476,8 +350,8 @@ onMounted(() => {
                   <Button type="submit" :disabled="isProfileLoading">
                     {{
                       isProfileLoading
-                        ? t('common.saving', 'Saving...')
-                        : t('settings.account.save-changes')
+                          ? t('common.saving', 'Saving...')
+                          : t('settings.account.save-changes')
                     }}
                   </Button>
                 </div>
@@ -512,8 +386,8 @@ onMounted(() => {
                     <Checkbox id="terms1" />
                     <div class="grid gap-1.5 leading-none">
                       <label
-                        for="terms1"
-                        class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          for="terms1"
+                          class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         {{ t('settings.notifications.email.system') }}
                       </label>

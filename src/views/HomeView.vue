@@ -7,28 +7,21 @@
     </div>
   </div>
 
-
   <!-- Authenticated User with Household and Crisis View -->
-  <div
-    v-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises"
-    class="content w-full max-w-7xl mx-auto pt-0"
-  >
+  <div v-else-if="userStore.isAuthenticated && hasHousehold && hasOngoingCrises"
+       class="content w-full max-w-7xl mx-auto pt-0">
     <AuthenticatedWithHouseholdCrisisHome />
   </div>
 
   <!-- Authenticated User with Household View (No Crisis) -->
-  <div
-    v-else-if="userStore.isAuthenticated && hasHousehold"
-    class="content w-full max-w-7xl mx-auto pt-0"
-  >
+  <div v-else-if="userStore.isAuthenticated && hasHousehold"
+       class="content w-full max-w-7xl mx-auto pt-0">
     <AuthenticatedWithHouseholdHome />
   </div>
 
   <!-- Authenticated User without Household View -->
-  <div
-    v-else-if="userStore.isAuthenticated && !hasHousehold"
-    class="content w-full max-w-7xl mx-auto pt-0"
-  >
+  <div v-else-if="userStore.isAuthenticated && !hasHousehold"
+       class="content w-full max-w-7xl mx-auto pt-0">
     <AuthenticatedNoHouseholdHome />
   </div>
 
@@ -39,34 +32,22 @@
 </template>
 
 <script setup lang="ts">
-
-/**
- * @component HomeView
- * @description Displays the Home page.
- */
-
 import { useI18n } from 'vue-i18n'
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useUserStore } from '@/stores/UserStore'
+import { useHouseholdStore } from '@/stores/HouseholdStore'
 import UnauthenticatedHome from '@/components/homeview/UnauthenticatedHome.vue'
 import AuthenticatedNoHouseholdHome from '@/components/homeview/AuthenticatedNoHouseholdHome.vue'
 import AuthenticatedWithHouseholdHome from '@/components/homeview/AuthenticatedWithHouseholdHome.vue'
 import AuthenticatedWithHouseholdCrisisHome from '@/components/homeview/AuthenticatedWithHouseholdCrisisHome.vue'
-import { getCurrentHousehold } from '@/services/HouseholdService'
 import { fetchAllPreviewCrisisEvents } from '@/services/CrisisEventService'
 
-const router = useRouter()
 const { t } = useI18n()
 const userStore = useUserStore()
+const householdStore = useHouseholdStore()
 
-
-/**
- * State for household and crisis status
- */
-
+// State for household and crisis status
 const hasHousehold = computed(() => !!householdStore.currentHousehold)
-const hasHousehold = ref(false)
 const hasOngoingCrises = ref(false)
 const isLoading = ref(true)
 

@@ -9,14 +9,14 @@
       <ScrollArea  class="space-y-3 overflow-y-auto gap-2 pr-1 flex-1">
         <ul class="space-y-2">
           <li
-            v-for="group in groups"
-            :key="group.id"
-            class="flex items-center px-3 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
-            :class="{
+              v-for="group in groups"
+              :key="group.id"
+              class="flex items-center px-3 py-2 rounded-lg hover:opacity-80 transition cursor-pointer"
+              :class="{
                   'bg-black text-accent dark:bg-white ': currentGroupId === group.groupId,
                   'hover:bg-sidebar-primary/15 ': currentGroupId !== group.groupId
                 }"
-            @click="switchToGroup(group.groupId)"
+              @click="switchToGroup(group.groupId)"
           >
             <span class="i-heroicons-home w-5 h-5" /> {{ group.name }}
           </li>
@@ -25,10 +25,10 @@
 
       <!-- Button for inviting household -->
       <Button
-        v-if="isAdmin"
-        @click="inviteHousehold"
-        variant="outline"
-        class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/15"
+          v-if="isAdmin"
+          @click="inviteHousehold"
+          variant="outline"
+          class="mt-4 hover:cursor-pointer hover:bg-sidebar-primary/15"
       >
         {{ t('group.invite-household') }}
       </Button>
@@ -36,9 +36,9 @@
       <!-- Create group button -->
       <div v-if="isAdmin" class="mt-8 border-t border-sidebar-border pt-4">
         <Button
-          @click="showCreateGroupDialog = true"
-          variant="outline"
-          class="mt-4 w-full hover:cursor-pointer hover:bg-sidebar-primary/15 dark:hover:bg-sidebar-primary/10"
+            @click="showCreateGroupDialog = true"
+            variant="outline"
+            class="mt-4 w-full hover:cursor-pointer hover:bg-sidebar-primary/15 dark:hover:bg-sidebar-primary/10"
         >
           {{ t('group.create-group') }}
         </Button>
@@ -50,9 +50,9 @@
         <ScrollArea class="max-h-48 overflow-y-auto pr-1">
           <ul class="space-y-2">
             <li
-              v-for="household in households"
-              :key="household.id"
-              class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-secondary text-sidebar-secondary-foreground text-sm"
+                v-for="household in households"
+                :key="household.id"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg bg-sidebar-secondary text-sidebar-secondary-foreground text-sm"
             >
               <House class="w-5 h-5" />
               <div>
@@ -70,9 +70,9 @@
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">{{ t('group.shared-inventory') }}</h2>
         <Button
-          v-if="isAdmin && currentGroupId"
-          @click="leaveCurrentGroup"
-          class="text-sm text-white bg-destructive hover:cursor-pointer hover:bg-destructive/70"
+            v-if="isAdmin && currentGroupId"
+            @click="leaveCurrentGroup"
+            class="text-sm text-white bg-destructive hover:cursor-pointer hover:bg-destructive/70"
         >
           {{ t('group.leave-group') }}
         </Button>
@@ -81,39 +81,34 @@
       <!-- Inventory Search Bar -->
       <div class="bg-muted rounded-lg shadow-md p-4 mb-6">
         <InventorySearchBar
-          class="mb-6"
-          @update:search="searchText = $event"
+            class="mb-6"
+            @update:search="searchText = $event"
         />
       </div>
 
       <!-- Group Inventory -->
       <div v-if="currentGroupId" class="bg-card rounded-lg shadow-md p-6">
         <GroupInventory
-          :group-id="currentGroupId"
-          :search-text="searchText"
+            :group-id="currentGroupId"
+            :search-text="searchText"
         />
       </div>
     </main>
   </div>
   <InviteHouseholdDialog
-    :open="showInviteDialog"
-    :group-id="selectedGroupId || 0"
-    @update:open="showInviteDialog = $event"
+      :open="showInviteDialog"
+      :group-id="selectedGroupId || 0"
+      @update:open="showInviteDialog = $event"
   />
   <CreateGroupDialog
-    :open="showCreateGroupDialog"
-    @update:open="showCreateGroupDialog = $event"
-    @group-created="refreshGroups"
+      :open="showCreateGroupDialog"
+      @update:open="showCreateGroupDialog = $event"
+      @group-created="refreshGroups"
   />
 </template>
 
 
 <script setup lang="ts">
-
-/**
- * @component GroupPage
- * @description Displays the Group page.
- */
 import { ref, onMounted, computed, watch } from 'vue';
 import { groupService } from '@/services/api/GroupService';
 import { useGroupStore } from '@/stores/GroupStore';
@@ -149,10 +144,7 @@ const showInviteDialog = ref(false);
 const showCreateGroupDialog = ref(false);
 const selectedGroupId = ref<number | null>(null);
 
-/**
- * Check if the user is household admin when component mounts.
- */
-
+// Check if user is household admin when component mounts
 onMounted(async () => {
   try {
     isAdmin.value = await isCurrentUserHouseholdAdmin();
@@ -175,10 +167,7 @@ onMounted(async () => {
   }
 });
 
-/**
- * Watch for changes in search text and current group ID.
- */
-
+// Watch for changes in search text and current group ID
 watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
   if (!newGroupId) return;
 
@@ -187,17 +176,17 @@ watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
     if (newSearchText.trim() === '') {
       // If search is empty, get all product types
       response = await groupService.getContributedProductTypes(
-        { groupId: newGroupId },
-        0,
-        20
+          { groupId: newGroupId },
+          0,
+          20
       );
     } else {
       // If there's a search term, use the search endpoint
       response = await groupService.searchContributedProductTypes(
-        newGroupId,
-        newSearchText,
-        0,
-        20
+          newGroupId,
+          newSearchText,
+          0,
+          20
       );
     }
 
@@ -215,10 +204,7 @@ watch([searchText, currentGroupId], async ([newSearchText, newGroupId]) => {
   }
 }, { immediate: true });
 
-/**
- * Watch for changes in current group ID to update households
- */
-
+// Watch for changes in current group ID to update households
 watch(currentGroupId, async (newGroupId) => {
   if (!newGroupId) {
     households.value = [];
@@ -243,8 +229,8 @@ function switchToGroup(groupId: number) {
 }
 
 function inviteHousehold() {
-  // TODO: Implement household invitation
-  console.log('Invite household not implemented');
+  selectedGroupId.value = currentGroupId.value;
+  showInviteDialog.value = true;
 }
 
 async function leaveCurrentGroup() {
@@ -280,17 +266,10 @@ async function refreshGroups() {
         name: group.name,
         groupId: group.id
       }));
-
-      // Switch to the newly created group
-      const newGroup = groups.value.find(g => g.name === newGroupName.value.trim());
-      if (newGroup) {
-        switchToGroup(newGroup.groupId);
       if (groups.value.length && !currentGroupId.value) {
         switchToGroup(groups.value[0].groupId);
       }
     }
-
-    cancelCreateGroup();
   } catch (error) {
     console.error('Error refreshing groups:', error);
   }
