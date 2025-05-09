@@ -264,9 +264,21 @@ function closeEmergencyContacts() {
         </p>
       </CardContent>
     </Card>
-
+    <div class="sticky top-0 z-10 bg-background py-4 border-b mb-6">
+      <nav class="flex justify-center gap-6 text-lg font-semibold" aria-label="Scenario Navigation">
+        <a href="#before" class="hover:underline text-primary">
+          {{ $t('scenarioThemes.before') }}
+        </a>
+        <a href="#under" class="hover:underline text-primary">
+          {{ $t('scenarioThemes.under') }}
+        </a>
+        <a href="#after" class="hover:underline text-primary">
+          {{ $t('scenarioThemes.after') }}
+        </a>
+      </nav>
+    </div>
     <!-- Before Crisis Instructions -->
-    <Card v-if="scenarioTheme.before" class="mb-6 shadow-md">
+    <Card v-if="scenarioTheme.before" id="before" class="mb-8 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <BookOpen class="h-5 w-5 text-primary" />
@@ -283,7 +295,7 @@ function closeEmergencyContacts() {
     </Card>
 
     <!-- During Crisis Instructions -->
-    <Card v-if="scenarioTheme.under" class="mb-6 shadow-md">
+    <Card v-if="scenarioTheme.under" id="under" class="mb-6 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <AlertTriangle class="h-5 w-5 text-primary" />
@@ -300,7 +312,7 @@ function closeEmergencyContacts() {
     </Card>
 
     <!-- After Crisis Instructions -->
-    <Card v-if="scenarioTheme.after" class="mb-6 shadow-md">
+    <Card v-if="scenarioTheme.after" id="after" class="mb-6 shadow-md">
       <CardHeader>
         <CardTitle class="flex items-center gap-2">
           <BookOpen class="h-5 w-5 text-primary" />
@@ -315,6 +327,10 @@ function closeEmergencyContacts() {
         ></div>
       </CardContent>
     </Card>
+
+    <div class="text-center mt-8">
+      <a href="#top" class="text-primary hover:underline">Back to Top</a>
+    </div>
 
     <!-- Legacy Instructions (for backward compatibility) -->
     <Card
@@ -344,8 +360,8 @@ function closeEmergencyContacts() {
         </CardTitle>
         <CardDescription>
           {{
-            $t('infoPage.themeDescription') ||
-            'Essential information to help you prepare and respond.'
+          $t('infoPage.themeDescription') ||
+          'Essential information to help you prepare and respond.'
           }}
         </CardDescription>
       </CardHeader>
@@ -466,7 +482,7 @@ function closeEmergencyContacts() {
             <div
               v-if="
                 themeResources &&
-                $te(`${themeResources}.contacts`) &&
+                $t(`${themeResources}.contacts`) &&
                 $t(`${themeResources}.contacts`).length > 0
               "
             >
@@ -512,8 +528,8 @@ function closeEmergencyContacts() {
     <h2 class="text-2xl font-bold mb-2">{{ $t('infoPage.selectThemePrompt') }}</h2>
     <p class="text-muted-foreground max-w-md">
       {{
-        $t('infoPage.browseThemesDescription') ||
-        'Browse through our information resources to learn about different crisis situations and how to prepare.'
+      $t('infoPage.browseThemesDescription') ||
+      'Browse through our information resources to learn about different crisis situations and how to prepare.'
       }}
     </p>
   </div>
