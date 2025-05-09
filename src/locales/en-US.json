@@ -51,7 +51,8 @@
     "2fa-login-title": "Two-Step Verification",
     "2fa-login-description": "Enter the verification code sent to your email to complete the login process.",
     "already-user": "Already a user? ",
-    "log-in-here": "Login here"
+    "log-in-here": "Login here",
+    "loading": "Loading..."
   },
   "reset-password": {
     "title": "Reset Password",
