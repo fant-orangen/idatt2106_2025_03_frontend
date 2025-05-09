@@ -130,7 +130,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import InviteHouseholdDialog from '@/components/group/InviteHouseholdDialog.vue';
 import CreateGroupDialog from '@/components/group/CreateGroupDialog.vue';
 import LeaveGroupDialog from '@/components/group/LeaveGroupDialog.vue';
-
+import { toast } from 'vue-sonner'
 
 const { t } = useI18n();
 const groupStore = useGroupStore();
