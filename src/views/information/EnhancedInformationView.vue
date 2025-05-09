@@ -66,8 +66,8 @@ const routeScenarioId = computed(() => {
  * Static sidebar sections that are always available
  */
 const staticSections: SidebarNode[] = [
-  { key: 'preparednessStorage', titleKey: 'sidebar.themes.preparednessStorage' },
-  { key: 'afterCrisis', titleKey: 'sidebar.themes.afterCrisis' }
+  { key: 'preparednessStorage', titleKey: 'sidebar.themes-preparednessStorage' },
+  { key: 'afterCrisis', titleKey: 'sidebar.themes-afterCrisis' }
 ]
 
 /**
@@ -86,7 +86,7 @@ const sections = computed<SidebarNode[]>(() => {
     return [
       {
         key: 'scenarioThemes',
-        titleKey: 'scenarioThemes.title',
+        titleKey: 'sidebar.categories',
         children: scenarioNodes
       },
       ...staticSections

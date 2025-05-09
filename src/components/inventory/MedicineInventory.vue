@@ -33,7 +33,7 @@
         <div v-if="item.edit" class="space-y-4 mt-4">
           <!-- Group selector -->
           <div class="border-b pb-4 mb-4">
-            <h3 class="text-sm font-medium mb-2">{{ t('inventory.common.share-with-group') }}:</h3>
+            <h3 class="text-sm font-medium mb-2">{{ t('inventory.share-with-group') }}:</h3>
             <div class="flex gap-2 items-center">
               <Select v-model="selectedGroupId" class="w-full sm:w-64">
                 <SelectTrigger>
@@ -136,7 +136,7 @@
           />
           <Select v-model="newProductUnit">
             <SelectTrigger>
-              <SelectValue :placeholder="t('inventory.common.select-unit')" />
+              <SelectValue :placeholder="t('inventory.select-unit')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="mcg">mcg</SelectItem>
@@ -160,9 +160,9 @@
         class="fixed top-1/4 left-1/2 -translate-x-1/2 bg-card text-foreground border border-destructive p-6 rounded-lg shadow-xl"
       >
         <p class="text-center">
-          <strong>{{ t('inventory.medicine.exists.title') }}</strong><br />
-          {{ t('inventory.medicine.exists.message') }}<br />
-          {{ t('inventory.medicine.exists.action') }}
+          <strong>{{ t('inventory.medicine.exists-title') }}</strong><br />
+          {{ t('inventory.medicine.exists-message') }}<br />
+          {{ t('inventory.medicine.exists-action') }}
         </p>
         <div class="text-right mt-4">
           <Button
@@ -468,14 +468,14 @@ const addProduct = async () => {
   if (!name || !newProductUnit.value) return
   const exists = items.value.some((item) => item?.name?.toLowerCase() === name.toLowerCase())
   if (exists) {
-    toast('Feil', {
-      description: t('inventory.medicine.exists.message'),
+    toast('NB!', {
+      description: t('inventory.medicine.exists-message'),
       duration: 3000
     });
     return
   }
   const unit = newProductUnit.value.toLowerCase()
-  const validUnits = ['mcg', 'mg', 'dose']
+  const validUnits = ['mcg', 'mg', 'dose','stk']
   if (!validUnits.includes(unit)) {
     return
   }

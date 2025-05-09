@@ -20,7 +20,6 @@ class InventoryService {
           size
         }
       });
-      console.log('API Response:', response.data);
 
       // Store the product IDs from this page
       this.productStore.addProductIdsFromPage(response.data.content);

@@ -1,8 +1,9 @@
 <template>
   <div class="min-h-screen p-6 bg-background text-foreground">
     <div class="max-w-5xl mx-auto space-y-8">
+
       <!-- Header -->
-      <h1 class="text-3xl font-bold mb-6">{{ t('inventory.food.title') }}</h1>
+      <h1 class="text-3xl font-bold mb-6">{{ t('inventory.food-title') }}</h1>
 
       <!-- Product List -->
       <div
@@ -22,7 +23,7 @@
             <span v-if="item?.name?.toLowerCase() === 'vann'">💧</span> {{ item?.name }}
           </div>
           <div class="text-left sm:text-left">{{ getTotalAmount(item) }}</div>
-          <div class="left-center sm:text-left">{{ item?.caloriesPerUnit }} {{ t('inventory.food.calories') }} {{ item?.unit }}</div>
+          <div class="left-center sm:text-left">{{ item?.caloriesPerUnit }} {{ t('inventory.food-calories') }} {{ item?.unit }}</div>
           <div class="text-right sm:text-center">
             <Button
               variant="link"
@@ -38,11 +39,11 @@
         <div v-if="item.edit" class="space-y-4 mt-4">
           <!-- Group selector -->
           <div class="border-b pb-4 mb-4">
-            <h3 class="text-sm font-medium mb-2">{{ t('inventory.common.share-with-group') }}:</h3>
+            <h3 class="text-sm font-medium mb-2">{{ t('inventory.share-with-group') }}:</h3>
             <div class="flex gap-2 items-center">
               <Select v-model="selectedGroupId" class="w-full sm:w-64">
                 <SelectTrigger>
-                  <SelectValue :placeholder="groups.length > 0 ? t('inventory.common.select-group') : t('inventory.common.no-groups')" />
+                  <SelectValue :placeholder="groups.length > 0 ? t('inventory.select-group') : t('inventory.no-groups')" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem v-for="group in groups" :key="group.id" :value="group.id">
@@ -61,7 +62,7 @@
             <Input
               v-model="batch.amount"
               type="number"
-              :placeholder="t('inventory.food.amount')"
+              :placeholder="t('inventory.food-amount')"
               class="text-center w-full"
             />
             <div class="text-sm text-center sm:text-left">{{ item.unit }}</div>
@@ -100,7 +101,7 @@
               :disabled="!selectedGroupId || addingBatchToGroup || batch.isContributed"
               class="text-xs w-full sm:w-auto"
             >
-              {{ batch.isContributed ? t('inventory.food.already-shared') : t('inventory.food.share') }}
+              {{ batch.isContributed ? t('inventory.food-already-shared') : t('inventory.food-share') }}
             </Button>
           </div>
 
@@ -111,7 +112,7 @@
               @click="addBatch(index)"
               class="text-sm text-primary hover:underline"
             >
-              + {{ t('inventory.food.add') }}
+              + {{ t('inventory.food-add') }}
             </Button>
             <Button
               v-if="item.edit"
@@ -119,7 +120,7 @@
               @click="deleteProductType(index)"
               class="text-sm"
             >
-              {{ t('inventory.food.delete-type') }}
+              {{ t('inventory.food-delete-type') }}
             </Button>
           </div>
         </div>
@@ -127,15 +128,15 @@
 
       <!-- Add New Product -->
       <div class="pt-6 space-y-4">
-        <h2 class="text-lg font-semibold">{{ t('inventory.food.add-new') }}</h2>
+        <h2 class="text-lg font-semibold">{{ t('inventory.food-add-new') }}</h2>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
           <Input
             v-model="newProductName"
-            :placeholder="t('inventory.food.product-name')"
+            :placeholder="t('inventory.food-product-name')"
           />
           <Select v-model="newProductUnit">
             <SelectTrigger>
-              <SelectValue :placeholder="t('inventory.common.select-unit')" />
+              <SelectValue :placeholder="t('inventory.select-unit')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="kg">kg</SelectItem>
@@ -154,7 +155,7 @@
             @click="addProduct"
             class="text-sm text-primary hover:underline"
           >
-            + {{ t('inventory.food.add') }}
+            + {{ t('inventory.food-add') }}
           </Button>
         </div>
       </div>
@@ -415,8 +416,8 @@ const addProduct = async () => {
     (item) => item?.name?.toLowerCase() === name.toLowerCase()
   );
   if (exists) {
-    toast('Feil', {
-      description: t('inventory.food.exists.message'),
+    toast('NB!', {
+      description: t('inventory.food-exists-message'),
       duration: 3000
     });
     return;
