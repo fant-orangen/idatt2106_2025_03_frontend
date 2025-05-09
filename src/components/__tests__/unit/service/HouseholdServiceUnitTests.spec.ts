@@ -272,7 +272,7 @@ describe('HouseholdService', () => {
         address: '123 Main St'
       }
 
-      const errorMessage = 'Failed to create household'
+      const errorMessage = 'Could not create household. Please try again later.'
 
       // Mock the API to throw an error
       vi.mocked(api.post).mockRejectedValue(new Error(errorMessage))

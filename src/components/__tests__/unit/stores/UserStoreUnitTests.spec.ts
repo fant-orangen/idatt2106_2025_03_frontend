@@ -372,9 +372,9 @@ describe('UserStore', () => {
 
       vi.spyOn(mockAuthService, 'changePassword').mockResolvedValue(createAxiosResponse(undefined))
 
-      await userStore.updatePassword(oldPassword, newPassword)
+      await userStore.updatePassword(oldPassword, newPassword, newPassword)
 
-      expect(mockAuthService.changePassword).toHaveBeenCalledWith(email, oldPassword, newPassword)
+      expect(mockAuthService.changePassword).toHaveBeenCalledWith(oldPassword, newPassword, newPassword)
     })
 
 
