@@ -57,7 +57,8 @@
     "2fa-login-title": "To-trinnsverifisering",
     "2fa-login-description": "Skriv inn koden sendt til e-posten din for å logge inn.",
     "already-user": "Allerede bruker?",
-    "log-in-here": "Logg inn her"
+    "log-in-here": "Logg inn her",
+    "loading": "Laster inn..."
   },
   "reset-password": {
     "title": "Tilbakestill passord",
