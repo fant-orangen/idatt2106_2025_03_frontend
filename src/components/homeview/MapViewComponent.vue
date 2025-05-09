@@ -90,6 +90,7 @@
             variant="outline"
             class="flex items-center border-[var(--crisis-level-yellow)] hover:bg-gray-200 dark:hover:bg-neutral-800"
             @click="toggleMeetingPlacesVisibility"
+            :disabled="!userLocation"
           >
             <span class="material-symbols-outlined scale-75 mr-2">recenter</span>
             {{ t('map.show-meeting-places', 'Meeting Places') }}

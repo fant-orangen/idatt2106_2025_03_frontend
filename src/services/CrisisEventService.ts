@@ -65,7 +65,7 @@ export async function fetchActiveCrisisEvents(): Promise<CrisisEvent[]> {
     const allEventsPage = await fetchAllCrisisEvents({ size: 200 });
     const activeEvents = allEventsPage.content.filter(event => event.isActive);
 
-    console.log(`Loaded ${allEventsPage.totalElements} total events from API, ${activeEvents.length} are active.`);
+
     return activeEvents;
 
   } catch (error) {
@@ -88,14 +88,12 @@ export async function fetchAllPreviewCrisisEvents(
   size = 10
 ): Promise<Page<CrisisEventPreviewDto>> {
   try {
-    console.log('Fetching paginated crisis events, page:', page);
     const response = await api.get<Page<CrisisEventPreviewDto>>('/public/crisis-events/all/previews', {
       params: { page, size },
       headers: {
         'Content-Type': 'application/json'
       }
     });
-    console.log("crisis events page:", response.data);
     return response.data;
   } catch (error) {
     console.error('Failed to fetch paginated crisis events', error);
@@ -222,7 +220,6 @@ export async function fetchCrisisEventChanges(
   size = 5
 ): Promise<Page<CrisisEventChange>> {
   try {
-    console.log("page : ", page);
     const response = await api.get<Page<CrisisEventChange>>(
       `/public/crisis-events/${crisisEventId}/changes`,
       { params: { page, size } }

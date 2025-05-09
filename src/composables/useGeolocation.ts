@@ -38,7 +38,6 @@ export function useGeolocation() {
       // We can't directly check, so try a test location request with minimal timeout
       return new Promise((resolve) => {
         const testTimeout = setTimeout(() => {
-          console.log('Permission check timed out, assuming prompt');
           resolve('prompt');
         }, 200);
 
@@ -46,18 +45,15 @@ export function useGeolocation() {
           navigator.geolocation.getCurrentPosition(
             () => {
               clearTimeout(testTimeout);
-              console.log('Test location request succeeded, permission is granted');
               browserPermissionState.value = 'granted';
               resolve('granted');
             },
             (error) => {
               clearTimeout(testTimeout);
               if (error.code === error.PERMISSION_DENIED) {
-                console.log('Test location request denied, permission is denied');
                 browserPermissionState.value = 'denied';
                 resolve('denied');
               } else {
-                console.log('Test location request failed for other reasons, assume prompt');
                 browserPermissionState.value = 'prompt';
                 resolve('prompt');
               }
@@ -66,7 +62,6 @@ export function useGeolocation() {
           );
         } catch (e) {
           clearTimeout(testTimeout);
-          console.error('Error during test permission check', e);
           browserPermissionState.value = null;
           resolve(null);
         }
@@ -76,12 +71,10 @@ export function useGeolocation() {
     // If Permissions API is supported, use it
     try {
       const permissionStatus = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
-      console.log('Geolocation permission status:', permissionStatus.state);
       browserPermissionState.value = permissionStatus.state;
 
       // Set up listener for permission changes
       permissionStatus.addEventListener('change', () => {
-        console.log('Geolocation permission changed to:', permissionStatus.state);
         browserPermissionState.value = permissionStatus.state;
       });
 
@@ -120,7 +113,6 @@ export function useGeolocation() {
 
   // --- Callbacks ---
   function successCallback(position: GeolocationPosition) {
-    console.log('Geolocation success:', position);
     const newLocation: UserLocation = {
       latitude: position.coords.latitude,
       longitude: position.coords.longitude,
@@ -129,7 +121,6 @@ export function useGeolocation() {
     geolocationStore.setLocation({ location: newLocation, status: 'Success', isLoading: false });
 
     if (browserPermissionState.value === 'prompt') {
-      console.log('Updating browser permission state to granted based on successful geolocation');
       browserPermissionState.value = 'granted';
     }
     // TODO: Send location updates to backend if needed
@@ -183,18 +174,11 @@ export function useGeolocation() {
       } else if (browserPermissionState.value === 'prompt') {
         statusMessage = 'Permission Required';
       }
-      console.log(`Cannot start watching: ${statusMessage}`);
       geolocationStore.setLocationError({ error: null, status: statusMessage, isLoading: false });
       return; // Prevent starting the watch if conditions aren't met
     }
 
 
-    if (watchId !== null) {
-      console.log('Already watching location.');
-      return;
-    }
-
-    console.log('Starting location watch...');
     geolocationStore.setLocationLoading(true); // Set loading state in GeolocationStore
 
     try {
@@ -212,7 +196,6 @@ export function useGeolocation() {
 
   function stopWatching() {
     if (watchId !== null) {
-      console.log('Stopping location watch...');
       navigator.geolocation.clearWatch(watchId);
       watchId = null;
       isWatching.value = false;
@@ -223,7 +206,6 @@ export function useGeolocation() {
   }
 
   function resetBrowserPermissionState() {
-    console.log('Forcibly resetting browser permission state tracking');
     browserPermissionState.value = null;
 
     // Force a fresh check with browser - key change!
@@ -231,17 +213,14 @@ export function useGeolocation() {
       // Use a very short-lived request to test real permission state
       navigator.geolocation.getCurrentPosition(
         () => {
-          console.log('Permission test successful - permission is GRANTED');
           browserPermissionState.value = 'granted';
           resolve('granted');
         },
         (error) => {
           if (error.code === 1) { // PERMISSION_DENIED
-            console.log('Permission test failed - permission is DENIED');
             browserPermissionState.value = 'denied';
             resolve('denied');
           } else {
-            console.log('Permission test inconclusive - assuming PROMPT required');
             browserPermissionState.value = 'prompt';
             resolve('prompt');
           }
@@ -252,7 +231,6 @@ export function useGeolocation() {
   }
 
   function resetGeolocationState() {
-    console.log('Resetting geolocation state');
     stopWatching();
 
     // Reset the geolocation store
@@ -267,13 +245,7 @@ export function useGeolocation() {
   async function getCurrentLocation(): Promise<UserLocation | null> {
     return new Promise(async (resolve) => {
       // First, clear all state and force a fresh permission check
-      console.log('==== STARTING FRESH LOCATION REQUEST ====');
       await resetBrowserPermissionState();
-
-      console.log('Current browser permission state:', browserPermissionState.value);
-      console.log('User login state:', userStore.loggedIn);
-      console.log('User location preference:', userStore.profile?.locationSharingEnabled);
-
       if (!('geolocation' in navigator)) {
         console.error('Geolocation is not supported.');
         geolocationStore.setLocationError({ error: null, status: 'Not Supported', isLoading: false });
@@ -285,7 +257,6 @@ export function useGeolocation() {
       const currentPermission = browserPermissionState.value;
 
       if (currentPermission === 'denied') {
-        console.log('Browser permission is denied, cannot proceed');
         geolocationStore.setLocationError({
           error: { code: 1, message: 'Permission denied by browser' },
           status: 'Permission Denied',
@@ -298,7 +269,6 @@ export function useGeolocation() {
       // We've confirmed browser permission is either granted or prompt
       // Now check user settings only if logged in
       if (userStore.loggedIn && userStore.profile?.locationSharingEnabled === false) {
-        console.log('User has explicitly disabled location sharing in profile');
         geolocationStore.setLocationError({
           error: { code: 1, message: 'Disabled in user settings' },
           status: 'Disabled by User',
@@ -311,13 +281,11 @@ export function useGeolocation() {
       // At this point, we've confirmed:
       // 1. Browser permission is not denied
       // 2. If user is logged in, they haven't disabled location
-      console.log('Permission checks passed, requesting location...');
       geolocationStore.setLocationLoading(true);
 
       try {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            console.log('Location request successful!', position);
             successCallback(position);
             resolve(geolocationStore.currentUserLocation);
           },
@@ -346,27 +314,18 @@ export function useGeolocation() {
 
   // --- Watcher for enabling/disabling based on combined condition ---
   watch(canShareLocation, (enabled, previouslyEnabled) => {
-    console.log(`Effective location sharing capability changed: ${previouslyEnabled} -> ${enabled}`);
     if (enabled && !isWatching.value) {
-      // Optional: Automatically start watching when enabled?
-      // Consider if you want this behavior or require manual start.
-      // startWatching();
-      console.log("Location sharing possible, watching can now be started/resumed.");
     } else if (!enabled && isWatching.value) {
-      console.log("Location sharing no longer possible, stopping watch.");
       stopWatching();
       // Optionally clear location state when disabled
       // geolocationStore.clearLocationState();
     }
   }, { immediate: true }); // immediate: true to check on component mount
 
-
-  // --- Cleanup ---
   onUnmounted(() => {
     stopWatching();
   });
 
-  // --- Return reactive state and methods ---
   return {
     coords,             // Computed ref to geolocationStore.currentUserLocation
     error,              // Computed ref to geolocationStore.locationError
