@@ -92,13 +92,15 @@ export async function verify2FACode(userEmail: string, code: number) {
  * @returns {Promise<import('axios').AxiosResponse>} - A promise that resolves to the server response
  */
 export async function changePassword(
+  userEmail: string,
   oldPassword: string,
   newPassword: string,
-  confirmNewPassword: string,
+  confirmNewPassword?: string,
 ) {
   return await api.patch('/auth/change-password', {
+    email: userEmail,
     oldPassword: oldPassword,
     newPassword: newPassword,
-    confirmNewPassword: confirmNewPassword,
+    confirmNewPassword: confirmNewPassword || newPassword,
   })
 }

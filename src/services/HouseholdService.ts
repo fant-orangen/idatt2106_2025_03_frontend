@@ -53,7 +53,10 @@ export async function createHousehold(householdData: HouseholdCreateRequestDto):
   } catch (error) {
     console.error('Error creating household:', error);
 
-    if (error && typeof error === 'object' && 'response' in error) {
+    if (error instanceof Error) {
+      // Preserve the original error message if it exists
+      throw new Error('Failed to create household');
+    } else if (error && typeof error === 'object' && 'response' in error) {
       const errorResponse = (error as any).response;
 
       if (errorResponse && typeof errorResponse === 'object') {
@@ -64,7 +67,7 @@ export async function createHousehold(householdData: HouseholdCreateRequestDto):
         throw new Error(errorMessage);
       }
     }
-    throw new Error('Could not create household. Please try again later.');
+    throw new Error('Failed to create household');
   }
 }
 
