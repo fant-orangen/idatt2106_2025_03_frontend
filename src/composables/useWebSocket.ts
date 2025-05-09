@@ -148,7 +148,6 @@ export function useWebSocket() {
           stompClient.disconnect(() => {
             // This callback might not always fire reliably depending on server/network state
           });
-        } else {
         }
       } catch (error) {
         console.error('Error during WebSocket disconnect method call:', error);
