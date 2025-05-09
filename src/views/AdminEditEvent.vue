@@ -20,29 +20,37 @@
       </BreadcrumbList>
     </Breadcrumb>
 
-    <h1>{{$t('admin.edit-event')}}:</h1>
+    <h1 class="text-2xl m-5">{{$t('admin.edit-event')}}:</h1>
 
     <!--Go back button shows up when an event is chosen-->
     <div v-if="selectedEvent">
       <Button @click="cancelUpdate()">{{ $t('navigation.go-back') }}</Button>
     </div>
 
-    <div class="page">
+    <div class="flex flex-row flex-wrap justify-center m-7 gap-3.5 items-start">
       <!--Scrollable element of all current events-->
-      <div class="events" v-if="!selectedEvent">
+      <div class="min-w-full" v-if="!selectedEvent">
         <Card>
           <CardHeader>
             <CardTitle>{{ $t('add-event-info.titles.choose-event') }}: </CardTitle>
           </CardHeader>
-          <CardContent class="card-content">
+          <CardContent class="box pt-2.5 overflow-y-auto max-h-[450px]">
+            <!-- Search bar -->
+            <div class="relative mb-4 w-full">
+              <Input v-model="searchQuery" type="text" placeholder="Søk etter et event..."
+                class="w-full rounded-md border px-3 py-2 pl-9 shadow-sm" />
+              <span class="absolute start-0 inset-y-0 flex items-center-safe justify-center px-3">
+                <Search class="size-5 text-muted-foreground" />
+              </span>
+            </div>
             <InfiniteScroll :is-loading="isFetchingNextPage" :has-more="hasNextPage" @load-more="fetchNextPage">
               <div
-                v-for="(event, index) in allEvents"
+                v-for="(event, index) in filteredEvents"
                 :key="event.id"
                 @click="selectEvent(index)"
-                :class="['text-sm', 'cursor-pointer', 'transition-colors', 'hover:bg-gray-200', 'dark:hover:bg-gray-700']"
+                :class="['text-sm', 'pt-1.5', 'rounded-[8px]', 'cursor-pointer', 'transition-colors', 'hover:bg-gray-200', 'dark:hover:bg-gray-700']"
               >
-                <div class="listOfEvents items-center">
+                <div class="flex flex-row flex-nowrap w-full gap-1 justify-evenly align-center text-[1.3em]">
                   <!-- Crisis Name -->
                   <span class="severity-tag">{{ event.name }}</span>
 
@@ -78,15 +86,17 @@
       </div>
 
       <div>
-        <Card class="edit" v-if="selectedEvent">
+        <Card class="min-w-fit max-w-[450px]" v-if="selectedEvent">
           <CardContent>
             <form @submit.prevent="onSubmit">
-              <div class="read-only">
+              <div>
                 <FormField name="title">
                   <FormItem>
                     <FormLabel>{{ $t('add-event-info.titles.title') }}</FormLabel>
                     <FormControl>
-                      <Input type="text" v-model="selectedEvent.name" readonly disabled />
+                      <Input type="text"
+                       v-model="selectedEvent.name"
+                        readonly disabled />
                     </FormControl>
                     <FormDescription>{{ $t('add-event-info.title') }}</FormDescription>
                   </FormItem>
@@ -109,7 +119,7 @@
               </div>
 
               <br />
-              <div class="container">
+              <div class="flex flex-row flex-nowrap gap-2.5">
                 <FormField v-slot="{ field, meta, errorMessage }" name="epicenterLatitude">
                   <FormItem>
                     <FormLabel>{{ $t('add-event-info.titles.latitude') }}</FormLabel>
@@ -163,7 +173,7 @@
               </FormField>
               <br />
 
-              <div class="read-only">
+              <div>
                 <FormField name="startTime">
                   <FormItem>
                     <FormLabel>{{ $t('add-event-info.titles.time') }}</FormLabel>
@@ -181,7 +191,7 @@
               </div>
               <br />
 
-              <div class="container">
+              <div class="flex flex-row flex-nowrap gap-2.5">
                 <FormField v-slot="{ field, meta, errorMessage }" name="severity">
                   <FormItem>
                     <FormLabel>{{ $t('add-event-info.titles.priority') }}</FormLabel>
@@ -240,16 +250,16 @@
                 <FormItem>
                   <FormLabel>{{ $t('add-event-info.titles.description') }}:</FormLabel>
                   <FormControl>
-                    <Textarea class="descriptionArea" v-bind="field"> </Textarea>
+                    <Textarea class="min-h-[100px] overflow-auto" v-bind="field"> </Textarea>
                   </FormControl>
                   <FormDescription>{{ $t('add-event-info.description') }}</FormDescription>
                   <FormMessage v-if="meta.touched && errorMessage">{{ errorMessage }}</FormMessage>
                 </FormItem> </FormField
               ><br />
 
-              <div class="buttons">
-                <Button>{{ $t('add-event-info.titles.submit') }}</Button>
-                <Button
+              <div>
+                <Button class="m m-1.5">{{ $t('add-event-info.titles.submit') }}</Button>
+                <Button class="m m-1.5"
                   type="button"
                   variant="destructive"
                   @click="deactivateEvent(selectedEvent.id)"
@@ -261,7 +271,7 @@
         </Card>
       </div>
 
-      <div class="map-area z-50" v-if="selectedEvent">
+      <div class="rounded-[8px] overflow-hidden border-muted min-w-[300px] min-h-[400px] z-50 bg-muted" v-if="selectedEvent">
         <StaticMapWithCircle
           v-if="
             selectedEvent.epicenterLatitude != null && selectedEvent.epicenterLongitude != null
@@ -273,7 +283,7 @@
           :color="getSeverityMapColor(selectedEvent.severity)"
           :mapId="`event-map-${selectedEvent.id}`"
         />
-        <div v-else class="map-placeholder text-center text-muted-foreground p-4">
+        <div v-else class="flex items-center justify-center h-full text-center text-muted-foreground p-4">
           {{$t('admin.map-location-missing')}}
         </div>
       </div>
@@ -326,10 +336,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
-// Import the StaticMapWithCircle component
 import StaticMapWithCircle from '@/components/map/StaticMapWithCircle.vue';
+import { Search } from 'lucide-vue-next'
 
 const { t } = useI18n()
+const searchQuery = ref('');
 const selectedEvent = ref<CrisisEventDto | null>(null)
 const updatedEvent = ref<UpdateCrisisEventDto | null>(null)
 const scenarioPreviews = ref<ScenarioThemePreview[]>([])
@@ -359,7 +370,11 @@ const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuer
 })
 
 const allEvents = computed<CrisisEventDto[]>(() => data.value?.pages.flat() ?? [])
-// allEvents.value.forEach((event: CrisisEventDto) => { console.log(event.id) }); // Removed console.log
+
+const filteredEvents = computed(() => {
+  return allEvents.value.filter(mp => mp.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+});
+
 
 /**
  * Saves the event the admin user chose to edit to the 'selectedEvent' variable.
@@ -426,7 +441,7 @@ function setUpFormSchema() {
         z
         .number()
         .min(1, t('add-event-info.errors.radius'))
-        .max(10000, t('add-event-info.errors.radius')), // Assuming radius is in meters for the form
+        .max(100000, t('add-event-info.errors.radius')), // Assuming radius is in meters for the form
       ),
       severity: z.enum(['green', 'yellow', 'red']),
       category: z
@@ -663,71 +678,6 @@ function callToast(message: string) {
 </script>
 
 <style scoped>
-h1 {
-  font-size: 2em;
-  margin: 20px;
-}
-
-.buttons > Button {
-  margin: 5px;
-}
-
-.page {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  margin: 30px;
-  gap: 15px;
-  align-items: flex-start;
-}
-
-.container {
-  display: flex;
-  flex-flow: row nowrap;
-  gap: 10px;
-}
-
-.events {
-  min-width: fit-content;
-  max-height: 600px;
-  border-radius: 8px;
-}
-
-.listOfEvents {
-  display: flex;
-  flex-flow: row nowrap;
-  width: 100%;
-  font-size: 1.3em;
-  gap: 3px;
-  justify-content: space-evenly;
-}
-
-.edit {
-  min-width: fit-content;
-  max-width: 450px;
-}
-
-.read-only {
-  cursor: not-allowed;
-}
-
-.read-only input {
-  background-color: var(--color-muted);
-  cursor: not-allowed;
-  text-transform: capitalize;
-}
-
-.card-content > div {
-  padding-top: 10px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 1em;
-}
-
-.descriptionArea {
-  min-height: 100px;
-  overflow: auto;
-}
 
 .severity-tag {
   padding: 2px 10px;
@@ -740,7 +690,6 @@ h1 {
 .false {
   background-color: var(--gray);
 }
-
 .green {
   background-color: var(--crisis-level-green);
 }
@@ -749,22 +698,5 @@ h1 {
 }
 .red {
   background-color: var(--crisis-level-red);
-}
-
-/* Added styling for the map area */
-.map-area {
-  border-radius: 8px;
-  border: 1px solid var(--border); /* Use theme border */
-  min-width: 300px;
-  min-height: 400px; /* Match map container height */
-  overflow: hidden; /* Ensure map stays within bounds */
-  background-color: var(--muted); /* Placeholder background */
-}
-
-.map-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
 }
 </style>

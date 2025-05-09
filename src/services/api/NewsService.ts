@@ -93,45 +93,8 @@ export async function getNewsDigest(
 }
 
 /**
- * Creates a new news article (admin only).
- *
- * @param {CreateNewsDto} newsArticle - The news article data to create
- * @returns {Promise<News>} The created news article
- */
-export async function createNewsArticle(newsArticle: CreateNewsDto): Promise<News> {
-  try {
-    const response = await api.post('/admin/news', newsArticle);
-    return response.data;
-  } catch (error: unknown) {
-    console.error('Error creating news article:', error);
-    throw error;
-  }
-}
-
-/**
- * Updates an existing news article (admin only).
- *
- * @param {number} newsArticleId - The ID of the news article to update
- * @param {UpdateNewsArticleDTO} updateData - The data to update
- * @returns {Promise<News>} The updated news article
- */
-export async function updateNewsArticle(
-  newsArticleId: number,
-  updateData: UpdateNewsArticleDTO
-): Promise<News> {
-  try {
-    const response = await api.patch(`/admin/news/${newsArticleId}`, updateData);
-    return response.data;
-  } catch (error: unknown) {
-    console.error(`Error updating news article ${newsArticleId}:`, error);
-    throw error;
-  }
-}
-
-
-/**
- * Creates a new news article. 
- * @param newsArticle 
+ * Creates a new news article. Only accessible to admin or superadmin users.
+ * @param newsArticle - CreateNewsDto object with all data variables to save.
  */
 export async function adminAddNews(newsArticle: CreateNewsDto) {
   try {

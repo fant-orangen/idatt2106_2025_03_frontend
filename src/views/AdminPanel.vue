@@ -21,9 +21,9 @@
 
 	  <!-- Main Content -->
 	  <div class="flex-grow p-5">
-		<div class="page flex flex-col lg:flex-row gap-8">
+		<div class="page flex flex-col gap-8">
 		  <!-- Menu Buttons for Admin Actions -->
-		  <div class="menu flex flex-col gap-4 w-full lg:w-1/3">
+		  <div class="menu flex flex-col gap-4 w-full">
 			<h1 class="text-2xl font-bold text-primary">
 			  <span v-if="userStore.isSuperAdminUser">
 				{{ $t('admin.super-admin') }}: {{ $t('admin.administrate') }}
@@ -33,75 +33,76 @@
 			  </span>
 			</h1>
 
-			<Button
-			  v-if="userStore.isSuperAdminUser"
-			  @click="router.push('/admin/handle-admins')"
-			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-			  {{ $t('admin.edit-admin') }}
-			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-			<Button
-			  @click="router.push('/admin/add-new-event')"
-			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-			  {{ $t('admin.make-new-event') }}
-			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-			<Button
-			  @click="router.push('/admin/add-new-POI')"
-			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-			  {{ $t('admin.make-new-POI') }}
-			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-			<Button
-			  @click="router.push('/admin/add-new-scenario-theme')"
-			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-			  {{ $t('admin.make-new-scenario-theme') }}
-			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-			<Button
-			  @click="router.push('/quiz-overview/admin/new-quiz')"
-			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-			  {{ $t('admin.make-new-activity') }}
-			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-			<Button
-			  @click="router.push('/admin/edit-event')"
-			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-			  {{ $t('admin.edit-event') }}
-			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-			<Button
-			  @click="router.push('/admin/edit-scenario-theme')"
-			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-			  {{ $t('admin.edit-scenario-theme') }}
-			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-			<Button @click="router.push('/admin/edit-poi')"
-			class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-				{{ $t('admin.edit-POI') }}
-				<font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-
-			<Button
-			  @click="router.push('/admin/meeting-point')"
-			  class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
-			>
-			  {{ $t('admin.meeting-point') }}
-			  <font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
-			<Button @click="router.push('/admin/news')" 
-			class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm">
-				{{ $t('admin.news') }}
-				<font-awesome-icon icon="fa-solid fa-arrow-right" />
-			</Button>
+<div class="menu grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Button
+          @click="router.push('/admin/add-new-event')"
+          class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.make-new-event') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button
+          @click="router.push('/admin/add-new-POI')"
+          class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.make-new-POI') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button
+          @click="router.push('/admin/add-new-scenario-theme')"
+          class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.make-new-scenario-theme') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button
+          @click="router.push('/admin/edit-event')"
+          class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.edit-event') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button @click="router.push('/admin/edit-poi')"
+        class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.edit-POI') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button
+          @click="router.push('/admin/edit-scenario-theme')"
+          class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.edit-scenario-theme') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button @click="router.push('/admin/news')" 
+        class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm">
+          {{ $t('admin.news') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button
+          @click="router.push('/admin/meeting-point')"
+          class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.meeting-point') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button
+          @click="router.push('/quiz-overview/admin/new-quiz')"
+          class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.make-new-activity') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        <Button
+          v-if="userStore.isSuperAdminUser"
+          @click="router.push('/admin/handle-admins')"
+          class="w-full bg-primary hover:bg-primary/90 py-2 px-3 rounded-md flex justify-between items-center text-sm"
+        >
+          {{ $t('admin.edit-admin') }}
+          <font-awesome-icon icon="fa-solid fa-arrow-right" />
+        </Button>
+        </div>
 		  </div>
 
 		  <!-- Map Section -->
@@ -109,9 +110,10 @@
 			<h1 class="text-2xl font-bold text-primary mb-4">
 			  {{ $t('info.current-situation') }}
 			</h1>
-			<div class="w-full rounded-md shadow-md">
-			  <MapOverviewComponent />
-			</div>
+      <!-- Map Button Section -->
+      <section class="w-full px-4">
+        <MapViewComponent />
+      </section>
 		  </div>
 		</div>
 	  </div>
@@ -121,6 +123,7 @@
   <script setup lang="ts">
   import router from '@/router'
   import { useUserStore } from '@/stores/UserStore'
+  import MapViewComponent from '@/components/homeview/MapViewComponent.vue';
   import { Button } from '@/components/ui/button'
   import {
 	Breadcrumb,
