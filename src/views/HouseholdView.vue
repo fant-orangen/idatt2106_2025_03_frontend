@@ -344,9 +344,20 @@ const updateHouseholdDetails = async () => {
     await refreshHouseholdData();
     showEditHouseholdDialog.value = false;
     toast.success(t('household.update-success'));
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating household:', error);
-    toast.error(t('household.update-error'));
+
+    // Improved error handling to show backend error message
+    if (error instanceof Error && 'response' in error) {
+      const axiosError = error as { response?: { data?: string } };
+      if (axiosError.response?.data) {
+        toast.error(axiosError.response.data);
+      } else {
+        toast.error(t('household.update-error'));
+      }
+    } else {
+      toast.error(t('household.update-error'));
+    }
   } finally {
     isUpdatingHousehold.value = false;
   }
@@ -375,7 +386,7 @@ const handleDeleteHousehold = async () => {
     } else if (typeof error === 'object' && error !== null && 'response' in error) {
       const errorResponse = error as { response?: { data?: string } };
       if (errorResponse.response?.data) {
-        toast.error(errorResponse.response.data);
+        toast.error(String(errorResponse.response.data));
       } else {
         toast.error(t('household.delete_error'));
       }
