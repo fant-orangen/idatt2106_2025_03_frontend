@@ -1146,6 +1146,7 @@
     }
   },
   "household": {
+    "my-household": "Husholdning",
     "supplies": "Husholdningsartikler",
     "no-supplies": "No supplies registered yet.",
     "members": "Medlemmer",
