@@ -557,7 +557,7 @@
       "optional-message": "Optional: Add a personal message",
       "send-invitation": "Send Invitation",
       "invitation-sent": "Invitation sent successfully",
-      "invitation-failed": "Failed to send invitation",
+      "invitation-failed": "Failed to send invitation, user not found.",
       "add-user-title": "Invite User to Household",
       "create_new": "Create New Household",
       "create_description": "Create your own household to manage your emergency preparedness.",

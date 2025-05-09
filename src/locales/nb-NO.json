@@ -648,7 +648,7 @@
     "optional-message": "Valgfritt: Legg til en personlig melding",
     "send-invitation": "Send invitasjon",
     "invitation-sent": "Invitasjon sendt",
-    "invitation-failed": "Kunne ikke sende invitasjon",
+    "invitation-failed": "Kunne ikke sende invitasjon, brukeren finnes ikke.",
     "invitation-sent-success": "Invitasjon sendt",
     "add-user-title": "Inviter bruker til hushold",
     "create_new": "Opprett nytt hushold",
